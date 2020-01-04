@@ -1,0 +1,93 @@
+<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".g.cs" #>
+
+//
+// File was automatically generated at <#= DateTime.Now #>
+//
+
+using System;
+
+<#
+    const int MAX = 8;
+#>
+namespace Carbonfrost.Commons.Spec {
+
+<# for (int i = 0; i <= MAX; i++) {
+   string[] typeArgsList = Enumerable.Range(1, i).Select(t => "T" + t).ToArray();
+   string[] fields   = Enumerable.Range(1, i).Select(t => "_arg" + t).ToArray();
+   string[] parms    = Enumerable.Range(1, i).Select(t => "arg" + t).ToArray();
+
+   if (i == 1) {
+       typeArgsList = new [] { "T" };
+   }
+
+   string args = List(typeArgsList.Zip(parms, (t, f) => (t + " " + f))); // T1 arg1, T2 arg2...
+   string typeArgs = "<" + List(typeArgsList) + ">";
+   string typeArgsResult = "<" + List(typeArgsList.Concat(new [] { "TResult" })) + ">";
+
+   if (typeArgs == "<>") {
+       typeArgs = "";
+   }
+#>
+
+    partial class TestClass {
+
+        public GivenExpectationBuilder<#= typeArgs #> Given<#= typeArgs #>(<#= args #>) {
+            return new GivenExpectationBuilder<#= typeArgs #>(<#= List(parms) #>);
+        }
+    }
+
+    partial class Assert {
+
+        public static GivenExpectationBuilder<#= typeArgs #> Given<#= typeArgs #>(<#= args #>) {
+            return new GivenExpectationBuilder<#= typeArgs #>(<#= List(parms) #>);
+        }
+
+    }
+
+    public struct GivenExpectationBuilder<#= typeArgs #> {
+
+<# foreach (var m in typeArgsList.Zip(fields, (t, f) => (t + " " + f))) { #>
+        private readonly <#= m #>;
+<# } #>
+
+<# if (args.Length > 0) { #>
+
+        internal GivenExpectationBuilder(<#= args #>) {
+<# foreach (var m in fields.Zip(parms, (t, f) => (t + " = " + f))) { #>
+        <#= m #>;
+<# } #>
+        }
+
+<# } #>
+
+        public ExpectationBuilder<TResult> Expect<TResult>(Func<#= typeArgsResult #> func) {
+<# foreach (var m in parms.Zip(fields, (t, f) => (t + " = " + f))) { #>
+        var <#= m #>;
+<# } #>
+            return new ExpectationBuilder<TResult>(() => func(<#= List(parms) #>),
+                                                   false,
+                                                   TextUtility.FormatArgs(<#= List(parms) #>));
+        }
+
+        public ExpectationBuilder Expect(Action<#= typeArgs #> func) {
+<# foreach (var m in parms.Zip(fields, (t, f) => (t + " = " + f))) { #>
+        var <#= m #>;
+<# } #>
+            return new ExpectationBuilder(() => func(<#= List(parms) #>),
+                                          false,
+                                          TextUtility.FormatArgs(<#= List(parms) #>));
+        }
+    }
+
+<# } #>
+
+}
+<#+
+    static string List(IEnumerable<string> items) {
+        return string.Join(", ", items);
+    }
+#>

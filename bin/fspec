@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+#
+# Development utility to execute `fspec'.  This script builds the code
+# before running, which is designed to let you tweak the code under development
+# and rapidly re-run the command.
+#
+# Environment variables:
+#
+# DOTNET_OPTIONS    Specifies options to dotnet
+# FSPEC_OPTIONS     Specifies options to fspec
+# BUILD_FIRST       If specified, then a build will occur before running fspec
+#
+
+set -e
+
+project_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+
+source "$project_dir/eng/helpers.bash"
+
+_build_first fspec
+_exec fspec "$*"
