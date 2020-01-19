@@ -1,0 +1,44 @@
+<#@ template language="C#" #>
+<#@ output extension=".g.cs" #>
+
+//
+// File was automatically generated at <#= DateTime.Now #>
+//
+
+<#
+    string[] NAMES = {
+        "Warn",
+        "Trace",
+        "Info",
+        "Debug",
+        "Error",
+        "Fatal",
+    };
+#>
+namespace Carbonfrost.Commons.Spec.ExecutionModel {
+
+    partial class TestLog {
+
+<# foreach (var name in NAMES) { #>
+
+        public void <#= name #>(string format, object arg) {
+            <#= name #>(string.Format(format, arg));
+        }
+
+        public void <#= name #>(string format, object arg0, object arg1) {
+            <#= name #>(string.Format(format, arg0, arg1));
+        }
+
+        public void <#= name #>(string format, object arg0, object arg1, object arg2) {
+            <#= name #>(string.Format(format, arg0, arg1, arg2));
+        }
+
+        public void <#= name #>(string format, params object[] args) {
+            <#= name #>(string.Format(format, args));
+        }
+
+<# } #>
+
+    }
+
+}

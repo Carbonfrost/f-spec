@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../Build.props" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <RootNamespace>Carbonfrost.CFSpec</RootNamespace>
+    <Description> Global tool for running fspec </Description>
+    <PackageProjectUrl>https://github.com/Carbonfrost/f-spec</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Carbonfrost/f-spec</RepositoryUrl>
+    <PackAsTool>true</PackAsTool>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Carbonfrost.Commons.Spec\Carbonfrost.Commons.Spec.csproj" />
+  </ItemGroup>
+</Project>

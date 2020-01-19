@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, srgen, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, srgen, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+  </resheader>
+  <data name="FailedToLoadAssembly" xml:space="preserve">
+    <value>Not an assembly: {0}</value>
+  </data>
+  <data name="FailedToLoadAssemblyGeneralIO" xml:space="preserve">
+    <value>Assembly file could not load: {0} ({1})</value>
+  </data>
+  <data name="FailedToLoadAssemblyPath" xml:space="preserve">
+    <value>Assembly file not found: {0}</value>
+  </data>
+  <data name="InvalidContextLines" xml:space="preserve">
+    <value>invalid number of context lines</value>
+  </data>
+  <data name="InvalidRandomSeed" xml:space="preserve">
+    <value>invalid random seed</value>
+  </data>
+  <data name="InvalidTimeSpan" xml:space="preserve">
+    <value>invalid time span</value>
+  </data>
+  <data name="InvalidVerify" xml:space="preserve">
+    <value>invalid verification mode</value>
+  </data>
+  <data name="UContextLines" xml:space="preserve">
+    <value>Show as many lines of context in unified diffs</value>
+  </data>
+  <data name="UFixture" xml:space="preserve">
+    <value>Include a fixture search {{PATH}}</value>
+  </data>
+  <data name="UFocus" xml:space="preserve">
+    <value>Focus tests whose descriptions or names match the given {{REGEX}}</value>
+  </data>
+  <data name="UHelp" xml:space="preserve">
+    <value>Display this help screen</value>
+  </data>
+  <data name="UNoDiff" xml:space="preserve">
+    <value>Don't use unified diffs when assertion messages contain long strings</value>
+  </data>
+  <data name="UNoFocus" xml:space="preserve">
+    <value>Ignore all focused elements and run everything</value>
+  </data>
+  <data name="UNoRandomizeSpecs" xml:space="preserve">
+    <value>Don't randomize specs</value>
+  </data>
+  <data name="UNoSummary" xml:space="preserve">
+    <value>Don't show test run summary of failed tests at the end</value>
+  </data>
+  <data name="UNoWhitespace" xml:space="preserve">
+    <value>Don't use special characters when printing whitespace in assertion failure messages</value>
+  </data>
+  <data name="UPause" xml:space="preserve">
+    <value>Attach tty and wait for a keypress before exiting</value>
+  </data>
+  <data name="UPlanTimeout" xml:space="preserve">
+    <value>Specify the maximum {{TIME}} allowed for the test plan to execute</value>
+  </data>
+  <data name="URandom" xml:space="preserve">
+    <value>Use the specified {{SEED}} to randomize specs</value>
+  </data>
+  <data name="USelfTest" xml:space="preserve">
+    <value>Run the self-tests and exit</value>
+  </data>
+  <data name="UShowPassExplicit" xml:space="preserve">
+    <value>Display messages when Assert.Pass is used</value>
+  </data>
+  <data name="UShowTestNames" xml:space="preserve">
+    <value>Display names of tests and test cases even on success</value>
+  </data>
+  <data name="USkip" xml:space="preserve">
+    <value>Skip tests whose descriptions or names match the given {{REGEX}}</value>
+  </data>
+  <data name="UTimeout" xml:space="preserve">
+    <value>Specify the maximum {{TIME}} allowed for any particular test to execute</value>
+  </data>
+  <data name="UVerify" xml:space="preserve">
+    <value>Use the specified verification mode to check for errors in tests and assertions</value>
+  </data>
+  <data name="UVersion" xml:space="preserve">
+    <value>Report the version information and exit</value>
+  </data>
+</root>

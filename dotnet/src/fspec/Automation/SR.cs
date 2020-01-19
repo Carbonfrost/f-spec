@@ -1,0 +1,249 @@
+
+// This file was automatically generated.  DO NOT EDIT or else
+// your changes could be lost!
+
+#pragma warning disable 1570
+
+using System;
+using System.Globalization;
+using System.Resources;
+using System.Reflection;
+
+namespace Carbonfrost.CFSpec.Resources {
+
+    /// <summary>
+    /// Contains strongly-typed string resources.
+    /// </summary>
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("srgen", "1.0.0.0")]
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute]
+    internal static partial class SR {
+
+        private static global::System.Resources.ResourceManager _resources;
+        private static global::System.Globalization.CultureInfo _currentCulture;
+        private static global::System.Func<string, string> _resourceFinder;
+
+        [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Resources.ResourceManager ResourceManager {
+            get {
+                if (object.ReferenceEquals(_resources, null)) {
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Carbonfrost.CFSpec.Resources.SR", typeof(SR).GetTypeInfo().Assembly);
+                    _resources = temp;
+                }
+                return _resources;
+            }
+        }
+
+        [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Globalization.CultureInfo Culture {
+            get {
+                return _currentCulture;
+            }
+            set {
+                _currentCulture = value;
+            }
+        }
+
+        private static global::System.Func<string, string> ResourceFinder {
+            get {
+                if (object.ReferenceEquals(_resourceFinder, null)) {
+                    try {
+                        global::System.Resources.ResourceManager rm = ResourceManager;
+                        _resourceFinder = delegate (string s) {
+                            return rm.GetString(s);
+                        };
+                    } catch (global::System.Exception ex) {
+                        _resourceFinder = delegate (string s) {
+                            return string.Format("localization error! {0}: {1} ({2})", s, ex.GetType(), ex.Message);
+                        };
+                    }
+                }
+                return _resourceFinder;
+            }
+        }
+
+
+  /// <summary>Not an assembly: ${path}</summary>
+    internal static string FailedToLoadAssembly(
+    object @path
+    ) {
+        return string.Format(Culture, ResourceFinder("FailedToLoadAssembly") , @path);
+    }
+
+  /// <summary>Assembly file could not load: ${path} (${error})</summary>
+    internal static string FailedToLoadAssemblyGeneralIO(
+    object @path, object @error
+    ) {
+        return string.Format(Culture, ResourceFinder("FailedToLoadAssemblyGeneralIO") , @path, @error);
+    }
+
+  /// <summary>Assembly file not found: ${path}</summary>
+    internal static string FailedToLoadAssemblyPath(
+    object @path
+    ) {
+        return string.Format(Culture, ResourceFinder("FailedToLoadAssemblyPath") , @path);
+    }
+
+  /// <summary>invalid number of context lines</summary>
+    internal static string InvalidContextLines(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("InvalidContextLines") );
+    }
+
+  /// <summary>invalid random seed</summary>
+    internal static string InvalidRandomSeed(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("InvalidRandomSeed") );
+    }
+
+  /// <summary>invalid time span</summary>
+    internal static string InvalidTimeSpan(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("InvalidTimeSpan") );
+    }
+
+  /// <summary>invalid verification mode</summary>
+    internal static string InvalidVerify(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("InvalidVerify") );
+    }
+
+  /// <summary>Show as many lines of context in unified diffs</summary>
+    internal static string UContextLines(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UContextLines") );
+    }
+
+  /// <summary>Include a fixture search {{PATH}}</summary>
+    internal static string UFixture(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UFixture") );
+    }
+
+  /// <summary>Focus tests whose descriptions or names match the given {{REGEX}}</summary>
+    internal static string UFocus(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UFocus") );
+    }
+
+  /// <summary>Display this help screen</summary>
+    internal static string UHelp(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UHelp") );
+    }
+
+  /// <summary>Don't use unified diffs when assertion messages contain long strings</summary>
+    internal static string UNoDiff(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UNoDiff") );
+    }
+
+  /// <summary>Ignore all focused elements and run everything</summary>
+    internal static string UNoFocus(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UNoFocus") );
+    }
+
+  /// <summary>Don't randomize specs</summary>
+    internal static string UNoRandomizeSpecs(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UNoRandomizeSpecs") );
+    }
+
+  /// <summary>Don't show test run summary of failed tests at the end</summary>
+    internal static string UNoSummary(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UNoSummary") );
+    }
+
+  /// <summary>Don't use special characters when printing whitespace in assertion failure messages</summary>
+    internal static string UNoWhitespace(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UNoWhitespace") );
+    }
+
+  /// <summary>Attach tty and wait for a keypress before exiting</summary>
+    internal static string UPause(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UPause") );
+    }
+
+  /// <summary>Specify the maximum {{TIME}} allowed for the test plan to execute</summary>
+    internal static string UPlanTimeout(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UPlanTimeout") );
+    }
+
+  /// <summary>Use the specified {{SEED}} to randomize specs</summary>
+    internal static string URandom(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("URandom") );
+    }
+
+  /// <summary>Run the self-tests and exit</summary>
+    internal static string USelfTest(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("USelfTest") );
+    }
+
+  /// <summary>Display messages when Assert.Pass is used</summary>
+    internal static string UShowPassExplicit(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UShowPassExplicit") );
+    }
+
+  /// <summary>Display names of tests and test cases even on success</summary>
+    internal static string UShowTestNames(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UShowTestNames") );
+    }
+
+  /// <summary>Skip tests whose descriptions or names match the given {{REGEX}}</summary>
+    internal static string USkip(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("USkip") );
+    }
+
+  /// <summary>Specify the maximum {{TIME}} allowed for any particular test to execute</summary>
+    internal static string UTimeout(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UTimeout") );
+    }
+
+  /// <summary>Use the specified verification mode to check for errors in tests and assertions</summary>
+    internal static string UVerify(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UVerify") );
+    }
+
+  /// <summary>Report the version information and exit</summary>
+    internal static string UVersion(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UVersion") );
+    }
+
+    }
+}
