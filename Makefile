@@ -7,7 +7,9 @@ PREFIX = /usr/local
 dotnet/install: -install-dotnet-fspec
 
 ## Test dotnet
-dotnet/test: dotnet/build
+dotnet/test: dotnet/build -dotnet/test
+
+-dotnet/test:
 	dotnet dotnet/src/fspec/bin/$(CONFIGURATION)/$(FRAMEWORK)/fspec.dll --self-test
 
 ## Generate generated code
@@ -20,6 +22,18 @@ dotnet/generate:
 		-r Carbonfrost.CFSpec.Resources.SR \
 		dotnet/src/fspec/Automation/SR.properties \
 		--resx
+
+## Run unit tests with code coverage
+dotnet/cover: dotnet/build -check-command-coverlet
+	coverlet \
+		--target "make" \
+		--targetargs "-- -dotnet/test" \
+		--format lcov \
+		--output lcov.info \
+		--exclude-by-attribute 'Obsolete' \
+		--exclude-by-attribute 'GeneratedCode' \
+		--exclude-by-attribute 'CompilerGenerated' \
+		dotnet/src/fspec/bin/$(CONFIGURATION)/$(FRAMEWORK)/fspec.dll
 
 -install-dotnet-%: -check-env-CONFIGURATION -check-env-FRAMEWORK -check-env-PREFIX
 	@ rm -rf $(PREFIX)/opt/$*/
