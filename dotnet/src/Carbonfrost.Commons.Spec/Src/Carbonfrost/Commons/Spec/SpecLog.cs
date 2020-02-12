@@ -30,6 +30,10 @@ namespace Carbonfrost.Commons.Spec {
             Debug("Assembly loading: " + fullPath);
         }
 
+        public static void AssemblyResolved(string assembly) {
+            Debug("Assembly resolved: " + assembly);
+        }
+
         public static void DidCreateTestRunner(TestRunner runner) {
             Debug("Created test runner: " + runner);
         }
@@ -38,9 +42,9 @@ namespace Carbonfrost.Commons.Spec {
             Debug("Logger: " + logger);
         }
 
-        public static void DiscoveredTests(IEnumerable<ReflectedTestClass> tests) {
+        public static void DiscoveredTests(IEnumerable<TestUnit> tests) {
             foreach (var t in tests) {
-                Debug("Discovered test: " + t);
+                Debug("Discovered test: " + t.DisplayName);
             }
         }
 

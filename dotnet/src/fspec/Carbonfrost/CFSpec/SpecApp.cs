@@ -78,18 +78,47 @@ namespace Carbonfrost.CFSpec {
                 Console.WriteLine("spec: " + message);
                 return 1;
             }
+
+            var assemblyPath = list.Select(t => Path.GetDirectoryName(new Uri(t.CodeBase).LocalPath)).Distinct();
+
+            RegisterAssemblyResolve(assemblyPath);
             foreach (var asm in list) {
                 testRunnerOptions.TestRun.AddAssembly(asm);
             }
+
             if (Options.SelfTest) {
                 testRunnerOptions.TestRun.AddAssembly(typeof(TestMatcher).GetTypeInfo().Assembly);
                 testRunnerOptions.IsSelfTest = true;
             }
+
             var runner = TestRunner.Create(testRunnerOptions);
             SpecLog.DidCreateTestRunner(runner);
             var result = runner.RunTests();
 
             return (int) result.FailureReason;
+        }
+
+        private void RegisterAssemblyResolve(IEnumerable<string> assemblyPath) {
+            AppDomain currentDomain = AppDomain.CurrentDomain;
+
+            var searchPath = assemblyPath.ToArray();
+            currentDomain.AssemblyResolve += (_, e) => {
+                var an = new AssemblyName(e.Name);
+                if (an.Name == "Carbonfrost.Commons.Spec") {
+                    return typeof(Assert).Assembly;
+                }
+                foreach (var folderPath in searchPath) {
+                    string assemblyPath = Path.Combine(folderPath, an.Name + ".dll");
+                    if (File.Exists(assemblyPath)) {
+                        SpecLog.AssemblyResolved(assemblyPath);
+                        return System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath(
+                            assemblyPath
+                        );
+                    }
+                }
+
+                return null;
+            };
         }
 
         private List<Assembly> LoadAssemblies(out string message) {
