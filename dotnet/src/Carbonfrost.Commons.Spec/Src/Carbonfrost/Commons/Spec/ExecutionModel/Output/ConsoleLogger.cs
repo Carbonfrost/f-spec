@@ -1,5 +1,5 @@
 //
-// Copyright 2016-2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016-2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,10 +15,8 @@
 //
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
@@ -26,13 +24,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
         private static readonly IConsoleWrapper console = ConsoleWrapper.Default;
         private readonly IList<TestUnitResult> _problems = new List<TestUnitResult>();
-        private static readonly string RULE = new string('-', 24);
         private readonly DisplayFlags _flags;
         private readonly IList<TestMessageEventArgs> _bufferLog = new List<TestMessageEventArgs>();
+        private readonly ConsoleOutputParts _parts;
+        private readonly RenderContext _renderContext;
 
-        private readonly ConsoleOutputPart<TestCaseResult>[] _onTestCaseFinished;
-        private readonly ConsoleOutputPart<TestRunResults>[] _onTestRunFinished;
-        private readonly ConsoleOutputPart<IList<TestUnitResult>>[] _onTestRunFinishedWithProblems;
+        private RenderContext RenderContext {
+            get {
+                return _renderContext;
+            }
+        }
 
         public ConsoleLogger(TestRunnerOptions opts) {
             if (!opts.SuppressSummary) {
@@ -44,15 +45,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             if (opts.ShowPassExplicitly) {
                 _flags |= DisplayFlags.ShowExplicitPasses;
             }
-
-            _onTestCaseFinished = new[] {
-                new ConsoleTestCaseStatus(console),
-            };
-            _onTestRunFinished = new[] {
-                new ConsoleTestRunResults(console),
-            };
-            _onTestRunFinishedWithProblems = new[] {
-                new ConsoleTestRunProblems(console),
+            _parts = new ConsoleOutputParts();
+            _renderContext = new RenderContext {
+                Console = console,
+                Parts = _parts,
             };
         }
 
@@ -81,30 +77,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             }
         }
 
-        protected override void OnTestNamespaceStarted(TestNamespaceStartedEventArgs e) {
-            console.Gray();
-            console.Write("{0}: ", e.Namespace);
-            console.ResetColor();
-            base.OnTestNamespaceStarted(e);
-        }
-
-        protected override void OnTestNamespaceFinished(TestNamespaceFinishedEventArgs e) {
-            console.Gray();
-            console.Write(" ({0} of {1} tests, {2})",
-                          e.Results.ExecutedCount,
-                          e.Results.TotalCount,
-                          FormatDuration(e.Results.ExecutionTime));
-            console.WriteLine();
-            console.ResetColor();
-            base.OnTestNamespaceFinished(e);
-        }
-
-        protected override void OnTestAssemblyStarted(TestAssemblyStartedEventArgs e) {
-            console.Gray();
-            console.WriteLine(PrettyCodeBase(e.Assembly, true));
-            console.ResetColor();
-        }
-
         protected override void OnTestCaseStarted(TestCaseStartedEventArgs e) {
             // We only show this once for a theory (hence on position 0)
             if (e.Position == 0 && (_flags & DisplayFlags.ShowCaseStart) > 0) {
@@ -123,7 +95,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                 _problems.Add(e.Result);
             }
 
-            RenderResults(_onTestCaseFinished, e.Result);
+            _parts.onTestCaseFinished.Render(RenderContext, e.Result);
         }
 
         protected override void OnTestRunnerStarting(TestRunnerStartingEventArgs e) {
@@ -150,12 +122,19 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             var results = e.Results;
             console.White();
             console.WriteLine();
-            console.Write("Ran {0} of {1} tests in {2}", results.ExecutedCount, results.TotalCount, FormatDuration(duration));
+            console.WriteLine();
+            console.Write(
+                "Ran {0} of {1} ({2:0.#}%) tests in {3}",
+                results.ExecutedCount,
+                results.TotalCount,
+                100 * results.ExecutedPercentage,
+                FormatDuration(duration)
+            );
             console.WriteLine();
             console.ResetColor();
 
-            RenderResults(_onTestRunFinishedWithProblems, _problems);
-            RenderResults(_onTestRunFinished, e.Results);
+            _parts.onTestRunFinishedWithProblems.Render(RenderContext, _problems);
+            _parts.onTestRunFinished.Render(RenderContext, e.Results);
         }
 
         protected override void OnMessage(TestMessageEventArgs e) {
@@ -198,7 +177,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                 shouldShowDetails = true;
             }
             if (shouldShowDetails) {
-                DisplayResultDetails(result);
+                DisplayResultDetails(-1, RenderContext, result);
             }
             console.ResetColor();
         }
@@ -214,30 +193,24 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             return result.IsPending || result.Skipped || result.Failed;
         }
 
-        internal static void DisplayResultDetails(TestUnitResult result) {
-            console.ColorFor(result);
-            console.WriteLine();
-            console.WriteLine(RULE);
-            if (result.Failed) {
-                console.WriteLine("Failure");
-                console.WriteLine(result.Reason);
-            } else if (result.IsPending) {
-                console.WriteLine("Pending");
-                console.WriteLine(result.Reason);
-            }
-
+        internal static void DisplayResultDetails(int number, RenderContext renderContext, TestUnitResult result) {
             console.PushIndent();
-            console.WriteLine();
-            console.WriteLine(result.DisplayName);
-
-            if (result.ExceptionInfo != null) {
-                console.WriteLine();
-                console.WriteLine(result.ExceptionInfo.Message.TrimEnd('\r', '\n'));
-                console.WriteLine();
-
-                console.DarkGray();
-                console.WriteLine(result.ExceptionInfo.StackTrace.TrimEnd('\r', '\n'));
+            if (number > 0) {
+                console.Write(number + ") ");
             }
+            console.WriteLine(result.DisplayName);
+            console.WriteLine();
+
+            console.ColorFor(result);
+            if (result.Failed) {
+                console.Write("Failure: ");
+                console.WriteLineIfNotEmpty(result.Reason);
+            } else if (result.IsPending) {
+                console.Write("Pending: ");
+                console.WriteLineIfNotEmpty(result.Reason);
+            }
+
+            renderContext.Parts.onExceptionInfo.Render(renderContext, result.ExceptionInfo);
 
             console.ResetColor();
             foreach (var m in result.Messages) {
@@ -245,12 +218,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             }
             console.PopIndent();
             console.WriteLine();
-        }
-
-        private static void RenderResults<T>(IEnumerable<ConsoleOutputPart<T>> items, T result) {
-            foreach (var r in items) {
-                r.Render(result);
-            }
         }
 
         static string FormatDuration(TimeSpan duration) {
