@@ -26,9 +26,17 @@ namespace Carbonfrost.Commons.Spec {
 
         static readonly RandomNumberGenerator rng = RandomNumberGenerator.Create();
 
+        static readonly char[] PATH_UNSAFE_CHARS = {
+            '\x0',
+            '/',
+            '\\',
+            ':',
+            '@'
+        };
+
         static readonly string PathSafeChars = string.Format(
             @"[{0}]+",
-            string.Concat(Path.GetInvalidFileNameChars().Select(s => Regex.Escape(s.ToString()))));
+            string.Concat(PATH_UNSAFE_CHARS.Select(s => Regex.Escape(s.ToString()))));
 
         internal static string RandomName() {
             byte[] data = new byte[6];

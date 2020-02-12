@@ -37,7 +37,6 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         IEnumerable<TestData> ITestDataProvider.GetData(TestContext context) {
-            TestUnit unit = context.CurrentTest;
             yield return new TestData(_data).WithName(Name);
         }
 
