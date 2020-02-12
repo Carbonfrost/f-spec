@@ -58,7 +58,7 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
             var subj = new NotMatcher<int>(
                 Matchers.Equal(20)
             );
-            Assert.Equal("spec.equal.not", TestMatcherLocalizer.Failure(subj, "").Name);
+            Assert.Equal("spec.equal.not", TestMatcherLocalizer.Failure(subj, "").Name.ToString());
         }
     }
 }

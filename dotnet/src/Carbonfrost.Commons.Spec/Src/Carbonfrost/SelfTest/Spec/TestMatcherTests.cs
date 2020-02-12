@@ -23,6 +23,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 
 using Carbonfrost.Commons.Spec;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.SelfTest.Spec {
 
@@ -35,9 +36,9 @@ namespace Carbonfrost.SelfTest.Spec {
             }
         }
 
-        public IEnumerable<KeyValuePair<string, string>> ExtractedUserData {
+        public UserDataCollection ExtractedUserData {
             get {
-                return TestMatcherLocalizer.ExtractUserData(Subject);
+                return new UserDataCollection(Subject);
             }
         }
 

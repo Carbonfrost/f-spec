@@ -139,7 +139,7 @@ namespace Carbonfrost.SelfTest.Spec {
                        }).Not.ToHave.Any.EqualTo(60);
             }
             catch (AssertException ex) {
-                Assert.Equal("spec.notAny", ex.TestFailure.Name);
+                Assert.Equal("spec.notAny", ex.TestFailure.Name.ToString());
                 Assert.Equal("1", ex.TestFailure.UserData["Indexes"]);
 
                 var lines = ex.Message.Split('\n').Select(t => t.Trim()).Take(2);

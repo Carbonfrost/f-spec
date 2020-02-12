@@ -91,10 +91,10 @@ namespace Carbonfrost.Commons.Spec {
             return new AssertException(SR.TestFileDataRequiresOneParameter());
         }
 
-        public static AssertException UnusableComparer(string name, object comparer, Exception e) {
+        public static AssertException UnusableComparer(TestMatcherName name, object comparer, Exception e) {
             var failure = new TestFailure(name) {
                 UserData = {
-                    { "Comparer", comparer.ToString() }
+                    { "Comparer", TextUtility.ConvertToString(comparer) }
                 }
             };
             return new AssertException(
