@@ -53,8 +53,19 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
         }
 
         [Fact]
+        public void Expect_using_params_ToHave_Single_predicate_inner_item() {
+            Expect(new [] { "a", "b", "c" }).ToHave.Single((string t) => t == "b");
+            Expect("a", "b", "c").ToHave.Single((string t) => t == "b");
+        }
+
+        [Fact]
         public void Expect_ToHave_Single_item() {
             Expect(new [] { "z" }).ToHave.Single.Item();
+        }
+
+        [Fact]
+        public void Single_with_predicate_will_detect_single_item() {
+            Assert.Single(r => r == "b", new [] { "a", "b", "a" });
         }
     }
 }

@@ -212,7 +212,7 @@ namespace Carbonfrost.Commons.Spec {
 
             int CountEstimate(IEnumerable<TSource> actual) {
                 Func<TSource, bool> f = t => Predicate(t);
-                return actual.TakeWhile(f).Take(2).Count();
+                return actual.Where(f).Take(2).Count();
             }
         }
     }
