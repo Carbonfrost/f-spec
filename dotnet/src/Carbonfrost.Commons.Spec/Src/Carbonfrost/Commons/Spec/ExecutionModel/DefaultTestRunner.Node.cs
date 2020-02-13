@@ -29,15 +29,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             private readonly IList<TestUnitNode> _children = new List<TestUnitNode>(0);
 
-            public IEnumerable<TestUnitNode> DescendentsAndSelf {
+            public IEnumerable<TestUnitNode> DescendantsAndSelf {
                 get {
-                    return new[] { this }.Concat(Descendents);
+                    return new[] { this }.Concat(Descendants);
                 }
             }
 
-            public IEnumerable<TestUnitNode> Descendents {
+            public IEnumerable<TestUnitNode> Descendants {
                 get {
-                    return Children.SelectMany(c => c.DescendentsAndSelf);
+                    return Children.SelectMany(c => c.DescendantsAndSelf);
                 }
             }
 
@@ -153,7 +153,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     _context = runner.NewTestContext(Unit);
 
                     foreach (var anc in Unit.Ancestors()) {
-                        anc.BeforeExecutingDescendentSafe(_context);
+                        anc.BeforeExecutingDescendantSafe(_context);
                     }
 
                     Unit.BeforeExecutingSafe(_context);
@@ -187,7 +187,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
                 if (Unit.SetUpError == null) {
                     foreach (var anc in Unit.Ancestors()) {
-                        anc.AfterExecutingDescendentSafe(context);
+                        anc.AfterExecutingDescendantSafe(context);
                     }
 
                     Unit.AfterExecutingSafe(context);

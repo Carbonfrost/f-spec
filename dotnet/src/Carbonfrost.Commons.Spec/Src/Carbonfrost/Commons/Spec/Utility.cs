@@ -54,7 +54,7 @@ namespace Carbonfrost.Commons.Spec {
             if (Uri.TryCreate(result, UriKind.Absolute, out uri)) {
                 // Make it relative
                 if (makeRelative) {
-                    var current = new Uri("file://" + Directory.GetCurrentDirectory());
+                    var current = new Uri("file://" + Directory.GetCurrentDirectory() + "/");
                     return current.MakeRelativeUri(uri).ToString();
                 }
                 return uri.LocalPath;

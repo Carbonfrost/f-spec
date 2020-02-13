@@ -56,7 +56,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             internal IEnumerable<TestUnitNode> PlanOrder {
                 get {
-                    return _root.DescendentsAndSelf;
+                    return _root.DescendantsAndSelf;
                 }
             }
 

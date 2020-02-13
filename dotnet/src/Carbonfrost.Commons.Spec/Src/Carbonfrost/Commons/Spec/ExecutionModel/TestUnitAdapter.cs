@@ -29,13 +29,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             public void BeforeExecuting(TestContext testContext) {
             }
 
-            public void AfterExecuting() {
+            public void AfterExecuting(TestContext testContext) {
             }
 
-            public void BeforeExecutingDescendent(TestContext descendentTestContext) {
+            public void BeforeExecutingDescendant(TestContext descendantTestContext) {
             }
 
-            public void AfterExecutingDescendent(TestContext descendentTestContext) {
+            public void AfterExecutingDescendant(TestContext descendantTestContext) {
             }
         }
     }

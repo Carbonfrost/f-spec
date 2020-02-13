@@ -98,12 +98,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        internal void BeforeExecutingDescendentSafe(TestContext descendentTestContext) {
-            BeforeExecutingDescendent(descendentTestContext);
+        internal void BeforeExecutingDescendantSafe(TestContext descendantTestContext) {
+            BeforeExecutingDescendant(descendantTestContext);
         }
 
-        internal void AfterExecutingDescendentSafe(TestContext descendentTestContext) {
-            AfterExecutingDescendent(descendentTestContext);
+        internal void AfterExecutingDescendantSafe(TestContext descendantTestContext) {
+            AfterExecutingDescendant(descendantTestContext);
         }
 
         protected virtual void Initialize(TestContext testContext) {
@@ -118,10 +118,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             testContext.Log.Flush();
         }
 
-        protected virtual void BeforeExecutingDescendent(TestContext descendentTestContext) {
+        protected virtual void BeforeExecutingDescendant(TestContext descendantTestContext) {
         }
 
-        protected virtual void AfterExecutingDescendent(TestContext descendentTestContext) {
+        protected virtual void AfterExecutingDescendant(TestContext descendantTestContext) {
         }
 
         internal bool NotifyStarting(ITestRunnerEventSink events) {
@@ -211,15 +211,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         public abstract string DisplayName { get; }
         public abstract TestUnitType Type { get; }
 
-        public IEnumerable<TestUnit> DescendentsAndSelf {
+        public IEnumerable<TestUnit> DescendantsAndSelf {
             get {
-                return new[] { this }.Concat(Descendents);
+                return new[] { this }.Concat(Descendants);
             }
         }
 
-        public IEnumerable<TestUnit> Descendents {
+        public IEnumerable<TestUnit> Descendants {
             get {
-                return Children.SelectMany(c => c.DescendentsAndSelf);
+                return Children.SelectMany(c => c.DescendantsAndSelf);
             }
         }
 

@@ -1,5 +1,7 @@
+#if SELF_TEST
+
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,13 +15,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
+using System.Threading;
 
-namespace Carbonfrost.Commons.Spec.ExecutionModel {
+using Carbonfrost.Commons.Spec;
 
-    interface ITestUnitAdapter : ITestExecutionFilter {
-        void Initialize(TestContext testContext);
-        void BeforeExecutingDescendant(TestContext descendantTestContext);
-        void AfterExecutingDescendant(TestContext descendantTestContext);
+namespace Carbonfrost.SelfTest.Spec {
+
+    public class UsingCultureAttributeTests {
+
+        [UsingCulture("fr-FR")]
+        [Fact]
+        public void UsingCultureAttribute_should_set_up_culture() {
+            Assert.Equal(Thread.CurrentThread.CurrentCulture.Name, "fr-FR");
+        }
     }
 }
+#endif
