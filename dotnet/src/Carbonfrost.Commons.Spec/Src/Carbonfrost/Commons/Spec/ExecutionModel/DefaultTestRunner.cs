@@ -75,6 +75,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 child.IsPending |= unit.IsPending;
                 child.IsExplicit |= unit.IsExplicit;
                 child.PassExplicitly |= unit.PassExplicitly;
+                if (unit.Reason != null) {
+                    child.Reason = unit.Reason;
+                }
                 InheritBiasToChildren(child);
             }
             unit.Seal();

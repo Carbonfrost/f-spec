@@ -68,8 +68,9 @@ namespace Carbonfrost.SelfTest.Spec {
 
         [Fact]
         public void Localizer_should_generate_property_localization() {
-            foreach (var kvp in ExtractedUserData) {
-                var caption = TestMatcherLocalizer.Caption(kvp.Key);
+            var data = ExtractedUserData;
+            foreach (var kvp in data) {
+                var caption = data.Caption(kvp.Key);
                 Assert.DoesNotContain("FAILED TO LOCALIZE", caption);
             }
         }

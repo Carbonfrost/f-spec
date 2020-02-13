@@ -44,10 +44,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                 }
             }
 
-            foreach (var p in pending) {
-                ConsoleLogger.DisplayResultDetails(-1, context, p);
-            }
             console.PopIndent();
+
+            if (pending.Any()) {
+                console.Yellow();
+                console.WriteLine("Pending: ");
+
+                console.PushIndent();
+                foreach (var p in pending) {
+                    ConsoleLogger.DisplayResultDetails(-1, context, p);
+                }
+                console.PopIndent();
+            }
         }
     }
 }

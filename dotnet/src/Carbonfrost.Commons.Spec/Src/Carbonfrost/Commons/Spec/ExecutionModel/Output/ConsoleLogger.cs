@@ -199,15 +199,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                 console.Write(number + ") ");
             }
             console.WriteLine(result.DisplayName);
-            console.WriteLine();
 
             console.ColorFor(result);
+            console.PushIndent();
+
             if (result.Failed) {
                 console.Write("Failure: ");
                 console.WriteLineIfNotEmpty(result.Reason);
             } else if (result.IsPending) {
-                console.Write("Pending: ");
-                console.WriteLineIfNotEmpty(result.Reason);
+                console.Muted();
+                console.WriteLineIfNotEmpty("// " + result.Reason);
             }
 
             renderContext.Parts.onExceptionInfo.Render(renderContext, result.ExceptionInfo);
@@ -216,6 +217,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             foreach (var m in result.Messages) {
                 PrintMessage(m);
             }
+            console.PopIndent();
             console.PopIndent();
             console.WriteLine();
         }

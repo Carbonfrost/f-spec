@@ -46,12 +46,7 @@ namespace Carbonfrost.Commons.Spec {
             return failure;
         }
 
-        internal static string Caption(string caption) {
-            var cap = "Label" + caption;
-            return SR.ResourceManager.GetString(cap) ?? MissingLocalization(caption);
-        }
-
-        static string MissingLocalization(string key) {
+        internal static string MissingLocalization(string key) {
             return $"FAILED TO LOCALIZE ({key})";
         }
 

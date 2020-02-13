@@ -68,9 +68,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        static string LineItem(string caption, string data, int length) {
-            caption = TestMatcherLocalizer.Caption(caption);
+        private string LineItem(string caption, string data, int length) {
+            caption = Caption(caption);
             return string.Format("{0," + (bufferWidth + length) + "}: {1}", caption, data);
+        }
+
+        internal string Caption(string caption) {
+            var cap = "Label" + caption;
+            return SR.ResourceManager.GetString(cap) ?? TestMatcherLocalizer.MissingLocalization(caption);
         }
 
         public void Clear() {

@@ -23,9 +23,12 @@ namespace Carbonfrost.Commons.Spec {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public sealed class XTheoryAttribute : Attribute, IReflectionTestUnitFactory {
 
+        public string Reason { get; set; }
+
         TestUnit IReflectionTestUnitFactory.CreateTestCase(MethodInfo method) {
             return new ReflectedTheory(method) {
-                IsPending = true
+                IsPending = true,
+                Reason = Reason,
             };
         }
     }
