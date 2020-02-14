@@ -63,27 +63,6 @@ namespace Carbonfrost.CFSpec.Resources {
         }
 
 
-  /// <summary>Not an assembly: ${path}</summary>
-    internal static string FailedToLoadAssembly(
-    object @path
-    ) {
-        return string.Format(Culture, ResourceFinder("FailedToLoadAssembly") , @path);
-    }
-
-  /// <summary>Assembly file could not load: ${path} (${error})</summary>
-    internal static string FailedToLoadAssemblyGeneralIO(
-    object @path, object @error
-    ) {
-        return string.Format(Culture, ResourceFinder("FailedToLoadAssemblyGeneralIO") , @path, @error);
-    }
-
-  /// <summary>Assembly file not found: ${path}</summary>
-    internal static string FailedToLoadAssemblyPath(
-    object @path
-    ) {
-        return string.Format(Culture, ResourceFinder("FailedToLoadAssemblyPath") , @path);
-    }
-
   /// <summary>invalid number of context lines</summary>
     internal static string InvalidContextLines(
 

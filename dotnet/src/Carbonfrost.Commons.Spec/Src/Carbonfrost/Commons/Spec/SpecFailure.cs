@@ -161,5 +161,17 @@ namespace Carbonfrost.Commons.Spec {
         internal static Exception NotValidDataUri() {
             return new ArgumentException();
         }
+
+        internal static SpecException FailedToLoadAssembly(string asmPath) {
+            return new SpecException(SR.FailedToLoadAssembly(asmPath));
+        }
+
+        internal static Exception FailedToLoadAssemblyPath(string asmPath) {
+            return new SpecException(SR.FailedToLoadAssemblyPath(asmPath));
+        }
+
+        internal static Exception FailedToLoadAssemblyGeneralIO(string asmPath, string message) {
+            return new SpecException( SR.FailedToLoadAssemblyGeneralIO(asmPath, message));
+        }
     }
 }

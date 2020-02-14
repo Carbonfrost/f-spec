@@ -16,6 +16,7 @@
 using System;
 using System.Reflection;
 using System.Linq;
+using System.IO;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
@@ -100,13 +101,33 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         public TestRunResults RunTests() {
             try {
                 Current = this;
-                return RunTestsCore();
+                var run  = CreateTestRun();
+                return RunTestsCore(run);
             } finally {
                 Current = null;
             }
         }
 
-        protected abstract TestRunResults RunTestsCore();
+        protected virtual TestRun CreateTestRun() {
+            var run = new TestRun();
+            if (Options.IsSelfTest) {
+                SpecLog.ActivatedSelfTestMode();
+                run.AddAssembly(typeof(TestMatcher).GetTypeInfo().Assembly);
+            }
+
+            var lp = (LoaderPathCollection) Options.LoaderPaths;
+            var list = lp.LoadAssemblies();
+            var assemblyPath = list.Select(t => Path.GetDirectoryName(new Uri(t.CodeBase).LocalPath)).Distinct();
+
+            lp.RegisterAssemblyResolve(assemblyPath);
+            foreach (var asm in list) {
+                run.AddAssembly(asm);
+            }
+            SpecLog.DidCreateTestRun();
+            return run;
+        }
+
+        protected abstract TestRunResults RunTestsCore(TestRun run);
 
         protected virtual void OnTestRunnerStarted(TestRunnerStartedEventArgs e) {
             if (TestRunnerStarted != null) {

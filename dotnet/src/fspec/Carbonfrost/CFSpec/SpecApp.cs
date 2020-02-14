@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2019, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,15 +14,10 @@
 // limitations under the License.
 //
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 using Carbonfrost.Commons.Spec.ExecutionModel.Output;
-using Carbonfrost.CFSpec.Resources;
 
 namespace Carbonfrost.CFSpec {
 
@@ -53,6 +48,8 @@ namespace Carbonfrost.CFSpec {
                 ContextLines = Options.ContextLines,
                 ShowPassExplicitly = Options.ShowPassExplicitly,
                 Verification = Options.Verify,
+                IsSelfTest = Options.SelfTest,
+                LoadAssemblyFromPath = System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath
             };
             if (!Options.NoWhitespace) {
                 testRunnerOptions.AssertionMessageFormatMode |= AssertionMessageFormatModes.PrintWhitespace;
@@ -68,89 +65,28 @@ namespace Carbonfrost.CFSpec {
                 testRunnerOptions.SkipPatterns.Add(s);
             }
             foreach (var s in Options.FixturePaths) {
-                testRunnerOptions.FixtureDirectories.Add(s);
+                testRunnerOptions.FixturePaths.Add(s);
+            }
+            foreach (var s in Options.Assemblies) {
+                testRunnerOptions.LoaderPaths.Add(s);
             }
             SpecLog.DidFinalizeOptions(Options.ToString());
 
-            string message;
-            var list = LoadAssemblies(out message);
-            if (message != null) {
-                Console.WriteLine("spec: " + message);
-                return 1;
-            }
+            TestRunner runner = TestRunner.Create(testRunnerOptions);
 
-            var assemblyPath = list.Select(t => Path.GetDirectoryName(new Uri(t.CodeBase).LocalPath)).Distinct();
-
-            RegisterAssemblyResolve(assemblyPath);
-            foreach (var asm in list) {
-                testRunnerOptions.TestRun.AddAssembly(asm);
-            }
-
-            if (Options.SelfTest) {
-                testRunnerOptions.TestRun.AddAssembly(typeof(TestMatcher).GetTypeInfo().Assembly);
-                testRunnerOptions.IsSelfTest = true;
-            }
-
-            var runner = TestRunner.Create(testRunnerOptions);
             SpecLog.DidCreateTestRunner(runner);
-            var result = runner.RunTests();
 
-            return (int) result.FailureReason;
-        }
-
-        private void RegisterAssemblyResolve(IEnumerable<string> assemblyPath) {
-            AppDomain currentDomain = AppDomain.CurrentDomain;
-
-            var searchPath = assemblyPath.ToArray();
-            currentDomain.AssemblyResolve += (_, e) => {
-                var an = new AssemblyName(e.Name);
-                if (an.Name == "Carbonfrost.Commons.Spec") {
-                    return typeof(Assert).Assembly;
-                }
-                foreach (var folderPath in searchPath) {
-                    string assemblyPath = Path.Combine(folderPath, an.Name + ".dll");
-                    if (File.Exists(assemblyPath)) {
-                        SpecLog.AssemblyResolved(assemblyPath);
-                        return System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath(
-                            assemblyPath
-                        );
-                    }
-                }
-
-                return null;
-            };
-        }
-
-        private List<Assembly> LoadAssemblies(out string message) {
-            var list = new List<Assembly>();
-            message = null;
-
-            foreach (var asmPath in Options.Assemblies) {
-                string fullPath = Path.GetFullPath(asmPath);
-                if (!File.Exists(fullPath)) {
-                    message = SR.FailedToLoadAssemblyPath(asmPath);
-                    break;
-                }
-                try {
-                    SpecLog.LoadAssembly(fullPath);
-
-                    var asmInfo = System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath(
-                        fullPath
-                    );
-                    list.Add(asmInfo);
-
-                } catch (BadImageFormatException) {
-                    message = SR.FailedToLoadAssembly(asmPath);
-                    break;
-                } catch (FileNotFoundException ex) {
-                    message = SR.FailedToLoadAssemblyPath(asmPath + " -> " + ex.FileName);
-                    break;
-                } catch (IOException ex) {
-                    message = SR.FailedToLoadAssemblyGeneralIO(asmPath, ex.Message);
-                    break;
-                }
+            try {
+                var result = runner.RunTests();
+                return (int) result.FailureReason;
+            } catch (SpecException ex) {
+                return Fail(ex.Message);
             }
-            return list;
+        }
+
+        private int Fail(string message) {
+            Console.Error.WriteLine("spec: " + message);
+            return 1;
         }
     }
 }

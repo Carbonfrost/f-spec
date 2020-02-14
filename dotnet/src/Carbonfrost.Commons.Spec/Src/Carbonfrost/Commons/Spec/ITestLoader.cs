@@ -13,30 +13,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-
 using System;
-using System.Linq;
+using System.IO;
 
-namespace Carbonfrost.Commons.Spec.ExecutionModel {
+namespace Carbonfrost.Commons.Spec {
 
-    partial class DefaultTestRunner {
+    interface ITestLoader {
+        TestFile LoadFile(string fileName);
+        TestFixture LoadFixture(string fileName);
+        TestFixtureData LoadFixtureData(string fileName);
 
-        internal class TestPlan : TestPlanBase {
-
-            public TestPlan(DefaultTestRunner runner, TestRun run, TestRunnerOptions normalized)
-                : base(runner, run, normalized)
-            {
-            }
-
-            public override TestRunResults RunTests() {
-                foreach (var item in PlanOrder) {
-                    item.Run(Runner);
-                }
-                return (TestRunResults) Root.FindResult();
-            }
-
-        }
-
+        TestFile DownloadFile(Uri url);
+        TestFixture DownloadFixture(Uri url);
+        TestFixtureData DownloadFixtureData(Uri url);
+        TextReader DownloadText(Uri url);
+        Stream Download(Uri url);
     }
-
 }

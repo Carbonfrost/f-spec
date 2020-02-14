@@ -26,6 +26,14 @@ namespace Carbonfrost.Commons.Spec {
             Debug("Options: " + text);
         }
 
+        public static void ActivatedSelfTestMode() {
+            Debug("Self-test mode activated");
+        }
+
+        public static void DidCreateTestRun() {
+            Debug("Created test run");
+        }
+
         public static void LoadAssembly(string fullPath) {
             Debug("Assembly loading: " + fullPath);
         }

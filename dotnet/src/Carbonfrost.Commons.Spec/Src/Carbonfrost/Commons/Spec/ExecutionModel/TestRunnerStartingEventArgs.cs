@@ -37,14 +37,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public TestRun TestRun {
-            get {
-                return _options.TestRun;
-            }
+            get;
+            private set;
         }
 
-        internal TestRunnerStartingEventArgs(TestRunnerOptions options, int willRunTests) {
+        internal TestRunnerStartingEventArgs(TestRunnerOptions options, TestRun run, int willRunTests) {
             _options = options;
             _willRunTests = willRunTests;
+            TestRun = run;
         }
     }
 }

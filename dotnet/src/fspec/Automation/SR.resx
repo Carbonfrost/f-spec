@@ -58,15 +58,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, srgen, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
   </resheader>
-  <data name="FailedToLoadAssembly" xml:space="preserve">
-    <value>Not an assembly: {0}</value>
-  </data>
-  <data name="FailedToLoadAssemblyGeneralIO" xml:space="preserve">
-    <value>Assembly file could not load: {0} ({1})</value>
-  </data>
-  <data name="FailedToLoadAssemblyPath" xml:space="preserve">
-    <value>Assembly file not found: {0}</value>
-  </data>
   <data name="InvalidContextLines" xml:space="preserve">
     <value>invalid number of context lines</value>
   </data>

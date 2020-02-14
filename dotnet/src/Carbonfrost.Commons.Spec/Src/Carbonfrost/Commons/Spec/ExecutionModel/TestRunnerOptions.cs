@@ -15,22 +15,23 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     public class TestRunnerOptions {
 
-        private TestRun _testRun;
         private int _randomSeed;
         private Flags _flags;
         private TimeSpan? _testTimeout;
         private TimeSpan? _planTimeout;
         private readonly MakeReadOnlyList<string> _focusPatterns = new MakeReadOnlyList<string>();
         private readonly MakeReadOnlyList<string> _skipPatterns = new MakeReadOnlyList<string>();
-        private readonly MakeReadOnlyList<string> _fixtureDirectories = new MakeReadOnlyList<string>();
         private AssertionMessageFormatModes _assertionMessageFormatMode;
         private int _contextLines = -1;
         private TestVerificationMode _verification;
+        private readonly PathCollection _fixturePaths = new PathCollection();
+        private readonly LoaderPathCollection _loaderPaths = new LoaderPathCollection();
 
         internal bool IsSelfTest {
             get;
@@ -97,22 +98,24 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public IList<string> FixtureDirectories {
+        public PathCollection FixturePaths {
             get {
-                return _fixtureDirectories;
+                return _fixturePaths;
             }
         }
 
-        public TestRun TestRun {
+        public PathCollection LoaderPaths {
             get {
-                if (_testRun == null) {
-                    _testRun = new TestRun();
-                }
-                return _testRun;
+                return _loaderPaths;
+            }
+        }
+
+        public Func<string, Assembly> LoadAssemblyFromPath {
+            get {
+                return _loaderPaths.LoadAssemblyFromPath;
             }
             set {
-                WritePreamble();
-                _testRun = value;
+                _loaderPaths.LoadAssemblyFromPath = value;
             }
         }
 
@@ -190,11 +193,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 return;
             }
 
-            TestRun = copyFrom.TestRun;
             SkipPatterns.AddAll(copyFrom.SkipPatterns);
             IgnoreFocus = copyFrom.IgnoreFocus;
             FocusPatterns.AddAll(copyFrom.FocusPatterns);
-            FixtureDirectories.AddAll(copyFrom.FixtureDirectories);
+            FixturePaths.AddAll(copyFrom.FixturePaths);
+            LoaderPaths.AddAll(copyFrom.LoaderPaths);
+            LoadAssemblyFromPath = copyFrom.LoadAssemblyFromPath;
             RandomSeed = copyFrom.RandomSeed;
             _flags = copyFrom._flags;
             ContextLines = copyFrom.ContextLines;
@@ -216,10 +220,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public void MakeReadOnly() {
             IsReadOnly = true;
-            TestRun.Children.MakeReadOnly();
             _focusPatterns.MakeReadOnly();
             _skipPatterns.MakeReadOnly();
-            _fixtureDirectories.MakeReadOnly();
+            _fixturePaths.MakeReadOnly();
+            _loaderPaths.MakeReadOnly();
         }
 
         public TestRunnerOptions Clone() {
