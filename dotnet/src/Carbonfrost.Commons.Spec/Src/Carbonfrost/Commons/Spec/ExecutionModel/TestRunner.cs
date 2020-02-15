@@ -16,6 +16,7 @@
 using System;
 using System.Reflection;
 using System.Linq;
+using System.IO;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
@@ -41,12 +42,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         public event EventHandler<TestUnitStartedEventArgs> TestUnitStarted;
         public event EventHandler<TestUnitFinishedEventArgs> TestUnitFinished;
 
-        internal static bool ShouldVerify {
-            get {
-                return Current.Options.Verification == TestVerificationMode.Strict;
-            }
-        }
-
         internal static string Version {
             get {
                 var asm = typeof(TestRunner).GetTypeInfo().Assembly;
@@ -64,13 +59,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
                 return version;
             }
-        }
-
-        // HACK There is probably a better solution than a global to track the runner
-
-        internal static TestRunner Current {
-            get;
-            private set;
         }
 
         public TestRunnerOptions Options {
@@ -98,15 +86,30 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public TestRunResults RunTests() {
-            try {
-                Current = this;
-                return RunTestsCore();
-            } finally {
-                Current = null;
-            }
+            var run  = CreateTestRun();
+            return RunTestsCore(run);
         }
 
-        protected abstract TestRunResults RunTestsCore();
+        protected virtual TestRun CreateTestRun() {
+            var run = new TestRun();
+            if (Options.IsSelfTest) {
+                SpecLog.ActivatedSelfTestMode();
+                run.AddAssembly(typeof(TestMatcher).GetTypeInfo().Assembly);
+            }
+
+            var lp = (LoaderPathCollection) Options.LoaderPaths;
+            var list = lp.LoadAssemblies();
+            var assemblyPath = list.Select(t => Path.GetDirectoryName(new Uri(t.CodeBase).LocalPath)).Distinct();
+
+            lp.RegisterAssemblyResolve(assemblyPath);
+            foreach (var asm in list) {
+                run.AddAssembly(asm);
+            }
+            SpecLog.DidCreateTestRun();
+            return run;
+        }
+
+        protected abstract TestRunResults RunTestsCore(TestRun run);
 
         protected virtual void OnTestRunnerStarted(TestRunnerStartedEventArgs e) {
             if (TestRunnerStarted != null) {

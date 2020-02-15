@@ -142,6 +142,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             var result = new TestCaseResult(this) {
                 Status = PredeterminedStatus,
+                Reason = Reason,
             };
             result.Done(DateTime.Now);
             return result;

@@ -15,6 +15,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
@@ -22,23 +23,39 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
         public bool ShortProblems { get; set; }
 
-        public ConsoleTestRunProblems(IConsoleWrapper console) : base(console) {}
-
-        public override void Render(IList<TestUnitResult> problems) {
+        protected override void RenderCore(IList<TestUnitResult> problems) {
             if (problems.Count == 0) {
                 return;
             }
 
-            console.WriteLine("Summary of test run");
+            console.WriteLine();
             console.PushIndent();
-            foreach (var p in problems) {
-                console.ColorFor(p);
-                console.Write(p.DisplayName);
 
-                console.ResetColor();
-                ConsoleLogger.DisplayResultDetails(p);
+            int number = 1;
+            var pending = new List<TestUnitResult>();
+
+            foreach (var p in problems) {
+                if (p.Failed) {
+                    ConsoleLogger.DisplayResultDetails(number, context, p);
+                    number++;
+
+                } else if (p.IsPending) {
+                    pending.Add(p);
+                }
             }
+
             console.PopIndent();
+
+            if (pending.Any()) {
+                console.Yellow();
+                console.WriteLine("Pending: ");
+
+                console.PushIndent();
+                foreach (var p in pending) {
+                    ConsoleLogger.DisplayResultDetails(-1, context, p);
+                }
+                console.PopIndent();
+            }
         }
     }
 }

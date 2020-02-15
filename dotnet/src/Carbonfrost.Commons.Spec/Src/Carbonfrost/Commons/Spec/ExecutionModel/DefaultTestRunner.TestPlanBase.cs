@@ -56,43 +56,42 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             internal IEnumerable<TestUnitNode> PlanOrder {
                 get {
-                    return _root.DescendentsAndSelf;
+                    return _root.DescendantsAndSelf;
                 }
             }
 
-            protected TestPlanBase(DefaultTestRunner runner, TestRunnerOptions normalized) {
+            protected TestPlanBase(DefaultTestRunner runner, TestRun testRun, TestRunnerOptions normalized) {
                 _normalizedOpts = normalized;
                 _runner = runner;
                 _root = new RootNode();
 
-                var run = normalized.TestRun;
-                var testContext = new TestContext(run, _runner, _runner.RandomCache, null);
-                Push(_root, testContext, run);
+                var testContext = new TestContext(testRun, _runner, _runner.RandomCache, null);
+                Push(_root, testContext, testRun);
 
                 _root.AppendEnd(null);
 
                 // Apply rules from the options
                 if (normalized.FocusPatterns.Count > 0) {
                     ApplyPatterns(NewRegex(normalized.FocusPatterns),
-                                  _normalizedOpts.TestRun,
+                                  testRun,
                                   t => t.IsFocused = true);
                 }
                 if (normalized.SkipPatterns.Count > 0) {
                     ApplyPatterns(NewRegex(normalized.SkipPatterns),
-                                  _normalizedOpts.TestRun,
+                                  testRun,
                                   t => t.Skipped = true);
                 }
 
                 // If any focused nodes, then only run focused nodes
-                if (!_normalizedOpts.IgnoreFocus && _normalizedOpts.TestRun.ContainsFocusedUnits) {
-                    ApplyFocussing(normalized.TestRun);
+                if (!_normalizedOpts.IgnoreFocus && testRun.ContainsFocusedUnits) {
+                    ApplyFocussing(testRun);
                 }
 
                 // Look for explicit tests
-                SkipExplicitTests(_normalizedOpts.TestRun);
+                SkipExplicitTests(testRun);
 
                 // Scan the tree for other situations
-                InheritBiasToChildren(_normalizedOpts.TestRun);
+                InheritBiasToChildren(testRun);
 
                 _willRun = PlanOrder.OfType<TestCaseNode>()
                     .Select(t => (TestCase) t.Unit)

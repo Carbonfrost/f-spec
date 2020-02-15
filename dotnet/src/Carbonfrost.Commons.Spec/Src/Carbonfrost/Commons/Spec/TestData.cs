@@ -35,7 +35,7 @@ namespace Carbonfrost.Commons.Spec {
 
         private TestData(string name, object[] data) {
             _name = name;
-            _data = data;
+            _data = data ?? Array.Empty<object>();
         }
 
         public TestData(params object[] data)

@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
@@ -58,7 +59,7 @@ namespace Carbonfrost.Commons.Spec {
                 return comparer.Compare(actual, expected);
 
             } catch (ArgumentException e) {
-                var name = TestMatcherLocalizer.Code(GetType().GetTypeInfo());
+                var name = TestMatcherName.FromType(GetType());
                 throw SpecFailure.UnusableComparer(name, comparer, e);
             }
         }

@@ -40,22 +40,22 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             get; private set;
         }
 
-        internal DefaultTestRunner.TestPlan CreatePlan() {
-            return new TestPlan(this, _opts);
+        internal DefaultTestRunner.TestPlan CreatePlan(TestRun run) {
+            return new TestPlan(this, run, _opts);
         }
 
-        protected override TestRunResults RunTestsCore() {
+        protected override TestRunResults RunTestsCore(TestRun run) {
             SetupLogger();
             DateTime started = DateTime.Now;
 
-            var plan = CreatePlan();
+            var plan = CreatePlan(run);
             var testsWillRun = plan.WillRunTestCasesCount;
 
-            OnTestRunnerStarting(new TestRunnerStartingEventArgs(_opts, testsWillRun));
-            OnTestRunnerStarted(new TestRunnerStartedEventArgs(_opts, testsWillRun));
+            OnTestRunnerStarting(new TestRunnerStartingEventArgs(_opts, run, testsWillRun));
+            OnTestRunnerStarted(new TestRunnerStartedEventArgs(_opts, run, testsWillRun));
 
             var runResults = plan.RunTests();
-            var e = new TestRunnerFinishedEventArgs(runResults, _opts);
+            var e = new TestRunnerFinishedEventArgs(run, runResults, _opts);
             OnTestRunnerFinished(e);
             return runResults;
         }
@@ -75,6 +75,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 child.IsPending |= unit.IsPending;
                 child.IsExplicit |= unit.IsExplicit;
                 child.PassExplicitly |= unit.PassExplicitly;
+                if (unit.Reason != null) {
+                    child.Reason = unit.Reason;
+                }
                 InheritBiasToChildren(child);
             }
             unit.Seal();

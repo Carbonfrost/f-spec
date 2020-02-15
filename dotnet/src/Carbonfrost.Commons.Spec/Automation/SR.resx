@@ -241,6 +241,15 @@
   <data name="Failed" xml:space="preserve">
     <value>Explicitly failed</value>
   </data>
+  <data name="FailedToLoadAssembly" xml:space="preserve">
+    <value>Not an assembly: {0}</value>
+  </data>
+  <data name="FailedToLoadAssemblyGeneralIO" xml:space="preserve">
+    <value>Assembly file could not load: {0} ({1})</value>
+  </data>
+  <data name="FailedToLoadAssemblyPath" xml:space="preserve">
+    <value>Assembly file not found: {0}</value>
+  </data>
   <data name="HaveLengthWorksWith" xml:space="preserve">
     <value>Can't assert length on type `{0}'.  It works only for strings and arrays.  Investigate asserting on count for collections instead.</value>
   </data>

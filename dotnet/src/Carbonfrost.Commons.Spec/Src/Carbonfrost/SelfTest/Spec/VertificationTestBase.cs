@@ -1,7 +1,7 @@
 #if SELF_TEST
 
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
-using System.Linq;
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
@@ -24,15 +22,15 @@ namespace Carbonfrost.SelfTest.Spec {
 
     public abstract class VerificationTestBase : TestClass {
 
-        private TestVerificationMode _previousMode;
+        private bool _previousMode;
 
-        protected override void BeforeTest(TestUnit test) {
-            _previousMode = TestRunner.Current.Options.Verification;
-            TestRunner.Current.Options.Verification = TestVerificationMode.Strict;
+        protected override void BeforeTest() {
+            _previousMode = Assert.UseStrictMode;
+            Assert.UseStrictMode = true;
         }
 
-        protected override void AfterTest(TestUnit test) {
-            TestRunner.Current.Options.Verification = _previousMode;
+        protected override void AfterTest() {
+            Assert.UseStrictMode = _previousMode;
         }
     }
 }

@@ -22,6 +22,17 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
         public static readonly IConsoleWrapper Default = new BclConsole();
 
+        internal static void Muted(this IConsoleWrapper self){
+            self.DarkBlue();
+        }
+
+        internal static void WriteLineIfNotEmpty(this IConsoleWrapper self, string text) {
+            if (string.IsNullOrEmpty(text)) {
+                return;
+            }
+            self.WriteLine(text);
+        }
+
         internal static void Black(this IConsoleWrapper self) {
             self.SetForeground(ConsoleColor.Black);
         }

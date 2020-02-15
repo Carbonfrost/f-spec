@@ -1,5 +1,5 @@
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.IO;
 using System.Security;
 using System.Text;
@@ -24,27 +22,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
     class BclConsole : ConsoleWrapperBase {
 
-        private bool? _prettyFormat;
         private bool? _unicode;
         private bool _needIndent = true;
-
-        public bool PrettyFormat {
-            get {
-                if (_prettyFormat.HasValue) {
-                    return _prettyFormat.Value;
-                }
-                else {
-                    bool result = false;
-                    try {
-                        result = Console.WindowWidth > 0;
-                    }
-                    catch (IOException) {
-                    }
-                    _prettyFormat = result;
-                    return result;
-                }
-            }
-        }
 
         public override bool IsUnicodeEncoding {
             get {
@@ -70,59 +49,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             }
         }
 
-        private int Position {
-            get {
-                return Console.CursorLeft;
-            }
-        }
-
         public override void Write(string text) {
-            if (!PrettyFormat) {
-                Console.Write(text);
-                return;
-            }
-            if (text == null) {
-                return;
-            }
-
-            text = text.Replace("\r\n", "\n");
-            int index = 0;
-            while (index < text.Length) {
-                WriteIndent();
-                int availableWidth = Console.WindowWidth - Position;
-                int cr = text.IndexOf('\n', index) - index;
-                if (cr >= 0 && cr < availableWidth) {
-                    availableWidth = cr + 1;
-                }
-                string sub;
-                if (text.Length >= (index + availableWidth)) {
-                    sub = text.Substring(index, availableWidth);
-                    _needIndent = true;
-                    Console.Write(sub);
-                    // If we wrap after writing, then the calculation of WindowWidth worked
-                    // otherwise, wrap to the next line ourselves
-                    if (Position != 0) {
-                        Console.WriteLine();
-                    }
-
-                } else {
-                    sub = text.Substring(index);
-                    Console.Write(sub);
-                }
-                index += availableWidth;
-            }
+            WriteIndent();
+            Console.Write(text);
         }
 
         public override void WriteLine() {
             Console.WriteLine();
             _needIndent = true;
-        }
-
-        private void WriteIndent() {
-            if (_needIndent) {
-                _needIndent = false;
-                Console.Write(IndentString);
-            }
         }
 
         public override void SetForeground(ConsoleColor color) {
@@ -131,6 +65,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
         public override void ResetColor() {
             Console.ResetColor();
+        }
+
+        private void WriteIndent() {
+            if (_needIndent) {
+                Console.Write(IndentString);
+                _needIndent = false;
+            }
         }
 
     }

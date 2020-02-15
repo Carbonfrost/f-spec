@@ -18,9 +18,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
     class ConsoleTestRunResults : ConsoleOutputPart<TestRunResults> {
 
-        public ConsoleTestRunResults(IConsoleWrapper console) : base(console) {}
-
-        public override void Render(TestRunResults results) {
+        protected override void RenderCore(TestRunResults results) {
             if (results.FailedCount > 0 || results.PendingCount > 0) {
                 console.Red();
                 console.Write("FAILED");
@@ -30,26 +28,30 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             }
 
             console.ResetColor();
-            console.Write(" -- ");
+
+            console.WriteLine();
+            console.WriteLine();
+
+            console.PushIndent();
 
             console.Green();
-            console.Write("{0} Passed", results.PassedCount);
+            console.WriteLine("{0,4} passed", results.PassedCount);
+
+            if (results.FailedCount > 0) {
+                console.Red();
+            }
+            console.Write("{0,4} failed", results.FailedCount);
+
+            if (results.PendingCount > 0) {
+                console.Yellow();
+                console.Write("  {0,4} pending", results.PendingCount);
+            }
 
             console.ResetColor();
-            console.Write(" | ");
 
-            console.Red();
-            console.Write("{0} Failed", results.FailedCount);
-
-            console.ResetColor();
-            console.Write(" | ");
-
-            console.Yellow();
-            console.Write("{0} Pending", results.PendingCount);
-
-            console.ResetColor();
-            console.Write(" | ");
-            console.Write("{0} Skipped", results.SkippedCount);
+            if (results.SkippedCount > 0) {
+                console.Write("  {0,4} skipped", results.SkippedCount);
+            }
 
             if (results.ContainsFocusedUnits) {
                 console.Write(" - ");
@@ -57,6 +59,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                 console.Write("FOCUSED");
             }
             console.WriteLine();
+            console.PopIndent();
        }
     }
 }

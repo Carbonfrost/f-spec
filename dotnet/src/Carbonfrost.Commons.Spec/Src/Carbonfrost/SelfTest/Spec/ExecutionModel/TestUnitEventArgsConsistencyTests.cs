@@ -21,6 +21,7 @@ using System.Linq;
 using System.Reflection;
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.ExecutionModel;
+using Extensions = Carbonfrost.Commons.Spec.Extensions;
 
 namespace Carbonfrost.SelfTest.Spec {
 

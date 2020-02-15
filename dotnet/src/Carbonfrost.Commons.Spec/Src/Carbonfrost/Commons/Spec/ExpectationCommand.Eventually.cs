@@ -97,7 +97,7 @@ namespace Carbonfrost.Commons.Spec {
                     Message = SR.EventuallyTimedOutAfter(TextUtility.FormatDuration(_duration)),
                     Children = { aFailure },
                 };
-                result.UserData["Actual"] = TextUtility.ConvertToString(actual, TestMatcherLocalizer.ShowWS);
+                result.UserData["Actual"] = TextUtility.ConvertToString(actual);
                 return result;
             }
 

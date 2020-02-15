@@ -29,6 +29,14 @@ namespace Carbonfrost.SelfTest.Spec {
         public void Acceptance_mismatch_arguments(string onlyOneArgument) {
         }
 
+        [Fact]
+        public void TestData_can_initialize_from_null() {
+            var inline = new InlineDataAttribute(null, null);
+            Assert.Equal(new object[] { null, null }, inline.Data);
+            Assert.Equal(new[] {
+                new TestData(new object[] { null, null })
+            }, ((ITestDataProvider) inline).GetData(null));
+        }
     }
 }
 #endif

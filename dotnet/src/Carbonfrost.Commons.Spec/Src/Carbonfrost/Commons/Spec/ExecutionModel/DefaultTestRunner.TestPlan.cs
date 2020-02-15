@@ -23,8 +23,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         internal class TestPlan : TestPlanBase {
 
-            public TestPlan(DefaultTestRunner runner, TestRunnerOptions normalized)
-                : base(runner, normalized)
+            public TestPlan(DefaultTestRunner runner, TestRun run, TestRunnerOptions normalized)
+                : base(runner, run, normalized)
             {
             }
 

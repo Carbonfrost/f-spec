@@ -91,10 +91,10 @@ namespace Carbonfrost.Commons.Spec {
             return new AssertException(SR.TestFileDataRequiresOneParameter());
         }
 
-        public static AssertException UnusableComparer(string name, object comparer, Exception e) {
+        public static AssertException UnusableComparer(TestMatcherName name, object comparer, Exception e) {
             var failure = new TestFailure(name) {
                 UserData = {
-                    { "Comparer", comparer.ToString() }
+                    { "Comparer", TextUtility.ConvertToString(comparer) }
                 }
             };
             return new AssertException(
@@ -160,6 +160,18 @@ namespace Carbonfrost.Commons.Spec {
 
         internal static Exception NotValidDataUri() {
             return new ArgumentException();
+        }
+
+        internal static SpecException FailedToLoadAssembly(string asmPath) {
+            return new SpecException(SR.FailedToLoadAssembly(asmPath));
+        }
+
+        internal static Exception FailedToLoadAssemblyPath(string asmPath) {
+            return new SpecException(SR.FailedToLoadAssemblyPath(asmPath));
+        }
+
+        internal static Exception FailedToLoadAssemblyGeneralIO(string asmPath, string message) {
+            return new SpecException( SR.FailedToLoadAssemblyGeneralIO(asmPath, message));
         }
     }
 }

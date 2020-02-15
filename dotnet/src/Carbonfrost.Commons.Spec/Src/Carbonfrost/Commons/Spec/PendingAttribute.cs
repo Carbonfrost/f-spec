@@ -31,7 +31,7 @@ namespace Carbonfrost.Commons.Spec {
 
         void ITestUnitMetadataProvider.Apply(TestContext testContext) {
             testContext.CurrentTest.IsPending = true;
-            testContext.CurrentTest.Reason = Reason;
+            testContext.CurrentTest.Reason = "Disabled with [Pending] attribute";
         }
     }
 }

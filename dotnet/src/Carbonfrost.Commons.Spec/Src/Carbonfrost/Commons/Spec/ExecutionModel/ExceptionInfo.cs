@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,23 +36,34 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             private set;
         }
 
+        public TestFailure TestFailure {
+            get;
+            private set;
+        }
+
         private ExceptionInfo() {
         }
 
-        public ExceptionInfo(Type exceptionType, string message, string stackTrace) {
+        public ExceptionInfo(Type exceptionType, string message, string stackTrace, TestFailure testFailure) {
             Message = message;
             StackTrace = stackTrace;
             ExceptionType = exceptionType;
+            TestFailure = testFailure;
         }
 
         public static ExceptionInfo FromException(Exception ex) {
             var sb = new StringBuilder();
             FormatStackTrace(sb, ex);
+            TestFailure failure = null;
+            if (ex is AssertException aex) {
+                failure = aex.TestFailure;
+            }
 
             return new ExceptionInfo {
                 StackTrace = sb.ToString(),
                 Message = FormatExceptionMessage(ex),
                 ExceptionType = ex.GetType(),
+                TestFailure = failure,
             };
         }
 

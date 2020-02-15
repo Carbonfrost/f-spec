@@ -373,8 +373,8 @@ namespace Carbonfrost.Commons.Spec {
                     var item = results.Dequeue();
                     yield return item;
 
-                    var descendents = enumerator.EnumerateDirectories(item);
-                    foreach (var d in descendents)
+                    var descendants = enumerator.EnumerateDirectories(item);
+                    foreach (var d in descendants)
                         results.Enqueue(d);
                 }
             }

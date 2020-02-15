@@ -24,6 +24,17 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class TestContext {
 
+        public TestCaseResult RunTest(Action<TestContext> testFunc) {
+            return RunTest(testFunc, null);
+        }
+
+        public TestCaseResult RunTest(Action<TestContext> testFunc, TestOptions options) {
+            return RunTest(tc => {
+                testFunc(tc);
+                return null;
+            }, options);
+        }
+
         public TestCaseResult RunTest(Func<TestContext, object> testFunc) {
             return RunTest(testFunc, null);
         }

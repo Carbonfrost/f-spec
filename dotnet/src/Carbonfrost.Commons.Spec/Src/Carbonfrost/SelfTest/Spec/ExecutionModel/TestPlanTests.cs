@@ -63,10 +63,11 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
             var opts = new TestRunnerOptions {
                 IgnoreFocus = true,
             };
-            opts.TestRun.Children.AddAll(TestUnits("A", "B"));
+            var testRun = new TestRun();
+            testRun.Children.AddAll(TestUnits("A", "B"));
 
             var runner = new DefaultTestRunner(opts);
-            var plan = runner.CreatePlan();
+            var plan = runner.CreatePlan(testRun);
             var names = WillRun(plan);
             Assert.Equal(new [] { "TestA1", "TestB1", "TestB2", "TestB3"  }, names);
         }
@@ -93,9 +94,10 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
                     "(2|3)$",
                 },
             };
-            opts.TestRun.Children.AddAll(TestUnits("C"));
+            var testRun = new TestRun();
+            testRun.Children.AddAll(TestUnits("C"));
             var runner = new DefaultTestRunner(opts);
-            var plan = runner.CreatePlan();
+            var plan = runner.CreatePlan(testRun);
 
             var names = WillRun(plan);
             Assert.Equal(new [] { "TestC2", "TestC3" }, names);
@@ -108,9 +110,10 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
                     "2$",
                 },
             };
-            opts.TestRun.Children.AddAll(TestUnits("A", "B", "C", "D"));
+            var testRun = new TestRun();
+            testRun.Children.AddAll(TestUnits("A", "B", "C", "D"));
             var runner = new DefaultTestRunner(opts);
-            var plan = runner.CreatePlan();
+            var plan = runner.CreatePlan(testRun);
 
             var names = WillRun(plan);
             Assert.Equal(new [] { "TestB2", "TestC2", "TestD2" }, names);
@@ -118,9 +121,10 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
 
         private static DefaultTestRunner.TestPlan CreatePlan(params string[] names) {
             var opts = new TestRunnerOptions();
-            opts.TestRun.Children.AddAll(TestUnits(names));
+            var testRun = new TestRun();
+            testRun.Children.AddAll(TestUnits(names));
             var runner = new DefaultTestRunner(opts);
-            return runner.CreatePlan();
+            return runner.CreatePlan(testRun);
         }
 
         private static IEnumerable<TestUnit> TestUnits(params string[] names) {

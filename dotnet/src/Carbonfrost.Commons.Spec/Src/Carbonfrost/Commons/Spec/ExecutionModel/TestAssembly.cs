@@ -67,8 +67,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             foreach (var nsGroup in _assembly.ExportedTypes.GroupBy(t => t.Namespace)) {
                 var tests = nsGroup.Select(t => TestUnitFromType(t));
-                SpecLog.DiscoveredTests(tests);
                 var unit = new TestNamespace(nsGroup.Key, tests);
+                SpecLog.DiscoveredTests(unit.Children);
                 if (unit.Children.Count == 0) {
                     // if the ns has no tests, we don't even report it exists
                     continue;

@@ -146,7 +146,7 @@ namespace Carbonfrost.Commons.Spec {
             return string.Format("{0}<{1}>", withoutTicks, String.Join(", ", simpleNames));
         }
 
-        internal static string ConvertToString(object value, bool showWS = false, int depth = 0) {
+        internal static string ConvertToString(object value, int depth = 0) {
             if (value == null) {
                 return "<null>";
             }
@@ -155,7 +155,7 @@ namespace Carbonfrost.Commons.Spec {
                 if (stringValue.Length == 0) {
                     return "<empty>";
                 }
-                return WS(stringValue, showWS);
+                return stringValue;
             }
 
             IEnumerable enumerableValue = value as IEnumerable;
@@ -172,11 +172,11 @@ namespace Carbonfrost.Commons.Spec {
                 } else {
                     string stringValueObject = valueObject as string;
                     if (stringValueObject != null) {
-                        displayName = string.Format("\"{0}\"", WS(stringValueObject, showWS));
+                        displayName = string.Format("\"{0}\"", stringValueObject);
                     } else if (depth == 3) {
                         displayName = valueObject.ToString();
                     } else {
-                        displayName = ConvertToString(valueObject, showWS, depth + 1);
+                        displayName = ConvertToString(valueObject, depth + 1);
                     }
                 }
                 valueStrings.Add(displayName);
@@ -187,17 +187,14 @@ namespace Carbonfrost.Commons.Spec {
                                  string.Join(", ", valueStrings.ToArray()));
         }
 
-        static string WS(string text, bool showWS) {
-            if (showWS) {
-                // TODO These aren't universal -- won't work with some Windows fonts
-                // bullet might work better in some fonts • U+2022
-                if (text == null) {
-                    return null;
-                }
-                return text.Replace(" ", "⋅") //  U+22C5
-                    .Replace("\t", "→"); // U+2192
+        internal static string ShowWhitespace(string text) {
+            // TODO These aren't universal -- won't work with some Windows fonts
+            // bullet might work better in some fonts • U+2022
+            if (text == null) {
+                return null;
             }
-            return text;
+            return text.Replace(" ", "⋅") //  U+22C5
+                .Replace("\t", "→"); // U+2192
         }
     }
 }

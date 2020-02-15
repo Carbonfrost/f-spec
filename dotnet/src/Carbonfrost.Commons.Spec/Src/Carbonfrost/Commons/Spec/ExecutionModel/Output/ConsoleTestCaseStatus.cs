@@ -18,13 +18,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
     class ConsoleTestCaseStatus : ConsoleOutputPart<TestCaseResult> {
 
-        private readonly string _bullet;
-
-        public ConsoleTestCaseStatus(IConsoleWrapper console) : base(console) {
-            _bullet = console.IsUnicodeEncoding ? "•" : ".";
-        }
-
-        public override void Render(TestCaseResult result) {
+        protected override void RenderCore(TestCaseResult result) {
+            var bullet = console.IsUnicodeEncoding ? "•" : ".";
             if (result.Skipped) {
                 console.Yellow();
                 console.Write("S");
@@ -39,7 +34,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
             } else {
                 console.White();
-                console.Write(_bullet);
+                console.Write(bullet);
             }
             console.ResetColor();
         }

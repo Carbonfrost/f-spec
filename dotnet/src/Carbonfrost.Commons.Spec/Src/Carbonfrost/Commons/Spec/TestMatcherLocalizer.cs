@@ -13,24 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 using Carbonfrost.Commons.Spec.Resources;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
 namespace Carbonfrost.Commons.Spec {
 
-    interface ISupportTestMatcher {
-        object RealMatcher { get; }
-    }
-
     static class TestMatcherLocalizer {
-
-        private static readonly Regex NAME = new Regex(@"^(.+)Matcher(`\d+)?$");
 
         public static TestFailure FailurePredicate(object matcher) {
             return FailureMessageCore(false, matcher, true);
@@ -38,29 +29,21 @@ namespace Carbonfrost.Commons.Spec {
 
         public static TestFailure Failure(object matcher, object actual) {
             TestFailure failure = FailureMessageCore(false, matcher, false);
-            var strActual = TextUtility.ConvertToString(actual, ShowWS);
+            var strActual = TextUtility.ConvertToString(actual);
             failure.UserData["Actual"] = strActual;
 
-            var strMatcher = matcher as EqualMatcher<string>;
-            if (strMatcher != null) {
+            if (matcher is EqualMatcher<string> strMatcher) {
                 string strExpected = strMatcher.Expected;
                 var patch = new Patch(strExpected, strActual);
                 if (patch.ALineCount > 1 || patch.BLineCount > 1) {
-                    failure.UserData["Diff"] = patch.ToString();
+                    failure.UserData.Diff = patch;
                 }
             }
             return failure;
         }
 
-        internal static string Code(TypeInfo type) {
-            string name = NAME.Replace(type.Name, "$1");
-            return "spec." + char.ToLowerInvariant(name[0]) + name.Substring(1);
-        }
-
-        internal static string Caption(string caption) {
-            var cap = "Label" + caption;
-            return SR.ResourceManager.GetString(cap)
-                ?? "FAILED TO LOCALIZE " + caption;
+        internal static string MissingLocalization(string key) {
+            return $"FAILED TO LOCALIZE ({key})";
         }
 
         private static string ExpectedMessage(
@@ -70,7 +53,7 @@ namespace Carbonfrost.Commons.Spec {
                 return "";
             }
 
-            var typeName = NAME.Replace(type.Name, "$1");
+            var typeName = TestMatcherName.NAME.Replace(type.Name, "$1");
             if (typeName == "And" || typeName == "Or") {
                 return negated ? SR.NotExpectedTo() : SR.ExpectedTo();
             }
@@ -87,40 +70,10 @@ namespace Carbonfrost.Commons.Spec {
 
             var msg = SR.ResourceManager.GetString(msgCode);
             if (msg == null) {
-                return "FAILED TO LOCALIZE " + msgCode;
+                return MissingLocalization(msgCode);
             }
 
             return TextUtility.Fill(msg, data);
-        }
-
-        internal static Dictionary<string, string> ExtractUserData(object matcher) {
-            var props = matcher.GetType()
-                .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                .Where(t => t.CanRead && t.GetIndexParameters().Length == 0);
-
-            var result = new Dictionary<string, string>();
-            var defaultShowWS = ShowWS;
-            foreach (var pi in props) {
-                var showWS = defaultShowWS;
-                var name = pi.Name;
-                string value = null;
-                object val = pi.GetValue(matcher);
-                var attr = (MatcherUserDataAttribute) pi.GetCustomAttribute(typeof(MatcherUserDataAttribute));
-                if (attr != null) {
-                    if (attr.Hidden) {
-                        continue;
-                    }
-                }
-
-                if (val is StringComparer) {
-                    value = GetStringComparerText(val);
-                } else {
-                    value = TextUtility.ConvertToString(val, showWS);
-                }
-                result[name] = value;
-            }
-
-            return result;
         }
 
         static TestFailure FailureMessageCore(bool negated, object matcher, bool predicate) {
@@ -139,13 +92,12 @@ namespace Carbonfrost.Commons.Spec {
                 matcherType = matcherType.GetGenericTypeDefinition().GetTypeInfo();
             }
 
-            string code = Code(matcherType) + (negated ? ".not" : "");
-            var dict = ExtractUserData(matcher);
-
-            var failure = new TestFailure(code) {
-                Message = ExpectedMessage(negated, dict, matcherType, predicate),
-            };
-            failure.UserData.AddAll(dict);
+            var matcherName = TestMatcherName.FromType(matcherType);
+            if (negated) {
+                matcherName = matcherName.Negated();
+            }
+            var failure = new TestFailure(matcherName, matcher);
+            failure.Message = ExpectedMessage(negated, failure.UserData, matcherType, predicate);
             ChildrenMessages(failure, matcher);
             return failure;
         }
@@ -171,37 +123,5 @@ namespace Carbonfrost.Commons.Spec {
                 last.Message = cm.Operator + " " + last.Message;
             }
         }
-
-        static string GetStringComparerText(object comparison) {
-            if (comparison == null) {
-                return "<null>";
-            }
-
-            var str = comparison.ToString();
-
-            if (comparison == StringComparer.OrdinalIgnoreCase) {
-                str = "ordinal (ignore case)";
-
-            } else if (comparison == StringComparer.Ordinal) {
-                str = "ordinal";
-            }
-
-            else if (comparison == StringComparer.InvariantCulture) {
-                str = "invariant culture";
-            }
-            else if (comparison == StringComparer.InvariantCultureIgnoreCase) {
-                str = "invariant culture (ignore case)";
-            }
-
-            return str;
-        }
-
-        internal static bool ShowWS {
-            get {
-                return TestRunner.Current != null && TestRunner.Current
-                    .Options.AssertionMessageFormatMode.HasFlag(AssertionMessageFormatModes.PrintWhitespace);
-            }
-        }
-
     }
 }

@@ -26,7 +26,7 @@ namespace Carbonfrost.Commons.Spec {
     public abstract partial class TestClass : ITestUnitAdapter, ITestContext {
 
         private TestContext _selfContext;
-        private TestContext _descendentContext;
+        private TestContext _descendantContext;
 
         internal static bool HasSelfTests {
             get {
@@ -36,7 +36,7 @@ namespace Carbonfrost.Commons.Spec {
 
         public TestContext TestContext {
             get {
-                return _descendentContext ?? _selfContext;
+                return _descendantContext ?? _selfContext;
             }
         }
 
@@ -71,6 +71,12 @@ namespace Carbonfrost.Commons.Spec {
 
         protected virtual void BeforeExecuting() {}
         protected virtual void AfterExecuting() {}
+
+        protected virtual void BeforeTest() {
+        }
+
+        protected virtual void AfterTest() {
+        }
 
         protected virtual void BeforeTest(TestUnit test) {
         }
@@ -182,6 +188,22 @@ namespace Carbonfrost.Commons.Spec {
             return TestContext.ReadAllLines(fileName, encoding);
         }
 
+        public TestCaseResult RunTest(Action<TestContext> testFunc) {
+            return TestContext.RunTest(testFunc);
+        }
+
+        public TestCaseResult RunTest(Action<TestContext> testFunc, TestOptions options) {
+            return TestContext.RunTest(testFunc, options);
+        }
+
+        public TestCaseResult RunTest(Func<TestContext, object> testFunc) {
+            return TestContext.RunTest(testFunc);
+        }
+
+        public TestCaseResult RunTest(Func<TestContext, object> testFunc, TestOptions options) {
+            return TestContext.RunTest(testFunc, options);
+        }
+
         void ITestUnitAdapter.Initialize(TestContext testContext) {
             try {
                 _selfContext = testContext;
@@ -191,12 +213,12 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        void ITestUnitAdapter.BeforeExecuting(TestContext testContext) {
+        void ITestExecutionFilter.BeforeExecuting(TestContext testContext) {
             _selfContext = testContext;
             BeforeExecuting();
         }
 
-        void ITestUnitAdapter.AfterExecuting() {
+        void ITestExecutionFilter.AfterExecuting(TestContext testContext) {
             try {
                 AfterExecuting();
             } finally {
@@ -204,16 +226,18 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        void ITestUnitAdapter.BeforeExecutingDescendent(TestContext descendentContext) {
-            _descendentContext = descendentContext;
-            BeforeTest(descendentContext.CurrentTest);
+        void ITestUnitAdapter.BeforeExecutingDescendant(TestContext descendantContext) {
+            _descendantContext = descendantContext;
+            BeforeTest(descendantContext.CurrentTest);
+            BeforeTest();
         }
 
-        void ITestUnitAdapter.AfterExecutingDescendent(TestContext descendentContext) {
+        void ITestUnitAdapter.AfterExecutingDescendant(TestContext descendantContext) {
             try {
-                AfterTest(descendentContext.CurrentTest);
+                AfterTest(descendantContext.CurrentTest);
+                AfterTest();
             } finally {
-                _descendentContext = null;
+                _descendantContext = null;
             }
         }
     }

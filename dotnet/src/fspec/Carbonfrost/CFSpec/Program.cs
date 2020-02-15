@@ -85,7 +85,7 @@ namespace Carbonfrost.CFSpec {
             unrecognized = null;
 
             foreach (string s in unknowns) {
-                if (s.StartsWith("-", StringComparison.Ordinal) || s.StartsWith("/", StringComparison.Ordinal)) {
+                if (s.StartsWith("-", StringComparison.Ordinal)) {
                     unrecognized = s;
                     return false;
                 }

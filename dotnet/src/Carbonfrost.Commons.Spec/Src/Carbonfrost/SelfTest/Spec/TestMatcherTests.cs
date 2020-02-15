@@ -23,6 +23,8 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 
 using Carbonfrost.Commons.Spec;
+using Carbonfrost.Commons.Spec.ExecutionModel;
+using Carbonfrost.Commons.Spec.ExecutionModel.Output;
 
 namespace Carbonfrost.SelfTest.Spec {
 
@@ -35,9 +37,9 @@ namespace Carbonfrost.SelfTest.Spec {
             }
         }
 
-        public IEnumerable<KeyValuePair<string, string>> ExtractedUserData {
+        public UserDataCollection ExtractedUserData {
             get {
-                return TestMatcherLocalizer.ExtractUserData(Subject);
+                return new UserDataCollection(Subject);
             }
         }
 
@@ -67,8 +69,9 @@ namespace Carbonfrost.SelfTest.Spec {
 
         [Fact]
         public void Localizer_should_generate_property_localization() {
-            foreach (var kvp in ExtractedUserData) {
-                var caption = TestMatcherLocalizer.Caption(kvp.Key);
+            var data = ExtractedUserData;
+            foreach (var kvp in data) {
+                var caption = ConsoleExceptionInfo.Caption(kvp.Key);
                 Assert.DoesNotContain("FAILED TO LOCALIZE", caption);
             }
         }

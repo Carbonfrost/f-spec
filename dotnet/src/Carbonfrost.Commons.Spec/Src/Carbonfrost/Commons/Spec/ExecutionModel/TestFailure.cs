@@ -23,8 +23,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     public class TestFailure {
 
-        const int bufferWidth = 6;
-        private readonly string _name;
+        private readonly TestMatcherName _name;
         private readonly TestFailureCollection _children = new TestFailureCollection();
 
         public string Message { get; set; }
@@ -35,20 +34,25 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public string Name {
+        public TestMatcherName Name {
             get {
                 return _name;
             }
         }
 
-        public IDictionary<string, string> UserData {
+        public UserDataCollection UserData {
             get;
             private set;
         }
 
-        public TestFailure(string name) {
+        internal TestFailure(TestMatcherName name, object matcher) {
             _name = name;
-            UserData = new SortedDictionary<string, string>(new SortOrder());
+            UserData = new UserDataCollection(matcher);
+        }
+
+        public TestFailure(TestMatcherName name) {
+            _name = name;
+            UserData = new UserDataCollection();
         }
 
         public override string ToString() {
@@ -56,49 +60,17 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                                  _name, Message, TextUtility.ConvertToString(UserData));
         }
 
-
-        class SortOrder : IComparer<string> {
-
-            public int Compare(string x, string y) {
-                // Expected, Actual, then everything else alphabetically
-                return string.Compare(CheckNames(x),
-                                      CheckNames(y),
-                                      StringComparison.OrdinalIgnoreCase);
-            }
-
-            static string CheckNames(string x) {
-                if (string.Equals(x, SR.LabelActual()) || string.Equals(x, SR.LabelExpected())) {
-                    return " " + x;
-                }
-                return x;
-            }
-        }
-
-
         internal Exception ToException() {
             return new AssertException(Message, this, null);
         }
 
         internal string FormatMessage(string userMessage) {
-            // Format actual and expected together
-            int maxLength = 0;
             var err = new StringBuilder();
 
             if (!string.IsNullOrEmpty(userMessage)) {
                 err.AppendLine(userMessage);
             }
             AppendChildren(err, 0);
-
-            if (UserData.Keys.Count > 0) {
-                maxLength = UserData.Keys.Max(t => t.Length);
-
-                err.AppendLine();
-                foreach (var kvp in UserData) {
-                    string line = LineItem(kvp.Key, kvp.Value, maxLength);
-                    err.AppendLine(line);
-                }
-            }
-
             return err.ToString();
         }
 
@@ -127,11 +99,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 Message = string.Format(message, (object[]) args);
             }
             return this;
-        }
-
-        static string LineItem(string caption, string data, int length) {
-            caption = TestMatcherLocalizer.Caption(caption);
-            return string.Format("{0," + (bufferWidth + length) + "}: {1}", caption, data);
         }
 
         internal TestFailure UpdateTestSubject() {

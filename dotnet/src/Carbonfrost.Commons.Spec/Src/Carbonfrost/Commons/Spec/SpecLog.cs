@@ -26,8 +26,20 @@ namespace Carbonfrost.Commons.Spec {
             Debug("Options: " + text);
         }
 
+        public static void ActivatedSelfTestMode() {
+            Debug("Self-test mode activated");
+        }
+
+        public static void DidCreateTestRun() {
+            Debug("Created test run");
+        }
+
         public static void LoadAssembly(string fullPath) {
             Debug("Assembly loading: " + fullPath);
+        }
+
+        public static void AssemblyResolved(string assembly) {
+            Debug("Assembly resolved: " + assembly);
         }
 
         public static void DidCreateTestRunner(TestRunner runner) {
@@ -38,9 +50,9 @@ namespace Carbonfrost.Commons.Spec {
             Debug("Logger: " + logger);
         }
 
-        public static void DiscoveredTests(IEnumerable<ReflectedTestClass> tests) {
+        public static void DiscoveredTests(IEnumerable<TestUnit> tests) {
             foreach (var t in tests) {
-                Debug("Discovered test: " + t);
+                Debug("Discovered test: " + t.DisplayName);
             }
         }
 

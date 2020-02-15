@@ -60,6 +60,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        internal double ExecutedPercentage {
+            get {
+                if (TotalCount == 0) {
+                    return 0;
+                }
+                return (double) ExecutedCount / (double) TotalCount;
+            }
+        }
+
         public int PassedCount {
             get {
                 return Counts.Passed;

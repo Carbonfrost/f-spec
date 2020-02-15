@@ -39,7 +39,7 @@
 //  - The current option requires a value (i.e. not a Option type of ':')
 //
 // The `name' used in the option format string does NOT include any leading
-// option indicator, such as '-', '--', or '/'.  All three of these are
+// option indicator, such as '-' or '--'.  All three of these are
 // permitted/required on any named option.
 //
 // Option bundling is permitted so long as:
@@ -61,10 +61,10 @@
 //  OptionSet p = new OptionSet ()
 //    .Add ("v", v => ++verbose)
 //    .Add ("name=|value=", v => Console.WriteLine (v));
-//  p.Parse (new string[]{"-v", "--v", "/v", "-name=A", "/name", "B", "extra"});
+//  p.Parse (new string[]{"-v", "--v", "-name=A", "-name", "B", "extra"});
 //
 // The above would parse the argument string array, and would invoke the
-// lambda expression three times, setting `verbose' to 3 when complete.
+// lambda expression two times, setting `verbose' to 2 when complete.
 // It would also print out "A" and "B" to standard output.
 // The returned array would contain the string "extra".
 //
@@ -94,18 +94,18 @@
 //      p.Parse (new string[]{"-a+"});  // sets v != null
 //      p.Parse (new string[]{"-a-"});  // sets v == null
 //
+
 #define LINQ
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-#if NET
 using System.ComponentModel;
+using System.Globalization;
+using System.IO;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-#endif
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -315,13 +315,8 @@ namespace NDesk.Options {
 
         protected static T Parse<T> (string value, OptionContext c)
         {
-            if (typeof(T) == typeof(string)) {
-                return (T) (object) value;
-            }
-
-            T t = default (T);
-#if NET
             TypeConverter conv = TypeDescriptor.GetConverter (typeof (T));
+            T t = default (T);
             try {
                 if (value != null)
                     t = (T) conv.ConvertFromString (value);
@@ -333,7 +328,6 @@ namespace NDesk.Options {
                         value, typeof (T).Name, c.OptionName),
                     c.OptionName, e);
             }
-#endif
             return t;
         }
 
@@ -431,9 +425,6 @@ namespace NDesk.Options {
         }
     }
 
-#if NET
-    [Serializable]
-#endif
     class OptionException : Exception {
         private string option;
 
@@ -453,24 +444,22 @@ namespace NDesk.Options {
             this.option = optionName;
         }
 
-#if NET
         protected OptionException (SerializationInfo info, StreamingContext context)
             : base (info, context)
         {
             this.option = info.GetString ("OptionName");
         }
-#endif
+
         public string OptionName {
             get {return this.option;}
         }
-#if NET
+
         [SecurityPermission (SecurityAction.LinkDemand, SerializationFormatter = true)]
         public override void GetObjectData (SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData (info, context);
             info.AddValue ("OptionName", option);
         }
-#endif
     }
 
     delegate void OptionAction<TKey, TValue> (TKey key, TValue value);
@@ -481,14 +470,14 @@ namespace NDesk.Options {
         {
         }
 
-        public OptionSet (Func<string, string> localizer)
+        public OptionSet (Converter<string, string> localizer)
         {
             this.localizer = localizer;
         }
 
-        Func<string, string> localizer;
+        Converter<string, string> localizer;
 
-        public Func<string, string> MessageLocalizer {
+        public Converter<string, string> MessageLocalizer {
             get {return localizer;}
         }
 
@@ -503,7 +492,8 @@ namespace NDesk.Options {
             throw new InvalidOperationException ("Option has no names!");
         }
 
-        private Option GetOptionForName (string option)
+        [Obsolete ("Use KeyedCollection.this[string]")]
+        protected Option GetOptionForName (string option)
         {
             if (option == null)
                 throw new ArgumentNullException ("option");
@@ -739,7 +729,7 @@ namespace NDesk.Options {
         }
 
         private readonly Regex ValueOption = new Regex (
-            @"^(?<flag>--|-|/)(?<name>[^:=]+)((?<sep>[:=])(?<value>.*))?$");
+            @"^(?<flag>--|-)(?<name>[^:=]+)((?<sep>[:=])(?<value>.*))?$");
 
         protected bool GetOptionParts (string argument, out string flag, out string name, out string sep, out string value)
         {

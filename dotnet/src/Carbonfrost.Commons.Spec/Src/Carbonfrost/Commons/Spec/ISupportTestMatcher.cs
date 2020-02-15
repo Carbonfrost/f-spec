@@ -13,13 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
 
-namespace Carbonfrost.Commons.Spec.ExecutionModel {
-
-    public enum TestVerificationMode {
-        None,
-        Strict,
+namespace Carbonfrost.Commons.Spec {
+    interface ISupportTestMatcher {
+        object RealMatcher { get; }
     }
-
 }

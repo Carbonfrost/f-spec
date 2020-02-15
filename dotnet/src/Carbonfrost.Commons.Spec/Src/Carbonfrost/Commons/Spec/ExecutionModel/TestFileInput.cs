@@ -64,7 +64,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             var searchDirectories = new List<string>();
             searchDirectories.Add(".");
-            searchDirectories.AddAll(context.TestRunnerOptions.FixtureDirectories);
+            searchDirectories.AddAll(context.TestRunnerOptions.FixturePaths.EnumerateFiles());
 
             return Pattern.EnumerateFiles(searchDirectories);
         }

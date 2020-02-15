@@ -184,16 +184,13 @@ namespace Carbonfrost.Commons.Spec {
             private readonly int? _max;
             private readonly bool _outer;
 
-            public CardinalityCommand(Func<IEnumerable<T>> thunk, int? min, int? max, bool outer) : base(thunk) {
-                if (TestRunner.ShouldVerify) {
-                    if (max < min) {
-                        throw SpecFailure.CardinalityMinGreaterThanMax();
-                    }
-                    if (min < 0 || max < 0) {
-                        throw SpecFailure.NegativeCardinality();
-                    }
+            internal bool ShouldVerify {
+                get {
+                    return Assert.UseStrictMode;
                 }
+            }
 
+            public CardinalityCommand(Func<IEnumerable<T>> thunk, int? min, int? max, bool outer) : base(thunk) {
                 _min = min;
                 _max = max;
                 _outer = outer;
@@ -204,6 +201,9 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             public override void Implies(CommandCondition c) {
+                if (!ShouldVerify) {
+                    return;
+                }
                 if (c == CommandCondition.ExactlyOne) {
                     if (_min.GetValueOrDefault(1) != 1 || _max.GetValueOrDefault(1) != 1) {
                         throw SpecFailure.ExactlyOnePlural();
@@ -237,6 +237,14 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             public override TestFailure Should(ITestMatcher<T> matcher) {
+                if (ShouldVerify) {
+                    if (_max < _min) {
+                        throw SpecFailure.CardinalityMinGreaterThanMax();
+                    }
+                    if (_min < 0 || _max < 0) {
+                        throw SpecFailure.NegativeCardinality();
+                    }
+                }
                 if (!_min.HasValue && !_max.HasValue) {
                     return null;
                 }

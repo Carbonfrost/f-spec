@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,24 +15,10 @@
 //
 using System;
 using System.IO;
-using System.Linq;
 
 using Carbonfrost.Commons.Spec.ExecutionModel;
-using Carbonfrost.Commons.Spec;
 
 namespace Carbonfrost.Commons.Spec {
-
-    interface ITestLoader {
-        TestFile LoadFile(string fileName);
-        TestFixture LoadFixture(string fileName);
-        TestFixtureData LoadFixtureData(string fileName);
-
-        TestFile DownloadFile(Uri url);
-        TestFixture DownloadFixture(Uri url);
-        TestFixtureData DownloadFixtureData(Uri url);
-        TextReader DownloadText(Uri url);
-        Stream Download(Uri url);
-    }
 
     class TestLoader : ITestLoader {
 
@@ -142,20 +128,18 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         string FindActualPath(string fileName) {
-            if (Path.IsPathRooted(fileName)) {
+            if (Path.IsPathRooted(fileName) && File.Exists(fileName)) {
                 return fileName;
             }
             if (File.Exists(fileName)) {
                 return Path.GetFullPath(fileName);
             }
-            foreach (var fd in TestRunnerOptions.FixtureDirectories) {
-                string actualPath = Path.Combine(fd, fileName);
-                if (File.Exists(actualPath)) {
-                    return Path.GetFullPath(actualPath);
-                }
+            var result = _opts.FixturePaths.GetFullPath(fileName);
+            if (result != null) {
+                return result;
             }
 
-            throw SpecFailure.CannotFindFixture(fileName, TestRunnerOptions.FixtureDirectories);
+            throw SpecFailure.CannotFindFixture(fileName, TestRunnerOptions.FixturePaths);
         }
     }
 }

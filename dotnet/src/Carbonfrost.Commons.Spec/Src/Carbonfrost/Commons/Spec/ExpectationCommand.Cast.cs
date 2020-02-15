@@ -85,7 +85,7 @@ namespace Carbonfrost.Commons.Spec {
                 }
 
                 public bool Matches(Func<TFrom> actualFactory) {
-                    var real = TestMatcherLocalizer.Code(_real.GetType().GetTypeInfo());
+                    var real = TestMatcherName.FromType(_real.GetType());
                     Func<T> thunk = () => {
                         var actual = actualFactory();
                         try {

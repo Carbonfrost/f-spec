@@ -136,6 +136,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 ex = ex.InnerException;
             }
             ExceptionInfo = ExceptionInfo.FromException(ex);
+            Reason = Reason;
 
             if (ex is PassException) {
                 Status = TestStatus.Passed;

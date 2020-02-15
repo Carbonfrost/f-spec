@@ -66,7 +66,7 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
         public void LocalizerCode_should_be_expected_value() {
             var subj = new AndMatcher<string>(Matchers.BeEmpty(), Matchers.HaveCount(0));
             var failure = TestMatcherLocalizer.Failure(subj, "");
-            Assert.Equal("spec.and", failure.Name);
+            Assert.Equal("spec.and", failure.Name.ToString());
         }
     }
 }

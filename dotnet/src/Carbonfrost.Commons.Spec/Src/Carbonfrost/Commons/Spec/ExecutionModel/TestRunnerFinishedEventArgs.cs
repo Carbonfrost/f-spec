@@ -1,5 +1,5 @@
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,13 +34,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public TestRun TestRun {
-            get {
-                return _opts.TestRun;
-            }
+            get;
+            private set;
         }
 
-        internal TestRunnerFinishedEventArgs(TestRunResults results, TestRunnerOptions opts) {
+        internal TestRunnerFinishedEventArgs(TestRun testRun, TestRunResults results, TestRunnerOptions opts) {
             Results = results;
+            TestRun = testRun;
             _opts = opts;
         }
     }

@@ -103,6 +103,12 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        internal bool ShouldVerify {
+            get {
+                return Assert.UseStrictMode;
+            }
+        }
+
         internal TestContext(TestUnit self, TestRunner runner, Random random, object testObject) {
             _self = self;
             _runner = runner;

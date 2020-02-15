@@ -17,11 +17,9 @@ using System;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    interface ITestUnitAdapter {
+    interface ITestUnitAdapter : ITestExecutionFilter {
         void Initialize(TestContext testContext);
-        void BeforeExecuting(TestContext testContext);
-        void AfterExecuting();
-        void BeforeExecutingDescendent(TestContext descendentTestContext);
-        void AfterExecutingDescendent(TestContext descendentTestContext);
+        void BeforeExecutingDescendant(TestContext descendantTestContext);
+        void AfterExecutingDescendant(TestContext descendantTestContext);
     }
 }

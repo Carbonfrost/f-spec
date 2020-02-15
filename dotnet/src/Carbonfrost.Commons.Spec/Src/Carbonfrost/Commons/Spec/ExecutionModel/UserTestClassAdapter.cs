@@ -36,7 +36,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         protected override void AfterExecuting(TestContext testContext) {
-            Adapter.AfterExecuting();
+            Adapter.AfterExecuting(testContext);
         }
 
         protected override void BeforeExecuting(TestContext testContext) {
@@ -44,12 +44,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             base.BeforeExecuting(testContext);
         }
 
-        protected override void BeforeExecutingDescendent(TestContext descendentTestContext) {
-            Adapter.BeforeExecutingDescendent(descendentTestContext);
+        protected override void BeforeExecutingDescendant(TestContext descendantTestContext) {
+            Adapter.BeforeExecutingDescendant(descendantTestContext);
         }
 
-        protected override void AfterExecutingDescendent(TestContext descendentTestContext) {
-            Adapter.AfterExecutingDescendent(descendentTestContext);
+        protected override void AfterExecutingDescendant(TestContext descendantTestContext) {
+            Adapter.AfterExecutingDescendant(descendantTestContext);
         }
     }
 }
