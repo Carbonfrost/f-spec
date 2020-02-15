@@ -89,9 +89,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public void Items(string message, params object[] args) {
-            if (TestRunner.ShouldVerify) {
-                _cmd.Implies(CommandCondition.NotOneButZeroOrMore);
-            }
+            _cmd.Implies(CommandCondition.NotOneButZeroOrMore);
             As<IEnumerable>().Should(TestMatcher<object>.Anything, message, (object[]) args);
         }
 
@@ -100,9 +98,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public void Item(string message, params object[] args) {
-            if (TestRunner.ShouldVerify) {
-                _cmd.Implies(CommandCondition.ExactlyOne);
-            }
+            _cmd.Implies(CommandCondition.ExactlyOne);
             As<IEnumerable>().Should(TestMatcher<object>.Anything, message, (object[]) args);
         }
 

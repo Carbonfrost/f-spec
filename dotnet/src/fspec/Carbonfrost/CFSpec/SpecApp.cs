@@ -47,7 +47,6 @@ namespace Carbonfrost.CFSpec {
                 ShowTestNames = Options.ShowTestNames,
                 ContextLines = Options.ContextLines,
                 ShowPassExplicitly = Options.ShowPassExplicitly,
-                Verification = Options.Verify,
                 IsSelfTest = Options.SelfTest,
                 LoadAssemblyFromPath = System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath
             };
@@ -71,6 +70,8 @@ namespace Carbonfrost.CFSpec {
                 testRunnerOptions.LoaderPaths.Add(s);
             }
             SpecLog.DidFinalizeOptions(Options.ToString());
+
+            Assert.UseStrictMode = TestVerificationMode.Strict == Options.Verify;
 
             TestRunner runner = TestRunner.Create(testRunnerOptions);
 

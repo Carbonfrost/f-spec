@@ -147,9 +147,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
 
                 bool shouldRun = Unit.NotifyStarting(runner) && Unit.SetUpError == null;
-                Unit.NotifyStarted(runner);
 
                 if (shouldRun) {
+                    Unit.NotifyStarted(runner);
                     _context = runner.NewTestContext(Unit);
 
                     foreach (var anc in Unit.Ancestors()) {

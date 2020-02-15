@@ -52,6 +52,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                 this.context = null;
             }
         }
+
+        protected void WriteLine() {
+            console.WriteLine();
+        }
+
+        protected void WriteLine(string text) {
+            console.WriteLine(text);
+        }
+
+        protected void Write(string text) {
+            console.Write(text);
+        }
     }
 
     static class ConsoleOutputPart {

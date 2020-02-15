@@ -13,11 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 using Carbonfrost.Commons.Spec.Resources;
 using Carbonfrost.Commons.Spec.TestMatchers;
@@ -32,15 +29,14 @@ namespace Carbonfrost.Commons.Spec {
 
         public static TestFailure Failure(object matcher, object actual) {
             TestFailure failure = FailureMessageCore(false, matcher, false);
-            var strActual = TextUtility.ConvertToString(actual, ShowWS);
+            var strActual = TextUtility.ConvertToString(actual);
             failure.UserData["Actual"] = strActual;
 
-            var strMatcher = matcher as EqualMatcher<string>;
-            if (strMatcher != null) {
+            if (matcher is EqualMatcher<string> strMatcher) {
                 string strExpected = strMatcher.Expected;
                 var patch = new Patch(strExpected, strActual);
                 if (patch.ALineCount > 1 || patch.BLineCount > 1) {
-                    failure.UserData["Diff"] = patch.ToString();
+                    failure.UserData.Diff = patch;
                 }
             }
             return failure;
@@ -127,13 +123,5 @@ namespace Carbonfrost.Commons.Spec {
                 last.Message = cm.Operator + " " + last.Message;
             }
         }
-
-        internal static bool ShowWS {
-            get {
-                return TestRunner.Current != null && TestRunner.Current
-                    .Options.AssertionMessageFormatMode.HasFlag(AssertionMessageFormatModes.PrintWhitespace);
-            }
-        }
-
     }
 }

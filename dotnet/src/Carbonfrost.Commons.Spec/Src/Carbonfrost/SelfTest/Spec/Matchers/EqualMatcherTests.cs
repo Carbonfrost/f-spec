@@ -140,7 +140,7 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
             var subj = new EqualMatcher<string>("and");
             var failure = TestMatcherLocalizer.Failure(subj, "bool");
 
-            Assert.DoesNotContainKey("Diff", failure.UserData);
+            Assert.Null(failure.UserData.Diff);
         }
 
         [Fact]
@@ -155,8 +155,8 @@ bool
 c
 d
 e");
-            Assert.ContainsKey("Diff", failure.UserData);
-            var diff = failure.UserData["Diff"].Split(new [] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            Assert.NotNull(failure.UserData.Diff);
+            var diff = failure.UserData.Diff.ToString().Split(new [] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
             Assert.Equal(new [] { "@@@ -1,6 +1,6",
                              " and",
                              " bool",

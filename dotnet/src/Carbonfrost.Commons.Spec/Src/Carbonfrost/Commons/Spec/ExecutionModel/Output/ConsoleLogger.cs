@@ -45,7 +45,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             if (opts.ShowPassExplicitly) {
                 _flags |= DisplayFlags.ShowExplicitPasses;
             }
-            _parts = new ConsoleOutputParts();
+            _parts = new ConsoleOutputParts(opts);
             _renderContext = new RenderContext {
                 Console = console,
                 Parts = _parts,
@@ -208,7 +208,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                 console.WriteLineIfNotEmpty(result.Reason);
             } else if (result.IsPending) {
                 console.Muted();
-                console.WriteLineIfNotEmpty("// " + result.Reason);
+                if (!string.IsNullOrEmpty(result.Reason)) {
+                    console.WriteLine("// " + result.Reason);
+                }
             }
 
             renderContext.Parts.onExceptionInfo.Render(renderContext, result.ExceptionInfo);

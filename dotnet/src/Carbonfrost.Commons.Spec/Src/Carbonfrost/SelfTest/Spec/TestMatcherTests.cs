@@ -24,6 +24,7 @@ using System.Text.RegularExpressions;
 
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.ExecutionModel;
+using Carbonfrost.Commons.Spec.ExecutionModel.Output;
 
 namespace Carbonfrost.SelfTest.Spec {
 
@@ -70,7 +71,7 @@ namespace Carbonfrost.SelfTest.Spec {
         public void Localizer_should_generate_property_localization() {
             var data = ExtractedUserData;
             foreach (var kvp in data) {
-                var caption = data.Caption(kvp.Key);
+                var caption = ConsoleExceptionInfo.Caption(kvp.Key);
                 Assert.DoesNotContain("FAILED TO LOCALIZE", caption);
             }
         }

@@ -315,7 +315,7 @@ namespace Carbonfrost.Commons.Spec {
 
         ITestMatcher ITestMatcherFactory.CreateMatcher(TestContext testContext) {
             var t = Matchers.Throw(ExceptionType).UnwindingTargetExceptions;
-            if (TestRunner.ShouldVerify) {
+            if (testContext.ShouldVerify) {
                 return t.WithVerification();
             }
             return t;

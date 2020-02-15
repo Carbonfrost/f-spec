@@ -15,11 +15,9 @@
 //
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Linq;
 using System;
-using System.Text;
 
 using Carbonfrost.Commons.Spec.TestMatchers;
 using Carbonfrost.Commons.Spec.Resources;
@@ -29,7 +27,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
     public class UserDataCollection : IDictionary<string, string> {
 
         private readonly IDictionary<string, string> Dictionary;
-        const int bufferWidth = 6;
 
         public string this[string key] {
             get {
@@ -50,32 +47,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             get {
                 return false;
             }
-        }
-
-        internal void AppendTo(StringBuilder err) {
-            if (Keys.Count > 0) {
-                int maxLength = Keys.Max(t => t.Length);
-
-                err.AppendLine();
-                foreach (var kvp in this) {
-                    if (IsHiddenFromTable(kvp.Key)) {
-                        continue;
-                    }
-
-                    string line = LineItem(kvp.Key, kvp.Value, maxLength);
-                    err.AppendLine(line);
-                }
-            }
-        }
-
-        private string LineItem(string caption, string data, int length) {
-            caption = Caption(caption);
-            return string.Format("{0," + (bufferWidth + length) + "}: {1}", caption, data);
-        }
-
-        internal string Caption(string caption) {
-            var cap = "Label" + caption;
-            return SR.ResourceManager.GetString(cap) ?? TestMatcherLocalizer.MissingLocalization(caption);
         }
 
         public void Clear() {
@@ -110,6 +81,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        internal Patch Diff {
+            get;
+            set;
+        }
+
         public bool ContainsKey(string key) {
             return Dictionary.ContainsKey(key);
         }
@@ -142,12 +118,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return Dictionary.GetEnumerator();
         }
 
-        private static bool ShowWS {
-            get {
-                return TestMatcherLocalizer.ShowWS;
-            }
-        }
-
         internal UserDataCollection(object matcher) : this() {
             ExtractUserData(matcher);
         }
@@ -161,9 +131,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .Where(t => t.CanRead && t.GetIndexParameters().Length == 0);
 
-            var defaultShowWS = ShowWS;
             foreach (var pi in props) {
-                var showWS = defaultShowWS;
                 var name = pi.Name;
                 string value = null;
                 object val = pi.GetValue(matcher);
@@ -178,13 +146,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 if (val is StringComparer) {
                     value = GetStringComparerText(val);
                 } else {
-                    value = TextUtility.ConvertToString(val, showWS);
+                    value = TextUtility.ConvertToString(val);
                 }
                 Dictionary[name] = value;
             }
         }
 
-        private bool IsHiddenFromTable(string key) {
+        internal bool IsHiddenFromTable(string key) {
             if (key == "Comparer") {
                 return this.GetValueOrDefault(key) == "<default>";
             }

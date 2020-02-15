@@ -29,23 +29,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         private readonly MakeReadOnlyList<string> _skipPatterns = new MakeReadOnlyList<string>();
         private AssertionMessageFormatModes _assertionMessageFormatMode;
         private int _contextLines = -1;
-        private TestVerificationMode _verification;
         private readonly PathCollection _fixturePaths = new PathCollection();
         private readonly LoaderPathCollection _loaderPaths = new LoaderPathCollection();
 
         internal bool IsSelfTest {
             get;
             set;
-        }
-
-        public TestVerificationMode Verification {
-            get {
-                return _verification;
-            }
-            set {
-                WritePreamble();
-                _verification = value;
-            }
         }
 
         public int ContextLines {
@@ -202,7 +191,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             RandomSeed = copyFrom.RandomSeed;
             _flags = copyFrom._flags;
             ContextLines = copyFrom.ContextLines;
-            Verification = copyFrom.Verification;
             IsSelfTest = copyFrom.IsSelfTest;
         }
 

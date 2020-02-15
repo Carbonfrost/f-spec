@@ -65,14 +65,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         internal string FormatMessage(string userMessage) {
-            // Format actual and expected together
             var err = new StringBuilder();
 
             if (!string.IsNullOrEmpty(userMessage)) {
                 err.AppendLine(userMessage);
             }
             AppendChildren(err, 0);
-            UserData.AppendTo(err);
             return err.ToString();
         }
 

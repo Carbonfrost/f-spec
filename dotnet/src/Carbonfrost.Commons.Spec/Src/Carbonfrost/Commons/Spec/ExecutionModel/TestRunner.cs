@@ -42,12 +42,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         public event EventHandler<TestUnitStartedEventArgs> TestUnitStarted;
         public event EventHandler<TestUnitFinishedEventArgs> TestUnitFinished;
 
-        internal static bool ShouldVerify {
-            get {
-                return Current.Options.Verification == TestVerificationMode.Strict;
-            }
-        }
-
         internal static string Version {
             get {
                 var asm = typeof(TestRunner).GetTypeInfo().Assembly;
@@ -65,13 +59,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
                 return version;
             }
-        }
-
-        // HACK There is probably a better solution than a global to track the runner
-
-        internal static TestRunner Current {
-            get;
-            private set;
         }
 
         public TestRunnerOptions Options {
@@ -99,13 +86,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public TestRunResults RunTests() {
-            try {
-                Current = this;
-                var run  = CreateTestRun();
-                return RunTestsCore(run);
-            } finally {
-                Current = null;
-            }
+            var run  = CreateTestRun();
+            return RunTestsCore(run);
         }
 
         protected virtual TestRun CreateTestRun() {

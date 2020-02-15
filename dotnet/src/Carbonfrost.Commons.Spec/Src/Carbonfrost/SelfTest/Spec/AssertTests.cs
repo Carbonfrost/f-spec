@@ -31,6 +31,8 @@ namespace Carbonfrost.SelfTest.Spec {
             "Given",
             "Pass",
             "Pending",
+            "get_UseStrictMode",
+            "set_UseStrictMode",
 
             "Equals", // from object.Equals
         };

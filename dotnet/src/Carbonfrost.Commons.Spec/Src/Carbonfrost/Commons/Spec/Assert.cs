@@ -29,6 +29,11 @@ namespace Carbonfrost.Commons.Spec {
 
         static readonly Asserter Global = new Asserter();
 
+        public static bool UseStrictMode {
+            get;
+            set;
+        }
+
         public static ExpectationBuilder<IEnumerable> Expect() {
             return new ExpectationBuilder<IEnumerable>(() => Empty<object>.Array, false, null);
         }
