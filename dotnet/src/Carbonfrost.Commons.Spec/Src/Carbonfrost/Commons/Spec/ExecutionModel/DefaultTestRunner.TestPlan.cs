@@ -37,6 +37,39 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         }
 
+        internal class FailFastTestPlan : TestPlanBase {
+
+            public FailFastTestPlan(DefaultTestRunner runner, TestRun run, TestRunnerOptions normalized)
+                : base(runner, run, normalized)
+            {
+            }
+
+            public override TestRunResults RunTests() {
+                var e = PlanOrder.GetEnumerator();
+;
+                while (e.MoveNext()) {
+                    var item = e.Current;
+                    item.Run(Runner);
+
+                    if (item.FindResult().Failed) {
+                        // Ensure clean up by processing descendants
+                        foreach (var d in item.Descendants) {
+                            d.Run(Runner);
+                        }
+                        break;
+                    }
+                }
+
+                while (e.MoveNext()) {
+                    var item = e.Current;
+                    item.Abort(Runner);
+                }
+
+                return (TestRunResults) Root.FindResult();
+            }
+
+        }
+
     }
 
 }

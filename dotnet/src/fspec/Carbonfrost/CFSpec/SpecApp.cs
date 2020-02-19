@@ -48,6 +48,7 @@ namespace Carbonfrost.CFSpec {
                 ContextLines = Options.ContextLines,
                 ShowPassExplicitly = Options.ShowPassExplicitly,
                 IsSelfTest = Options.SelfTest,
+                FailFast = Options.FailFast,
                 LoadAssemblyFromPath = System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath
             };
             if (!Options.NoWhitespace) {
@@ -79,14 +80,23 @@ namespace Carbonfrost.CFSpec {
 
             try {
                 var result = runner.RunTests();
-                return (int) result.FailureReason;
+                return ToExitCode(result.FailureReason);
+
             } catch (SpecException ex) {
                 return Fail(ex.Message);
             }
         }
 
+        private int ToExitCode(TestRunFailureReason reason) {
+            if (!Options.FailOnPending && reason == TestRunFailureReason.ContainsPendingElements) {
+                return 0;
+            }
+
+            return (int) reason;
+        }
+
         private int Fail(string message) {
-            Console.Error.WriteLine("spec: " + message);
+            Console.Error.WriteLine("fatal: " + message);
             return 1;
         }
     }

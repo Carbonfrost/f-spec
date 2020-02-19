@@ -47,14 +47,15 @@ namespace Carbonfrost.CFSpec {
         public int ContextLines = -1;
         public bool SelfTest;
         public TestVerificationMode Verify;
-
+        public bool FailFast;
+        public bool FailOnPending;
         public TimeSpan? TestTimeout;
         public TimeSpan? PlanTimeout;
 
-        private readonly OptionSet OptionSet;
+        private readonly OptionSetExtension OptionSet;
 
         public ProgramOptions() {
-            this.OptionSet = new OptionSet {
+            OptionSet = new OptionSetExtension {
                 { "help",          SR.UHelp(),             v => ShowHelp() },
                 { "version",       SR.UVersion(),          v => ShowVersion() },
 
@@ -70,6 +71,8 @@ namespace Carbonfrost.CFSpec {
                 { "no-summary",    SR.UNoSummary(),        v => NoSummary = true },
                 { "self-test",     SR.USelfTest(),         v => WillSelfTest() },
                 { "show-tests",    SR.UShowTestNames(),    v => ShowTestNames = true },
+                { "fail-fast",     SR.UFailFast(),         v => FailFast = true },
+                { "fail-pending",  SR.UFailOnPending(),    v => FailOnPending = true },
 
                 { "show-pass-explicit", SR.UShowPassExplicit(), v => ShowPassExplicitly = true },
                 { "verify=",            SR.UVerify(),           v => Verify = SafeEnumParse<TestVerificationMode>(v, SR.InvalidVerify(), "--verify") },
@@ -81,6 +84,33 @@ namespace Carbonfrost.CFSpec {
                 { "plan-timeout=", SR.UPlanTimeout(),      v => PlanTimeout = SafeTimeSpanParse(v, SR.InvalidTimeSpan(), "--plan-timeout") },
                 { "pause",         SR.UPause(),            v => DebugWait = true },
             };
+
+            OptionSet.Group(SR.UOutputOptions(),
+                "context-lines=",
+                "no-diff",
+                "no-summary",
+                "no-whitespace",
+                "show-pass-explicit",
+                "show-tests"
+            );
+
+            OptionSet.Group(SR.UTestSelectionOptions(),
+                "focus=",
+                "no-focus",
+                "no-random",
+                "skip="
+            );
+
+            OptionSet.Group(SR.URunnerOptions(),
+                "plan-timeout=",
+                "timeout=",
+                "verify=",
+                "random-seed=",
+                "self-test",
+                "fail-fast",
+                "fail-pending",
+                "i|fixture="
+            );
         }
 
         private void WillSelfTest() {
@@ -101,12 +131,12 @@ namespace Carbonfrost.CFSpec {
         }
 
         public void Usage() {
-            _console.WriteLine("Usage:  spec [OPTION]... [ASSEMBLY]...");
+            _console.WriteLine("Usage: fspec [OPTION]... [ASSEMBLY]...");
             _console.WriteLine("Run tests in the specified assemblies");
             _console.WriteLine();
 
             var s = new StringWriter();
-            OptionSet.WriteOptionDescriptions(s);
+            OptionSet.WriteUsage(s);
             _console.Write(s.ToString());
         }
 

@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,6 +57,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
 
             internal abstract void Run(DefaultTestRunner runner);
+            internal abstract void Abort(DefaultTestRunner runner);
 
             public virtual TestUnitResult FindResult() {
                 if (Parent == null) {
@@ -105,6 +106,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
                 Parent.FindResult().ContainerOrSelf.Children.Add(_result);
             }
+
+            internal override void Abort(DefaultTestRunner runner) {
+                var myCase = (TestCase) Unit;
+                var result = new TestCaseResult(myCase) {
+                    Status = TestStatus.Skipped,
+                };
+                result.Done(DateTime.Now);
+                Parent.FindResult().ContainerOrSelf.Children.Add(result);
+            }
         }
 
         internal class RootNode : TestUnitNode {
@@ -117,6 +127,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             internal override void Run(DefaultTestRunner runner) {
                 _result.Starting();
+            }
+
+            internal override void Abort(DefaultTestRunner runner) {
             }
 
             public override TestUnitResult FindResult() {
@@ -162,6 +175,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
             }
 
+            internal override void Abort(DefaultTestRunner runner) {
+            }
+
             public override TestUnitResult FindResult() {
                 return _result ?? Parent.FindResult();
             }
@@ -200,6 +216,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 result.IsFocused = Unit.IsFocused;
                 result.Done();
                 Unit.NotifyFinished(runner, result);
+                Safely.Dispose(context);
+            }
+
+            internal override void Abort(DefaultTestRunner runner) {
+                var result = FindResult();
+                var context = FindTestContext();
+
+                if (result != null) {
+                    result.Done();
+                }
                 Safely.Dispose(context);
             }
         }

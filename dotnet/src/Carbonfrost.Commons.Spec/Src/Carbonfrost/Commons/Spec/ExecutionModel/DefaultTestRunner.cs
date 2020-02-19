@@ -40,7 +40,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             get; private set;
         }
 
-        internal DefaultTestRunner.TestPlan CreatePlan(TestRun run) {
+        internal DefaultTestRunner.TestPlanBase CreatePlan(TestRun run) {
+            if (Options.FailFast) {
+                return new FailFastTestPlan(this, run, _opts);
+            }
+
             return new TestPlan(this, run, _opts);
         }
 

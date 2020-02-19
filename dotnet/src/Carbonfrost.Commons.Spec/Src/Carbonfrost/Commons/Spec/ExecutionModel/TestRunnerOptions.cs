@@ -1,5 +1,5 @@
 //
-// Copyright 2016-2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016-2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,8 +33,23 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         private readonly LoaderPathCollection _loaderPaths = new LoaderPathCollection();
 
         internal bool IsSelfTest {
-            get;
-            set;
+            get {
+                return (_flags & Flags.SelfTest) > 0;
+            }
+            set {
+                WritePreamble();
+                SetFlag(value, Flags.SelfTest);
+            }
+        }
+
+        public bool FailFast {
+            get {
+                return (_flags & Flags.FailFast) > 0;
+            }
+            set {
+                WritePreamble();
+                SetFlag(value, Flags.FailFast);
+            }
         }
 
         public int ContextLines {
@@ -126,7 +141,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
             set {
                 WritePreamble();
-                _flags = value ? (_flags | Flags.RandomizeSpecs) : (_flags & ~Flags.RandomizeSpecs);
+                SetFlag(value, Flags.RandomizeSpecs);
             }
         }
 
@@ -136,7 +151,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
             set {
                 WritePreamble();
-                _flags = value ? (_flags | Flags.IgnoreFocus) : (_flags & ~Flags.IgnoreFocus);
+                SetFlag(value, Flags.IgnoreFocus);
             }
         }
 
@@ -146,7 +161,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
             set {
                 WritePreamble();
-                _flags = value ? (_flags | Flags.ShowPassExplicitly) : (_flags & ~Flags.ShowPassExplicitly);
+                SetFlag(value, Flags.ShowPassExplicitly);
             }
         }
 
@@ -156,7 +171,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
             set {
                 WritePreamble();
-                _flags = value ? (_flags | Flags.ShowTestNames) : (_flags & ~Flags.ShowTestNames);
+                SetFlag(value, Flags.ShowTestNames);
             }
         }
 
@@ -166,7 +181,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
             set {
                 WritePreamble();
-                _flags = value ? (_flags | Flags.SuppressSummary) : (_flags & ~Flags.SuppressSummary);
+                SetFlag(value, Flags.SuppressSummary);
             }
         }
 
@@ -224,13 +239,19 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        private void SetFlag(bool value, Flags flag) {
+            _flags = value ? (_flags | flag) : (_flags & ~flag);
+        }
+
         [Flags]
         enum Flags {
-            RandomizeSpecs,
-            IgnoreFocus,
-            ShowPassExplicitly,
-            ShowTestNames,
-            SuppressSummary,
+            RandomizeSpecs = 1 << 0,
+            IgnoreFocus = 1 << 1,
+            ShowPassExplicitly = 1 << 2,
+            ShowTestNames = 1 << 3,
+            SuppressSummary = 1 << 4,
+            FailFast = 1 << 5,
+            SelfTest = 1 << 6,
         }
     }
 }

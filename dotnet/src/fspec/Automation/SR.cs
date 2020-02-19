@@ -98,6 +98,20 @@ namespace Carbonfrost.CFSpec.Resources {
         return string.Format(Culture, ResourceFinder("UContextLines") );
     }
 
+  /// <summary>Exit when the first test fails</summary>
+    internal static string UFailFast(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UFailFast") );
+    }
+
+  /// <summary>Exit with an error code if any pending specs</summary>
+    internal static string UFailOnPending(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UFailOnPending") );
+    }
+
   /// <summary>Include a fixture search {{PATH}}</summary>
     internal static string UFixture(
 
@@ -117,6 +131,13 @@ namespace Carbonfrost.CFSpec.Resources {
 
     ) {
         return string.Format(Culture, ResourceFinder("UHelp") );
+    }
+
+  /// <summary>Loader options</summary>
+    internal static string ULoaderOptions(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("ULoaderOptions") );
     }
 
   /// <summary>Don't use unified diffs when assertion messages contain long strings</summary>
@@ -154,6 +175,13 @@ namespace Carbonfrost.CFSpec.Resources {
         return string.Format(Culture, ResourceFinder("UNoWhitespace") );
     }
 
+  /// <summary>Output options</summary>
+    internal static string UOutputOptions(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UOutputOptions") );
+    }
+
   /// <summary>Attach tty and wait for a keypress before exiting</summary>
     internal static string UPause(
 
@@ -173,6 +201,13 @@ namespace Carbonfrost.CFSpec.Resources {
 
     ) {
         return string.Format(Culture, ResourceFinder("URandom") );
+    }
+
+  /// <summary>Runner options</summary>
+    internal static string URunnerOptions(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("URunnerOptions") );
     }
 
   /// <summary>Run the self-tests and exit</summary>
@@ -201,6 +236,13 @@ namespace Carbonfrost.CFSpec.Resources {
 
     ) {
         return string.Format(Culture, ResourceFinder("USkip") );
+    }
+
+  /// <summary>Test selection options</summary>
+    internal static string UTestSelectionOptions(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UTestSelectionOptions") );
     }
 
   /// <summary>Specify the maximum {{TIME}} allowed for any particular test to execute</summary>
