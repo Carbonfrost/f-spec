@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -20,20 +21,22 @@ using System.Linq;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-     public class PathCollection : Collection<string> {
+    public class PathCollection : Collection<string> {
+
+        internal FileSystem FileSystem = FileSystem.Real;
 
          public PathCollection()
             : base(new MakeReadOnlyList<string>()) {}
 
         public IEnumerable<string> EnumerateDirectories() {
-            return Items.Where(IsDirectory);
+            return Items.Where(FileSystem.IsDirectory);
         }
 
         public IEnumerable<string> EnumerateFiles() {
             var result = Enumerable.Empty<string>();
             foreach (var item in Items) {
-                if (IsDirectory(item)) {
-                    result = result.Concat(Directory.EnumerateFiles(item));
+                if (FileSystem.IsDirectory(item)) {
+                    result = result.Concat(FileSystem.DirectoryEnumerateFiles(item));
                 } else {
                     result = result.Concat(new [] { item });
                 }
@@ -49,8 +52,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             var pattern = new WildcardPattern(searchPattern);
             var result = Enumerable.Empty<string>();
             foreach (var item in Items) {
-                if (IsDirectory(item)) {
-                    result = result.Concat(Directory.EnumerateFiles(item, searchPattern, searchOption));
+                if (FileSystem.IsDirectory(item)) {
+                    result = result.Concat(FileSystem.DirectoryEnumerateFiles(item, searchPattern, searchOption));
 
                 } else if (pattern.IsMatch(item)) {
                     result = result.Concat(new [] { item });
@@ -61,8 +64,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public string GetFullPath(string path) {
             foreach (var fd in EnumerateDirectories()) {
-                string actualPath = Path.Combine(fd, path);
-                if (Exists(actualPath)) {
+                string actualPath = Path.Combine(FileSystem.WorkingDirectory, fd, path);
+                if (FileSystem.Exists(actualPath)) {
                     return actualPath;
                 }
             }
@@ -75,14 +78,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         internal void MakeReadOnly() {
             ((MakeReadOnlyList<string>) Items).MakeReadOnly();
-        }
-
-        private bool IsDirectory(string path) {
-            return Directory.Exists(path);
-        }
-
-        private bool Exists(string path) {
-            return Directory.Exists(path) || File.Exists(path);
         }
     }
 }

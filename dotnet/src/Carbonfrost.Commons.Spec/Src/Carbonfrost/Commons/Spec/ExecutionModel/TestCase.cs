@@ -81,7 +81,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 if (TestMethod == null) {
                     return null;
                 }
-                return TestMethod.DeclaringType.GetProperty(TestMethod.Name.Substring(4));
+                if (TestMethod.Name.StartsWith("get_")) {
+                    return TestMethod.DeclaringType.GetProperty(TestMethod.Name.Substring(4));
+                }
+
+                return null;
             }
         }
 
