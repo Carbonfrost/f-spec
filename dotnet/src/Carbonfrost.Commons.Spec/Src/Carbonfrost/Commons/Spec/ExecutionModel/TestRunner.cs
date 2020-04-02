@@ -97,14 +97,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 run.AddAssembly(typeof(TestMatcher).GetTypeInfo().Assembly);
             }
 
-            var lp = (LoaderPathCollection) Options.LoaderPaths;
-            var list = lp.LoadAssemblies();
-            var assemblyPath = list.Select(t => Path.GetDirectoryName(new Uri(t.CodeBase).LocalPath)).Distinct();
-
-            lp.RegisterAssemblyResolve(assemblyPath);
-            foreach (var asm in list) {
+            foreach (var asm in Options.LoadAssembliesAndBindLoader()) {
                 run.AddAssembly(asm);
             }
+
             SpecLog.DidCreateTestRun();
             return run;
         }

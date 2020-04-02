@@ -61,6 +61,9 @@
   <data name="InvalidContextLines" xml:space="preserve">
     <value>invalid number of context lines</value>
   </data>
+  <data name="InvalidPackageReference" xml:space="preserve">
+    <value>invalid package reference syntax</value>
+  </data>
   <data name="InvalidRandomSeed" xml:space="preserve">
     <value>invalid random seed</value>
   </data>
@@ -109,6 +112,9 @@
   <data name="UOutputOptions" xml:space="preserve">
     <value>Output options</value>
   </data>
+  <data name="UPackage" xml:space="preserve">
+    <value>Load the NuGet package dependency {{FORMULA}}</value>
+  </data>
   <data name="UPause" xml:space="preserve">
     <value>Attach tty and wait for a keypress before exiting</value>
   </data>
@@ -129,6 +135,9 @@
   </data>
   <data name="UShowTestNames" xml:space="preserve">
     <value>Display names of tests and test cases even on success</value>
+  </data>
+  <data name="UShowWhitespace" xml:space="preserve">
+    <value>Use special characters when printing whitespace in assertion failure messages</value>
   </data>
   <data name="USkip" xml:space="preserve">
     <value>Skip tests whose descriptions or names match the given {{REGEX}}</value>

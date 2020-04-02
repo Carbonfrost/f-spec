@@ -143,7 +143,7 @@
     <value>Expected to end with substring {Expected}</value>
   </data>
   <data name="ExpectedEqual" xml:space="preserve">
-    <value>Expected equal {Expected}</value>
+    <value>Expected equal</value>
   </data>
   <data name="ExpectedEqualDownloadContents" xml:space="preserve">
     <value>Expected to equal download contents {Source}</value>

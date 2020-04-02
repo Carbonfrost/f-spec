@@ -19,7 +19,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
     class ConsoleTestRunResults : ConsoleOutputPart<TestRunResults> {
 
         protected override void RenderCore(TestRunResults results) {
-            if (results.FailedCount > 0 || results.PendingCount > 0) {
+            if (results.FailedCount > 0) {
                 console.Red();
                 console.Write("FAILED");
             } else {
@@ -36,6 +36,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
             console.Green();
             console.WriteLine("{0,4} passed", results.PassedCount);
+            console.ResetColor();
 
             if (results.FailedCount > 0) {
                 console.Red();

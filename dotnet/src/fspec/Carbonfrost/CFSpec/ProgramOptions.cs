@@ -31,6 +31,7 @@ namespace Carbonfrost.CFSpec {
 
         private readonly IConsoleWrapper _console = ConsoleWrapper.Default;
         public readonly List<string> Assemblies = new List<string>();
+        public readonly List<PackageReference> Packages = new List<PackageReference>();
         public readonly List<string> FixturePaths = new List<string>();
         public readonly List<string> FocusPatterns = new List<string>();
         public readonly List<string> SkipPatterns = new List<string>();
@@ -41,7 +42,7 @@ namespace Carbonfrost.CFSpec {
         public bool ShowTestNames;
         public bool NoFocus;
         public bool NoSummary;
-        public bool NoWhitespace;
+        public bool ShowWhitespace;
         public bool NoUnifiedDiff;
         public bool ShowPassExplicitly;
         public int ContextLines = -1;
@@ -60,12 +61,14 @@ namespace Carbonfrost.CFSpec {
                 { "version",       SR.UVersion(),          v => ShowVersion() },
 
                 { "i|fixture=",    SR.UFixture(),          v => FixturePaths.Add(v) },
+                { "p|package=",    SR.UPackage(),          v => Packages.Add(SafeParsePackageFormula(v, SR.InvalidPackageReference(), "--package")) },
 
                 { "skip=",         SR.USkip(),             v => SkipPatterns.Add(v) },
                 { "focus=",        SR.UFocus(),            v => FocusPatterns.Add(v) },
                 { "no-focus",      SR.UNoFocus(),          v => NoFocus = true },
 
-                { "no-whitespace", SR.UNoWhitespace(),     v => NoWhitespace = true },
+                { "show-whitespace", SR.UShowWhitespace(), v => ShowWhitespace = true },
+                { "no-whitespace", SR.UNoWhitespace(),     v => ShowWhitespace = false },
                 { "no-diff",       SR.UNoDiff(),           v => NoUnifiedDiff = true },
                 { "context-lines=",SR.UContextLines(),     v => ContextLines = SafeInt32Parse(v, SR.InvalidContextLines(), "--context-lines") },
                 { "no-summary",    SR.UNoSummary(),        v => NoSummary = true },
@@ -85,23 +88,24 @@ namespace Carbonfrost.CFSpec {
                 { "pause",         SR.UPause(),            v => DebugWait = true },
             };
 
-            OptionSet.Group(SR.UOutputOptions(),
+            OptionSet.Group(SR.UOutputOptions(), sort: true,
                 "context-lines=",
                 "no-diff",
                 "no-summary",
+                "show-whitespace",
                 "no-whitespace",
                 "show-pass-explicit",
                 "show-tests"
             );
 
-            OptionSet.Group(SR.UTestSelectionOptions(),
+            OptionSet.Group(SR.UTestSelectionOptions(), sort: true,
                 "focus=",
                 "no-focus",
                 "no-random",
                 "skip="
             );
 
-            OptionSet.Group(SR.URunnerOptions(),
+            OptionSet.Group(SR.URunnerOptions(), sort: true,
                 "plan-timeout=",
                 "timeout=",
                 "verify=",
@@ -109,7 +113,8 @@ namespace Carbonfrost.CFSpec {
                 "self-test",
                 "fail-fast",
                 "fail-pending",
-                "i|fixture="
+                "i|fixture=",
+                "p|package="
             );
         }
 
@@ -169,6 +174,14 @@ namespace Carbonfrost.CFSpec {
             throw ParseFailure(v, msg, optionName);
         }
 
+        private PackageReference SafeParsePackageFormula(string v, string msg, string optionName) {
+            PackageReference result;
+            if (PackageReference.TryParse(v, out result)) {
+                return result;
+            }
+            throw ParseFailure(v, msg, optionName);
+        }
+
         static OptionException ParseFailure(string v, string msg, string optionName) {
             return new OptionException(string.Format("{0}: '{1}'", msg, v), optionName);
         }
@@ -203,7 +216,7 @@ namespace Carbonfrost.CFSpec {
                 buildDate = new DateTime(2016, 1, 1, 0, 0, 0);
             }
             string since = buildDate.GetValueOrDefault().Year > 2016 ? "2016 - " : null;
-            _console.WriteLine("Carbonfrost{1} Spec version {0}", version, registered);
+            _console.WriteLine("Carbonfrost{1} Fspec version {0}", version, registered);
             _console.WriteLine("Copyright {0} {2}{1:yyyy} Carbonfrost Systems, Inc.  All rights reserved.", copy, buildDate, since);
             _console.WriteLine();
             Quit = true;

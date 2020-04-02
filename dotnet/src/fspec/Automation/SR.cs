@@ -70,6 +70,13 @@ namespace Carbonfrost.CFSpec.Resources {
         return string.Format(Culture, ResourceFinder("InvalidContextLines") );
     }
 
+  /// <summary>invalid package reference syntax</summary>
+    internal static string InvalidPackageReference(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("InvalidPackageReference") );
+    }
+
   /// <summary>invalid random seed</summary>
     internal static string InvalidRandomSeed(
 
@@ -182,6 +189,13 @@ namespace Carbonfrost.CFSpec.Resources {
         return string.Format(Culture, ResourceFinder("UOutputOptions") );
     }
 
+  /// <summary>Load the NuGet package dependency {{FORMULA}}</summary>
+    internal static string UPackage(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UPackage") );
+    }
+
   /// <summary>Attach tty and wait for a keypress before exiting</summary>
     internal static string UPause(
 
@@ -229,6 +243,13 @@ namespace Carbonfrost.CFSpec.Resources {
 
     ) {
         return string.Format(Culture, ResourceFinder("UShowTestNames") );
+    }
+
+  /// <summary>Use special characters when printing whitespace in assertion failure messages</summary>
+    internal static string UShowWhitespace(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UShowWhitespace") );
     }
 
   /// <summary>Skip tests whose descriptions or names match the given {{REGEX}}</summary>

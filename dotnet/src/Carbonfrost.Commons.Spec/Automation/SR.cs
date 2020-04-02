@@ -259,7 +259,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("ExpectedEndWithSubstring") );
     }
 
-  /// <summary>Expected equal {Expected}</summary>
+  /// <summary>Expected equal</summary>
     internal static string ExpectedEqual(
 
     ) {

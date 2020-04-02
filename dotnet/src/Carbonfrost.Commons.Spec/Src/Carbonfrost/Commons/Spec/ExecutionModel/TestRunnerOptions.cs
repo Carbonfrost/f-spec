@@ -15,6 +15,8 @@
 //
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
@@ -30,7 +32,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         private AssertionMessageFormatModes _assertionMessageFormatMode;
         private int _contextLines = -1;
         private readonly PathCollection _fixturePaths = new PathCollection();
-        private readonly LoaderPathCollection _loaderPaths = new LoaderPathCollection();
+        private readonly MakeReadOnlyList<PackageReference> _packageReferences = new MakeReadOnlyList<PackageReference>();
+        private readonly AssemblyLoader _loader = new AssemblyLoader();
+        private readonly PathCollection _loaderPaths = new PathCollection();
 
         internal bool IsSelfTest {
             get {
@@ -116,10 +120,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public Func<string, Assembly> LoadAssemblyFromPath {
             get {
-                return _loaderPaths.LoadAssemblyFromPath;
+                return _loader.LoadAssemblyFromPath;
             }
             set {
-                _loaderPaths.LoadAssemblyFromPath = value;
+                WritePreamble();
+                _loader.LoadAssemblyFromPath = value;
             }
         }
 
@@ -190,7 +195,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             private set;
         }
 
-        public TestRunnerOptions() {}
+        public IList<PackageReference> PackageReferences {
+            get {
+                return _packageReferences;
+            }
+        }
+
+        public TestRunnerOptions() : this(null) {
+        }
 
         public TestRunnerOptions(TestRunnerOptions copyFrom) {
             if (copyFrom == null) {
@@ -207,6 +219,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             _flags = copyFrom._flags;
             ContextLines = copyFrom.ContextLines;
             IsSelfTest = copyFrom.IsSelfTest;
+            PackageReferences.AddAll(copyFrom.PackageReferences);
         }
 
         internal TestRunnerOptions Normalize() {
@@ -227,10 +240,25 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             _skipPatterns.MakeReadOnly();
             _fixturePaths.MakeReadOnly();
             _loaderPaths.MakeReadOnly();
+            _packageReferences.MakeReadOnly();
         }
 
         public TestRunnerOptions Clone() {
             return new TestRunnerOptions(this);
+        }
+
+        internal IEnumerable<Assembly> LoadAssembliesAndBindLoader() {
+            var list = new List<Assembly>();
+            list.AddRange(_loader.LoadAssemblies(LoaderPaths));
+
+            _loader.RegisterAssemblyResolve(
+                list.Select(t => Path.GetDirectoryName(new Uri(t.CodeBase).LocalPath)).Distinct()
+            );
+
+            list.AddRange(
+                _loader.LoadAssemblies(PackageReferences.Select(pkg => pkg.ResolveAssembly()))
+            );
+            return list;
         }
 
         private void WritePreamble() {

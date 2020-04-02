@@ -26,6 +26,7 @@ namespace Carbonfrost.CFSpec {
         private class OptionGroup {
             public string Label;
             public HashSet<string> Options;
+            public bool Sort;
         }
 
         private readonly List<OptionGroup> _groups = new List<OptionGroup>();
@@ -38,6 +39,9 @@ namespace Carbonfrost.CFSpec {
 
                 // Keep order they were specified in Add(), not Group
                 var options = this.Where(o => group.Options.Contains(o.Prototype));
+                if (group.Sort) {
+                    options = options.OrderBy(o => o.Names[0]);
+                }
 
                 foreach (Option option in options) {
                     groupedOptions.Add(option);
@@ -52,9 +56,10 @@ namespace Carbonfrost.CFSpec {
             }
         }
 
-        public void Group(string label, params string[] options) {
+        public void Group(string label, bool sort = false, params string[] options) {
             _groups.Add(new OptionGroup {
                 Label = label,
+                Sort = sort,
                 Options = new HashSet<string>(options),
             });
         }

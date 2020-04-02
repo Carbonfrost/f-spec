@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
+
 using System.Collections.Generic;
 using System.Linq;
 
@@ -29,31 +29,42 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             }
 
             console.WriteLine();
-            console.PushIndent();
 
-            int number = 1;
             var pending = new List<TestUnitResult>();
-
+            var failures = new List<TestUnitResult>();
             foreach (var p in problems) {
-                if (p.Failed) {
-                    ConsoleLogger.DisplayResultDetails(number, context, p);
-                    number++;
-
-                } else if (p.IsPending) {
+                if (p.IsPending) {
                     pending.Add(p);
+                } else if (p.Failed) {
+                    failures.Add(p);
                 }
             }
 
-            console.PopIndent();
-
+            // Print pending tests first so as to reduce scrollback
             if (pending.Any()) {
                 console.Yellow();
                 console.WriteLine("Pending: ");
+                console.ResetColor();
 
                 console.PushIndent();
                 foreach (var p in pending) {
                     ConsoleLogger.DisplayResultDetails(-1, context, p);
                 }
+                console.PopIndent();
+            }
+
+            if (failures.Any()) {
+                console.Red();
+                console.WriteLine("Failures: ");
+                console.ResetColor();
+                console.PushIndent();
+
+                int number = 1;
+                foreach (var p in failures) {
+                    ConsoleLogger.DisplayResultDetails(number, context, p);
+                    number++;
+                }
+
                 console.PopIndent();
             }
         }

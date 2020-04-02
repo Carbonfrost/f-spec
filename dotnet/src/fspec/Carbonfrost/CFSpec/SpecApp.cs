@@ -51,7 +51,7 @@ namespace Carbonfrost.CFSpec {
                 FailFast = Options.FailFast,
                 LoadAssemblyFromPath = System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath
             };
-            if (!Options.NoWhitespace) {
+            if (Options.ShowWhitespace) {
                 testRunnerOptions.AssertionMessageFormatMode |= AssertionMessageFormatModes.PrintWhitespace;
             }
             if (!Options.NoUnifiedDiff) {
@@ -69,6 +69,9 @@ namespace Carbonfrost.CFSpec {
             }
             foreach (var s in Options.Assemblies) {
                 testRunnerOptions.LoaderPaths.Add(s);
+            }
+            foreach (var s in Options.Packages) {
+                testRunnerOptions.PackageReferences.Add(s);
             }
             SpecLog.DidFinalizeOptions(Options.ToString());
 
