@@ -16,12 +16,11 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using System.Linq;
-using Carbonfrost.Commons.Spec.ExecutionModel;
 
-namespace Carbonfrost.Commons.Spec {
+namespace Carbonfrost.Commons.Spec
+{
 
-    public struct Expectation {
+    public struct Expectation : IExpectation {
 
         private readonly IExpectationCommand _cmd;
 
@@ -35,22 +34,18 @@ namespace Carbonfrost.Commons.Spec {
             _cmd = cmd;
         }
 
-        internal void Should(ITestMatcher matcher, string message = null, params object[] args) {
-            var failure = _cmd.Should(matcher);
-
-            if (failure != null) {
-                throw failure.UpdateTestSubject().UpdateMessage(message, args).ToException();
-            }
-        }
-
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("This is an override of Object.Equals(). Call Assert.Equal() instead.", true)]
         public new bool Equals(object b) {
             throw new InvalidOperationException("Expectation.Equals should not be used");
         }
+
+        IExpectationCommand IExpectation.ToCommand() {
+            return _cmd;
+        }
     }
 
-    public struct Expectation<T> {
+    public struct Expectation<T> : IExpectation<T> {
 
         private readonly ExpectationCommand<T> _cmd;
 
@@ -106,18 +101,14 @@ namespace Carbonfrost.Commons.Spec {
             return new Expectation(_cmd.Untyped());
         }
 
-        internal void Should(ITestMatcher<T> matcher, string message = null, params object[] args) {
-            var failure = _cmd.Should(matcher);
-
-            if (failure != null) {
-                throw failure.UpdateTestSubject().UpdateMessage(message, args).ToException();
-            }
-        }
-
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("This is an override of Object.Equals(). Call Assert.Equal() instead.", true)]
         public new bool Equals(object b) {
             throw new InvalidOperationException("Expectation.Equals should not be used");
+        }
+
+        ExpectationCommand<T> IExpectation<T>.ToCommand() {
+            return _cmd;
         }
     }
 }

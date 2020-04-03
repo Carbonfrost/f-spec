@@ -16,7 +16,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Carbonfrost.Commons.Spec {
 
@@ -95,7 +94,7 @@ namespace Carbonfrost.Commons.Spec {
         }
     }
 
-    public struct EnumerableExpectation<TValue> {
+    public struct EnumerableExpectation<TValue> : IExpectation<IEnumerable<TValue>> {
 
         private readonly ExpectationCommand<IEnumerable<TValue>> _cmd;
 
@@ -165,13 +164,12 @@ namespace Carbonfrost.Commons.Spec {
             return new Expectation<TValue>(_cmd.Cardinality(null, max).As<TValue>());
         }
 
-
         public Expectation<TBase> As<TBase>() {
             throw new NotImplementedException();
         }
 
-        internal void Should(ITestMatcher<IEnumerable<TValue>> matcher, string message = null, params object[] args) {
-            Self.Should(matcher, message, (object[]) args);
+        ExpectationCommand<IEnumerable<TValue>> IExpectation<IEnumerable<TValue>>.ToCommand() {
+            return ((IExpectation<IEnumerable<TValue>>) Self).ToCommand();
         }
     }
 

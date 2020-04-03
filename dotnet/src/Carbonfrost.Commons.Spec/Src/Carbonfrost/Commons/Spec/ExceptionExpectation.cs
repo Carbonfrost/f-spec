@@ -18,7 +18,7 @@ using System.ComponentModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public struct ExceptionExpectation {
+    public struct ExceptionExpectation : IExpectation {
 
         private readonly IExpectationCommand _cmd;
 
@@ -26,18 +26,14 @@ namespace Carbonfrost.Commons.Spec {
             _cmd = cmd;
         }
 
-        internal void Should(ITestMatcher matcher, string message = null, params object[] args) {
-            var failure = _cmd.Should(matcher);
-
-            if (failure != null) {
-                throw failure.UpdateTestSubject().UpdateMessage(message, args).ToException();
-            }
-        }
-
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("This is an override of Object.Equals(). Call Assert.Equal() instead.", true)]
         public new bool Equals(object b) {
             throw new InvalidOperationException("Expectation.Equals should not be used");
+        }
+
+        IExpectationCommand IExpectation.ToCommand() {
+            return _cmd;
         }
     }
 }
