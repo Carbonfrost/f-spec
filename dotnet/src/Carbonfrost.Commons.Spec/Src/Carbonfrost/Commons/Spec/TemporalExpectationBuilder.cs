@@ -35,6 +35,12 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        public ExceptionExpectation ToThrow {
+            get {
+                return new ExceptionExpectation(_cmd);
+            }
+        }
+
         public Expectation Will {
             get {
                 return new Expectation(_cmd);

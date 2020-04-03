@@ -15,10 +15,8 @@
 //
 
 using System;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Carbonfrost.Commons.Spec.ExecutionModel;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
 namespace Carbonfrost.Commons.Spec {
@@ -42,7 +40,7 @@ namespace Carbonfrost.Commons.Spec {
     partial class Extensions {
 
         public static void Throw<TException>(this Expectation e) where TException : Exception{
-            Throw(e, null);
+            Throw<TException>(e, null);
         }
 
         public static void Throw(this Expectation e) {
@@ -54,6 +52,22 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public static void Throw(this Expectation e, string message, params object[] args) {
+            e.Should(Matchers.Throw(), message, (object[]) args);
+        }
+
+        public static void Exception<TException>(this ExceptionExpectation e) where TException : Exception{
+            Exception<TException>(e, null);
+        }
+
+        public static void Exception(this ExceptionExpectation e) {
+            Exception(e, null);
+        }
+
+        public static void Exception<TException>(this ExceptionExpectation e, string message, params object[] args) where TException : Exception{
+            e.Should(Matchers.Throw<TException>(), message, (object[]) args);
+        }
+
+        public static void Exception(this ExceptionExpectation e, string message, params object[] args) {
             e.Should(Matchers.Throw(), message, (object[]) args);
         }
 

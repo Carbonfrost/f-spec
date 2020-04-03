@@ -47,9 +47,21 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        public ExceptionExpectation ToThrow {
+            get {
+                return new ExceptionExpectation(_cmd);
+            }
+        }
+
         public SatisfactionExpectation ToSatisfy {
             get {
                 return new SatisfactionExpectation(_cmd);
+            }
+        }
+
+        public ExpectationBuilder Not {
+            get {
+                return new ExpectationBuilder(_cmd.Negated());
             }
         }
 

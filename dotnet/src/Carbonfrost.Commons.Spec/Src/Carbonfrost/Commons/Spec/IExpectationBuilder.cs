@@ -13,12 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
 
 namespace Carbonfrost.Commons.Spec {
 
     interface IExpectationBuilderBase {
         Expectation Will { get; }
+        ExceptionExpectation ToThrow { get; }
         SatisfactionExpectation ToSatisfy { get; }
 
         void To(ITestMatcher matcher, string message = null, params object[] args);
