@@ -20,13 +20,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Carbonfrost.Commons.Spec {
 
     static class TextUtility {
-
-        private static readonly Regex PLACEHOLDERS = new Regex(@"\{(?<placeholder>[^}]+)\}");
 
         public static string Truncate(string str) {
             if (str == null) {
@@ -76,29 +73,6 @@ namespace Carbonfrost.Commons.Spec {
                 needComma = true;
             }
             return sb.ToString();
-        }
-
-        public static string Fill(string msg, IDictionary<string, string> data) {
-            // Fill any placeholders in the message
-            MatchEvaluator replThunk = m => {
-                string[] nameAndFormat = m.Groups["placeholder"].Value.Split(':');
-                string name = nameAndFormat[0];
-                string format = nameAndFormat.ElementAtOrDefault(1);
-                string value;
-
-                if (data.TryGetValue(name, out value)) {
-                    data.Remove(name);
-
-                    switch (format) {
-                        case "B": // For BoundsExclusive
-                            return bool.Parse(value) ? nameAndFormat[2] : "";
-                    }
-                    return value;
-                }
-                return "{" + name + "}";
-            };
-
-            return PLACEHOLDERS.Replace(msg, replThunk);
         }
 
         public static StringComparison ToComparison(StringComparer comparer) {

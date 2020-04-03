@@ -18,7 +18,6 @@ using System;
 using System.Text.RegularExpressions;
 using System.Linq;
 using System.IO;
-using Carbonfrost.Commons.Spec.Resources;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
@@ -29,10 +28,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
         static readonly string[] SPACES = Enumerable.Range(0, 10)
             .Select(m => "// " + new string(' ', m))
             .ToArray();
-        const int bufferWidth = 6;
-
-        public int ContextLines { get; set; }
-        public bool ShowWhitespace { get; set; }
 
         protected override void RenderCore(ExceptionInfo exceptionInfo) {
             if (exceptionInfo == null) {
@@ -42,7 +37,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             console.WriteLine();
             console.WriteLine(exceptionInfo.Message.TrimEnd('\r', '\n'));
             if (exceptionInfo.TestFailure != null) {
-                Append(exceptionInfo.TestFailure.UserData);
+                context.Parts.forUserData.Render(context, exceptionInfo.TestFailure.UserData);
             }
             console.WriteLine();
 
@@ -86,45 +81,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                 console.Write($"   {file}:{line}");
             }
             console.WriteLine();
-        }
-
-        private void Append(UserDataCollection data) {
-            if (data.Keys.Count <= 0) {
-                return;
-            }
-
-            int maxLength = data.Keys.Max(t => t.Length);
-
-            WriteLine();
-            foreach (var kvp in data) {
-                if (data.IsHiddenFromTable(kvp.Key)) {
-                    continue;
-                }
-                WriteLineItem(kvp.Key, ShowWS(kvp.Value), maxLength);
-            }
-
-            if (data.Diff != null) {
-                WriteLineItem("Diff", "", maxLength);
-                WriteLine(data.Diff.ToString(ContextLines));
-            }
-        }
-
-        private void WriteLineItem(string caption, string data, int length) {
-            caption = Caption(caption);
-            Write(string.Format("{0," + (bufferWidth + length) + "}: ", caption));
-            WriteLine(data);
-        }
-
-        private string ShowWS(string text) {
-            if (ShowWhitespace) {
-                return TextUtility.ShowWhitespace(text);
-            }
-            return text;
-        }
-
-        internal static string Caption(string caption) {
-            var cap = "Label" + caption;
-            return SR.ResourceManager.GetString(cap) ?? TestMatcherLocalizer.MissingLocalization(caption);
         }
     }
 }

@@ -1,7 +1,7 @@
 #if SELF_TEST
 
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,21 +15,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using Carbonfrost.Commons.Spec;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.SelfTest.Spec {
 
-    public class TextUtilityTests {
+    public class FillableMessageTests {
 
         [Fact]
         public void Fill_should_apply_format_strings() {
-            var dict = new Dictionary<string, string> {
+            var dict = new UserDataCollection {
                 { "BoundsExclusive", "true" },
             };
-            Assert.Equal("hello (exclusive)", TextUtility.Fill("hello {BoundsExclusive:B:(exclusive)}", dict));
+            Assert.Equal(
+                "hello (exclusive)",
+                FillableMessage.Fill("hello {BoundsExclusive:B:(exclusive)}", dict).ToString()
+            );
         }
     }
 }
