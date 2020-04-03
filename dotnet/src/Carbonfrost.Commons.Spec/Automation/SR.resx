@@ -133,6 +133,9 @@
   <data name="ExpectedContainsSubstring" xml:space="preserve">
     <value>Expected to contain substring "{Expected}"</value>
   </data>
+  <data name="ExpectedDistinct" xml:space="preserve">
+    <value>Expected to be distinct</value>
+  </data>
   <data name="ExpectedEmpty" xml:space="preserve">
     <value>Expected empty</value>
   </data>
@@ -325,6 +328,9 @@
   <data name="NotExpectedContainsSubstring" xml:space="preserve">
     <value>Not expected to contain substring "{Expected}"</value>
   </data>
+  <data name="NotExpectedDistinct" xml:space="preserve">
+    <value>Not expected to be distinct</value>
+  </data>
   <data name="NotExpectedEmpty" xml:space="preserve">
     <value>Not expected to be empty</value>
   </data>
@@ -423,6 +429,9 @@
   </data>
   <data name="NotPredicateContainsSubstring" xml:space="preserve">
     <value>not to contain substring "{Expected}"</value>
+  </data>
+  <data name="NotPredicateDistinct" xml:space="preserve">
+    <value>not be distinct</value>
   </data>
   <data name="NotPredicateEmpty" xml:space="preserve">
     <value>not be empty</value>
@@ -525,6 +534,9 @@
   </data>
   <data name="PredicateContainsSubstring" xml:space="preserve">
     <value>to contain substring "{Expected}"</value>
+  </data>
+  <data name="PredicateDistinct" xml:space="preserve">
+    <value>be distinct</value>
   </data>
   <data name="PredicateEmpty" xml:space="preserve">
     <value>be empty</value>

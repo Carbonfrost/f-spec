@@ -238,6 +238,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("ExpectedContainsSubstring") );
     }
 
+  /// <summary>Expected to be distinct</summary>
+    internal static string ExpectedDistinct(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("ExpectedDistinct") );
+    }
+
   /// <summary>Expected empty</summary>
     internal static string ExpectedEmpty(
 
@@ -686,6 +693,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("NotExpectedContainsSubstring") );
     }
 
+  /// <summary>Not expected to be distinct</summary>
+    internal static string NotExpectedDistinct(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("NotExpectedDistinct") );
+    }
+
   /// <summary>Not expected to be empty</summary>
     internal static string NotExpectedEmpty(
 
@@ -915,6 +929,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
     ) {
         return string.Format(Culture, ResourceFinder("NotPredicateContainsSubstring") );
+    }
+
+  /// <summary>not be distinct</summary>
+    internal static string NotPredicateDistinct(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("NotPredicateDistinct") );
     }
 
   /// <summary>not be empty</summary>
@@ -1153,6 +1174,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
     ) {
         return string.Format(Culture, ResourceFinder("PredicateContainsSubstring") );
+    }
+
+  /// <summary>be distinct</summary>
+    internal static string PredicateDistinct(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("PredicateDistinct") );
     }
 
   /// <summary>be empty</summary>
