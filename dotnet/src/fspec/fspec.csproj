@@ -2,13 +2,19 @@
   <Import Project="../../Build.props" />
 
   <PropertyGroup>
+    <PackageId>fspec</PackageId>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <RootNamespace>Carbonfrost.CFSpec</RootNamespace>
+    <Authors>Carbonfrost</Authors>
     <Description> Global tool for running fspec </Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Copyright>Copyright 2010-2020 Carbonfrost Systems, Inc.</Copyright>
     <PackageProjectUrl>https://github.com/Carbonfrost/f-spec</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Carbonfrost/f-spec</RepositoryUrl>
     <PackAsTool>true</PackAsTool>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>

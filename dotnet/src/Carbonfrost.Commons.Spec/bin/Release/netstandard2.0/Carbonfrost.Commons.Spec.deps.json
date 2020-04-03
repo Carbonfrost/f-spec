@@ -7,7 +7,7 @@
   "targets": {
     ".NETStandard,Version=v2.0": {},
     ".NETStandard,Version=v2.0/": {
-      "Carbonfrost.Commons.Spec/0.0.0": {
+      "Carbonfrost.Commons.Spec/0.2.0+17.g1c5feed.dirty": {
         "dependencies": {
           "NETStandard.Library": "2.0.3"
         },
@@ -24,7 +24,7 @@
     }
   },
   "libraries": {
-    "Carbonfrost.Commons.Spec/0.0.0": {
+    "Carbonfrost.Commons.Spec/0.2.0+17.g1c5feed.dirty": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
