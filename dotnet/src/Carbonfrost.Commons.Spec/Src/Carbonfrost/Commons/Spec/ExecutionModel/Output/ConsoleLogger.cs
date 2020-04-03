@@ -111,8 +111,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             console.WriteLine(string.Format("Will run {0} tests", e.WillRunTests));
             console.WriteLine(string.Format("Random Seed: {0}", e.Options.RandomSeed));
 
-            var versionString = TestRunner.Version.Replace(" - ", " (\"spec ") + "\")";
-            console.WriteLine(string.Format("Running with: spec/{0}", versionString));
+            var versionString = TestRunner.Version.Replace(" - ", " (\"fspec ") + "\")";
+            console.WriteLine(string.Format("Running with: fspec/{0}", versionString));
             console.WriteLine();
             console.ResetColor();
         }
