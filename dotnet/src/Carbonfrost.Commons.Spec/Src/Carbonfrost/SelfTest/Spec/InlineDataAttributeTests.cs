@@ -1,7 +1,7 @@
 #if SELF_TEST
 
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ namespace Carbonfrost.SelfTest.Spec {
         [Explicit("This test is designed to fail.  Assertions happen on the output")]
         [Theory]
         [InlineData("wrong", "number", "of", "arguments")]
+        [CLSCompliant(false)]
         public void Acceptance_mismatch_arguments(string onlyOneArgument) {
         }
 
@@ -36,6 +37,12 @@ namespace Carbonfrost.SelfTest.Spec {
             Assert.Equal(new[] {
                 new TestData(new object[] { null, null })
             }, ((ITestDataProvider) inline).GetData(null));
+        }
+
+        [Fact]
+        public void Reason_propagates_to_test_data() {
+            var inline = new InlineDataAttribute("a") { Reason = "r" };
+            Assert.Equal("r", ((ITestDataProvider) inline).GetData(null).First().Reason);
         }
     }
 }

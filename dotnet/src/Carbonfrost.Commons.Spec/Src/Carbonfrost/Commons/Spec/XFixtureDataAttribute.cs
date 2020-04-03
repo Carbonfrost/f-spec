@@ -1,5 +1,5 @@
 //
-// Copyright 2016-2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 namespace Carbonfrost.Commons.Spec {
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public sealed class XFixtureDataAttribute : Attribute, ITestDataProvider, ITestCaseMetadataFilter {
+    public sealed class XFixtureDataAttribute : Attribute, ITestDataApiAttributeConventions, ITestCaseMetadataFilter {
 
         private readonly FixtureDataAttribute _inner;
 
@@ -47,8 +47,21 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public string Reason {
-            get;
-            set;
+            get {
+                return _inner.Reason;
+            }
+            set {
+                _inner.Reason = value;
+            }
+        }
+
+        public bool Explicit {
+            get {
+                return _inner.Explicit;
+            }
+            set {
+                _inner.Explicit = value;
+            }
         }
 
         public XFixtureDataAttribute(string pathPattern) {

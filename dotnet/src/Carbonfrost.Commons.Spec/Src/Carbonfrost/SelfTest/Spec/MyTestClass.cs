@@ -1,7 +1,7 @@
 #if SELF_TEST
 
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -102,7 +102,7 @@ namespace Carbonfrost.SelfTest.Spec {
         }
 
         [Fact]
-        public void _Only_one_instance() {
+        public void Constructor_generates_only_one_instance() {
             Assert.Equal(1, _total);
         }
 

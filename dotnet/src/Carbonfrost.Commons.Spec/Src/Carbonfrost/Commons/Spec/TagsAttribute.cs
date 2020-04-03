@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,15 +33,24 @@ namespace Carbonfrost.Commons.Spec {
 
         public TagsAttribute(params string[] tags) {
             if (tags == null) {
-                throw new ArgumentNullException("tags");
+                throw new ArgumentNullException(nameof(tags));
             }
             if (tags.Length == 0) {
-                throw SpecFailure.EmptyCollection("tags");
+                throw SpecFailure.EmptyCollection(nameof(tags));
             }
             foreach (var t in tags) {
                 TagAttribute.RequireValidTag(t);
             }
             _tags = new List<string>(tags);
+        }
+
+        public TagsAttribute(string tag) : this(new [] { tag }) {
+        }
+
+        public TagsAttribute(string tag1, string tag2) : this(new [] { tag1, tag2 }) {
+        }
+
+        public TagsAttribute(string tag1, string tag2, string tag3) : this(new [] { tag1, tag2, tag3 }) {
         }
 
         IEnumerable<string> ITestTagProvider.GetTags(TestContext context) {

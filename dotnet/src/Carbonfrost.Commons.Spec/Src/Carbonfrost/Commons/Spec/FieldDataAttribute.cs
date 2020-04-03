@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,14 +15,13 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public sealed class FieldDataAttribute : Attribute, ITestDataProvider {
+    public sealed class FieldDataAttribute : Attribute, ITestDataApiAttributeConventions {
 
         private readonly string[] _fields;
 
@@ -32,21 +31,39 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        public string Name { get; set; }
+        public string Name {
+            get;
+            set;
+        }
+
+        public string Reason {
+            get;
+            set;
+        }
+
+        public bool Explicit {
+            get;
+            set;
+        }
 
         public FieldDataAttribute(params string[] fields) {
             _fields = fields;
         }
 
-        public override string ToString() {
-            return string.Format("FieldData({0})", string.Join(", ", _fields));
+        public FieldDataAttribute(string field) {
+            _fields = new [] { field };
         }
 
-        private IEnumerable<TestData> WithNames(IEnumerable<TestData> data) {
-            if (string.IsNullOrEmpty(Name)) {
-                return data;
-            }
-            return data.Select(d => d.WithName(Name));
+        public FieldDataAttribute(string field1, string field2) {
+            _fields = new [] { field1, field2 };
+        }
+
+        public FieldDataAttribute(string field1, string field2, string field3) {
+            _fields = new [] { field1, field2, field3 };
+        }
+
+        public override string ToString() {
+            return string.Format("FieldData({0})", string.Join(", ", _fields));
         }
 
         IEnumerable<TestData> ITestDataProvider.GetData(TestContext context) {
@@ -60,7 +77,7 @@ namespace Carbonfrost.Commons.Spec {
                 }
                 all.Add(MemberAccessors.Field(fld));
             }
-            return WithNames(TestDataProvider.FromMemberAccessors(all).GetData(context));
+            return this.WithNames(TestDataProvider.FromMemberAccessors(all).GetData(context));
         }
     }
 }

@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017, 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ using Carbonfrost.Commons.Spec;
 namespace Carbonfrost.Commons.Spec {
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public sealed class FixtureDataAttribute : Attribute, ITestDataProvider {
+    public sealed class FixtureDataAttribute : Attribute, ITestDataApiAttributeConventions {
 
         private readonly TestFileInput _input;
 
@@ -38,7 +38,20 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        public string Name { get; set; }
+        public string Name {
+            get;
+            set;
+        }
+
+        public string Reason {
+            get;
+            set;
+        }
+
+        public bool Explicit {
+            get;
+            set;
+        }
 
         public FixtureDataAttribute(string pathPattern) {
             _input = new TestFileInput(pathPattern);
@@ -78,7 +91,7 @@ namespace Carbonfrost.Commons.Spec {
             var binder = TestDataBinder.Create(rt.TestMethod, keySet);
             var results = new List<TestData>(items.Count);
             foreach (var t in items) {
-                results.Add(new TestData(binder.Bind(t.Values)).WithName(Name));
+                results.Add(new TestData(binder.Bind(t.Values)).WithNameAndReason(Name, Reason, Explicit));
             }
             return results;
         }

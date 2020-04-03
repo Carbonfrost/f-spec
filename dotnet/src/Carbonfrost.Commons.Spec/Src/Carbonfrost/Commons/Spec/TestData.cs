@@ -1,5 +1,5 @@
 //
-// Copyright 2016-2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,10 +22,12 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public struct TestData : IReadOnlyList<object> {
+    public readonly struct TestData : IReadOnlyList<object> {
 
         private readonly string _name;
+        private readonly string _reason;
         private readonly object[] _data;
+        private readonly bool _explicit;
 
         public string Name {
             get {
@@ -33,17 +35,39 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        private TestData(string name, object[] data) {
+        public string Reason {
+            get {
+                return _reason;
+            }
+        }
+
+        public bool Explicit {
+            get  {
+                return _explicit;
+            }
+        }
+
+        private TestData(string name, string reason, bool @explicit, object[] data) {
             _name = name;
+            _reason = reason;
+            _explicit = @explicit;
             _data = data ?? Array.Empty<object>();
         }
 
         public TestData(params object[] data)
-            : this(null, data) {
+            : this(null, null, false, data) {
         }
 
         public TestData WithName(string name) {
-            return new TestData(name, _data);
+            return WithNameAndReason(name, Reason, Explicit);
+        }
+
+        public TestData WithReason(string reason) {
+            return WithNameAndReason(Name, reason, Explicit);
+        }
+
+        internal TestData WithNameAndReason(string name, string reason, bool @explicit) {
+            return new TestData(name, reason, @explicit, _data);
         }
 
         public object this[int index] {

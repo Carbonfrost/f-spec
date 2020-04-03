@@ -1,5 +1,5 @@
 //
-// Copyright 2016-2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,13 +15,12 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public sealed class XFieldDataAttribute : Attribute, ITestDataProvider, ITestCaseMetadataFilter {
+    public sealed class XFieldDataAttribute : Attribute, ITestDataApiAttributeConventions, ITestCaseMetadataFilter {
 
         private readonly FieldDataAttribute _inner;
 
@@ -30,8 +29,6 @@ namespace Carbonfrost.Commons.Spec {
                 return _inner.Fields;
             }
         }
-
-        public string Reason { get; set; }
 
         public string Name {
             get {
@@ -42,8 +39,38 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        public string Reason {
+            get {
+                return _inner.Reason;
+            }
+            set {
+                _inner.Reason = value;
+            }
+        }
+
+        public bool Explicit {
+            get {
+                return _inner.Explicit;
+            }
+            set {
+                _inner.Explicit = value;
+            }
+        }
+
         public XFieldDataAttribute(params string[] fields) {
             _inner = new FieldDataAttribute(fields);
+        }
+
+        public XFieldDataAttribute(string field) {
+            _inner = new FieldDataAttribute(field);
+        }
+
+        public XFieldDataAttribute(string field1, string field2) {
+            _inner = new FieldDataAttribute(field1, field2);
+        }
+
+        public XFieldDataAttribute(string field1, string field2, string field3) {
+            _inner = new FieldDataAttribute(field1, field2, field3);
         }
 
         public override string ToString() {
