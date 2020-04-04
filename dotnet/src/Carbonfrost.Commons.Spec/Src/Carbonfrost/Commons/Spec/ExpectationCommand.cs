@@ -1,5 +1,5 @@
 //
-// Copyright 2017, 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,18 +14,31 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    static partial class ExpectationCommand {
+    abstract partial class ExpectationCommand {
 
+        public abstract TestFailure Should(ITestMatcher matcher);
+        public abstract ExpectationCommand Negated();
+
+        public virtual ExpectationCommand Eventually(TimeSpan delay) {
+            throw new NotImplementedException();
+        }
+
+        public virtual ExpectationCommand Consistently(TimeSpan delay) {
+            throw new NotImplementedException();
+        }
+
+        public virtual ExpectationCommand<Exception> CaptureException() {
+            throw new NotImplementedException();
+        }
     }
 
     abstract class ExpectationCommand<T> {
 
-        public virtual IExpectationCommand Untyped() {
+        public virtual ExpectationCommand Untyped() {
             throw new NotImplementedException();
         }
 
@@ -33,7 +46,9 @@ namespace Carbonfrost.Commons.Spec {
 
         public abstract ExpectationCommand<T> Negated();
 
-        public abstract ExpectationCommand<TBase> As<TBase>();
+        public virtual ExpectationCommand<TBase> As<TBase>() {
+            return new ExpectationCommand.CastCommand<T, TBase>(this);
+        }
 
         // Given that T is IEnumerable -- convert to accumulator commands.
         // We can't know the type of the value (e.g. if T == IEnumerable<TValue>,
@@ -56,6 +71,10 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public virtual ExpectationCommand<T> Consistently(TimeSpan duration) {
+            throw new NotImplementedException();
+        }
+
+        public virtual ExpectationCommand<TResult> Property<TResult>(Func<T, TResult> accessor) {
             throw new NotImplementedException();
         }
 

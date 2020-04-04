@@ -99,9 +99,6 @@ namespace Carbonfrost.Commons.Spec {
                 this.thunk = thunk;
             }
 
-            public override ExpectationCommand<TBase> As<TBase>() {
-                return new CastCommand<T, TBase>(this);
-            }
         }
 
         // All and NotAny give up after 5 failures

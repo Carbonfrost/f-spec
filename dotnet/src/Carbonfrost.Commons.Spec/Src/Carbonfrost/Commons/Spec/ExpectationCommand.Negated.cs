@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,26 +14,28 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
+    partial class Extensions {
+
+        internal static ExpectationCommand<T> NegateIfNeeded<T>(this ExpectationCommand<T> cmd, bool negated) {
+            if (negated) {
+                cmd = cmd.Negated();
+            }
+            return cmd;
+        }
+
+        internal static ExpectationCommand NegateIfNeeded(this ExpectationCommand cmd, bool negated) {
+            if (negated) {
+                cmd = cmd.Negated();
+            }
+            return cmd;
+        }
+    }
+
     partial class ExpectationCommand {
-
-        public static ExpectationCommand<T> NegateIfNeeded<T>(this ExpectationCommand<T> cmd, bool negated) {
-            if (negated) {
-                cmd = cmd.Negated();
-            }
-            return cmd;
-        }
-
-        public static IExpectationCommand NegateIfNeeded(this IExpectationCommand cmd, bool negated) {
-            if (negated) {
-                cmd = cmd.Negated();
-            }
-            return cmd;
-        }
 
         class NegationCommand<T> : ExpectationCommand<T> {
 

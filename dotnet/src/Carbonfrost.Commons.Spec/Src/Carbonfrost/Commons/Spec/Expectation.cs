@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017, 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ namespace Carbonfrost.Commons.Spec
 
     public struct Expectation : IExpectation {
 
-        private readonly IExpectationCommand _cmd;
+        private readonly ExpectationCommand _cmd;
 
         public Expectation Not {
             get {
@@ -30,7 +30,7 @@ namespace Carbonfrost.Commons.Spec
             }
         }
 
-        internal Expectation(IExpectationCommand cmd) {
+        internal Expectation(ExpectationCommand cmd) {
             _cmd = cmd;
         }
 
@@ -40,7 +40,7 @@ namespace Carbonfrost.Commons.Spec
             throw new InvalidOperationException("Expectation.Equals should not be used");
         }
 
-        IExpectationCommand IExpectation.ToCommand() {
+        ExpectationCommand IExpectation.ToCommand() {
             return _cmd;
         }
     }

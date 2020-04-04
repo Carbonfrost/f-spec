@@ -1,5 +1,5 @@
 //
-// Copyright 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,15 +35,11 @@ namespace Carbonfrost.Commons.Spec {
                 _thunk = thunk;
             }
 
-            public override ExpectationCommand<TBase> As<TBase>() {
-                return new CastCommand<T, TBase>(this);
-            }
-
             public override ExpectationCommand<T> Negated() {
                 return new NegationCommand<T>(this);
             }
 
-            public override IExpectationCommand Untyped() {
+            public override ExpectationCommand Untyped() {
                 var myThunk = _thunk;
                 return TestCode(() => myThunk());
             }

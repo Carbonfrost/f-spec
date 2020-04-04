@@ -258,40 +258,30 @@ namespace Carbonfrost.Commons.Spec {
 
     namespace TestMatchers {
 
-        public class ThrowsMatcher : ITestMatcher {
+        public class ThrowsMatcher : ITestMatcher, ITestMatcherActualException {
 
-            private readonly Flags _flags;
+            private readonly RecordExceptionFlags _flags;
+            private Exception _actualException;
 
             public Type Expected { get; private set; }
 
             [MatcherUserData(Hidden = true)]
             public ThrowsMatcher UnwindingTargetExceptions {
                 get {
-                    return new ThrowsMatcher(Expected, _flags | Flags.Unwind);
+                    return WithFlags(_flags | RecordExceptionFlags.UnwindTargetExceptions);
                 }
             }
 
-            internal ITestMatcher WithVerification() {
-                return new ThrowsMatcher(Expected, _flags | Flags.Verify);
-            }
+            public ThrowsMatcher(Type expected = null) : this(expected, RecordExceptionFlags.UnwindTargetExceptions) {}
 
-            public ThrowsMatcher(Type expected = null) : this(expected, Flags.None) {}
-
-            private ThrowsMatcher(Type expected, Flags flags) {
+            private ThrowsMatcher(Type expected, RecordExceptionFlags flags) {
                 Expected = expected ?? typeof(Exception);
                 _flags = flags;
             }
 
             public bool Matches(Action testCode) {
-                var ex = Record.Exception(testCode);
-                if (ex is TargetInvocationException && _flags.HasFlag(Flags.Unwind)) {
-                    ex = ex.InnerException;
-                }
-                if (ex is AssertException && _flags.HasFlag(Flags.Verify)) {
-                    throw SpecFailure.CannotAssertAssertExceptions();
-                }
-
-                ActualException = ex;
+                var ex = Record.Exception(testCode, _flags);
+                _actualException = ex;
                 return Expected.GetTypeInfo().IsInstanceOfType(ex);
             }
 
@@ -299,13 +289,14 @@ namespace Carbonfrost.Commons.Spec {
             // Really, this means that the ThrowsMatcher is no longer reusable
             // because we carry this state.
 
-            internal Exception ActualException { get; private set; }
+            Exception ITestMatcherActualException.ActualException {
+                get {
+                    return _actualException;
+                }
+            }
 
-            [Flags]
-            enum Flags {
-                None,
-                Unwind = 1,
-                Verify = 2,
+            public ThrowsMatcher WithFlags(RecordExceptionFlags flags) {
+                return new ThrowsMatcher(Expected, flags);
             }
         }
     }
@@ -328,11 +319,12 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         ITestMatcher ITestMatcherFactory.CreateMatcher(TestContext testContext) {
-            var t = Matchers.Throw(ExceptionType).UnwindingTargetExceptions;
+            var flags = RecordExceptionFlags.UnwindTargetExceptions;
+
             if (testContext.ShouldVerify) {
-                return t.WithVerification();
+                flags |= RecordExceptionFlags.StrictVerification;
             }
-            return t;
+            return  Matchers.Throw(ExceptionType).WithFlags(flags);
         }
     }
 }

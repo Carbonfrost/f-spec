@@ -17,7 +17,7 @@
 namespace Carbonfrost.Commons.Spec {
 
     interface IExpectation {
-        IExpectationCommand ToCommand();
+        ExpectationCommand ToCommand();
     }
 
     interface IExpectation<T> {

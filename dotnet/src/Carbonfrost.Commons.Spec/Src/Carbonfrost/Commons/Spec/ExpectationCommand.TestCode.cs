@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,19 +14,17 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
 using Carbonfrost.Commons.Spec.ExecutionModel;
-using Carbonfrost.Commons.Spec.TestMatchers;
 
 namespace Carbonfrost.Commons.Spec {
 
     partial class ExpectationCommand {
 
-        public static IExpectationCommand TestCode(Action action) {
+        public static ExpectationCommand TestCode(Action action) {
             return new TestCodeCommand(action, false);
         }
 
-        class TestCodeCommand : IExpectationCommand {
+        class TestCodeCommand : ExpectationCommand {
 
             private readonly Action _thunk;
             private readonly bool _negated;
@@ -36,16 +34,15 @@ namespace Carbonfrost.Commons.Spec {
                 _negated = negated;
             }
 
-            public TestFailure Should(ITestMatcher matcher) {
+            public override TestFailure Should(ITestMatcher matcher) {
                 if (_negated) {
                     matcher = Matchers.Not(matcher);
                 }
 
                 var matches = matcher.Matches(_thunk);
                 object actual = _thunk;
-
-                var throwsMatcher = matcher as ThrowsMatcher;
-                if (throwsMatcher != null) {
+;
+                if (TestMatcher.Innermost(matcher) is ITestMatcherActualException throwsMatcher) {
                     actual = throwsMatcher.ActualException;
                 }
 
@@ -56,15 +53,19 @@ namespace Carbonfrost.Commons.Spec {
                 return null;
             }
 
-            public IExpectationCommand Negated() {
+            public override ExpectationCommand<Exception> CaptureException() {
+                return new CaptureExceptionCommand(_thunk, _negated);
+            }
+
+            public override ExpectationCommand Negated() {
                 return new TestCodeCommand(_thunk, !_negated);
             }
 
-            public IExpectationCommand Eventually(TimeSpan delay) {
+            public override ExpectationCommand Eventually(TimeSpan delay) {
                 return new EventuallyCommand(delay, _thunk, _negated);
             }
 
-            public IExpectationCommand Consistently(TimeSpan delay) {
+            public override ExpectationCommand Consistently(TimeSpan delay) {
                 return new ConsistentlyCommand(delay, _thunk, _negated);
             }
         }

@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
 //
 using System;
 using System.Diagnostics;
-using System.Linq;
-using Carbonfrost.Commons.Spec;
+
 using Carbonfrost.Commons.Spec.ExecutionModel;
 using Carbonfrost.Commons.Spec.Resources;
 
@@ -24,7 +23,7 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class ExpectationCommand {
 
-        class ConsistentlyCommand : IExpectationCommand {
+        class ConsistentlyCommand : ExpectationCommand {
 
             private readonly Action _thunk;
             private readonly TimeSpan _duration;
@@ -38,7 +37,7 @@ namespace Carbonfrost.Commons.Spec {
                 _negated = negated;
             }
 
-            public TestFailure Should(ITestMatcher matcher) {
+            public override TestFailure Should(ITestMatcher matcher) {
                 var s = Stopwatch.StartNew();
                 var durationMS = (int) _duration.TotalMilliseconds;
 
@@ -56,16 +55,8 @@ namespace Carbonfrost.Commons.Spec {
                 return null;
             }
 
-            public IExpectationCommand Negated() {
+            public override ExpectationCommand Negated() {
                 return new ConsistentlyCommand(_duration, _thunk, !_negated);
-            }
-
-            public IExpectationCommand Eventually(TimeSpan delay) {
-                throw new NotImplementedException();
-            }
-
-            public IExpectationCommand Consistently(TimeSpan delay) {
-                throw new NotImplementedException();
             }
         }
 
@@ -103,11 +94,6 @@ namespace Carbonfrost.Commons.Spec {
 
                 return null;
             }
-
-            public override ExpectationCommand<TBase> As<TBase>() {
-                return new CastCommand<T, TBase>(this);
-            }
-
 
             public override ExpectationCommand<T> Negated() {
                 return new ConsistentlyCommand<T>(_duration, _thunk, !_negated);

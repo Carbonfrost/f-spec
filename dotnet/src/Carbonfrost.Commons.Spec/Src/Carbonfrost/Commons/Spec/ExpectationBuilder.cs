@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ namespace Carbonfrost.Commons.Spec {
 
     public struct ExpectationBuilder : IExpectationBuilder {
 
-        private readonly IExpectationCommand _cmd;
+        private readonly ExpectationCommand _cmd;
 
         internal static TimeSpan DefaultDelay {
             get {
@@ -65,7 +65,7 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        internal ExpectationBuilder(IExpectationCommand cmd) {
+        internal ExpectationBuilder(ExpectationCommand cmd) {
             _cmd = cmd;
         }
 

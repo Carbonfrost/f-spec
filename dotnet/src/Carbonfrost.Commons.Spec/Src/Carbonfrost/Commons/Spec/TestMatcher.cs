@@ -15,7 +15,7 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
@@ -24,6 +24,13 @@ namespace Carbonfrost.Commons.Spec {
 
         public static readonly ITestMatcher Anything = new InvariantMatcher(true);
         public static readonly ITestMatcher Nothing = new InvariantMatcher(false);
+
+        internal static object Innermost(object any) {
+            if (any is INotMatcher n) {
+                return Innermost(n.InnerMatcher);
+            }
+            return any;
+        }
 
         class InvariantMatcher : ITestMatcher {
 

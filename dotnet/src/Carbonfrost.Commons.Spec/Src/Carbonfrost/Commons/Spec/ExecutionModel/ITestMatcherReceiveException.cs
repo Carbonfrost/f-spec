@@ -1,11 +1,11 @@
 //
-// Copyright 2017, 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,14 +14,11 @@
 // limitations under the License.
 //
 using System;
-using Carbonfrost.Commons.Spec.ExecutionModel;
 
-namespace Carbonfrost.Commons.Spec {
+namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    interface IExpectationCommand {
-        TestFailure Should(ITestMatcher matcher);
-        IExpectationCommand Negated();
-        IExpectationCommand Eventually(TimeSpan delay);
-        IExpectationCommand Consistently(TimeSpan delay);
+    interface ITestMatcherReceiveException {
+        Exception ActualException { get; set; }
     }
 }
+

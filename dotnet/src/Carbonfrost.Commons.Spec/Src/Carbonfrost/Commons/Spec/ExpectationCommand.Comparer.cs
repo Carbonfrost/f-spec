@@ -36,10 +36,6 @@ namespace Carbonfrost.Commons.Spec {
                 _comparer = comparer;
             }
 
-            public override ExpectationCommand<TBase> As<TBase>() {
-                throw new NotImplementedException();
-            }
-
             public override ExpectationCommand<T> Negated() {
                 return new ComparerCommand<T>(_comparer, _inner.Negated());
             }

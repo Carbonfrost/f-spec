@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,38 +14,42 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
+
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
+    partial class Extensions {
+
+        internal static ExpectationCommand<T> Given<T>(this ExpectationCommand<T> inner, string given) {
+            if (given != null) {
+                return new ExpectationCommand.GivenCommand<T>(inner, given);
+            }
+            return inner;
+        }
+
+        internal static ExpectationCommand Given(this ExpectationCommand inner, string given) {
+            if (given != null) {
+                return new ExpectationCommand.GivenCommand(inner, given);
+            }
+            return inner;
+        }
+
+    }
+
     partial class ExpectationCommand {
 
-        public static ExpectationCommand<T> Given<T>(this ExpectationCommand<T> inner, string given) {
-            if (given != null) {
-                return new GivenCommand<T>(inner, given);
-            }
-            return inner;
-        }
+        internal class GivenCommand : ExpectationCommand {
 
-        public static IExpectationCommand Given(this IExpectationCommand inner, string given) {
-            if (given != null) {
-                return new GivenCommand(inner, given);
-            }
-            return inner;
-        }
-
-        class GivenCommand : IExpectationCommand {
-
-            private readonly IExpectationCommand _inner;
+            private readonly ExpectationCommand _inner;
             private readonly string _given;
 
-            public GivenCommand(IExpectationCommand inner, string given) {
+            public GivenCommand(ExpectationCommand inner, string given) {
                 _inner = inner;
                 _given = given;
             }
 
-            public TestFailure Should(ITestMatcher matcher) {
+            public override TestFailure Should(ITestMatcher matcher) {
                 var failure = _inner.Should(matcher);
                 if (failure == null) {
                     return null;
@@ -54,20 +58,20 @@ namespace Carbonfrost.Commons.Spec {
                 return failure.UpdateGiven(_given);
             }
 
-            public IExpectationCommand Negated() {
+            public override ExpectationCommand Negated() {
                 return new GivenCommand(_inner.Negated(), _given);
             }
 
-            public IExpectationCommand Eventually(TimeSpan delay) {
+            public override ExpectationCommand Eventually(TimeSpan delay) {
                 return new GivenCommand(_inner.Eventually(delay), _given);
             }
 
-            public IExpectationCommand Consistently(TimeSpan delay) {
+            public override ExpectationCommand Consistently(TimeSpan delay) {
                 return new GivenCommand(_inner.Consistently(delay), _given);
             }
         }
 
-        class GivenCommand<T> : ExpectationCommand<T> {
+        internal class GivenCommand<T> : ExpectationCommand<T> {
 
             private readonly ExpectationCommand<T> _inner;
             private readonly string _given;
@@ -85,8 +89,8 @@ namespace Carbonfrost.Commons.Spec {
                 return new GivenCommand<T>(_inner.Negated(), _given);
             }
 
-            public override IExpectationCommand Untyped() {
-                return Given(_inner.Untyped(), _given);
+            public override ExpectationCommand Untyped() {
+                return _inner.Untyped().Given(_given);
             }
 
             public override ExpectationCommand<object> ToAll() {
@@ -102,11 +106,11 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             public override ExpectationCommand<T> Consistently(TimeSpan duration) {
-                return Given(_inner.Consistently(duration), _given);
+                return _inner.Consistently(duration).Given(_given);
             }
 
             public override ExpectationCommand<T> Eventually(TimeSpan duration) {
-                return Given(_inner.Eventually(duration), _given);
+                return _inner.Eventually(duration).Given(_given);
             }
 
             public override void Implies(CommandCondition c) {

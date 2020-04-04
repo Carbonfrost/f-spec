@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ namespace Carbonfrost.Commons.Spec {
 
     public struct TemporalExpectationBuilder : ITemporalExpectationBuilder {
 
-        private readonly IExpectationCommand _cmd;
+        private readonly ExpectationCommand _cmd;
 
         public TemporalExpectationBuilder Not {
             get {
@@ -47,7 +47,7 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        internal TemporalExpectationBuilder(IExpectationCommand cmd) {
+        internal TemporalExpectationBuilder(ExpectationCommand cmd) {
             _cmd = cmd;
         }
 

@@ -23,7 +23,7 @@ namespace Carbonfrost.SelfTest.Spec {
 
     public class TestProcessTests : TestClass {
 
-        [Fact]
+        [XFact]
         public void Output_should_acquire_output_of_process() {
             // TODO This test is not universal
             using (var pro = TestContext.StartProcess(@"\apps\lib\cfbuild\CFBuild.exe", "--help")) {

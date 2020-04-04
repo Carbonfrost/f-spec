@@ -24,7 +24,7 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
     public class ThrowsMatcherTests : TestClass {
 
         private void ThrowingMethod() {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException("Error", new AccessViolationException());
         }
 
         private object ThrowingFunc() {
@@ -74,6 +74,12 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
         }
 
         [Fact]
+        public void Throws_message_match() {
+            Expect(ThrowingMethod).ToThrow.Message.EqualTo("Error");
+            Expect(ThrowingMethod).ToThrow.InnerException.InstanceOf<AccessViolationException>();
+        }
+
+        [Fact]
         public void Assert_Throws_should_detect_error() {
             Assert.Throws(typeof(InvalidOperationException), (Action) ThrowingMethod);
         }
@@ -99,7 +105,6 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
         public void Expect_Given_fluent_expression_action() {
             Given().Expect(() => { throw new InvalidOperationException(); })
                 .To(Matchers.Throw<InvalidOperationException>());
-
         }
     }
 }

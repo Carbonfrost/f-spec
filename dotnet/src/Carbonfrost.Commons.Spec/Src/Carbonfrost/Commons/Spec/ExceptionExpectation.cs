@@ -20,9 +20,31 @@ namespace Carbonfrost.Commons.Spec {
 
     public struct ExceptionExpectation : IExpectation {
 
-        private readonly IExpectationCommand _cmd;
+        private readonly ExpectationCommand _cmd;
 
-        internal ExceptionExpectation(IExpectationCommand cmd) {
+        public Expectation<string> Message {
+            get {
+                return new Expectation<string>(
+                    _cmd.CaptureException().Property(ex => ex.Message)
+                );
+            }
+        }
+
+        public Expectation<Exception> Value {
+            get {
+                return new Expectation<Exception>(_cmd.CaptureException());
+            }
+        }
+
+        public Expectation<Exception> InnerException {
+            get {
+                return new Expectation<Exception>(
+                    _cmd.CaptureException().Property(ex => ex.InnerException)
+                );
+            }
+        }
+
+        internal ExceptionExpectation(ExpectationCommand cmd) {
             _cmd = cmd;
         }
 
@@ -32,7 +54,7 @@ namespace Carbonfrost.Commons.Spec {
             throw new InvalidOperationException("Expectation.Equals should not be used");
         }
 
-        IExpectationCommand IExpectation.ToCommand() {
+        ExpectationCommand IExpectation.ToCommand() {
             return _cmd;
         }
     }
