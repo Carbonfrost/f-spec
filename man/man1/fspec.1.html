@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='content-type' content='text/html;charset=utf8'>
+  <meta name='generator' content='Ronn-NG/v0.9.0 (http://github.com/apjanke/ronn-ng/tree/0.9.0)'>
+  <title>fspec(1) - a test framework for .NET Core</title>
+  <style type='text/css' media='all'>
+  /* style: man */
+  body#manpage {margin:0}
+  .mp {max-width:100ex;padding:0 9ex 1ex 4ex}
+  .mp p,.mp pre,.mp ul,.mp ol,.mp dl {margin:0 0 20px 0}
+  .mp h2 {margin:10px 0 0 0}
+  .mp > p,.mp > pre,.mp > ul,.mp > ol,.mp > dl {margin-left:8ex}
+  .mp h3 {margin:0 0 0 4ex}
+  .mp dt {margin:0;clear:left}
+  .mp dt.flush {float:left;width:8ex}
+  .mp dd {margin:0 0 0 9ex}
+  .mp h1,.mp h2,.mp h3,.mp h4 {clear:left}
+  .mp pre {margin-bottom:20px}
+  .mp pre+h2,.mp pre+h3 {margin-top:22px}
+  .mp h2+pre,.mp h3+pre {margin-top:5px}
+  .mp img {display:block;margin:auto}
+  .mp h1.man-title {display:none}
+  .mp,.mp code,.mp pre,.mp tt,.mp kbd,.mp samp,.mp h3,.mp h4 {font-family:monospace;font-size:14px;line-height:1.42857142857143}
+  .mp h2 {font-size:16px;line-height:1.25}
+  .mp h1 {font-size:20px;line-height:2}
+  .mp {text-align:justify;background:#fff}
+  .mp,.mp code,.mp pre,.mp pre code,.mp tt,.mp kbd,.mp samp {color:#131211}
+  .mp h1,.mp h2,.mp h3,.mp h4 {color:#030201}
+  .mp u {text-decoration:underline}
+  .mp code,.mp strong,.mp b {font-weight:bold;color:#131211}
+  .mp em,.mp var {font-style:italic;color:#232221;text-decoration:none}
+  .mp a,.mp a:link,.mp a:hover,.mp a code,.mp a pre,.mp a tt,.mp a kbd,.mp a samp {color:#0000ff}
+  .mp b.man-ref {font-weight:normal;color:#434241}
+  .mp pre {padding:0 4ex}
+  .mp pre code {font-weight:normal;color:#434241}
+  .mp h2+pre,h3+pre {padding-left:0}
+  ol.man-decor,ol.man-decor li {margin:3px 0 10px 0;padding:0;float:left;width:33%;list-style-type:none;text-transform:uppercase;color:#999;letter-spacing:1px}
+  ol.man-decor {width:100%}
+  ol.man-decor li.tl {text-align:left}
+  ol.man-decor li.tc {text-align:center;letter-spacing:4px}
+  ol.man-decor li.tr {text-align:right;float:right}
+  </style>
+</head>
+<!--
+  The following styles are deprecated and will be removed at some point:
+  div#man, div#man ol.man, div#man ol.head, div#man ol.man.
+
+  The .man-page, .man-decor, .man-head, .man-foot, .man-title, and
+  .man-navigation should be used instead.
+-->
+<body id='manpage'>
+  <div class='mp' id='man'>
+
+  <div class='man-navigation' style='display:none'>
+    <a href="#NAME">NAME</a>
+    <a href="#SYNOPSIS">SYNOPSIS</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#OPTIONS">OPTIONS</a>
+    <a href="#LOADER-PATH">LOADER PATH</a>
+    <a href="#EXIT-CODES">EXIT CODES</a>
+    <a href="#COPYRIGHT">COPYRIGHT</a>
+  </div>
+
+  <ol class='man-decor man-head man head'>
+    <li class='tl'>fspec(1)</li>
+    <li class='tc'></li>
+    <li class='tr'>fspec(1)</li>
+  </ol>
+
+  
+
+<h2 id="NAME">NAME</h2>
+<p class="man-name">
+  <code>fspec</code> - <span class="man-whatis">a test framework for .NET Core</span>
+</p>
+<h2 id="SYNOPSIS">SYNOPSIS</h2>
+
+<p>fspec [OPTION...] ASSEMBLY...</p>
+
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
+<p>The <span class="man-ref">fspec<span class="s">(1)</span></span> command runs tests that were built with <strong>f-spec</strong>, a test framework for .NET Core.</p>
+
+<p>Each <var>ASSEMBLY</var> to load is specified as an argument to the command.  Assemblies are scanned for tests, and dependency assemblies are automatically loaded if they are in the loader path.  The loader path is discussed in the <a href="#LOADER-PATH" title="LOADER PATH" data-bare-link="true">LOADER PATH</a> section.</p>
+
+<p>Inline markup for <code>code</code>, <code>user input</code>, and <strong>strong</strong> are displayed
+boldface; <var>variable</var>, <em>emphasis</em>, <em>emphasis</em>, are displayed in italics
+(HTML) or underline (roff).</p>
+
+<h2 id="OPTIONS">OPTIONS</h2>
+
+<dl>
+<dt>
+<code>--context-lines</code>=<var>COUNT</var>
+</dt>
+<dd>When string comparisons generate differences, this parameter is used to control how many lines of context are displayed before and after a contiguous hunk.</dd>
+<dt><code>--fail-fast</code></dt>
+<dd>Instead of running the entire test plan, run until the first test that fails.</dd>
+<dt><code>--fail-focused</code></dt>
+<dd>When used, specifies that the test plan fails if there are any tests that are focused.</dd>
+<dt><code>--fail-pending</code></dt>
+<dd>When used, specifies that the test plan fails if there are any pending tests.</dd>
+<dt>
+<code>--focus</code>=<var>REGEX</var>
+</dt>
+<dd>Focus tests whose descriptions or names match the given REGEX</dd>
+<dt>
+<code>-i, --fixture</code>=<var>PATH</var>
+</dt>
+<dd>Add a path to the fixture search path.  If the path is a file, then the file can be loaded as a fixture.  If the path is a directory, then the directory is used as the prefix when searching for a fixture.  This option can be specified multiple times.</dd>
+<dt><code>--no-diff</code></dt>
+<dd>Don't use unified diffs when assertion messages contain long strings</dd>
+<dt><code>--no-focus</code></dt>
+<dd>Ignore all focused elements and run everything</dd>
+<dt><code>--no-random</code></dt>
+<dd>Don't randomize specs.  Typically, tests are randomized within their containing theory, class, namespace, or assembly.  Using this option causes tests to be run in a stable order.</dd>
+<dt><code>--no-summary</code></dt>
+<dd>Don't show test run summary of failed tests at the end</dd>
+<dt><code>--no-whitespace</code></dt>
+<dd>When comparing strings, special characters will not be used when printing whitespace in assertion failure messages</dd>
+<dt>
+<code>-p, --package</code>=<var>FORMULA</var>
+</dt>
+<dd>Load the NuGet package dependency <var>FORMULA</var>.  The <var>FORMULA</var> is in the format <var>NAME</var>[/<var>VERSION</var>].  Though technically optional, <span class="man-ref">fspec<span class="s">(1)</span></span> raises an error if the version is not specified.  This may change in a future version.</dd>
+<dt><code>--pause</code></dt>
+<dd>Attach tty and wait for a keypress before exiting.  This is primarily used when a debugger is attached to prevent <span class="man-ref">fspec<span class="s">(1)</span></span> from exiting too soon.</dd>
+<dt>
+<code>--plan-timeout</code>=<var>TIME</var>
+</dt>
+<dd>Provides the limit on the amount of <var>TIME</var> that the entire test plan is allowed to take.  When reached, the test plan fails.  The value for <var>TIME</var> is either in seconds or using the format described in the description for  <code>--timeout</code>
+</dd>
+<dt>
+<code>--random-seed</code>=<var>SEED</var> </dt>
+<dd>Use the specified <var>SEED</var> to randomize the ordering in which specs are executed</dd>
+<dt><code>--self-test</code></dt>
+<dd>If <code>fspec</code> was built with its own tests, then run the self-tests.</dd>
+<dt><code>--show-pass-explicit</code></dt>
+<dd>Display messages when Assert.Pass is used</dd>
+<dt><code>--show-tests</code></dt>
+<dd>Display names of tests and test cases even on success</dd>
+<dt><code>--show-whitespace</code></dt>
+<dd> When comparing strings, special characters will be used when printing whitespace in assertion failure messages.</dd>
+<dt>
+<code>--skip</code>=<var>REGEX</var>
+</dt>
+<dd>Skip tests whose descriptions or names match the given REGEX</dd>
+<dt>
+<code>--timeout</code>=<var>TIME</var>
+</dt>
+<dd>The maximum <var>TIME</var> allowed for any particular test to execute.  The syntax of TIME is either a floating point number representing the whole and partial seconds to allow or it is the syntax of <code>System.TimeSpan</code> which looks like <var>DAYS</var>.<var>HOURS</var>:<var>MINUTES</var>:<var>SECONDS</var>.<var>TICKS</var>
+</dd>
+<dt>
+<code>--verify</code>=<var>VALUE</var>
+</dt>
+<dd>Use the specified verification mode to check for errors in tests and assertions.  If <code>strict</code> is used, then tests could fail if tests or assertions are structured incorrectly.  If <code>none</code> is used, then no verification is used, but a warning is printed when certain verification errors occur.</dd>
+<dt><code>--help</code></dt>
+<dd>Display the help screen</dd>
+<dt><code>--version</code></dt>
+<dd>Report the version information and exit</dd>
+</dl>
+
+<h2 id="LOADER-PATH">LOADER PATH</h2>
+
+<p>The loader path specifies the directories which are probed to find additional assemblies to load.  By default, the loader path contains each directory for each assembly that was specified at the command line.</p>
+
+<h2 id="EXIT-CODES">EXIT CODES</h2>
+
+<dl>
+<dt>0</dt>
+<dd>Success, all tests passed.</dd>
+<dt>1</dt>
+<dd>Failed, one or more tests failed.  If <code>--fail-pending</code> was used, then this is used when there are pending tests.</dd>
+<dt>2</dt>
+<dd>There was a problem configuring or starting up <code>fspec</code>
+</dd>
+</dl>
+
+<h2 id="COPYRIGHT">COPYRIGHT</h2>
+
+<p>Copyright © 2020 Carbonfrost Systems, Inc.  Licensed under the terms of the Apache 2.0 license (https://apache.org/licenses/LICENSE-2.0.txt)</p>
+
+  <ol class='man-decor man-foot man foot'>
+    <li class='tl'></li>
+    <li class='tc'>April 2020</li>
+    <li class='tr'>fspec(1)</li>
+  </ol>
+
+  </div>
+</body>
+</html>

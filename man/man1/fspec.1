@@ -1,0 +1,100 @@
+.\" generated with Ronn-NG/v0.9.0
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.0
+.TH "FSPEC" "1" "April 2020" ""
+.SH "NAME"
+\fBfspec\fR \- a test framework for \.NET Core
+.SH "SYNOPSIS"
+fspec [OPTION\|\.\|\.\|\.] ASSEMBLY\|\.\|\.\|\.
+.SH "DESCRIPTION"
+The fspec(1) command runs tests that were built with \fBf\-spec\fR, a test framework for \.NET Core\.
+.P
+Each \fIASSEMBLY\fR to load is specified as an argument to the command\. Assemblies are scanned for tests, and dependency assemblies are automatically loaded if they are in the loader path\. The loader path is discussed in the \fI\%#LOADER\-PATH\fR section\.
+.P
+Inline markup for \fBcode\fR, \fBuser input\fR, and \fBstrong\fR are displayed boldface; \fIvariable\fR, \fIemphasis\fR, \fIemphasis\fR, are displayed in italics (HTML) or underline (roff)\.
+.SH "OPTIONS"
+.TP
+\fB\-\-context\-lines\fR=\fICOUNT\fR
+When string comparisons generate differences, this parameter is used to control how many lines of context are displayed before and after a contiguous hunk\.
+.TP
+\fB\-\-fail\-fast\fR
+Instead of running the entire test plan, run until the first test that fails\.
+.TP
+\fB\-\-fail\-focused\fR
+When used, specifies that the test plan fails if there are any tests that are focused\.
+.TP
+\fB\-\-fail\-pending\fR
+When used, specifies that the test plan fails if there are any pending tests\.
+.TP
+\fB\-\-focus\fR=\fIREGEX\fR
+Focus tests whose descriptions or names match the given REGEX
+.TP
+\fB\-i, \-\-fixture\fR=\fIPATH\fR
+Add a path to the fixture search path\. If the path is a file, then the file can be loaded as a fixture\. If the path is a directory, then the directory is used as the prefix when searching for a fixture\. This option can be specified multiple times\.
+.TP
+\fB\-\-no\-diff\fR
+Don\'t use unified diffs when assertion messages contain long strings
+.TP
+\fB\-\-no\-focus\fR
+Ignore all focused elements and run everything
+.TP
+\fB\-\-no\-random\fR
+Don\'t randomize specs\. Typically, tests are randomized within their containing theory, class, namespace, or assembly\. Using this option causes tests to be run in a stable order\.
+.TP
+\fB\-\-no\-summary\fR
+Don\'t show test run summary of failed tests at the end
+.TP
+\fB\-\-no\-whitespace\fR
+When comparing strings, special characters will not be used when printing whitespace in assertion failure messages
+.TP
+\fB\-p, \-\-package\fR=\fIFORMULA\fR
+Load the NuGet package dependency \fIFORMULA\fR\. The \fIFORMULA\fR is in the format \fINAME\fR[/\fIVERSION\fR]\. Though technically optional, fspec(1) raises an error if the version is not specified\. This may change in a future version\.
+.TP
+\fB\-\-pause\fR
+Attach tty and wait for a keypress before exiting\. This is primarily used when a debugger is attached to prevent fspec(1) from exiting too soon\.
+.TP
+\fB\-\-plan\-timeout\fR=\fITIME\fR
+Provides the limit on the amount of \fITIME\fR that the entire test plan is allowed to take\. When reached, the test plan fails\. The value for \fITIME\fR is either in seconds or using the format described in the description for \fB\-\-timeout\fR
+.TP
+\fB\-\-random\-seed\fR=\fISEED\fR
+Use the specified \fISEED\fR to randomize the ordering in which specs are executed
+.TP
+\fB\-\-self\-test\fR
+If \fBfspec\fR was built with its own tests, then run the self\-tests\.
+.TP
+\fB\-\-show\-pass\-explicit\fR
+Display messages when Assert\.Pass is used
+.TP
+\fB\-\-show\-tests\fR
+Display names of tests and test cases even on success
+.TP
+\fB\-\-show\-whitespace\fR
+When comparing strings, special characters will be used when printing whitespace in assertion failure messages\.
+.TP
+\fB\-\-skip\fR=\fIREGEX\fR
+Skip tests whose descriptions or names match the given REGEX
+.TP
+\fB\-\-timeout\fR=\fITIME\fR
+The maximum \fITIME\fR allowed for any particular test to execute\. The syntax of TIME is either a floating point number representing the whole and partial seconds to allow or it is the syntax of \fBSystem\.TimeSpan\fR which looks like \fIDAYS\fR\.\fIHOURS\fR:\fIMINUTES\fR:\fISECONDS\fR\.\fITICKS\fR
+.TP
+\fB\-\-verify\fR=\fIVALUE\fR
+Use the specified verification mode to check for errors in tests and assertions\. If \fBstrict\fR is used, then tests could fail if tests or assertions are structured incorrectly\. If \fBnone\fR is used, then no verification is used, but a warning is printed when certain verification errors occur\.
+.TP
+\fB\-\-help\fR
+Display the help screen
+.TP
+\fB\-\-version\fR
+Report the version information and exit
+.SH "LOADER PATH"
+The loader path specifies the directories which are probed to find additional assemblies to load\. By default, the loader path contains each directory for each assembly that was specified at the command line\.
+.SH "EXIT CODES"
+.TP
+0
+Success, all tests passed\.
+.TP
+1
+Failed, one or more tests failed\. If \fB\-\-fail\-pending\fR was used, then this is used when there are pending tests\.
+.TP
+2
+There was a problem configuring or starting up \fBfspec\fR
+.SH "COPYRIGHT"
+Copyright \(co 2020 Carbonfrost Systems, Inc\. Licensed under the terms of the Apache 2\.0 license (https://apache\.org/licenses/LICENSE\-2\.0\.txt)

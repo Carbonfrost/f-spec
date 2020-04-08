@@ -1,10 +1,10 @@
 FRAMEWORK ?= netcoreapp3.0
 PREFIX = /usr/local
 
-.PHONY: dotnet/install dotnet/generate
+.PHONY: dotnet/install dotnet/generate -generate-docs -install-manuals
 
 ## Install dotnet outputs
-dotnet/install: -install-dotnet-fspec
+dotnet/install: -install-dotnet-fspec -install-manuals-fspec
 
 ## Test dotnet
 dotnet/test: dotnet/build -dotnet/test
@@ -22,6 +22,7 @@ dotnet/generate:
 		-r Carbonfrost.CFSpec.Resources.SR \
 		dotnet/src/fspec/Automation/SR.properties \
 		--resx
+
 
 ## Run unit tests with code coverage
 dotnet/cover: dotnet/build -check-command-coverlet
@@ -42,5 +43,16 @@ dotnet/cover: dotnet/build -check-command-coverlet
 	@ chmod +x $(PREFIX)/bin/$*
 	@ cp -r ./dotnet/src/$*/bin/$(CONFIGURATION)/$(FRAMEWORK)/ $(PREFIX)/opt/$*/
 	@ cp ./dotnet/src/runtimeconfig.template.json $(PREFIX)/opt/$*/$*.runtimeconfig.json
+
+-install-manuals-%: -check-env-PREFIX
+	$(Q) install -d $(PREFIX)/opt/$*/share/man/man1/
+	$(Q) cp man/man1/$*.1 $(PREFIX)/opt/$*/share/man/man1/
+	$(Q) ln -sf $(PREFIX)/opt/$*/share/man/man1/*.1 $(PREFIX)/share/man/man1/
+
+man/man1/fspec.1.html: -generate-docs
+man/man1/fspec.1: -generate-docs
+
+-generate-docs:
+	ronn man/man1/fspec.1.md
 
 include eng/.mk/*.mk
