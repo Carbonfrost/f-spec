@@ -518,6 +518,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("FailedToLoadAssemblyPath") , @path);
     }
 
+  /// <summary>Illegal tabs</summary>
+    internal static string FixtureParserIllegalTabs(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("FixtureParserIllegalTabs") );
+    }
+
   /// <summary>Can't assert length on type `${type}'.  It works only for strings and arrays.  Investigate asserting on count for collections instead.</summary>
     internal static string HaveLengthWorksWith(
     object @type
@@ -1132,6 +1139,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
     ) {
         return string.Format(Culture, ResourceFinder("NotPredicateTrue") );
+    }
+
+  /// <summary>${message}, line ${line}</summary>
+    internal static string ParserErrorLinePosition(
+    object @message, object @line
+    ) {
+        return string.Format(Culture, ResourceFinder("ParserErrorLinePosition") , @message, @line);
     }
 
   /// <summary>Explicitly passed</summary>

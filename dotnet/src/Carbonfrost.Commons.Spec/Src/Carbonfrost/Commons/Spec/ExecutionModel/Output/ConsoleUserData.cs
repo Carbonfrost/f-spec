@@ -23,7 +23,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
         const int bufferWidth = 6;
 
-        public int ContextLines { get; set; }
         public bool ShowWhitespace { get; set; }
 
         protected override void RenderCore(UserDataCollection data) {
@@ -43,7 +42,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
             if (data.Diff != null) {
                 WriteLineItem("Diff", "", maxLength);
-                WriteLine(data.Diff.ToString(ContextLines));
+                parts.forPatch.Render(context, data.Diff);
             }
         }
 

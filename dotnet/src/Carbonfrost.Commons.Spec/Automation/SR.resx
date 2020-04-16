@@ -253,6 +253,9 @@
   <data name="FailedToLoadAssemblyPath" xml:space="preserve">
     <value>Assembly file not found: {0}</value>
   </data>
+  <data name="FixtureParserIllegalTabs" xml:space="preserve">
+    <value>Illegal tabs</value>
+  </data>
   <data name="HaveLengthWorksWith" xml:space="preserve">
     <value>Can't assert length on type `{0}'.  It works only for strings and arrays.  Investigate asserting on count for collections instead.</value>
   </data>
@@ -516,6 +519,9 @@
   </data>
   <data name="NotPredicateTrue" xml:space="preserve">
     <value>not be true</value>
+  </data>
+  <data name="ParserErrorLinePosition" xml:space="preserve">
+    <value>{0}, line {1}</value>
   </data>
   <data name="Passed" xml:space="preserve">
     <value>Explicitly passed</value>

@@ -38,23 +38,9 @@ file2: >
         // so we do this format string
 
         const string FoldingRecord = @"simple: >
-    abcd efgh
-         abcd efgh
-total: |
-    abcd efgh
-         abcd efgh
-ki: -
-    abcd efgh
-         abcd efgh
-ki2: -
-    abcd efgh     \
-         abcd efgh
-eol: >-
-    abcd efgh
-         abcd efgh
-internal: >+
-    abcd efgh
-         abcd efgh
+    abcd efgh abcd efgh
+total: _
+    abcd efgh abcd efgh
 ";
 
 
@@ -111,19 +97,15 @@ note: goodbye was treated as an empty value";
         [Fact]
         public void Parse_should_fold_heredocs() {
             var fixture = TestFixture.Parse(SingleRecord);
-            Assert.Equal("Hello, world Goodbye, earth", fixture.Items[0].Values["file"]);
-            Assert.Equal("Hello, Jupiter from Juno", fixture.Items[0].Values["file2"]);
+            Assert.Equal("Hello, world Goodbye, earth\n", fixture.Items[0].Values["file"]);
+            Assert.Equal("Hello, Jupiter from Juno\n", fixture.Items[0].Values["file2"]);
         }
 
         [Fact]
         public void Parse_should_fold_heredocs_according_to_specifier() {
             var fixture = TestFixture.Parse(FoldingRecord);
-            Assert.Equal("abcd efgh abcd efgh", fixture.Items[0].Values["simple"]);
+            Assert.Equal("abcd efgh abcd efgh\n", fixture.Items[0].Values["simple"]);
             Assert.Equal("abcdefghabcdefgh", fixture.Items[0].Values["total"]);
-            Assert.Equal("abcd efgh\nabcd efgh", EOL(fixture.Items[0].Values["eol"]));
-            Assert.Equal("abcd efgh     abcd efgh", EOL(fixture.Items[0].Values["internal"]));
-            Assert.Equal("abcd efgh\n     abcd efgh", EOL(fixture.Items[0].Values["ki"]));
-            Assert.Equal("abcd efgh     \n     abcd efgh", EOL(fixture.Items[0].Values["ki2"]));
         }
 
         static string EOL(string s) {

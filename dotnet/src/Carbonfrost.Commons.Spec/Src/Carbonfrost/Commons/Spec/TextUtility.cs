@@ -21,7 +21,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Carbonfrost.Commons.Spec {
+namespace Carbonfrost.Commons.Spec
+{
 
     static class TextUtility {
 
@@ -162,13 +163,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         internal static string ShowWhitespace(string text) {
-            // TODO These aren't universal -- won't work with some Windows fonts
-            // bullet might work better in some fonts • U+2022
-            if (text == null) {
-                return null;
-            }
-            return text.Replace(" ", "⋅") //  U+22C5
-                .Replace("\t", "→"); // U+2192
+            return new WhitespaceVisibleString(text).ToString();
         }
     }
 }

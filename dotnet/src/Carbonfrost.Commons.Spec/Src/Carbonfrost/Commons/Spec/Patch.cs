@@ -37,6 +37,24 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        public List<Edit> Edits {
+            get {
+                return _ma.GetEdits();
+            }
+        }
+
+        public StringLinesSequence A {
+            get {
+                return _a;
+            }
+        }
+
+        public StringLinesSequence B {
+            get {
+                return _b;
+            }
+        }
+
         public Patch(string exExpected, string exActual) {
             _a = new StringLinesSequence(exExpected ?? string.Empty);
             _b = new StringLinesSequence(exActual ?? string.Empty);
