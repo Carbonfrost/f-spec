@@ -10,7 +10,7 @@ dotnet/install: -install-dotnet-fspec -install-manuals-fspec
 dotnet/test: dotnet/build -dotnet/test
 
 -dotnet/test:
-	dotnet dotnet/src/fspec/bin/$(CONFIGURATION)/$(FRAMEWORK)/fspec.dll --self-test
+	dotnet dotnet/src/fspec/bin/$(CONFIGURATION)/$(FRAMEWORK)/fspec.dll --self-test $(FSPEC_OPTIONS)
 
 ## Generate generated code
 dotnet/generate:
