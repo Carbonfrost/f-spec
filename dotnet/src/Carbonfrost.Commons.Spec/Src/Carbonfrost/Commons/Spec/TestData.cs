@@ -22,12 +22,18 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public readonly struct TestData : IReadOnlyList<object> {
+    public readonly struct TestData : ITestData, ITestUnitStateApiConventions<TestData> {
 
         private readonly string _name;
         private readonly string _reason;
         private readonly object[] _data;
-        private readonly bool _explicit;
+        private readonly TestUnitFlags _flags;
+
+        internal TestUnitFlags Flags {
+            get {
+                return _flags;
+            }
+        }
 
         public string Name {
             get {
@@ -41,33 +47,101 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        public bool Explicit {
-            get  {
-                return _explicit;
+        public bool IsExplicit {
+            get {
+                return _flags.HasFlag(TestUnitFlags.Explicit);
             }
         }
 
-        private TestData(string name, string reason, bool @explicit, object[] data) {
+        public bool IsFocused {
+            get {
+                return _flags.HasFlag(TestUnitFlags.Focus);
+            }
+        }
+
+        public bool IsPending {
+            get {
+                return _flags.HasFlag(TestUnitFlags.Pending);
+            }
+        }
+
+        public bool PassExplicitly {
+            get {
+                return _flags.HasFlag(TestUnitFlags.PassExplicitly);
+            }
+        }
+
+        public bool Skipped {
+            get {
+                return _flags.HasFlag(TestUnitFlags.Skip);
+            }
+        }
+
+        private TestData(string name, string reason, TestUnitFlags flags, object[] data) {
             _name = name;
             _reason = reason;
-            _explicit = @explicit;
+            _flags = flags;
             _data = data ?? Array.Empty<object>();
         }
 
         public TestData(params object[] data)
-            : this(null, null, false, data) {
+            : this(null, null, TestUnitFlags.None, data) {
+        }
+
+        public static TestData Create(params object[] data) {
+            return new TestData((object[]) data);
+        }
+
+        public static TestData FCreate(params object[] data) {
+            return new TestData(null, null, TestUnitFlags.Focus, (object[]) data);
+        }
+
+        public static TestData XCreate(params object[] data) {
+            return new TestData(null, null, TestUnitFlags.Pending, (object[]) data);
         }
 
         public TestData WithName(string name) {
-            return WithNameAndReason(name, Reason, Explicit);
+            return WithNameAndReason(name, Reason, _flags);
         }
 
         public TestData WithReason(string reason) {
-            return WithNameAndReason(Name, reason, Explicit);
+            return WithNameAndReason(Name, reason, _flags);
         }
 
-        internal TestData WithNameAndReason(string name, string reason, bool @explicit) {
-            return new TestData(name, reason, @explicit, _data);
+        public TestData Skip() {
+            return Skip(null);
+        }
+
+        public TestData Skip(string reason) {
+            return WithNameAndReason(Name, reason ?? Reason, _flags | TestUnitFlags.Skip);
+        }
+
+        public TestData Focus() {
+            return WithNameAndReason(Name, Reason, _flags | TestUnitFlags.Focus);
+        }
+
+        public TestData Focus(string reason) {
+            return WithNameAndReason(Name, reason, _flags | TestUnitFlags.Focus);
+        }
+
+        public TestData Pending() {
+            return WithNameAndReason(Name, Reason, _flags | TestUnitFlags.Pending);
+        }
+
+        public TestData Pending(string reason) {
+            return WithNameAndReason(Name, reason, _flags | TestUnitFlags.Pending);
+        }
+
+        public TestData Explicit() {
+            return Explicit(null);
+        }
+
+        public TestData Explicit(string reason) {
+            return WithNameAndReason(Name, reason ?? Reason, _flags | TestUnitFlags.Explicit);
+        }
+
+        internal TestData WithNameAndReason(string name, string reason, TestUnitFlags flags) {
+            return new TestData(name, reason, flags, _data);
         }
 
         public object this[int index] {

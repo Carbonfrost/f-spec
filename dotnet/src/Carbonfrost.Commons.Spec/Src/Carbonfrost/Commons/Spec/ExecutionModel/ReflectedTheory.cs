@@ -44,7 +44,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         private TestDataProviderCollection CreateTestDataProviders() {
             var attrs = TestMethod.GetCustomAttributes(false);
-            return new TestDataProviderCollection(attrs.OfType<ITestDataProvider>().ToArray());
+            return TestDataProviderCollection.Create(attrs.OfType<ITestDataProvider>().ToArray());
         }
 
         protected override void Initialize(TestContext testContext) {

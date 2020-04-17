@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
@@ -41,7 +42,9 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         internal static IEnumerable<TestData> WithNames(this ITestDataApiAttributeConventions self, IEnumerable<TestData> data) {
-            return data.Select(d => d.WithNameAndReason(self.Name, self.Reason, self.Explicit));
+            return data.Select(d => d.WithNameAndReason(
+                self.Name, self.Reason, d.Flags | (self.Explicit ? TestUnitFlags.Explicit : TestUnitFlags.None)
+            ));
         }
 
         // IgnoreCase versions are odd values

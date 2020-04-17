@@ -15,6 +15,7 @@
 //
 using System;
 using System.Collections.Generic;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
@@ -61,7 +62,9 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         IEnumerable<TestData> ITestDataProvider.GetData(TestContext context) {
-            yield return new TestData(_data).WithNameAndReason(Name, Reason, Explicit);
+            yield return new TestData(_data).WithNameAndReason(
+                Name, Reason, Explicit ? TestUnitFlags.Explicit : TestUnitFlags.None
+            );
         }
 
     }
