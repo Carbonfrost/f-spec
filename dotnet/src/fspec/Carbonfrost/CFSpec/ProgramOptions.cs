@@ -154,9 +154,9 @@ namespace Carbonfrost.CFSpec {
         }
 
         static TimeSpan SafeTimeSpanParse(string v, string msg, string optionName) {
-            TimeSpan result;
-            if (ParseUtility.TryParseTimeSpan(v, out result)) {
-                return result;
+            Time result;
+            if (Time.TryParse(v, out result)) {
+                return result.Value;
             }
             throw ParseFailure(v, msg, optionName);
         }
