@@ -16,6 +16,7 @@
 // limitations under the License.
 //
 using System;
+using System.Reflection;
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
@@ -105,6 +106,13 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
         public void Expect_Given_fluent_expression_action() {
             Given().Expect(() => { throw new InvalidOperationException(); })
                 .To(Matchers.Throw<InvalidOperationException>());
+        }
+
+        [Fact]
+        public void Assert_Throws_should_not_unwrap_TargetInvocationException_by_default() {
+            Assert.Throws<TargetInvocationException>(
+                () => throw new TargetInvocationException(new Exception())
+            );
         }
     }
 }

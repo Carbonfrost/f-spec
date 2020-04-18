@@ -272,7 +272,7 @@ namespace Carbonfrost.Commons.Spec {
                 }
             }
 
-            public ThrowsMatcher(Type expected = null) : this(expected, RecordExceptionFlags.UnwindTargetExceptions) {}
+            public ThrowsMatcher(Type expected = null) : this(expected, RecordExceptionFlags.None) {}
 
             private ThrowsMatcher(Type expected, RecordExceptionFlags flags) {
                 Expected = expected ?? typeof(Exception);
