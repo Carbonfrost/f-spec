@@ -35,6 +35,9 @@ When string comparisons generate differences, this parameter is used to control 
 * `-i, --fixture`=<PATH>:
   Add a path to the fixture search path.  If the path is a file, then the file can be loaded as a fixture.  If the path is a directory, then the directory is used as the prefix when searching for a fixture.  This option can be specified multiple times.
 
+* `--loader-path`=<PATH>:
+  Add a path to the loader search path.  When the path is a file, this is the same as loading the specified assembly.  If the path is a directory, then the directory is used to search for assemblies when an assembly reference must be loaded.  This option can be specified multiple times.
+
 * `--no-diff`:
   Don't use unified diffs when assertion messages contain long strings
 
@@ -43,7 +46,6 @@ When string comparisons generate differences, this parameter is used to control 
 
 * `--no-random`:
   Don't randomize specs.  Typically, tests are randomized within their containing theory, class, namespace, or assembly.  Using this option causes tests to be run in a stable order.
-
 
 * `--no-summary`:
   Don't show test run summary of failed tests at the end
@@ -94,13 +96,25 @@ When string comparisons generate differences, this parameter is used to control 
 
 The loader path specifies the directories which are probed to find additional assemblies to load.  By default, the loader path contains each directory for each assembly that was specified at the command line.
 
+You can specify the environment variable `FSPEC_LOADER_PATH` as described in [#ENVIRONMENT] to set up the loader path from the environment.
+
+If you need to add another loader path, you specify it with the `--loader-path` option.  This can be used to load an assembly directly or can be used to add a search directory from which assemblies can be loaded.  The loader path specified from the command line is searched before those set by an environment variable, and the implicit search of the containing directory of an assembly reference is performed last.
+
+## ENVIRONMENT
+
+* `FSPEC_FIXTURE_PATH`:
+  Specifies the fixture path where fixtures can be loaded.  This environment variable uses the format that `PATH` does; that is, it is a colon-delimited list of paths on Unix-like platforms or a semicolon-delimited list on Windows.  The other way to set fixture paths is with the `--fixture-path` option, and when it is specified, fixture paths are first loaded from the command line arguments.
+
+* `FSPEC_LOADER_PATH`:
+  Specifies the loader path, which contains assembly file names or search directories.  This environment variable uses the format that `PATH` does; that is, it is a colon-delimited list of paths on Unix-like platforms or a semicolon-delimited list on Windows.  See [#LOADER PATH] for an overview of how the loader path works.  The other way to set loader paths is with the `--loader-path` option, and when it is specified, loader paths are first loaded from the command line arguments.
+
 ## EXIT CODES
 
 * 0:
-  Success, all tests passed.
+  Success; all tests passed.
 
 * 1:
-  Failed, one or more tests failed.  If `--fail-pending` was used, then this is used when there are pending tests.
+  Failed; one or more tests failed.  If `--fail-pending` was used, then this is the result when there are pending tests.
 
 * 2:
   There was a problem configuring or starting up `fspec`

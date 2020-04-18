@@ -31,6 +31,9 @@ Focus tests whose descriptions or names match the given REGEX
 \fB\-i, \-\-fixture\fR=\fIPATH\fR
 Add a path to the fixture search path\. If the path is a file, then the file can be loaded as a fixture\. If the path is a directory, then the directory is used as the prefix when searching for a fixture\. This option can be specified multiple times\.
 .TP
+\fB\-\-loader\-path\fR=\fIPATH\fR
+Add a path to the loader search path\. When the path is a file, this is the same as loading the specified assembly\. If the path is a directory, then the directory is used to search for assemblies when an assembly reference must be loaded\. This option can be specified multiple times\.
+.TP
 \fB\-\-no\-diff\fR
 Don\'t use unified diffs when assertion messages contain long strings
 .TP
@@ -86,13 +89,24 @@ Display the help screen
 Report the version information and exit
 .SH "LOADER PATH"
 The loader path specifies the directories which are probed to find additional assemblies to load\. By default, the loader path contains each directory for each assembly that was specified at the command line\.
+.P
+You can specify the environment variable \fBFSPEC_LOADER_PATH\fR as described in [#ENVIRONMENT] to set up the loader path from the environment\.
+.P
+If you need to add another loader path, you specify it with the \fB\-\-loader\-path\fR option\. This can be used to load an assembly directly or can be used to add a search directory from which assemblies can be loaded\. The loader path specified from the command line is searched before those set by an environment variable, and the implicit search of the containing directory of an assembly reference is performed last\.
+.SH "ENVIRONMENT"
+.TP
+\fBFSPEC_FIXTURE_PATH\fR
+Specifies the fixture path where fixtures can be loaded\. This environment variable uses the format that \fBPATH\fR does; that is, it is a colon\-delimited list of paths on Unix\-like platforms or a semicolon\-delimited list on Windows\. The other way to set fixture paths is with the \fB\-\-fixture\-path\fR option, and when it is specified, fixture paths are first loaded from the command line arguments\.
+.TP
+\fBFSPEC_LOADER_PATH\fR
+Specifies the loader path, which contains assembly file names or search directories\. This environment variable uses the format that \fBPATH\fR does; that is, it is a colon\-delimited list of paths on Unix\-like platforms or a semicolon\-delimited list on Windows\. See [#LOADER PATH] for an overview of how the loader path works\. The other way to set loader paths is with the \fB\-\-loader\-path\fR option, and when it is specified, loader paths are first loaded from the command line arguments\.
 .SH "EXIT CODES"
 .TP
 0
-Success, all tests passed\.
+Success; all tests passed\.
 .TP
 1
-Failed, one or more tests failed\. If \fB\-\-fail\-pending\fR was used, then this is used when there are pending tests\.
+Failed; one or more tests failed\. If \fB\-\-fail\-pending\fR was used, then this is the result when there are pending tests\.
 .TP
 2
 There was a problem configuring or starting up \fBfspec\fR

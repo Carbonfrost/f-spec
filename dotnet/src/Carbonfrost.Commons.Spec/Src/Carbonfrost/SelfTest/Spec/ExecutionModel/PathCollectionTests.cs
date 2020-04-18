@@ -41,6 +41,33 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
             Assert.Equal("/working/relativeDirectory/fileB", path);
         }
 
+        [Theory]
+        [InlineData("/usr/local/bin:/usr/bin", "l", Name = "Linux")]
+        [InlineData("/usr/local/bin;/usr/bin", "w", Name = "Windows")]
+        [InlineData("/usr/local/bin\n/usr/bin", "r", Name = "Roundtrip")]
+        [InlineData("/usr/local/bin\n/usr/bin", "g", Name = "General (Roundtrip)")]
+        public void ParseExact_should_generate_correct_values(string input, string format) {
+            var result = PathCollection.ParseExact(input, format);
+            Assert.Contains("/usr/local/bin", result);
+            Assert.Contains("/usr/bin", result);
+        }
+
+        [Fact]
+        public void ParseExact_should_parse_empty_string_into_current_directory() {
+            var result = PathCollection.ParseExact("/usr/local/bin:/usr/bin::", "l");
+            Assert.Contains(Environment.CurrentDirectory, result);
+        }
+
+        [Theory]
+        [InlineData("l", "/usr:/usr/local")]
+        [InlineData("w", "/usr;/usr/local")]
+        [InlineData("r", "/usr\n/usr/local")]
+        [InlineData("g", "/usr\n/usr/local")]
+        public void ToString_should_generate_correct_format(string format, string expected) {
+            var result = new PathCollection("/usr", "/usr/local");
+            Assert.Equal(expected, result.ToString(format));
+        }
+
          class TestFileSystem : FileSystem {
 
             public override bool IsDirectory(string path) {

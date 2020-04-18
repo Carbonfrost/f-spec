@@ -18,15 +18,97 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    public class PathCollection : Collection<string> {
+    public class PathCollection : Collection<string>, IFormattable {
 
         internal FileSystem FileSystem = FileSystem.Real;
 
-         public PathCollection()
+        private static bool IsUnix {
+            get {
+                return Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX;
+            }
+        }
+
+        public PathCollection()
             : base(new MakeReadOnlyList<string>()) {}
+
+        public PathCollection(params string[] items) : this((IEnumerable<string>) items) {
+        }
+
+        public PathCollection(IEnumerable<string> items) : this() {
+            if (items is null) {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            Items.AddAll(items);
+        }
+
+        internal static PathCollection FromEnvironment(string variable) {
+            string value = Environment.GetEnvironmentVariable(variable);
+            if (string.IsNullOrEmpty(value)) {
+                return new PathCollection();
+            }
+            return Parse(value);
+        }
+
+        public static PathCollection Parse(string text) {
+            if (text.Contains("\n")) {
+                return ParseExact(text, "r");
+            }
+            if (IsUnix) {
+                return ParseExact(text, "l");
+            }
+            return ParseExact(text, "w");
+        }
+
+        public static PathCollection ParseExact(string text, string format) {
+            return ParseExact(text, GetFormat(format));
+        }
+
+        enum Format {
+            Linux,
+            Windows,
+            General,
+        }
+
+        static Format GetFormat(string format) {
+            if (string.IsNullOrEmpty(format)) {
+                return Format.General;
+            }
+            if (format.Length == 1) {
+                switch (char.ToLowerInvariant(format[0])) {
+                    case 'g':
+                    case 'r':
+                        return Format.General;
+                    case 'l':
+                        return Format.Linux;
+                    case 'w':
+                        return Format.Windows;
+                }
+            }
+            throw new FormatException();
+        }
+
+        private static PathCollection ParseExact(string text, Format format) {
+            string delim;
+            switch (format) {
+            case Format.Linux:
+                delim = ":";
+                break;
+            case Format.Windows:
+                delim = ";";
+                break;
+            default:
+                delim = @"\s*[\n\r\n]\s*";
+                break;
+            }
+            return new PathCollection(
+                Regex.Split(text, delim).Select(EmptyAsCurrentDir)
+            );
+        }
 
         public IEnumerable<string> EnumerateDirectories() {
             return Items.Where(FileSystem.IsDirectory);
@@ -73,11 +155,41 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public override string ToString() {
+            if (!IsUnix) {
+                return string.Join(";", Items);
+            }
             return string.Join(":", Items);
         }
 
         internal void MakeReadOnly() {
             ((MakeReadOnlyList<string>) Items).MakeReadOnly();
+        }
+
+        static string EmptyAsCurrentDir(string path) {
+            if (path.Length == 0) {
+                return Environment.CurrentDirectory;
+            }
+            return path;
+        }
+
+        public string ToString(string format) {
+            string delim;
+            switch (GetFormat(format)) {
+            case Format.Linux:
+                delim = ":";
+                break;
+            case Format.Windows:
+                delim = ";";
+                break;
+            default:
+                delim = "\n";
+                break;
+            }
+            return string.Join(delim, Items);
+        }
+
+        string IFormattable.ToString(string format, IFormatProvider formatProvider) {
+            return ToString(format);
         }
     }
 }

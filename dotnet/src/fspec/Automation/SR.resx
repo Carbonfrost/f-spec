@@ -73,6 +73,9 @@
   <data name="InvalidVerify" xml:space="preserve">
     <value>invalid verification mode</value>
   </data>
+  <data name="ULoaderPath" xml:space="preserve">
+    <value>Add {{PATH}} to loader path</value>
+  </data>
   <data name="UContextLines" xml:space="preserve">
     <value>Show as many lines of context in unified diffs</value>
   </data>

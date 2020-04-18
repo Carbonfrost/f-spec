@@ -33,6 +33,7 @@ namespace Carbonfrost.CFSpec {
         public readonly List<string> Assemblies = new List<string>();
         public readonly List<PackageReference> Packages = new List<PackageReference>();
         public readonly List<string> FixturePaths = new List<string>();
+        public readonly List<string> LoaderPaths = new List<string>();
         public readonly List<string> FocusPatterns = new List<string>();
         public readonly List<string> SkipPatterns = new List<string>();
         public int RandomSeed;
@@ -62,6 +63,7 @@ namespace Carbonfrost.CFSpec {
 
                 { "i|fixture=",    SR.UFixture(),          v => FixturePaths.Add(v) },
                 { "p|package=",    SR.UPackage(),          v => Packages.Add(SafeParsePackageFormula(v, SR.InvalidPackageReference(), "--package")) },
+                { "loader-path=",  SR.ULoaderPath(),       v => LoaderPaths.Add(v) },
 
                 { "skip=",         SR.USkip(),             v => SkipPatterns.Add(v) },
                 { "focus=",        SR.UFocus(),            v => FocusPatterns.Add(v) },
@@ -114,7 +116,8 @@ namespace Carbonfrost.CFSpec {
                 "fail-fast",
                 "fail-pending",
                 "i|fixture=",
-                "p|package="
+                "p|package=",
+                "loader-path="
             );
         }
 

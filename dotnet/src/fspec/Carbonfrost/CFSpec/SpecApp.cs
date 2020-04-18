@@ -64,12 +64,14 @@ namespace Carbonfrost.CFSpec {
             foreach (var s in Options.SkipPatterns) {
                 testRunnerOptions.SkipPatterns.Add(s);
             }
-            foreach (var s in Options.FixturePaths) {
-                testRunnerOptions.FixturePaths.Add(s);
-            }
-            foreach (var s in Options.Assemblies) {
-                testRunnerOptions.LoaderPaths.Add(s);
-            }
+
+            testRunnerOptions.FixturePaths.AddAll(Options.FixturePaths);
+            testRunnerOptions.FixturePaths.AddAll(PathCollection.FromEnvironment("FSPEC_FIXTURE_PATH"));
+
+            testRunnerOptions.LoaderPaths.AddAll(Options.Assemblies);
+            testRunnerOptions.LoaderPaths.AddAll(Options.LoaderPaths);
+            testRunnerOptions.LoaderPaths.AddAll(PathCollection.FromEnvironment("FSPEC_LOADER_PATH"));
+
             foreach (var s in Options.Packages) {
                 testRunnerOptions.PackageReferences.Add(s);
             }
