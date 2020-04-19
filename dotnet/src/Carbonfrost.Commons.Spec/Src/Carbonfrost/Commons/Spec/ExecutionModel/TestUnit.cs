@@ -42,6 +42,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        internal abstract TestUnitMetadata Metadata {
+            get;
+        }
+
         public virtual ITestSubjectProvider TestSubjectProvider {
             get {
                 return null;

@@ -307,7 +307,7 @@ namespace Carbonfrost.Commons.Spec {
         }
     }
 
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = false)]
     public sealed class ThrowsAttribute : Attribute, ITestMatcherFactory {
 
         private readonly Type _exceptionType;

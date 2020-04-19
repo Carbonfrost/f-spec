@@ -18,7 +18,7 @@ using System;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    class TestCaseExecutionFilterFactorySetup : ITestUnitMetadataProvider, ITestCaseFilter {
+    class TestCaseExecutionFilterFactorySetup : ITestUnitMetadataProvider, ITestUnitDescendantMetadataProvider, ITestCaseFilter {
 
         private readonly ITestExecutionFilterFactory _provider;
 
@@ -27,8 +27,17 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public void Apply(TestContext testContext) {
-            var t = (TestCase) testContext.CurrentTest;
-            t.Filters.Add(this);
+            ApplyCore(testContext.CurrentTest);
+        }
+
+        public void ApplyDescendant(TestContext testContext) {
+            ApplyCore(testContext.CurrentTest);
+        }
+
+        private void ApplyCore(TestUnit unit) {
+            if (unit is TestCase testCase) {
+                testCase.Filters.Add(this);
+            }
         }
 
         void ITestCaseFilter.RunTest(TestContext testContext, Action<TestContext> next) {

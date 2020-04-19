@@ -1,5 +1,5 @@
 //
-// Copyright 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         protected TestTheory(MethodInfo testMethod) {
             if (testMethod == null) {
-                throw new ArgumentNullException("testMethod");
+                throw new ArgumentNullException(nameof(testMethod));
             }
             _method = testMethod;
         }
@@ -54,6 +54,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         public override string DisplayName {
             get {
                 return Parent.DisplayName + "." + TestMethod.Name;
+            }
+        }
+
+        internal override TestUnitMetadata Metadata {
+            get {
+                return new TestUnitMetadata(
+                    TestMethod.GetCustomAttributes(false).Cast<Attribute>()
+                );
             }
         }
 

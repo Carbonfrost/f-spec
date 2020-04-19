@@ -26,7 +26,16 @@ namespace Carbonfrost.SelfTest.Spec {
         [UsingCulture("fr-FR")]
         [Fact]
         public void UsingCultureAttribute_should_set_up_culture() {
-            Assert.Equal(Thread.CurrentThread.CurrentCulture.Name, "fr-FR");
+            Assert.Equal("fr-FR", Thread.CurrentThread.CurrentCulture.Name);
+        }
+    }
+
+    [UsingCulture("fr-FR")]
+    public class UsingCultureAttributeClassLevelTests {
+
+        [Fact]
+        public void UsingCultureAttribute_should_set_up_culture_when_used_on_class() {
+            Assert.Equal("fr-FR", Thread.CurrentThread.CurrentCulture.Name);
         }
     }
 }

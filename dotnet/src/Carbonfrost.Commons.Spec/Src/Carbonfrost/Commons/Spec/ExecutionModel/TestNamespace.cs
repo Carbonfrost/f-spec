@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,9 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
@@ -40,6 +39,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         public sealed override TestUnitCollection Children {
             get {
                 return _children;
+            }
+        }
+
+        internal override TestUnitMetadata Metadata {
+            get {
+                return TestUnitMetadata.Empty;
             }
         }
 

@@ -14,27 +14,9 @@
 // limitations under the License.
 //
 
-using System;
-
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    class TestCaseExecutionFilterSetup : ITestUnitMetadataProvider, ITestCaseFilter {
-
-        private readonly ITestExecutionFilter _provider;
-
-        public TestCaseExecutionFilterSetup(ITestExecutionFilter provider) {
-            _provider = provider;
-        }
-
-        public void Apply(TestContext testContext) {
-            var t = (TestCase) testContext.CurrentTest;
-            t.Filters.Add(this);
-        }
-
-        void ITestCaseFilter.RunTest(TestContext testContext, Action<TestContext> next) {
-            _provider.BeforeExecuting(testContext);
-            next(testContext);
-            _provider.AfterExecuting(testContext);
-        }
+    public interface ITestUnitDescendantMetadataProvider {
+        void ApplyDescendant(TestContext testContext);
     }
 }

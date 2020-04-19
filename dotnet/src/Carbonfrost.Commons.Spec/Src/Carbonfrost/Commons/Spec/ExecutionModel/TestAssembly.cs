@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,6 +49,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        internal override TestUnitMetadata Metadata {
+            get {
+                return new TestUnitMetadata(
+                    _assembly.GetCustomAttributes()
+                );
+            }
+        }
+
         private TestAssembly(Assembly assembly) {
             _assembly = assembly;
             _children = new TestUnitCollection(this);
@@ -56,14 +64,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public static TestUnit Create(Assembly assembly) {
             if (assembly == null) {
-                throw new ArgumentNullException("assembly");
+                throw new ArgumentNullException(nameof(assembly));
             }
             return new TestAssembly(assembly);
         }
 
         protected override void Initialize(TestContext testContext) {
-            IEnumerable<Attribute> attrs = _assembly.GetCustomAttributes().Cast<Attribute>();
-            attrs.ApplyMetadata(testContext);
+            Metadata.Apply(testContext);
 
             foreach (var nsGroup in _assembly.ExportedTypes.GroupBy(t => t.Namespace)) {
                 var tests = nsGroup.Select(t => TestUnitFromType(t));
@@ -76,6 +83,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
                 Children.Add(unit);
             }
+
+            Metadata.ApplyDescendants(testContext, Descendants);
         }
 
         internal ReflectedTestClass TestUnitFromType(Type type) {

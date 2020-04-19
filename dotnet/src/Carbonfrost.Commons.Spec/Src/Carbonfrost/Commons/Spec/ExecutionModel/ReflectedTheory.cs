@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,8 +48,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         protected override void Initialize(TestContext testContext) {
-            IEnumerable<Attribute> attrs = TestMethod.GetCustomAttributes(false).Cast<Attribute>();
-            attrs.ApplyMetadata(testContext);
+            Metadata.Apply(testContext);
 
             int index = 0;
             foreach (var attr in TestDataProviders) {
@@ -76,6 +75,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     index++;
                 }
             }
+
+            Metadata.ApplyDescendants(testContext, Descendants);
         }
 
     }

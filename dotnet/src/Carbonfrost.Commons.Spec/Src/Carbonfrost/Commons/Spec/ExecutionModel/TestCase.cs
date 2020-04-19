@@ -1,5 +1,5 @@
 //
-// Copyright 2017, 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
     public abstract class TestCase : TestUnit {
 
         private readonly List<ITestCaseFilter> _filters = new List<ITestCaseFilter>(0);
-        private List<object> _attributesCache;
+        private IReadOnlyList<Attribute> _attributesCache;
 
         internal IList<ITestCaseFilter> Filters {
             get {
@@ -54,20 +54,27 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         // These are the attributes that control the test case.  They
         // come from the method, its return parameter, and the corresponding
         // property
-        internal IEnumerable<Attribute> Attributes {
+        internal IReadOnlyList<Attribute> Attributes {
             get {
                 if (_attributesCache == null) {
-                    _attributesCache = new List<object>();
-                    _attributesCache.AddAll(TestMethod.GetCustomAttributes(false));
+                    var cache = new List<object>();
+                    cache.AddAll(TestMethod.GetCustomAttributes(false));
 
                     if (TestMethod.ReturnParameter != null) {
-                        _attributesCache.AddAll(TestMethod.ReturnParameter.GetCustomAttributes(false));
+                        cache.AddAll(TestMethod.ReturnParameter.GetCustomAttributes(false));
                     }
                     if (TestProperty != null) {
-                        _attributesCache.AddAll(TestProperty.GetCustomAttributes(false));
+                        cache.AddAll(TestProperty.GetCustomAttributes(false));
                     }
+                    _attributesCache = cache.Cast<Attribute>().ToArray();
                 }
-                return _attributesCache.Cast<Attribute>();
+                return _attributesCache;
+            }
+        }
+
+        internal override TestUnitMetadata Metadata {
+            get {
+                return new TestUnitMetadata(Attributes);
             }
         }
 
@@ -119,7 +126,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        protected TestCase(MethodInfo testMethod) {
+        internal TestCase(MethodInfo testMethod) {
             if (testMethod == null) {
                 throw new ArgumentNullException("testMethod");
             }

@@ -1,5 +1,5 @@
 //
-// Copyright 2016-2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
@@ -53,6 +52,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        internal override TestUnitMetadata Metadata {
+            get {
+                return new TestUnitMetadata(
+                    TestType.GetTypeInfo().GetCustomAttributes(false).Cast<Attribute>()
+                );
+            }
+        }
+
         internal ReflectedTestClass(Type type) {
             _type = type;
             _children = new TestUnitCollection(this);
@@ -65,8 +72,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         protected override void Initialize(TestContext testContext) {
-            IEnumerable<Attribute> attrs = TestType.GetTypeInfo().GetCustomAttributes(false).Cast<Attribute>();
-            attrs.ApplyMetadata(testContext);
+            Metadata.Apply(testContext);
 
             // Either treat as a subject test class or a default one
             if (TestSubjectProvider != null) {
@@ -81,6 +87,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             } else {
                 AddTestMethods();
             }
+
+            Metadata.ApplyDescendants(testContext, Descendants);
         }
 
         public override object FindTestObject() {
