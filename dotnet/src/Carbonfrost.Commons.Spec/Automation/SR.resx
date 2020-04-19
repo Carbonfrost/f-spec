@@ -184,9 +184,6 @@
   <data name="ExpectedInstanceOf" xml:space="preserve">
     <value>Expected instance of {Expected}</value>
   </data>
-  <data name="ExpectedInstanceOfType" xml:space="preserve">
-    <value>Expected instance of type</value>
-  </data>
   <data name="ExpectedLessThan" xml:space="preserve">
     <value>Expected &lt; {Expected}</value>
   </data>
@@ -207,6 +204,9 @@
   </data>
   <data name="ExpectedOverlap" xml:space="preserve">
     <value>Expected overlap</value>
+  </data>
+  <data name="ExpectedReferenceType" xml:space="preserve">
+    <value>Expected reference type</value>
   </data>
   <data name="ExpectedSame" xml:space="preserve">
     <value>Expected same</value>
@@ -234,6 +234,9 @@
   </data>
   <data name="ExpectedTrue" xml:space="preserve">
     <value>Expected true</value>
+  </data>
+  <data name="ExpectedValueType" xml:space="preserve">
+    <value>Expected value type</value>
   </data>
   <data name="ExplicitPassNotSet" xml:space="preserve">
     <value>Test is configured to require explicitly passing, but test completed without invoking Assert.Pass().</value>
@@ -279,6 +282,9 @@
   </data>
   <data name="LabelFileName" xml:space="preserve">
     <value>File name</value>
+  </data>
+  <data name="LabelFlags" xml:space="preserve">
+    <value>Flags</value>
   </data>
   <data name="LabelGiven" xml:space="preserve">
     <value>Given</value>
@@ -394,6 +400,9 @@
   <data name="NotExpectedOverlap" xml:space="preserve">
     <value>Not expected to overlap</value>
   </data>
+  <data name="NotExpectedReferenceType" xml:space="preserve">
+    <value>Expected not reference type</value>
+  </data>
   <data name="NotExpectedSame" xml:space="preserve">
     <value>Not expected to be same</value>
   </data>
@@ -420,6 +429,9 @@
   </data>
   <data name="NotExpectedTrue" xml:space="preserve">
     <value>Not expected to be true</value>
+  </data>
+  <data name="NotExpectedValueType" xml:space="preserve">
+    <value>Expected not value type</value>
   </data>
   <data name="NotPredicateAssignableFrom" xml:space="preserve">
     <value>not be assignable from {Expected}</value>
@@ -496,6 +508,9 @@
   <data name="NotPredicateOverlap" xml:space="preserve">
     <value>not overlap</value>
   </data>
+  <data name="NotPredicateReferenceType" xml:space="preserve">
+    <value>not be reference type</value>
+  </data>
   <data name="NotPredicateSame" xml:space="preserve">
     <value>not be same</value>
   </data>
@@ -519,6 +534,9 @@
   </data>
   <data name="NotPredicateTrue" xml:space="preserve">
     <value>not be true</value>
+  </data>
+  <data name="NotPredicateValueType" xml:space="preserve">
+    <value>not be value type</value>
   </data>
   <data name="ParserErrorLinePosition" xml:space="preserve">
     <value>{0}, line {1}</value>
@@ -604,6 +622,9 @@
   <data name="PredicateOverlap" xml:space="preserve">
     <value>overlap</value>
   </data>
+  <data name="PredicateReferenceType" xml:space="preserve">
+    <value>be reference type</value>
+  </data>
   <data name="PredicateSame" xml:space="preserve">
     <value>be same</value>
   </data>
@@ -627,6 +648,9 @@
   </data>
   <data name="PredicateTrue" xml:space="preserve">
     <value>be true</value>
+  </data>
+  <data name="PredicateValueType" xml:space="preserve">
+    <value>be value type</value>
   </data>
   <data name="SequenceNullConversion" xml:space="preserve">
     <value>Unexpectedly tried to assert on a sequence that was a null reference.</value>

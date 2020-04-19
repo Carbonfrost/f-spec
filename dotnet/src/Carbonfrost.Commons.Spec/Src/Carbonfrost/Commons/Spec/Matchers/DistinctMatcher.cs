@@ -22,6 +22,10 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class Matchers {
 
+        public static DistinctMatcher BeDistinct() {
+            return new DistinctMatcher();
+        }
+
         public static DistinctMatcher<TSource> BeDistinct<TSource>() {
             return new DistinctMatcher<TSource>(EqualityComparer<TSource>.Default);
         }
@@ -278,15 +282,53 @@ namespace Carbonfrost.Commons.Spec {
 
     namespace TestMatchers {
 
-        public class DistinctMatcher<TSource> : TestMatcher<IEnumerable<TSource>> {
+        public class DistinctMatcher : TestMatcher<System.Collections.IEnumerable> {
+
+            public DistinctMatcher<TSource> WithComparer<TSource>(IEqualityComparer<TSource> comparer) {
+                return new DistinctMatcher<TSource>(comparer);
+            }
+
+            public DistinctMatcher<TSource> WithComparer<TSource>(IComparer<TSource> comparer) {
+                if (comparer == null) {
+                    return new DistinctMatcher<TSource>();
+                }
+                return new DistinctMatcher<TSource>(new Assert.EqualityComparerAdapter<TSource>(comparer));
+            }
+
+            public DistinctMatcher<TSource> WithComparison<TSource>(IEqualityComparer<TSource> comparer) {
+                return new DistinctMatcher<TSource>(comparer);
+            }
+
+            public override bool Matches(System.Collections.IEnumerable actual) {
+                var comparer = EqualityComparer<object>.Default;
+                var tally = new HashSet<object>(comparer);
+                foreach (var a in actual) {
+                    if (!tally.Add(a)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+
+        public class DistinctMatcher<TSource> : TestMatcher<IEnumerable<TSource>>, ITestMatcherWithEqualityComparerApiConventions<DistinctMatcher<TSource>, TSource> {
 
             public IEqualityComparer<TSource> Comparer {
                 get;
                 private set;
             }
 
-            public DistinctMatcher(IEqualityComparer<TSource> comparer = null) {
+            public DistinctMatcher() {
+            }
+
+            public DistinctMatcher(IEqualityComparer<TSource> comparer) {
                 Comparer = comparer;
+            }
+
+            public DistinctMatcher(Comparison<TSource> comparison) {
+                if (comparison != null) {
+                    Comparer = new Assert.EqualityComparisonAdapter<TSource>(comparison);
+                }
             }
 
             public DistinctMatcher<TSource> WithComparer(IEqualityComparer<TSource> comparer) {
@@ -295,13 +337,13 @@ namespace Carbonfrost.Commons.Spec {
 
             public DistinctMatcher<TSource> WithComparer(IComparer<TSource> comparer) {
                 if (comparer == null) {
-                    return new DistinctMatcher<TSource>(null);
+                    return new DistinctMatcher<TSource>();
                 }
                 return new DistinctMatcher<TSource>(new Assert.EqualityComparerAdapter<TSource>(comparer));
             }
 
-            public DistinctMatcher<TSource> WithComparison(IEqualityComparer<TSource> comparer) {
-                return new DistinctMatcher<TSource>(comparer);
+            public DistinctMatcher<TSource> WithComparison(Comparison<TSource> comparison) {
+                return new DistinctMatcher<TSource>(comparison);
             }
 
             public override bool Matches(IEnumerable<TSource> actual) {

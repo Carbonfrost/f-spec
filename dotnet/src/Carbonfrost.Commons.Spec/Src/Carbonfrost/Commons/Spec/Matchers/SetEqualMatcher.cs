@@ -1,5 +1,5 @@
 //
-// Copyright 2017, 2018-2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2018-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
 namespace Carbonfrost.Commons.Spec {
@@ -279,14 +278,25 @@ namespace Carbonfrost.Commons.Spec {
 
     namespace TestMatchers {
 
-        public class SetEqualMatcher<TSource> : TestMatcher<IEnumerable<TSource>> {
+        public class SetEqualMatcher<TSource> : TestMatcher<IEnumerable<TSource>>, ITestMatcherWithEqualityComparerApiConventions<SetEqualMatcher<TSource>, TSource> {
 
             public IEnumerable<TSource> Expected { get; private set; }
             public IEqualityComparer<TSource> Comparer { get; private set; }
 
-            public SetEqualMatcher(IEnumerable<TSource> expected, IEqualityComparer<TSource> comparer = null) {
+            public SetEqualMatcher(IEnumerable<TSource> expected) {
+                Expected = expected;
+            }
+
+            public SetEqualMatcher(IEnumerable<TSource> expected, IEqualityComparer<TSource> comparer) {
                 Expected = expected;
                 Comparer = comparer;
+            }
+
+            public SetEqualMatcher(IEnumerable<TSource> expected, Comparison<TSource> comparison) {
+                Expected = expected;
+                if (comparison != null) {
+                    Comparer = new Assert.EqualityComparisonAdapter<TSource>(comparison);
+                }
             }
 
             public SetEqualMatcher<TSource> WithComparer(IEqualityComparer<TSource> comparer) {
@@ -295,13 +305,13 @@ namespace Carbonfrost.Commons.Spec {
 
             public SetEqualMatcher<TSource> WithComparer(IComparer<TSource> comparer) {
                 if (comparer == null) {
-                    return new SetEqualMatcher<TSource>(Expected, null);
+                    return new SetEqualMatcher<TSource>(Expected);
                 }
                 return new SetEqualMatcher<TSource>(Expected, new Assert.EqualityComparerAdapter<TSource>(comparer));
             }
 
-            public SetEqualMatcher<TSource> WithComparison(IEqualityComparer<TSource> comparer) {
-                return new SetEqualMatcher<TSource>(Expected, comparer);
+            public SetEqualMatcher<TSource> WithComparison(Comparison<TSource> comparison) {
+                return new SetEqualMatcher<TSource>(Expected, comparison);
             }
 
             public override bool Matches(IEnumerable<TSource> actual) {

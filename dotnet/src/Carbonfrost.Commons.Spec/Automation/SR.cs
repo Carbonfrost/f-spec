@@ -357,13 +357,6 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("ExpectedInstanceOf") );
     }
 
-  /// <summary>Expected instance of type</summary>
-    internal static string ExpectedInstanceOfType(
-    
-    ) {
-        return string.Format(Culture, ResourceFinder("ExpectedInstanceOfType") );
-    }
-
   /// <summary>Expected < {Expected}</summary>
     internal static string ExpectedLessThan(
     
@@ -411,6 +404,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
     
     ) {
         return string.Format(Culture, ResourceFinder("ExpectedOverlap") );
+    }
+
+  /// <summary>Expected reference type</summary>
+    internal static string ExpectedReferenceType(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("ExpectedReferenceType") );
     }
 
   /// <summary>Expected same</summary>
@@ -474,6 +474,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
     
     ) {
         return string.Format(Culture, ResourceFinder("ExpectedTrue") );
+    }
+
+  /// <summary>Expected value type</summary>
+    internal static string ExpectedValueType(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("ExpectedValueType") );
     }
 
   /// <summary>Test is configured to require explicitly passing, but test completed without invoking Assert.Pass().</summary>
@@ -579,6 +586,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
     
     ) {
         return string.Format(Culture, ResourceFinder("LabelFileName") );
+    }
+
+  /// <summary>Flags</summary>
+    internal static string LabelFlags(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("LabelFlags") );
     }
 
   /// <summary>Given</summary>
@@ -847,6 +861,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("NotExpectedOverlap") );
     }
 
+  /// <summary>Expected not reference type</summary>
+    internal static string NotExpectedReferenceType(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("NotExpectedReferenceType") );
+    }
+
   /// <summary>Not expected to be same</summary>
     internal static string NotExpectedSame(
     
@@ -908,6 +929,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
     
     ) {
         return string.Format(Culture, ResourceFinder("NotExpectedTrue") );
+    }
+
+  /// <summary>Expected not value type</summary>
+    internal static string NotExpectedValueType(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("NotExpectedValueType") );
     }
 
   /// <summary>not be assignable from {Expected}</summary>
@@ -1085,6 +1113,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("NotPredicateOverlap") );
     }
 
+  /// <summary>not be reference type</summary>
+    internal static string NotPredicateReferenceType(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("NotPredicateReferenceType") );
+    }
+
   /// <summary>not be same</summary>
     internal static string NotPredicateSame(
     
@@ -1139,6 +1174,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
     
     ) {
         return string.Format(Culture, ResourceFinder("NotPredicateTrue") );
+    }
+
+  /// <summary>not be value type</summary>
+    internal static string NotPredicateValueType(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("NotPredicateValueType") );
     }
 
   /// <summary>${message}, line ${line}</summary>
@@ -1337,6 +1379,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("PredicateOverlap") );
     }
 
+  /// <summary>be reference type</summary>
+    internal static string PredicateReferenceType(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("PredicateReferenceType") );
+    }
+
   /// <summary>be same</summary>
     internal static string PredicateSame(
     
@@ -1391,6 +1440,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
     
     ) {
         return string.Format(Culture, ResourceFinder("PredicateTrue") );
+    }
+
+  /// <summary>be value type</summary>
+    internal static string PredicateValueType(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("PredicateValueType") );
     }
 
   /// <summary>Unexpectedly tried to assert on a sequence that was a null reference.</summary>

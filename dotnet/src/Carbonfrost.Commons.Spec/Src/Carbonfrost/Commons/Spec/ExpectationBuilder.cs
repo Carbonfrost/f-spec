@@ -156,6 +156,10 @@ namespace Carbonfrost.Commons.Spec {
             ToExpectation(false).Should(matcher, message, args);
         }
 
+        public void To(ITestMatcher<object> matcher, string message = null, params object[] args) {
+            ToExpectation(false).As<object>().Should(matcher, message, args);
+        }
+
         public void NotTo(ITestMatcher matcher, string message = null, params object[] args) {
             ToExpectation(true).Untyped().Should(matcher, message, args);
         }
@@ -164,12 +168,20 @@ namespace Carbonfrost.Commons.Spec {
             ToExpectation(true).Should(matcher, message, args);
         }
 
+        public void NotTo(ITestMatcher<object> matcher, string message = null, params object[] args) {
+            ToExpectation(true).As<object>().Should(matcher, message, args);
+        }
+
         public void ToNot(ITestMatcher matcher, string message = null, params object[] args) {
             ToExpectation(true).Untyped().Should(matcher, message, args);
         }
 
         public void ToNot(ITestMatcher<T> matcher, string message = null, params object[] args) {
             ToExpectation(true).Should(matcher, message, args);
+        }
+
+        public void ToNot(ITestMatcher<object> matcher, string message = null, params object[] args) {
+            ToExpectation(true).As<object>().Should(matcher, message, args);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]

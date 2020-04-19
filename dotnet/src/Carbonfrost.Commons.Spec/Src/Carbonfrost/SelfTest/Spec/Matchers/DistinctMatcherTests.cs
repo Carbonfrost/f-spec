@@ -69,8 +69,17 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
 
         [Fact]
         public void Expect_Given_fluent_expression() {
-            // TODO It shouldn't be necessary to specify type arguments
             Given().Expect(() => new [] { 420 }).To(Matchers.BeDistinct<int>());
+        }
+
+        [Fact]
+        public void Expect_Given_fluent_expression_without_type_arguments() {
+            Given().Expect(() => new [] { 420 }).To(Matchers.BeDistinct());
+        }
+
+        [Fact]
+        public void Expect_fluent_expression_without_type_arguments() {
+            Expect(new [] { "text", "text" }).NotTo(Matchers.BeDistinct());
         }
     }
 }
