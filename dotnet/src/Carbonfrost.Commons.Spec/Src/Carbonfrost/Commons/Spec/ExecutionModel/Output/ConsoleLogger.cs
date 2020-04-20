@@ -88,7 +88,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
         }
 
         protected override void OnTestCaseFinished(TestCaseFinishedEventArgs e) {
-            e.Result.Messages = _bufferLog.ToArray();
+            e.Result.Messages.AddRange(_bufferLog);
             _bufferLog.Clear();
 
             if (IsProblem(e.Result)) {
@@ -169,7 +169,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
         }
 
         private void DisplayResult(TestUnitResult result) {
-            var shouldShowDetails = result.Failed || result.IsPending || result.Messages.Length > 0;
+            var shouldShowDetails = result.Failed || result.IsPending || result.Messages.Count > 0;
             if ((_flags & DisplayFlags.ShowExplicitPasses) > 0
                 && result.Passed
                 && result.ExceptionInfo != null

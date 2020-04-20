@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
@@ -23,6 +23,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         private DateTime _finishedAt;
         private DateTime _startedAt;
+        private readonly List<TestMessageEventArgs> _messages = new List<TestMessageEventArgs>();
 
         public abstract string DisplayName {
             get;
@@ -123,7 +124,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         // HACK These are the messages that were collected during the test run.
         // Can this be API?
-        internal TestMessageEventArgs[] Messages { get; set; }
+        internal List<TestMessageEventArgs> Messages {
+            get {
+                return _messages;
+            }
+        }
 
         internal virtual void ApplyCounts(TestUnitCounts counts) {}
 
