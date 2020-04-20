@@ -77,16 +77,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             }
         }
 
-        protected override void OnTestCaseStarted(TestCaseStartedEventArgs e) {
-            // We only show this once for a theory (hence on position 0)
-            if (e.Position == 0 && (_flags & DisplayFlags.ShowCaseStart) > 0) {
-                console.Gray();
-                console.WriteLine();
-                console.Write("  " + e.MethodName + ": ");
-                console.ResetColor();
-            }
-        }
-
         protected override void OnTestCaseFinished(TestCaseFinishedEventArgs e) {
             e.Result.Messages.AddRange(_bufferLog);
             _bufferLog.Clear();
@@ -96,6 +86,23 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             }
 
             _parts.onTestCaseFinished.Render(RenderContext, e.Result);
+        }
+
+        protected override void OnTestTheoryStarted(TestTheoryStartedEventArgs e) {
+            if ((_flags & DisplayFlags.ShowCaseStart) > 0) {
+                console.Gray();
+                console.WriteLine();
+                console.Write("  " + e.TestTheory.TestMethod + ": ");
+                console.ResetColor();
+            }
+        }
+
+        protected override void OnTestTheoryFinished(TestTheoryFinishedEventArgs e) {
+            e.Result.Messages.AddRange(_bufferLog);
+            _bufferLog.Clear();
+            foreach (var m in e.Result.Messages) {
+                PrintMessage(m);
+            }
         }
 
         protected override void OnTestRunnerStarting(TestRunnerStartingEventArgs e) {

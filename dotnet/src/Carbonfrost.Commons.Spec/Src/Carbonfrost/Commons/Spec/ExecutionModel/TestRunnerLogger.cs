@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
 using System.Threading;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
@@ -49,12 +48,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             events.TestUnitStarted += events_TestUnitStarted;
             events.TestUnitStarting += events_TestUnitStarting;
             events.TestUnitFinished += events_TestUnitFinished;
+            events.TestTheoryStarted += events_TestTheoryStarted;
+            events.TestTheoryStarting += events_TestTheoryStarting;
+            events.TestTheoryFinished += events_TestTheoryFinished;
             events.Message += events_Message;
         }
 
         public virtual object GetService(Type serviceType) {
             if (serviceType == null) {
-                throw new ArgumentNullException("serviceType");
+                throw new ArgumentNullException(nameof(serviceType));
             }
             return _serviceProvider.GetService(serviceType);
         }
@@ -93,6 +95,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 _events.TestUnitStarted -= events_TestUnitStarted;
                 _events.TestUnitStarting -= events_TestUnitStarting;
                 _events.TestUnitFinished -= events_TestUnitFinished;
+                _events.TestTheoryStarted -= events_TestTheoryStarted;
+                _events.TestTheoryStarting -= events_TestTheoryStarting;
+                _events.TestTheoryFinished -= events_TestTheoryFinished;
                 _events = null;
             }
             _serviceProvider = null;
@@ -163,6 +168,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         protected virtual void OnTestUnitFinished(TestUnitFinishedEventArgs e) {
+            DefaultMessage(e);
+        }
+
+        protected virtual void OnTestTheoryStarting(TestTheoryStartingEventArgs e) {
+            DefaultMessage(e);
+        }
+
+        protected virtual void OnTestTheoryStarted(TestTheoryStartedEventArgs e) {
+            DefaultMessage(e);
+        }
+
+        protected virtual void OnTestTheoryFinished(TestTheoryFinishedEventArgs e) {
             DefaultMessage(e);
         }
 
@@ -256,6 +273,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         private void events_TestUnitFinished(object sender, TestUnitFinishedEventArgs e) {
             OnTestUnitFinished(e);
+        }
+
+        private void events_TestTheoryStarting(object sender, TestTheoryStartingEventArgs e) {
+            OnTestTheoryStarting(e);
+        }
+
+        private void events_TestTheoryStarted(object sender, TestTheoryStartedEventArgs e) {
+            OnTestTheoryStarted(e);
+        }
+
+        private void events_TestTheoryFinished(object sender, TestTheoryFinishedEventArgs e) {
+            OnTestTheoryFinished(e);
         }
     }
 }

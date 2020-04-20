@@ -41,6 +41,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         public event EventHandler<TestUnitStartingEventArgs> TestUnitStarting;
         public event EventHandler<TestUnitStartedEventArgs> TestUnitStarted;
         public event EventHandler<TestUnitFinishedEventArgs> TestUnitFinished;
+        public event EventHandler<TestTheoryStartingEventArgs> TestTheoryStarting;
+        public event EventHandler<TestTheoryStartedEventArgs> TestTheoryStarted;
+        public event EventHandler<TestTheoryFinishedEventArgs> TestTheoryFinished;
 
         internal static string Version {
             get {
@@ -215,6 +218,24 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        protected virtual void OnTestTheoryStarting(TestTheoryStartingEventArgs e) {
+            if (TestTheoryStarting != null) {
+                TestTheoryStarting(this, e);
+            }
+        }
+
+        protected virtual void OnTestTheoryStarted(TestTheoryStartedEventArgs e) {
+            if (TestTheoryStarted != null) {
+                TestTheoryStarted(this, e);
+            }
+        }
+
+        protected virtual void OnTestTheoryFinished(TestTheoryFinishedEventArgs e) {
+            if (TestTheoryFinished != null) {
+                TestTheoryFinished(this, e);
+            }
+        }
+
         protected virtual void OnMessage(TestMessageEventArgs e) {
             if (Message != null) {
                 Message(this, e);
@@ -250,6 +271,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     OnTestClassStarting(new TestClassStartingEventArgs(e));
                     break;
                 case TestUnitType.Theory:
+                    OnTestTheoryStarting(new TestTheoryStartingEventArgs(e));
                     break;
                 case TestUnitType.Fact:
                 case TestUnitType.Case:
@@ -272,6 +294,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     OnTestClassStarted(new TestClassStartedEventArgs(e));
                     break;
                 case TestUnitType.Theory:
+                    OnTestTheoryStarted(new TestTheoryStartedEventArgs(e));
                     break;
                 case TestUnitType.Fact:
                 case TestUnitType.Case:
@@ -294,6 +317,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     OnTestClassFinished(new TestClassFinishedEventArgs(e));
                     break;
                 case TestUnitType.Theory:
+                    OnTestTheoryFinished(new TestTheoryFinishedEventArgs(e));
                     break;
                 case TestUnitType.Fact:
                 case TestUnitType.Case:
