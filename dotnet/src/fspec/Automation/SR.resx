@@ -152,7 +152,7 @@
     <value>Specify the maximum {{TIME}} allowed for any particular test to execute</value>
   </data>
   <data name="UVerify" xml:space="preserve">
-    <value>Use the specified verification mode to check for errors in tests and assertions</value>
+    <value>Use the specified verification {{MODE}} (either strict or none) to check for errors in tests and assertions</value>
   </data>
   <data name="UVersion" xml:space="preserve">
     <value>Report the version information and exit</value>

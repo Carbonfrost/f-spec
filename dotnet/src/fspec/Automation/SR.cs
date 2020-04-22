@@ -280,7 +280,7 @@ namespace Carbonfrost.CFSpec.Resources {
         return string.Format(Culture, ResourceFinder("UTimeout") );
     }
 
-  /// <summary>Use the specified verification mode to check for errors in tests and assertions</summary>
+  /// <summary>Use the specified verification {{MODE}} (either strict or none) to check for errors in tests and assertions</summary>
     internal static string UVerify(
     
     ) {

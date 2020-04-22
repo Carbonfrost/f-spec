@@ -10,15 +10,15 @@ dotnet/install: -install-dotnet-fspec -install-manuals-fspec
 dotnet/test: dotnet/build -dotnet/test
 
 -dotnet/test:
-	dotnet dotnet/src/fspec/bin/$(CONFIGURATION)/$(FRAMEWORK)/fspec.dll --self-test $(FSPEC_OPTIONS)
+	$(Q) dotnet dotnet/src/fspec/bin/$(CONFIGURATION)/$(FRAMEWORK)/fspec.dll --verify=strict --self-test $(FSPEC_OPTIONS)
 
 ## Generate generated code
 dotnet/generate:
-	srgen -c Carbonfrost.Commons.Spec.Resources.SR \
+	$(Q) srgen -c Carbonfrost.Commons.Spec.Resources.SR \
 		-r Carbonfrost.Commons.Spec.Automation.SR \
 		dotnet/src/Carbonfrost.Commons.Spec/Automation/SR.properties \
 		--resx
-	srgen -c Carbonfrost.CFSpec.Resources.SR \
+	$(Q) srgen -c Carbonfrost.CFSpec.Resources.SR \
 		-r Carbonfrost.CFSpec.Resources.SR \
 		dotnet/src/fspec/Automation/SR.properties \
 		--resx
@@ -26,7 +26,7 @@ dotnet/generate:
 
 ## Run unit tests with code coverage
 dotnet/cover: dotnet/build -check-command-coverlet
-	coverlet \
+	$(Q) coverlet \
 		--target "make" \
 		--targetargs "-- -dotnet/test" \
 		--format lcov \
@@ -53,6 +53,6 @@ man/man1/fspec.1.html: -generate-docs
 man/man1/fspec.1: -generate-docs
 
 -generate-docs:
-	ronn man/man1/fspec.1.md
+	$(Q) ronn man/man1/fspec.1.md
 
 include eng/.mk/*.mk

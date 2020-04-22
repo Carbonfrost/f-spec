@@ -17,6 +17,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using NDesk.Options;
 
 namespace Carbonfrost.CFSpec {
@@ -31,11 +32,76 @@ namespace Carbonfrost.CFSpec {
 
         private readonly List<OptionGroup> _groups = new List<OptionGroup>();
 
+        public void WriteSuccintUsage(TextWriter o) {
+            const string usageLabel = "usage: fspec ";
+            o.Write(usageLabel);
+
+            int INITIAL = usageLabel.Length;
+            int pos = INITIAL;
+            foreach (var opt in Items.Select(GetOptionProto)) {
+                if (pos + opt.Length >= 80) {
+                    o.WriteLine();
+                    o.Write(new string(' ', INITIAL));
+                    pos = INITIAL;
+                }
+                pos += opt.Length + 1;
+                o.Write(opt + " ");
+            }
+            o.WriteLine("[assembly]...");
+            o.WriteLine();
+            o.WriteLine("Run tests in the specified assemblies");
+            o.WriteLine();
+        }
+
+        private string GetOptionProto(Option p) {
+            var names = p.Names.Except(new [] { "<>" });
+            var localizer = MessageLocalizer;
+            if (!names.Any()) {
+                return null;
+            }
+            var sb = new StringBuilder();
+            sb.Append("[");
+            bool comma = false;
+            foreach (var name in names) {
+                if (comma) {
+                    sb.Append("|");
+                }
+                if (name.Length == 1) {
+                    sb.Append("-");
+                } else {
+                    sb.Append("--");
+                }
+                sb.Append(name);
+                comma = true;
+            }
+
+            if (p.OptionValueType == OptionValueType.Optional ||
+                p.OptionValueType == OptionValueType.Required) {
+                if (p.OptionValueType == OptionValueType.Optional) {
+                    sb.Append("[");
+                }
+                sb.Append(localizer("=" + GetArgumentName(0, p.MaxValueCount, p.Description)));
+
+                string sep = p.ValueSeparators != null && p.ValueSeparators.Length > 0
+                    ? p.ValueSeparators [0]
+                    : " ";
+                for (int c = 1; c < p.MaxValueCount; ++c) {
+                    sb.Append(localizer(sep + GetArgumentName (c, p.MaxValueCount, p.Description)));
+                }
+                if (p.OptionValueType == OptionValueType.Optional) {
+                    sb.Append("]");
+                }
+            }
+            sb.Append("]");
+            return sb.ToString();
+        }
+
         public void WriteUsage(TextWriter o) {
             var groupedOptions = new HashSet<Option>();
+            WriteSuccintUsage(o);
 
             foreach (var group in _groups) {
-                o.WriteLine(group.Label);
+                o.WriteLine(group.Label + ":");
 
                 // Keep order they were specified in Add(), not Group
                 var options = this.Where(o => group.Options.Contains(o.Prototype));

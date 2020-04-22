@@ -3,17 +3,14 @@ fspec (1) -- a test framework for .NET Core
 
 ## SYNOPSIS
 
-  fspec [OPTION...] ASSEMBLY...
+* :
+      **fspec** [options] [<assembly>]...
 
 ## DESCRIPTION
 
 The fspec(1) command runs tests that were built with **f-spec**, a test framework for .NET Core.
 
-Each <ASSEMBLY> to load is specified as an argument to the command.  Assemblies are scanned for tests, and dependency assemblies are automatically loaded if they are in the loader path.  The loader path is discussed in the [LOADER PATH][] section.
-
-Inline markup for `code`, `user input`, and **strong** are displayed
-boldface; <variable>, _emphasis_, *emphasis*, are displayed in italics
-(HTML) or underline (roff).
+Each <assembly> to load is specified as an argument to the command.  Assemblies are scanned for tests, and dependency assemblies are automatically loaded if they are in the loader path.  The loader path is discussed in the [LOADER PATH][] section.
 
 ## OPTIONS
 
@@ -83,7 +80,7 @@ When string comparisons generate differences, this parameter is used to control 
 * `--timeout`=<TIME>:
   The maximum <TIME> allowed for any particular test to execute.  The syntax of TIME is either a floating point number representing the whole and partial seconds to allow or it is the syntax of `System.TimeSpan` which looks like <DAYS>.<HOURS>:<MINUTES>:<SECONDS>.<TICKS>
 
-* `--verify`=<VALUE>:
+* `--verify`={**strict**|**none**}:
   Use the specified verification mode to check for errors in tests and assertions.  If `strict` is used, then tests could fail if tests or assertions are structured incorrectly.  If `none` is used, then no verification is used, but a warning is printed when certain verification errors occur.
 
 * `--help`:

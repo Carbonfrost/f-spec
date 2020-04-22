@@ -139,10 +139,6 @@ namespace Carbonfrost.CFSpec {
         }
 
         public void Usage() {
-            _console.WriteLine("Usage: fspec [OPTION]... [ASSEMBLY]...");
-            _console.WriteLine("Run tests in the specified assemblies");
-            _console.WriteLine();
-
             var s = new StringWriter();
             OptionSet.WriteUsage(s);
             _console.Write(s.ToString());

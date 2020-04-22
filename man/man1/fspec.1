@@ -4,13 +4,13 @@
 .SH "NAME"
 \fBfspec\fR \- a test framework for \.NET Core
 .SH "SYNOPSIS"
-fspec [OPTION\|\.\|\.\|\.] ASSEMBLY\|\.\|\.\|\.
+.TP
+
+\fBfspec\fR [options] [\fIassembly\fR]\|\.\|\.\|\.
 .SH "DESCRIPTION"
 The fspec(1) command runs tests that were built with \fBf\-spec\fR, a test framework for \.NET Core\.
 .P
-Each \fIASSEMBLY\fR to load is specified as an argument to the command\. Assemblies are scanned for tests, and dependency assemblies are automatically loaded if they are in the loader path\. The loader path is discussed in the \fI\%#LOADER\-PATH\fR section\.
-.P
-Inline markup for \fBcode\fR, \fBuser input\fR, and \fBstrong\fR are displayed boldface; \fIvariable\fR, \fIemphasis\fR, \fIemphasis\fR, are displayed in italics (HTML) or underline (roff)\.
+Each \fIassembly\fR to load is specified as an argument to the command\. Assemblies are scanned for tests, and dependency assemblies are automatically loaded if they are in the loader path\. The loader path is discussed in the \fI\%#LOADER\-PATH\fR section\.
 .SH "OPTIONS"
 .TP
 \fB\-\-context\-lines\fR=\fICOUNT\fR
@@ -79,7 +79,7 @@ Skip tests whose descriptions or names match the given REGEX
 \fB\-\-timeout\fR=\fITIME\fR
 The maximum \fITIME\fR allowed for any particular test to execute\. The syntax of TIME is either a floating point number representing the whole and partial seconds to allow or it is the syntax of \fBSystem\.TimeSpan\fR which looks like \fIDAYS\fR\.\fIHOURS\fR:\fIMINUTES\fR:\fISECONDS\fR\.\fITICKS\fR
 .TP
-\fB\-\-verify\fR=\fIVALUE\fR
+\fB\-\-verify\fR={\fBstrict\fR|\fBnone\fR}
 Use the specified verification mode to check for errors in tests and assertions\. If \fBstrict\fR is used, then tests could fail if tests or assertions are structured incorrectly\. If \fBnone\fR is used, then no verification is used, but a warning is printed when certain verification errors occur\.
 .TP
 \fB\-\-help\fR

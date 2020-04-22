@@ -939,7 +939,7 @@ namespace NDesk.Options {
             return true;
         }
 
-        static int GetNextOptionIndex (string[] names, int i)
+        protected static int GetNextOptionIndex (string[] names, int i)
         {
             while (i < names.Length && names [i] == "<>") {
                 ++i;
@@ -953,7 +953,7 @@ namespace NDesk.Options {
             o.Write (s);
         }
 
-        private static string GetArgumentName (int index, int maxIndex, string description)
+        protected static string GetArgumentName (int index, int maxIndex, string description)
         {
             if (description == null)
                 return maxIndex == 1 ? "VALUE" : "VALUE" + (index + 1);

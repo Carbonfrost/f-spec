@@ -77,17 +77,16 @@
 </p>
 <h2 id="SYNOPSIS">SYNOPSIS</h2>
 
-<p>fspec [OPTION...] ASSEMBLY...</p>
+<dl>
+<dt></dt>
+<dd>    <strong>fspec</strong> [options] [<var>assembly</var>]...</dd>
+</dl>
 
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
 
 <p>The <span class="man-ref">fspec<span class="s">(1)</span></span> command runs tests that were built with <strong>f-spec</strong>, a test framework for .NET Core.</p>
 
-<p>Each <var>ASSEMBLY</var> to load is specified as an argument to the command.  Assemblies are scanned for tests, and dependency assemblies are automatically loaded if they are in the loader path.  The loader path is discussed in the <a href="#LOADER-PATH" title="LOADER PATH" data-bare-link="true">LOADER PATH</a> section.</p>
-
-<p>Inline markup for <code>code</code>, <code>user input</code>, and <strong>strong</strong> are displayed
-boldface; <var>variable</var>, <em>emphasis</em>, <em>emphasis</em>, are displayed in italics
-(HTML) or underline (roff).</p>
+<p>Each <var>assembly</var> to load is specified as an argument to the command.  Assemblies are scanned for tests, and dependency assemblies are automatically loaded if they are in the loader path.  The loader path is discussed in the <a href="#LOADER-PATH" title="LOADER PATH" data-bare-link="true">LOADER PATH</a> section.</p>
 
 <h2 id="OPTIONS">OPTIONS</h2>
 
@@ -156,8 +155,7 @@ boldface; <var>variable</var>, <em>emphasis</em>, <em>emphasis</em>, are display
 <dd>The maximum <var>TIME</var> allowed for any particular test to execute.  The syntax of TIME is either a floating point number representing the whole and partial seconds to allow or it is the syntax of <code>System.TimeSpan</code> which looks like <var>DAYS</var>.<var>HOURS</var>:<var>MINUTES</var>:<var>SECONDS</var>.<var>TICKS</var>
 </dd>
 <dt>
-<code>--verify</code>=<var>VALUE</var>
-</dt>
+<code>--verify</code>={<strong>strict</strong>|<strong>none</strong>}</dt>
 <dd>Use the specified verification mode to check for errors in tests and assertions.  If <code>strict</code> is used, then tests could fail if tests or assertions are structured incorrectly.  If <code>none</code> is used, then no verification is used, but a warning is printed when certain verification errors occur.</dd>
 <dt><code>--help</code></dt>
 <dd>Display the help screen</dd>
