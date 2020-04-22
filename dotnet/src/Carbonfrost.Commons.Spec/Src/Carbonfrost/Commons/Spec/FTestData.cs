@@ -77,6 +77,12 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        public bool Failed {
+            get {
+                return _self.Failed;
+            }
+        }
+
         private TestData Copy {
             get {
                 return _self.Focus();
@@ -97,6 +103,14 @@ namespace Carbonfrost.Commons.Spec {
 
         public TestData Explicit(string reason) {
             return Copy.Explicit(reason);
+        }
+
+        public TestData Fail() {
+            return Copy.Fail(null);
+        }
+
+        public TestData Fail(string reason) {
+            return Copy.Fail(reason);
         }
 
         public TestData Focus() {

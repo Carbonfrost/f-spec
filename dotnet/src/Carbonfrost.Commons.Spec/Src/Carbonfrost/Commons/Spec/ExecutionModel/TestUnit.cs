@@ -126,8 +126,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         protected virtual void AfterExecutingDescendant(TestContext descendantTestContext) {
         }
 
-        internal bool NotifyStarting(ITestRunnerEventSink events) {
-            var e = new TestUnitStartingEventArgs(this);
+        internal bool NotifyStarting(ITestRunnerEventSink events, out TestUnitStartingEventArgs e) {
+            e = new TestUnitStartingEventArgs(this);
             events.NotifyUnitStarting(e);
             return !e.Cancel;
         }
@@ -187,6 +187,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             set {
                 WritePreamble();
                 SetFlag(TestUnitFlags.Skip, value);
+            }
+        }
+
+        public bool Failed {
+            get {
+                return _flags.HasFlag(TestUnitFlags.Failed);
+            }
+            set {
+                WritePreamble();
+                SetFlag(TestUnitFlags.Failed, value);
             }
         }
 
@@ -288,12 +298,26 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return Type + " " + DisplayName;
         }
 
-        internal void ForceSkipped() {
-            SetFlag(TestUnitFlags.Skip, true);
+        internal void ForcePredeterminedStatus(TestUnitFlags flags, string reason) {
+            SetFlag(flags, true);
+            _reason = reason;
 
             foreach (var c in Children) {
-                c.ForceSkipped();
+                c.ForcePredeterminedStatus(flags, null);
             }
+        }
+
+        internal static TestStatus? ConvertToStatus(ITestUnitState state) {
+            if (state.Skipped && !state.IsFocused) { // Skip unless focussed
+                return TestStatus.Skipped;
+            }
+            if (state.IsPending) {
+                return TestStatus.Pending;
+            }
+            if (state.Failed) {
+                return TestStatus.Failed;
+            }
+            return null;
         }
 
         private void ThrowIfSealed() {

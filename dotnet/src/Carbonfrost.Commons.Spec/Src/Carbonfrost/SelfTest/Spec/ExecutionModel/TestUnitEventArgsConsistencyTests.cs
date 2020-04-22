@@ -1,13 +1,13 @@
 #if SELF_TEST
 
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ namespace Carbonfrost.SelfTest.Spec {
 
         public IEnumerable<TypeInfo> EventArgsTypes {
             get {
-                return typeof(Extensions).GetTypeInfo().Assembly.DefinedTypes.Where(t => t.Name.EndsWith("EventArgs"));
+                return typeof(Extensions).GetTypeInfo().Assembly.DefinedTypes.Where(t => t.IsClass && t.Name.EndsWith("EventArgs"));
             }
         }
 
@@ -56,6 +56,7 @@ namespace Carbonfrost.SelfTest.Spec {
             var self = "TestUnit" + suffix + "EventArgs";
             Func<TypeInfo, bool> pred = t =>
                 t.Name != self
+                && t.IsClass
                 && !t.Name.Contains("Runner")
                 && t.Name.EndsWith(suffix + "EventArgs");
 
@@ -105,7 +106,7 @@ namespace Carbonfrost.SelfTest.Spec {
             Assert.NotNull(cancel);
 
             var unit = new TestUnitStartingEventArgs(null);
-            var ctor = type.DeclaredConstructors.First();
+            var ctor = type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).First();
             var inst = ctor.Invoke(new object[] { unit });
             cancel.SetValue(inst, true);
 
@@ -116,7 +117,7 @@ namespace Carbonfrost.SelfTest.Spec {
         [Theory]
         [PropertyData("FinishedEventArgsTypes")]
         public void FinishedEventArgs_should_have_only_unit_constructor(TypeInfo type) {
-            var ctors = type.DeclaredConstructors;
+            var ctors = type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
             Assert.Single(ctors);
             Assert.Single(ctors.First().GetParameters());
             Assert.Equal("TestUnitFinishedEventArgs", ctors.First().GetParameters()[0].ParameterType.Name);

@@ -16,6 +16,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Carbonfrost.Commons.Spec.Resources;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
@@ -68,6 +69,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         protected override void BeforeExecuting(TestContext testContext) {
             if (Children.Count == 0) {
                 testContext.Log.TheoryHasNoDataProviders();
+                testContext.VerifiableProblem(SR.TheoryHasNoDataProviders());
             }
             base.BeforeExecuting(testContext);
         }

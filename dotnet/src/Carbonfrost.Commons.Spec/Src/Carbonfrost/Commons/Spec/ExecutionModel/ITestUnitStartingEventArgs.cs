@@ -16,12 +16,8 @@
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    interface ITestUnitState {
-        bool Failed { get; }
-        bool IsExplicit { get; }
-        bool IsFocused { get; }
-        bool IsPending { get; }
-        bool PassExplicitly { get; }
-        bool Skipped { get; }
+    interface ITestUnitStartingEventArgs {
+        bool Cancel { get; set; }
+        string Reason { get; set; }
     }
 }

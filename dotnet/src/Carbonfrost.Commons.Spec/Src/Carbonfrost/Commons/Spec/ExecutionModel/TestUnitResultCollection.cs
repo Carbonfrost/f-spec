@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,13 +15,57 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     public class TestUnitResultCollection : Collection<TestUnitResult> {
 
         private readonly TestUnitResults _owner;
+        private TestUnitCounts _countsCache;
+        private TestStatus? _statusCache;
+
+        internal DateTime? StartedAt {
+            get {
+                if (Count == 0) {
+                    return null;
+                }
+                return Items[0].StartedAt;
+            }
+        }
+
+        internal DateTime? FinishedAt {
+            get {
+                if (Count == 0) {
+                    return null;
+                }
+                return Items.Last().FinishedAt;
+            }
+        }
+
+        internal TestStatus Status {
+            get {
+                if (_statusCache == null) {
+                    _statusCache = ComputeStatusSlow();
+                }
+                return _statusCache.Value;
+            }
+        }
+
+        internal TestUnitCounts Counts {
+            get {
+                if (_countsCache == null) {
+                    _countsCache = new TestUnitCounts();
+                    foreach (var c in Items) {
+                        c.ApplyCounts(_countsCache);
+                    }
+                }
+
+                return _countsCache;
+            }
+        }
 
         internal TestUnitResultCollection(TestUnitResults owner) {
             _owner = owner;
@@ -43,7 +87,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             ThrowIfReadOnly();
             item.Parent = _owner;
-            Items.Insert(index, item);
+            base.InsertItem(index, item);
+            ClearCache();
         }
 
         protected override void ClearItems() {
@@ -53,6 +98,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
 
             base.ClearItems();
+            ClearCache();
         }
 
         protected override void SetItem(int index, TestUnitResult item) {
@@ -62,13 +108,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             ThrowIfReadOnly();
             this[index].Parent = null;
             item.Parent = _owner;
-            Items[index] = item;
+            base.SetItem(index, item);
+            ClearCache();
         }
 
         protected override void RemoveItem(int index) {
             ThrowIfReadOnly();
             this[index].Parent = null;
-            Items.RemoveAt(index);
+            base.RemoveItem(index);
+            ClearCache();
         }
 
         public void MakeReadOnly() {
@@ -77,5 +125,19 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public bool IsReadOnly { get; private set; }
 
+        private void ClearCache() {
+            _countsCache = null;
+            _statusCache = null;
+        }
+
+        private TestStatus ComputeStatusSlow() {
+            if (Items.Count == 0) {
+                return TestStatus.Passed;
+            }
+            if (Items.Any(c => c.Status == TestStatus.Failed)) {
+                return TestStatus.Failed;
+            }
+            return TestStatus.Passed;
+        }
     }
 }

@@ -15,7 +15,6 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
@@ -53,27 +52,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
         }
 
         protected override void OnTestClassFinished(TestClassFinishedEventArgs e) {
-            if (_bufferLog.Count > 0) {
-                console.PushIndent();
-                console.WriteLine();
-                console.WriteLine();
-                console.WriteLine(e.Class.Name);
-
-                foreach (var m in _bufferLog) {
-                    PrintMessage(m);
-                }
-                console.PopIndent();
-                console.WriteLine();
-                _bufferLog.Clear();
-            }
-
-            // Test class failed in a special way, so we want to display this
-            if (!e.Result.Passed) {
-                console.ColorFor(e.Result);
-                console.WriteLine();
-                console.Write(string.Format("  {0} (setup): ", e.Class));
-                console.ResetColor();
-                DisplayResult(e.Result);
+            if (IsProblem(e.Result)) {
+                _problems.Add(e.Result);
             }
         }
 
@@ -100,9 +80,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
         protected override void OnTestTheoryFinished(TestTheoryFinishedEventArgs e) {
             e.Result.Messages.AddRange(_bufferLog);
             _bufferLog.Clear();
-            foreach (var m in e.Result.Messages) {
-                PrintMessage(m);
+
+            if (IsProblem(e.Result)) {
+                _problems.Add(e.Result);
             }
+
+            _parts.onTestTheoryFinished.Render(RenderContext, e.Result);
         }
 
         protected override void OnTestRunnerStarting(TestRunnerStartingEventArgs e) {
@@ -166,9 +149,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                     break;
             }
             console.Write(e.Severity.ToString().ToLowerInvariant());
-            console.Write(": ");
-            console.WriteLine(e.Message);
+            console.Write(":  ");
             console.ResetColor();
+            console.WriteLine(e.Message);
         }
 
         static string PrettyCodeBase(Assembly assembly, bool makeRelative = false) {
@@ -197,7 +180,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
                 return true;
             }
-            return result.IsPending || result.Skipped || result.Failed;
+
+            bool ignoreProblem = false;
+            if (result is TestUnitResults) {
+                // Because statuses rollup into the composite result (e.g. if composite contains
+                // only failed tests, then it rolls up as failed),
+                // only report composite results as a problem if there is a setup error.
+                ignoreProblem = result.ExceptionInfo == null && result.Messages.Count == 0;
+            }
+            return (result.IsPending || result.Skipped || result.Failed) && !ignoreProblem;
         }
 
         internal static void DisplayResultDetails(int number, RenderContext renderContext, TestUnitResult result) {
@@ -231,8 +222,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             console.WriteLine();
         }
 
-        static string FormatDuration(TimeSpan duration) {
-            return TextUtility.FormatDuration(duration);
+        static string FormatDuration(TimeSpan? duration) {
+            if (duration.HasValue) {
+                return TextUtility.FormatDuration(duration.Value);
+            }
+            return "";
         }
 
         [Flags]

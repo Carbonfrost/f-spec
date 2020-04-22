@@ -77,6 +77,12 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        public bool Failed {
+            get {
+                return _flags.HasFlag(TestUnitFlags.Failed);
+            }
+        }
+
         private TestData(string name, string reason, TestUnitFlags flags, object[] data) {
             _name = name;
             _reason = reason;
@@ -101,11 +107,11 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public TestData WithName(string name) {
-            return WithNameAndReason(name, Reason, _flags);
+            return Update(name, Reason, _flags);
         }
 
         public TestData WithReason(string reason) {
-            return WithNameAndReason(Name, reason, _flags);
+            return Update(Name, reason, _flags);
         }
 
         public TestData Skip() {
@@ -113,23 +119,31 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public TestData Skip(string reason) {
-            return WithNameAndReason(Name, reason ?? Reason, _flags | TestUnitFlags.Skip);
+            return Update(Name, reason ?? Reason, _flags | TestUnitFlags.Skip);
+        }
+
+        public TestData Fail() {
+            return Fail(null);
+        }
+
+        public TestData Fail(string reason) {
+            return Update(Name, reason ?? Reason, _flags | TestUnitFlags.Failed);
         }
 
         public TestData Focus() {
-            return WithNameAndReason(Name, Reason, _flags | TestUnitFlags.Focus);
+            return Update(Name, Reason, _flags | TestUnitFlags.Focus);
         }
 
         public TestData Focus(string reason) {
-            return WithNameAndReason(Name, reason, _flags | TestUnitFlags.Focus);
+            return Update(Name, reason, _flags | TestUnitFlags.Focus);
         }
 
         public TestData Pending() {
-            return WithNameAndReason(Name, Reason, _flags | TestUnitFlags.Pending);
+            return Update(Name, Reason, _flags | TestUnitFlags.Pending);
         }
 
         public TestData Pending(string reason) {
-            return WithNameAndReason(Name, reason, _flags | TestUnitFlags.Pending);
+            return Update(Name, reason, _flags | TestUnitFlags.Pending);
         }
 
         public TestData Explicit() {
@@ -137,10 +151,10 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public TestData Explicit(string reason) {
-            return WithNameAndReason(Name, reason ?? Reason, _flags | TestUnitFlags.Explicit);
+            return Update(Name, reason ?? Reason, _flags | TestUnitFlags.Explicit);
         }
 
-        internal TestData WithNameAndReason(string name, string reason, TestUnitFlags flags) {
+        internal TestData Update(string name, string reason, TestUnitFlags flags) {
             return new TestData(name, reason, flags, _data);
         }
 

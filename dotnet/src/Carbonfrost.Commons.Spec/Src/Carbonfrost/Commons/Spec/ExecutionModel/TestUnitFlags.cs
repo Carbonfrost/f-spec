@@ -26,5 +26,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         Pending = 1 << 4,
         Explicit = 1 << 5,
         PassExplicitly = 1 << 6,
+        Failed = 1 << 8,
     }
 }

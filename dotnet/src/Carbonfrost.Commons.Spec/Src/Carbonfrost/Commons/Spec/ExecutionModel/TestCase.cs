@@ -33,13 +33,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         internal TestStatus PredeterminedStatus {
             get {
-                if (Skipped && !IsFocused) { // Skip unless focussed
-                    return TestStatus.Skipped;
-                }
-                if (IsPending) {
-                    return TestStatus.Pending;
-                }
-                return TestStatus.NotRun;
+                return TestUnit.ConvertToStatus(this).GetValueOrDefault(TestStatus.NotRun);
             }
         }
 
@@ -128,7 +122,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         internal TestCase(MethodInfo testMethod) {
             if (testMethod == null) {
-                throw new ArgumentNullException("testMethod");
+                throw new ArgumentNullException(nameof(testMethod));
             }
 
             TestMethod = testMethod;
@@ -151,8 +145,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
             }
 
-            var result = new TestCaseResult(this) {
-                Status = PredeterminedStatus,
+            var result = new TestCaseResult(this, PredeterminedStatus) {
                 Reason = Reason,
             };
             result.Done(DateTime.Now);

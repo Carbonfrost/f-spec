@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,23 +15,19 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     public abstract class TestUnitResult {
 
-        private DateTime _finishedAt;
-        private DateTime _startedAt;
         private readonly List<TestMessageEventArgs> _messages = new List<TestMessageEventArgs>();
 
         public abstract string DisplayName {
             get;
         }
 
-        public TestStatus Status {
+        public abstract TestStatus Status {
             get;
-            set;
         }
 
         public TestUnitResults Parent {
@@ -104,22 +100,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             set;
         }
 
-        public TimeSpan ExecutionTime {
+        public TimeSpan? ExecutionTime {
             get {
                 return FinishedAt - StartedAt;
             }
         }
 
-        public DateTime StartedAt {
-            get {
-                return _startedAt;
-            }
+        public abstract DateTime? StartedAt {
+            get;
         }
 
-        public DateTime FinishedAt {
-            get {
-                return _finishedAt;
-            }
+        public abstract DateTime? FinishedAt {
+            get;
         }
 
         // HACK These are the messages that were collected during the test run.
@@ -132,48 +124,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         internal virtual void ApplyCounts(TestUnitCounts counts) {}
 
-        internal void SetSuccess() {
-            Status = TestStatus.Passed;
+        internal virtual void SetFailed(Exception ex) {
         }
 
-        internal void SetFailed(Exception ex) {
-            if (ex is TargetInvocationException) {
-                ex = ex.InnerException;
-            }
-            ExceptionInfo = ExceptionInfo.FromException(ex);
-            Reason = Reason;
-
-            if (ex is PassException) {
-                Status = TestStatus.Passed;
-                IsStatusExplicit = true;
-
-            } else if (ex is PendingException) {
-                Status = TestStatus.Pending;
-
-            } else if (ex is FailException) {
-                Status = TestStatus.Failed;
-                IsStatusExplicit = true;
-
-            } else {
-                Status = TestStatus.Failed;
-            }
+        internal virtual void Done(TestUnit unit) {
         }
-
-        internal void Starting() {
-            _startedAt = DateTime.Now;
-        }
-
-        internal void Done() {
-            _finishedAt = DateTime.Now;
-            if (Status == TestStatus.NotRun) {
-                SetSuccess();
-            }
-        }
-
-        internal void Done(DateTime startedAt) {
-            Done();
-            _startedAt = startedAt;
-        }
-
     }
 }

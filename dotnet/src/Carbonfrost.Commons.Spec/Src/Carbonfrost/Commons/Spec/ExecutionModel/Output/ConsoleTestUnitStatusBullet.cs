@@ -16,11 +16,27 @@
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
-    class ConsoleTestCaseStatus : ConsoleOutputPart<TestCaseResult> {
+    class ConsoleTestUnitStatusBullet : ConsoleOutputPart<TestUnitResult> {
 
-        protected override void RenderCore(TestCaseResult result) {
-            parts.forStatus.Render(context, result);
+        protected override void RenderCore(TestUnitResult result) {
+            var bullet = console.IsUnicodeEncoding ? "•" : ".";
+            if (result.Skipped) {
+                console.Yellow();
+                console.Write("S");
+
+            } else if (result.IsPending) {
+                console.Yellow();
+                console.Write("*");
+
+            } else if (result.Failed) {
+                console.Red();
+                console.Write("F");
+
+            } else {
+                console.White();
+                console.Write(bullet);
+            }
+            console.ResetColor();
         }
     }
-
 }

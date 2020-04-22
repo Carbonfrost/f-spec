@@ -25,5 +25,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         TSelf Pending(string reason);
         TSelf Explicit();
         TSelf Explicit(string reason);
+        TSelf Fail();
+        TSelf Fail(string reason);
     }
 }

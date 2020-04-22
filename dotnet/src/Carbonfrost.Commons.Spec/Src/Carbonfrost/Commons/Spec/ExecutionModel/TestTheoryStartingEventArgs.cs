@@ -17,7 +17,7 @@ using System;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    public class TestTheoryStartingEventArgs : EventArgs {
+    public class TestTheoryStartingEventArgs : EventArgs, ITestUnitStartingEventArgs {
 
         private readonly TestUnitStartingEventArgs _inner;
 
@@ -27,6 +27,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
             set {
                 _inner.Cancel = value;
+            }
+        }
+
+        public string Reason {
+            get {
+                return _inner.Reason;
+            }
+            set {
+                _inner.Reason = value;
             }
         }
 

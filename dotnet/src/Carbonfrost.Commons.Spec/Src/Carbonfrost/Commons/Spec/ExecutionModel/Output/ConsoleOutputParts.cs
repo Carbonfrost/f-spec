@@ -21,15 +21,20 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
     class ConsoleOutputParts {
 
         public readonly ConsoleOutputPart<TestCaseResult> onTestCaseFinished;
+        public readonly ConsoleOutputPart<TestUnitResults> onTestTheoryFinished;
         public readonly ConsoleOutputPart<TestRunResults> onTestRunFinished;
         public readonly ConsoleOutputPart<IList<TestUnitResult>> onTestRunFinishedWithProblems;
         public readonly ConsoleOutputPart<ExceptionInfo> onExceptionInfo;
         public readonly ConsoleOutputPart<UserDataCollection> forUserData;
         public readonly ConsoleOutputPart<Patch> forPatch;
+        public readonly ConsoleOutputPart<TestUnitResult> forStatus;
 
         public ConsoleOutputParts(TestRunnerOptions opts) {
             onTestCaseFinished = ConsoleOutputPart.Compose(
                 new ConsoleTestCaseStatus()
+            );
+            onTestTheoryFinished = ConsoleOutputPart.Compose(
+                new ConsoleTestTheoryStatus()
             );
             onTestRunFinished = ConsoleOutputPart.Compose(
                 new ConsoleTestRunResults()
@@ -54,6 +59,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                         AssertionMessageFormatModes.PrintWhitespace
                     ),
                 }
+            );
+            forStatus = ConsoleOutputPart.Compose(
+                new ConsoleTestUnitStatusBullet()
             );
         }
     }

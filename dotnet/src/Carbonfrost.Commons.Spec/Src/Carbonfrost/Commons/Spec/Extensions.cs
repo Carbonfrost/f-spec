@@ -42,7 +42,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         internal static IEnumerable<TestData> WithNames(this ITestDataApiAttributeConventions self, IEnumerable<TestData> data) {
-            return data.Select(d => d.WithNameAndReason(
+            return data.Select(d => d.Update(
                 self.Name, self.Reason, d.Flags | (self.Explicit ? TestUnitFlags.Explicit : TestUnitFlags.None)
             ));
         }

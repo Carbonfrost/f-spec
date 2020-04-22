@@ -652,6 +652,9 @@
   <data name="PredicateValueType" xml:space="preserve">
     <value>be value type</value>
   </data>
+  <data name="Sealed" xml:space="preserve">
+    <value>Can't modify the object right now because it has been sealed from further modifications.</value>
+  </data>
   <data name="SequenceNullConversion" xml:space="preserve">
     <value>Unexpectedly tried to assert on a sequence that was a null reference.</value>
   </data>

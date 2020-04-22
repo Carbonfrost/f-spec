@@ -14,14 +14,16 @@
 // limitations under the License.
 //
 
-namespace Carbonfrost.Commons.Spec.ExecutionModel {
+namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
-    interface ITestUnitState {
-        bool Failed { get; }
-        bool IsExplicit { get; }
-        bool IsFocused { get; }
-        bool IsPending { get; }
-        bool PassExplicitly { get; }
-        bool Skipped { get; }
+    class ConsoleTestTheoryStatus : ConsoleOutputPart<TestUnitResults> {
+
+        protected override void RenderCore(TestUnitResults result) {
+            // We only provide output when the theory is empty
+            if (result.Children.Count != 0) {
+                return;
+            }
+            parts.forStatus.Render(context, result);
+        }
     }
 }

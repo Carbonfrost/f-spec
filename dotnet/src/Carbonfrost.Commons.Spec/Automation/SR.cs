@@ -408,7 +408,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Expected reference type</summary>
     internal static string ExpectedReferenceType(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("ExpectedReferenceType") );
     }
@@ -478,7 +478,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Expected value type</summary>
     internal static string ExpectedValueType(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("ExpectedValueType") );
     }
@@ -590,7 +590,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Flags</summary>
     internal static string LabelFlags(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("LabelFlags") );
     }
@@ -863,7 +863,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Expected not reference type</summary>
     internal static string NotExpectedReferenceType(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("NotExpectedReferenceType") );
     }
@@ -933,7 +933,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Expected not value type</summary>
     internal static string NotExpectedValueType(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("NotExpectedValueType") );
     }
@@ -1115,7 +1115,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>not be reference type</summary>
     internal static string NotPredicateReferenceType(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("NotPredicateReferenceType") );
     }
@@ -1178,7 +1178,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>not be value type</summary>
     internal static string NotPredicateValueType(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("NotPredicateValueType") );
     }
@@ -1381,7 +1381,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>be reference type</summary>
     internal static string PredicateReferenceType(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("PredicateReferenceType") );
     }
@@ -1444,9 +1444,16 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>be value type</summary>
     internal static string PredicateValueType(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("PredicateValueType") );
+    }
+
+  /// <summary>Can't modify the object right now because it has been sealed from further modifications.</summary>
+    internal static string Sealed(
+    
+    ) {
+        return string.Format(Culture, ResourceFinder("Sealed") );
     }
 
   /// <summary>Unexpectedly tried to assert on a sequence that was a null reference.</summary>

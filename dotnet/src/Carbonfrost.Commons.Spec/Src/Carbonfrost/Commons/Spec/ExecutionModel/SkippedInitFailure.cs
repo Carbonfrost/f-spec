@@ -1,5 +1,5 @@
 //
-// Copyright 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         protected override TestCaseResult RunTestCore(TestContext testContext) {
-            var result = new TestCaseResult(this);
+            var result = new TestCaseResult(this, TestStatus.Skipped);
             result.Reason = _reason;
             result.SetFailed(_err);
             return result;

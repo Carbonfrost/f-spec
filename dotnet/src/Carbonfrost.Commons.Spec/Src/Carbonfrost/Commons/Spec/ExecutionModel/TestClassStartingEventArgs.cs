@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    public class TestClassStartingEventArgs : EventArgs {
+    public class TestClassStartingEventArgs : EventArgs, ITestUnitStartingEventArgs {
 
         private readonly TestUnitStartingEventArgs _inner;
 
@@ -29,6 +29,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
             set {
                 _inner.Cancel = value;
+            }
+        }
+
+        public string Reason {
+            get {
+                return _inner.Reason;
+            }
+            set {
+                _inner.Reason = value;
             }
         }
 

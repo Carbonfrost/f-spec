@@ -91,7 +91,7 @@ namespace Carbonfrost.Commons.Spec {
             var binder = TestDataBinder.Create(rt.TestMethod, keySet);
             var results = new List<TestData>(items.Count);
             foreach (var t in items) {
-                results.Add(new TestData(binder.Bind(t.Values)).WithNameAndReason(
+                results.Add(new TestData(binder.Bind(t.Values)).Update(
                     Name, Reason, Explicit ? TestUnitFlags.Explicit : TestUnitFlags.None
                 ));
             }
