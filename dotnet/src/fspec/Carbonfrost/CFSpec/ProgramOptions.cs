@@ -24,6 +24,7 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 using NDesk.Options;
 using Carbonfrost.CFSpec.Resources;
 using Carbonfrost.Commons.Spec.ExecutionModel.Output;
+using System.Text.RegularExpressions;
 
 namespace Carbonfrost.CFSpec {
 
@@ -34,8 +35,8 @@ namespace Carbonfrost.CFSpec {
         public readonly List<PackageReference> Packages = new List<PackageReference>();
         public readonly List<string> FixturePaths = new List<string>();
         public readonly List<string> LoaderPaths = new List<string>();
-        public readonly List<string> FocusPatterns = new List<string>();
-        public readonly List<string> SkipPatterns = new List<string>();
+        public readonly TestPlanFilter PlanFilter = new TestPlanFilter();
+
         public int RandomSeed;
         public bool DebugWait;
         public bool DontRandomizeSpecs;
@@ -65,9 +66,13 @@ namespace Carbonfrost.CFSpec {
                 { "p|package=",    SR.UPackage(),          v => Packages.Add(SafeParsePackageFormula(v, SR.InvalidPackageReference(), "--package")) },
                 { "loader-path=",  SR.ULoaderPath(),       v => LoaderPaths.Add(v) },
 
-                { "skip=",         SR.USkip(),             v => SkipPatterns.Add(v) },
-                { "focus=",        SR.UFocus(),            v => FocusPatterns.Add(v) },
-                { "no-focus",      SR.UNoFocus(),          v => NoFocus = true },
+                { "exclude=",         SR.UExclude(),        v => PlanFilter.Excludes.AddNew(v) },
+                { "exclude-pattern=", SR.UExcludePattern(), v => PlanFilter.Excludes.AddRegex(SafeRegexParse(v, "--exclude-pattern")) },
+                { "F|focus=",         SR.UFocus(),          v => PlanFilter.FocusPatterns.AddNew(v) },
+                { "no-focus",         SR.UNoFocus(),        v => NoFocus = true },
+                { "t|tag=",           SR.UTag(),            v => PlanFilter.Tags.AddNew(v) },
+                { "e|include=",          SR.UInclude(),         v => PlanFilter.Includes.AddNew(v) },
+                { "E|include-pattern=",  SR.UIncludePattern(),  v => PlanFilter.Includes.AddRegex(SafeRegexParse(v, "--include-pattern")) },
 
                 { "show-whitespace", SR.UShowWhitespace(), v => ShowWhitespace = true },
                 { "no-whitespace", SR.UNoWhitespace(),     v => ShowWhitespace = false },
@@ -104,7 +109,11 @@ namespace Carbonfrost.CFSpec {
                 "focus=",
                 "no-focus",
                 "no-random",
-                "skip="
+                "exclude=",
+                "exclude-pattern=",
+                "t|tag=",
+                "e|include=",
+                "E|include-pattern="
             );
 
             OptionSet.Group(SR.URunnerOptions(), sort: true,
@@ -179,6 +188,14 @@ namespace Carbonfrost.CFSpec {
                 return result;
             }
             throw ParseFailure(v, msg, optionName);
+        }
+
+        static Regex SafeRegexParse(string v, string optionName) {
+            try {
+                return new Regex(v);
+            } catch (Exception ex) {
+                throw ParseFailure(v, SR.InvalidRegex(ex.Message), optionName);
+            }
         }
 
         static OptionException ParseFailure(string v, string msg, string optionName) {

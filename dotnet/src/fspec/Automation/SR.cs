@@ -84,6 +84,13 @@ namespace Carbonfrost.CFSpec.Resources {
         return string.Format(Culture, ResourceFinder("InvalidRandomSeed") );
     }
 
+  /// <summary>invalid regex: ${reason}</summary>
+    internal static string InvalidRegex(
+    object @reason
+    ) {
+        return string.Format(Culture, ResourceFinder("InvalidRegex") , @reason);
+    }
+
   /// <summary>invalid time span</summary>
     internal static string InvalidTimeSpan(
     
@@ -98,18 +105,25 @@ namespace Carbonfrost.CFSpec.Resources {
         return string.Format(Culture, ResourceFinder("InvalidVerify") );
     }
 
-  /// <summary>Add {{PATH}} to loader path</summary>
-    internal static string ULoaderPath(
-    
-    ) {
-        return string.Format(Culture, ResourceFinder("ULoaderPath") );
-    }
-
   /// <summary>Show as many lines of context in unified diffs</summary>
     internal static string UContextLines(
     
     ) {
         return string.Format(Culture, ResourceFinder("UContextLines") );
+    }
+
+  /// <summary>Skip tests whose descriptions or names match the given {{PATTERN}}</summary>
+    internal static string UExclude(
+    
+    ) {
+        return string.Format(Culture, ResourceFinder("UExclude") );
+    }
+
+  /// <summary>Skip tests whose full names match {{REGEX}}</summary>
+    internal static string UExcludePattern(
+    
+    ) {
+        return string.Format(Culture, ResourceFinder("UExcludePattern") );
     }
 
   /// <summary>Exit when the first test fails</summary>
@@ -133,7 +147,7 @@ namespace Carbonfrost.CFSpec.Resources {
         return string.Format(Culture, ResourceFinder("UFixture") );
     }
 
-  /// <summary>Focus tests whose descriptions or names match the given {{REGEX}}</summary>
+  /// <summary>Focus tests whose descriptions or names match the given {{PATTERN}}</summary>
     internal static string UFocus(
     
     ) {
@@ -147,11 +161,32 @@ namespace Carbonfrost.CFSpec.Resources {
         return string.Format(Culture, ResourceFinder("UHelp") );
     }
 
+  /// <summary>Run tests whose full names match the given {{PATTERN}}</summary>
+    internal static string UInclude(
+    
+    ) {
+        return string.Format(Culture, ResourceFinder("UInclude") );
+    }
+
+  /// <summary>Run tests whose full names match {{REGEX}}</summary>
+    internal static string UIncludePattern(
+    
+    ) {
+        return string.Format(Culture, ResourceFinder("UIncludePattern") );
+    }
+
   /// <summary>Loader options</summary>
     internal static string ULoaderOptions(
     
     ) {
         return string.Format(Culture, ResourceFinder("ULoaderOptions") );
+    }
+
+  /// <summary>Add {{PATH}} to loader path</summary>
+    internal static string ULoaderPath(
+    
+    ) {
+        return string.Format(Culture, ResourceFinder("ULoaderPath") );
     }
 
   /// <summary>Don't use unified diffs when assertion messages contain long strings</summary>
@@ -259,11 +294,11 @@ namespace Carbonfrost.CFSpec.Resources {
         return string.Format(Culture, ResourceFinder("UShowWhitespace") );
     }
 
-  /// <summary>Skip tests whose descriptions or names match the given {{REGEX}}</summary>
-    internal static string USkip(
+  /// <summary>Run tests with the specified TAG.  (Optionally, ~TAG for tests without tag)</summary>
+    internal static string UTag(
     
     ) {
-        return string.Format(Culture, ResourceFinder("USkip") );
+        return string.Format(Culture, ResourceFinder("UTag") );
     }
 
   /// <summary>Test selection options</summary>

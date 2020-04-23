@@ -1,5 +1,3 @@
-#if SELF_TEST
-
 //
 // Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
@@ -15,21 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
-using System.Linq;
-using Carbonfrost.Commons.Spec;
 
-namespace Carbonfrost.SelfTest.Spec {
+namespace Carbonfrost.Commons.Spec {
 
-    public class TagsAttributeTests : TestClass {
-
-        [Fact]
-        [Tags("a", "b", "c")]
-        public void CurrentTest_should_have_tags() {
-            Assert.Contains("a", TestContext.CurrentTest.Tags);
-            Assert.Contains("b", TestContext.CurrentTest.Tags);
-            Assert.Contains("c", TestContext.CurrentTest.Tags);
-        }
+    public static class TestTagType {
+        public const string Platform = "platform";
     }
 }
-#endif

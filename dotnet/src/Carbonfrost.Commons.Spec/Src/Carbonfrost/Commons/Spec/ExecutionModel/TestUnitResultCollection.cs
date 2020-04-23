@@ -15,7 +15,6 @@
 //
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -25,7 +24,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         private readonly TestUnitResults _owner;
         private TestUnitCounts _countsCache;
-        private TestStatus? _statusCache;
 
         internal DateTime? StartedAt {
             get {
@@ -47,10 +45,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         internal TestStatus Status {
             get {
-                if (_statusCache == null) {
-                    _statusCache = ComputeStatusSlow();
-                }
-                return _statusCache.Value;
+                return Counts.Status;
             }
         }
 
@@ -127,17 +122,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         private void ClearCache() {
             _countsCache = null;
-            _statusCache = null;
-        }
-
-        private TestStatus ComputeStatusSlow() {
-            if (Items.Count == 0) {
-                return TestStatus.Passed;
-            }
-            if (Items.Any(c => c.Status == TestStatus.Failed)) {
-                return TestStatus.Failed;
-            }
-            return TestStatus.Passed;
         }
     }
 }

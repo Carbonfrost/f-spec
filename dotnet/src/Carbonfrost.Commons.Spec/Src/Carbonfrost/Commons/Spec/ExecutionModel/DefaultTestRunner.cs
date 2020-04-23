@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 //
 
 using System;
-using System.Linq;
 using Carbonfrost.Commons.Spec.ExecutionModel.Output;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
@@ -72,20 +71,5 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         public TestContext NewTestContext(TestUnit unit) {
             return new TestContext(unit, this, RandomCache, unit.FindTestObject());
         }
-
-        static void InheritBiasToChildren(TestUnit unit) {
-            foreach (var child in unit.Children) {
-                child.Skipped |= unit.Skipped;
-                child.IsPending |= unit.IsPending;
-                child.IsExplicit |= unit.IsExplicit;
-                child.PassExplicitly |= unit.PassExplicitly;
-                if (unit.Reason != null) {
-                    child.Reason = unit.Reason;
-                }
-                InheritBiasToChildren(child);
-            }
-            unit.Seal();
-        }
-
     }
 }

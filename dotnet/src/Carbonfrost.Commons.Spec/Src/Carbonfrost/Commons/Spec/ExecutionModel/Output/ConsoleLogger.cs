@@ -196,7 +196,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             if (number > 0) {
                 console.Write(number + ") ");
             }
-            console.WriteLine(result.DisplayName);
+            console.Write(result.DisplayName);
+            if (result.IsFocused) {
+                console.Write(" (focused)");
+            }
+            console.WriteLine();
 
             console.ColorFor(result);
             console.PushIndent();

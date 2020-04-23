@@ -1,5 +1,5 @@
 //
-// Copyright 2010, 2015 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2010, 2015, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,21 +25,45 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         private Regex _regexCache;
         private readonly string _text;
+        private static readonly char[] IMPLIED_UPGRADE_CHARS = {
+            '?',
+            '[',
+            ']',
+            '*',
+        };
 
         public WildcardPattern() : this("*") {}
 
         public WildcardPattern(string text,
-                               RegexOptions options = RegexOptions.None) {
+                               RegexOptions options = RegexOptions.None) : this(text, false, options) {
+        }
+
+        private WildcardPattern(string text,
+                                bool containing,
+                                RegexOptions options = RegexOptions.None) {
             if (text == null) {
                 throw new ArgumentNullException("text"); // $NON-NLS-1
             }
             _text = text;
-            _regexCache = new Regex(TransformPattern(), options);
+            _regexCache = new Regex(TransformPattern(containing), options);
         }
 
-        string TransformPattern() {
+        // Given "text", assumes you meant "*test*"; that is, we upgrade wildcards unless you
+        // have specified a wildcard character
+        internal static WildcardPattern Containing(string text) {
+            return new WildcardPattern(
+                text,
+                text.IndexOfAny(IMPLIED_UPGRADE_CHARS) < 0,
+                RegexOptions.IgnorePatternWhitespace
+            );
+        }
+
+        string TransformPattern(bool containing) {
             StringBuilder sb = new StringBuilder();
-            sb.Append("^");
+
+            if (!containing) {
+                sb.Append(@"\A");
+            }
             var c = ((IEnumerable<char>) _text).GetEnumerator();
             while (c.MoveNext()) {
                 if (c.Current == '\\') {
@@ -54,8 +78,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 else
                     sb.Append(str);
             }
-
-            sb.Append("$");
+            if (!containing) {
+                sb.Append(@"\Z");
+            }
             return sb.ToString();
         }
 

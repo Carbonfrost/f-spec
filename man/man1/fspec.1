@@ -13,8 +13,14 @@ The fspec(1) command runs tests that were built with \fBf\-spec\fR, a test frame
 Each \fIassembly\fR to load is specified as an argument to the command\. Assemblies are scanned for tests, and dependency assemblies are automatically loaded if they are in the loader path\. The loader path is discussed in the \fI\%#LOADER\-PATH\fR section\.
 .SH "OPTIONS"
 .TP
-\fB\-\-context\-lines\fR=\fICOUNT\fR
+\fB\-\-context\-lines\fR=\fIcount\fR
 When string comparisons generate differences, this parameter is used to control how many lines of context are displayed before and after a contiguous hunk\.
+.TP
+\fB\-\-exclude\fR=\fIstring\fR
+Skip tests whose full name excludes the specified \fIstring\fR\. See [#SELECTING TESTS] for information about the syntax to use for \fIstring\fR\.
+.TP
+\fB\-\-exclude\-pattern\fR=\fIregex\fR
+Skip tests whose full name excludes the specified \fIregex\fR pattern\. This is the same as specifying \fB\-\-exclude=regex:\fR\fIregex\fR
 .TP
 \fB\-\-fail\-fast\fR
 Instead of running the entire test plan, run until the first test that fails\.
@@ -25,13 +31,19 @@ When used, specifies that the test plan fails if there are any tests that are fo
 \fB\-\-fail\-pending\fR
 When used, specifies that the test plan fails if there are any pending tests\.
 .TP
-\fB\-\-focus\fR=\fIREGEX\fR
-Focus tests whose descriptions or names match the given REGEX
+\fB\-F, \-\-focus\fR=\fIstring\fR
+Focus tests whose descriptions or names match the given \fIstring\fR\. See [#SELECTING TESTS] for information about the syntax to use for \fIstring\fR\.
 .TP
-\fB\-i, \-\-fixture\fR=\fIPATH\fR
+\fB\-i, \-\-fixture\fR=\fIpath\fR
 Add a path to the fixture search path\. If the path is a file, then the file can be loaded as a fixture\. If the path is a directory, then the directory is used as the prefix when searching for a fixture\. This option can be specified multiple times\.
 .TP
-\fB\-\-loader\-path\fR=\fIPATH\fR
+\fB\-e, \-\-include\fR=\fIstring\fR
+Run tests whose full name includes the specified \fIstring\fR\. See [#SELECTING TESTS] for information about the syntax to use for \fIstring\fR\.
+.TP
+\fB\-E, \-\-include\-pattern\fR=\fIregex\fR
+Run tests whose full name includes the specified \fIregex\fR pattern\. This is the same as specifying \fB\-\-include=regex:\fR\fIregex\fR
+.TP
+\fB\-\-loader\-path\fR=\fIpath\fR
 Add a path to the loader search path\. When the path is a file, this is the same as loading the specified assembly\. If the path is a directory, then the directory is used to search for assemblies when an assembly reference must be loaded\. This option can be specified multiple times\.
 .TP
 \fB\-\-no\-diff\fR
@@ -49,17 +61,17 @@ Don\'t show test run summary of failed tests at the end
 \fB\-\-no\-whitespace\fR
 When comparing strings, special characters will not be used when printing whitespace in assertion failure messages
 .TP
-\fB\-p, \-\-package\fR=\fIFORMULA\fR
-Load the NuGet package dependency \fIFORMULA\fR\. The \fIFORMULA\fR is in the format \fINAME\fR[/\fIVERSION\fR]\. Though technically optional, fspec(1) raises an error if the version is not specified\. This may change in a future version\.
+\fB\-p, \-\-package\fR=\fIformula\fR
+Load the NuGet package dependency \fIformula\fR\. The \fIformula\fR is in the format \fIname\fR[/\fIversion\fR]\. Though technically optional, fspec(1) raises an error if the version is not specified\. This may change in a future version\.
 .TP
 \fB\-\-pause\fR
 Attach tty and wait for a keypress before exiting\. This is primarily used when a debugger is attached to prevent fspec(1) from exiting too soon\.
 .TP
-\fB\-\-plan\-timeout\fR=\fITIME\fR
-Provides the limit on the amount of \fITIME\fR that the entire test plan is allowed to take\. When reached, the test plan fails\. The value for \fITIME\fR is either in seconds or using the format described in the description for \fB\-\-timeout\fR
+\fB\-\-plan\-timeout\fR=\fItime\fR
+Provides the limit on the amount of \fItime\fR that the entire test plan is allowed to take\. When reached, the test plan fails\. The value for \fItime\fR is either in seconds or using the format described in the description for \fB\-\-timeout\fR
 .TP
-\fB\-\-random\-seed\fR=\fISEED\fR
-Use the specified \fISEED\fR to randomize the ordering in which specs are executed
+\fB\-\-random\-seed\fR=\fIseed\fR
+Use the specified \fIseed\fR to randomize the ordering in which specs are executed
 .TP
 \fB\-\-self\-test\fR
 If \fBfspec\fR was built with its own tests, then run the self\-tests\.
@@ -73,11 +85,11 @@ Display names of tests and test cases even on success
 \fB\-\-show\-whitespace\fR
 When comparing strings, special characters will be used when printing whitespace in assertion failure messages\.
 .TP
-\fB\-\-skip\fR=\fIREGEX\fR
-Skip tests whose descriptions or names match the given REGEX
+\fB\-t, \-\-tag\fR=\fItag\fR
+Run tests that have the specified \fItag\fR\. Tags are either simple names or key\-value pairs\. For example, \fBacceptance\fR is a valid tag, and so is \fBplatform:nixos\fR\. You can \fIexclude\fR tests that match the tag by using the prefix \fB~\fR\. For example, to exclude slow tests, you would specify \fB~slow\fR\. This flag can be specified multiple times\.
 .TP
-\fB\-\-timeout\fR=\fITIME\fR
-The maximum \fITIME\fR allowed for any particular test to execute\. The syntax of TIME is either a floating point number representing the whole and partial seconds to allow or it is the syntax of \fBSystem\.TimeSpan\fR which looks like \fIDAYS\fR\.\fIHOURS\fR:\fIMINUTES\fR:\fISECONDS\fR\.\fITICKS\fR
+\fB\-\-timeout\fR=\fItime\fR
+The maximum \fItime\fR allowed for any particular test to execute\. The syntax of TIME is either a floating point number representing the whole and partial seconds to allow or it is the syntax of \fBSystem\.TimeSpan\fR which looks like \fIdays\fR\.\fIhours\fR:\fIminutes\fR:\fIseconds\fR\.\fIticks\fR
 .TP
 \fB\-\-verify\fR={\fBstrict\fR|\fBnone\fR}
 Use the specified verification mode to check for errors in tests and assertions\. If \fBstrict\fR is used, then tests could fail if tests or assertions are structured incorrectly\. If \fBnone\fR is used, then no verification is used, but a warning is printed when certain verification errors occur\.
@@ -87,6 +99,17 @@ Display the help screen
 .TP
 \fB\-\-version\fR
 Report the version information and exit
+.SH "SELECTING TESTS"
+By default, all tests will be run in the test suite except for tests that are marked as "explicit"\. Various options let you specify which tests are included in the test plan\. Each option has a string argument:
+.IP "1." 4
+The string must be contained in the full name or description of the test (case insensitive)\.
+.IP "2." 4
+\fIBut\fR if a wildcard pattern character \'*\', \'?\', \'[\', or \']\', is present, then the string must match the wildcard expression\. Therefore, if you specify \fBtest\fR, the pattern will match strings that \fIcontain "test"\fR, but if you specify \fBtest*\fR the pattern will match strings that \fIstart with "test"\fR\.
+.IP "3." 4
+When you prefix the string with \fBregex:\fR, then the string is interpretted as a regular expression and is case sensitive\.
+.IP "" 0
+.P
+If you specify none of the test selection options, then the default set of tests are run, which is all tests except those marked with "explicit"\. Otherwise, the tests that will be run will be the tests that match the \fB\-\-include\fR or \fB\-\-tag\fR options but do not match the \fB\-\-exclude\fR option\.
 .SH "LOADER PATH"
 The loader path specifies the directories which are probed to find additional assemblies to load\. By default, the loader path contains each directory for each assembly that was specified at the command line\.
 .P

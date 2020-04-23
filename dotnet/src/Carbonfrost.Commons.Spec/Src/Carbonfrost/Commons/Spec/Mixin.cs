@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,6 +34,15 @@ namespace Carbonfrost.Commons.Spec {
             TValue result;
             if (!self.TryGetValue(k, out result)) {
                 return default(TValue);
+            }
+            return result;
+        }
+
+        public static TValue GetValueOrCache<TKey, TValue>(this IDictionary<TKey, TValue> self, TKey k, Func<TKey, TValue> func) {
+            TValue result;
+            if (!self.TryGetValue(k, out result)) {
+                result = func(k);
+                self.Add(k, result);
             }
             return result;
         }

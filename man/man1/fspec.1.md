@@ -14,8 +14,14 @@ Each <assembly> to load is specified as an argument to the command.  Assemblies 
 
 ## OPTIONS
 
-* `--context-lines`=<COUNT>:
-When string comparisons generate differences, this parameter is used to control how many lines of context are displayed before and after a contiguous hunk.
+* `--context-lines`=<count>:
+  When string comparisons generate differences, this parameter is used to control how many lines of context are displayed before and after a contiguous hunk.
+
+* `--exclude`=<string>:
+  Skip tests whose full name excludes the specified <string>.  See [#SELECTING TESTS] for information about the syntax to use for <string>.
+
+* `--exclude-pattern`=<regex>:
+  Skip tests whose full name excludes the specified <regex> pattern.  This is the same as specifying `--exclude=regex:`<regex>
 
 * `--fail-fast`:
   Instead of running the entire test plan, run until the first test that fails.
@@ -26,13 +32,19 @@ When string comparisons generate differences, this parameter is used to control 
 * `--fail-pending`:
   When used, specifies that the test plan fails if there are any pending tests.
 
-* `--focus`=<REGEX>:
-  Focus tests whose descriptions or names match the given REGEX
+* `-F, --focus`=<string>:
+  Focus tests whose descriptions or names match the given <string>.  See [#SELECTING TESTS] for information about the syntax to use for <string>.
 
-* `-i, --fixture`=<PATH>:
+* `-i, --fixture`=<path>:
   Add a path to the fixture search path.  If the path is a file, then the file can be loaded as a fixture.  If the path is a directory, then the directory is used as the prefix when searching for a fixture.  This option can be specified multiple times.
 
-* `--loader-path`=<PATH>:
+* `-e, --include`=<string>:
+  Run tests whose full name includes the specified <string>.  See [#SELECTING TESTS] for information about the syntax to use for <string>.
+
+* `-E, --include-pattern`=<regex>:
+  Run tests whose full name includes the specified <regex> pattern.  This is the same as specifying `--include=regex:`<regex>
+
+* `--loader-path`=<path>:
   Add a path to the loader search path.  When the path is a file, this is the same as loading the specified assembly.  If the path is a directory, then the directory is used to search for assemblies when an assembly reference must be loaded.  This option can be specified multiple times.
 
 * `--no-diff`:
@@ -50,17 +62,17 @@ When string comparisons generate differences, this parameter is used to control 
 *  `--no-whitespace`:
    When comparing strings, special characters will not be used when printing whitespace in assertion failure messages
 
-* `-p, --package`=<FORMULA>:
-  Load the NuGet package dependency <FORMULA>.  The <FORMULA> is in the format <NAME>[/<VERSION>].  Though technically optional, fspec(1) raises an error if the version is not specified.  This may change in a future version.
+* `-p, --package`=<formula>:
+  Load the NuGet package dependency <formula>.  The <formula> is in the format <name>[/<version>].  Though technically optional, fspec(1) raises an error if the version is not specified.  This may change in a future version.
 
 * `--pause`:
   Attach tty and wait for a keypress before exiting.  This is primarily used when a debugger is attached to prevent fspec(1) from exiting too soon.
 
-* `--plan-timeout`=<TIME>:
-  Provides the limit on the amount of <TIME> that the entire test plan is allowed to take.  When reached, the test plan fails.  The value for <TIME> is either in seconds or using the format described in the description for  `--timeout`
+* `--plan-timeout`=<time>:
+  Provides the limit on the amount of <time> that the entire test plan is allowed to take.  When reached, the test plan fails.  The value for <time> is either in seconds or using the format described in the description for  `--timeout`
 
-* `--random-seed`=<SEED> :
-  Use the specified <SEED> to randomize the ordering in which specs are executed
+* `--random-seed`=<seed> :
+  Use the specified <seed> to randomize the ordering in which specs are executed
 
 * `--self-test`:
   If `fspec` was built with its own tests, then run the self-tests.
@@ -74,11 +86,11 @@ When string comparisons generate differences, this parameter is used to control 
 * `--show-whitespace`:
    When comparing strings, special characters will be used when printing whitespace in assertion failure messages.
 
-* `--skip`=<REGEX>:
-  Skip tests whose descriptions or names match the given REGEX
+* `-t, --tag`=<tag>:
+  Run tests that have the specified <tag>.  Tags are either simple names or key-value pairs.  For example, `acceptance` is a valid tag, and so is `platform:nixos`.  You can _exclude_ tests that match the tag by using the prefix `~`.  For example, to exclude slow tests, you would specify `~slow`.  This flag can be specified multiple times.
 
-* `--timeout`=<TIME>:
-  The maximum <TIME> allowed for any particular test to execute.  The syntax of TIME is either a floating point number representing the whole and partial seconds to allow or it is the syntax of `System.TimeSpan` which looks like <DAYS>.<HOURS>:<MINUTES>:<SECONDS>.<TICKS>
+* `--timeout`=<time>:
+  The maximum <time> allowed for any particular test to execute.  The syntax of TIME is either a floating point number representing the whole and partial seconds to allow or it is the syntax of `System.TimeSpan` which looks like <days>.<hours>:<minutes>:<seconds>.<ticks>
 
 * `--verify`={**strict**|**none**}:
   Use the specified verification mode to check for errors in tests and assertions.  If `strict` is used, then tests could fail if tests or assertions are structured incorrectly.  If `none` is used, then no verification is used, but a warning is printed when certain verification errors occur.
@@ -88,6 +100,17 @@ When string comparisons generate differences, this parameter is used to control 
 
 * `--version`:
   Report the version information and exit
+
+## SELECTING TESTS
+
+By default, all tests will be run in the test suite except for tests that are marked as "explicit".  Various options let you specify which tests are included in the test plan.  Each option has a string argument:
+
+1.  The string must be contained in the full name or description of the test (case insensitive).
+2.  _But_ if a wildcard pattern character '*', '?', '[', or ']', is present, then the string must match the wildcard expression.  Therefore, if you specify `test`, the pattern will match strings that _contain "test"_, but if you specify `test*` the pattern will match strings that _start with "test"_.
+3.  When you prefix the string with `regex:`, then the string is interpretted as a regular expression and is case sensitive.
+
+If you specify none of the test selection options, then the default set of tests are run, which is all tests except those marked with "explicit".
+Otherwise, the tests that will be run will be the tests that match the `--include` or `--tag` options but do not match the `--exclude` option.
 
 ## LOADER PATH
 

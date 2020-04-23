@@ -27,14 +27,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         private Flags _flags;
         private TimeSpan? _testTimeout;
         private TimeSpan? _planTimeout;
-        private readonly MakeReadOnlyList<string> _focusPatterns = new MakeReadOnlyList<string>();
-        private readonly MakeReadOnlyList<string> _skipPatterns = new MakeReadOnlyList<string>();
         private AssertionMessageFormatModes _assertionMessageFormatMode;
         private int _contextLines = -1;
         private readonly PathCollection _fixturePaths = new PathCollection();
         private readonly MakeReadOnlyList<PackageReference> _packageReferences = new MakeReadOnlyList<PackageReference>();
         private readonly AssemblyLoader _loader = new AssemblyLoader();
         private readonly PathCollection _loaderPaths = new PathCollection();
+        private readonly TestPlanFilter _planFilter = new TestPlanFilter();
 
         internal bool IsSelfTest {
             get {
@@ -128,18 +127,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public IList<string> SkipPatterns {
-            get {
-                return _skipPatterns;
-            }
-        }
-
-        public IList<string> FocusPatterns {
-            get {
-                return _focusPatterns;
-            }
-        }
-
         public bool RandomizeSpecs {
             get {
                 return (_flags & Flags.RandomizeSpecs) > 0;
@@ -201,6 +188,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public TestPlanFilter PlanFilter {
+             get {
+                 return _planFilter;
+             }
+        }
+
         public TestRunnerOptions() : this(null) {
         }
 
@@ -209,9 +202,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 return;
             }
 
-            SkipPatterns.AddAll(copyFrom.SkipPatterns);
             IgnoreFocus = copyFrom.IgnoreFocus;
-            FocusPatterns.AddAll(copyFrom.FocusPatterns);
             FixturePaths.AddAll(copyFrom.FixturePaths);
             LoaderPaths.AddAll(copyFrom.LoaderPaths);
             LoadAssemblyFromPath = copyFrom.LoadAssemblyFromPath;
@@ -220,6 +211,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             ContextLines = copyFrom.ContextLines;
             IsSelfTest = copyFrom.IsSelfTest;
             PackageReferences.AddAll(copyFrom.PackageReferences);
+            PlanFilter.CopyFrom(copyFrom.PlanFilter);
         }
 
         internal TestRunnerOptions Normalize() {
@@ -236,11 +228,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public void MakeReadOnly() {
             IsReadOnly = true;
-            _focusPatterns.MakeReadOnly();
-            _skipPatterns.MakeReadOnly();
             _fixturePaths.MakeReadOnly();
             _loaderPaths.MakeReadOnly();
             _packageReferences.MakeReadOnly();
+            _planFilter.MakeReadOnly();
         }
 
         public TestRunnerOptions Clone() {

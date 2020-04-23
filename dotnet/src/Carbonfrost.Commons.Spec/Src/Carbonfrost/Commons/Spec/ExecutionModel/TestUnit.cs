@@ -20,7 +20,7 @@ using System.Threading;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    public abstract class TestUnit : ITestUnitState {
+    public abstract class TestUnit : ITestUnitState, ITestUnitApiConventions {
 
         private int _isDisposed;
         private TestUnitFlags _flags;
@@ -28,7 +28,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         private Exception _initializeError;
         private TimeSpan? _timeout;
         private TestUnit _parent;
-        private readonly HashSet<string> _tags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private readonly TestTagCollection _tags = new TestTagCollection();
 
         protected bool IsDisposed {
             get {
@@ -237,11 +237,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public virtual bool ContainsFocusedUnits {
             get {
-                return Children.Any(t => t.ContainsFocusedUnits || t.IsFocused);
+                return Children.Any(t => t.IsFocused || t.ContainsFocusedUnits);
             }
         }
 
-        public ICollection<string> Tags {
+        public TestTagCollection Tags {
             get {
                 return _tags;
             }

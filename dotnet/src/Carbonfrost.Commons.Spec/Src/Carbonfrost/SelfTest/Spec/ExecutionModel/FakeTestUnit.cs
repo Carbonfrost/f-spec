@@ -15,20 +15,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
-using System.Linq;
 using Carbonfrost.Commons.Spec;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
-namespace Carbonfrost.SelfTest.Spec {
+namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
 
-    public class TagsAttributeTests : TestClass {
+    public class FakeTestUnit : TestUnit {
 
-        [Fact]
-        [Tags("a", "b", "c")]
-        public void CurrentTest_should_have_tags() {
-            Assert.Contains("a", TestContext.CurrentTest.Tags);
-            Assert.Contains("b", TestContext.CurrentTest.Tags);
-            Assert.Contains("c", TestContext.CurrentTest.Tags);
+        private readonly string _displayName;
+
+        public FakeTestUnit(string displayName) {
+            _displayName = displayName;
+        }
+
+
+        public override string DisplayName {
+            get {
+                return _displayName;
+            }
+        }
+
+        public override TestUnitType Type {
+            get {
+                return TestUnitType.Fact;
+            }
+        }
+
+        public override TestUnitCollection Children {
+            get;
+        }
+
+        internal override TestUnitMetadata Metadata {
+            get;
         }
     }
 }

@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017, 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public partial class TestContext : DisposableObject, ITestContext {
+    public partial class TestContext : DisposableObject, ITestContext, ITestUnitApiConventions {
 
         private readonly TestUnit _self;
         private readonly TestRunner _runner;
@@ -33,6 +33,7 @@ namespace Carbonfrost.Commons.Spec {
         private TestTemporaryDirectory _defaultTemp;
         private readonly Random _random;
         private readonly object _testObject;
+        private readonly TestEnvironment _environment = new TestEnvironment();
 
         private CancellationToken _cancellationToken;
         private object _testResult;
@@ -44,6 +45,12 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        public TestEnvironment Environment {
+            get {
+                return _environment;
+            }
+        }
+
         internal IDisposable ApplyingContext() {
             _current.Value = this;
             return new Disposer(() => _current.Value = null);
@@ -52,6 +59,12 @@ namespace Carbonfrost.Commons.Spec {
         public TestDataProviderCollection TestDataProviders {
             get {
                 return CurrentTest.TestDataProviders;
+            }
+        }
+
+        public TestTagCollection Tags {
+            get {
+                return CurrentTest.Tags;
             }
         }
 

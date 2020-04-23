@@ -55,9 +55,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             }
 
             if (results.ContainsFocusedUnits) {
-                console.Write(" - ");
-                console.White();
-                console.Write("FOCUSED");
+                console.Magenta();
+                console.Write("   FOCUSED");
+                console.ResetColor();
             }
             console.WriteLine();
             console.PopIndent();

@@ -34,6 +34,7 @@ dotnet/cover: dotnet/build -check-command-coverlet
 		--exclude-by-attribute 'Obsolete' \
 		--exclude-by-attribute 'GeneratedCode' \
 		--exclude-by-attribute 'CompilerGenerated' \
+		--include-test-assembly \
 		dotnet/src/fspec/bin/$(CONFIGURATION)/$(FRAMEWORK)/fspec.dll
 
 -install-dotnet-%: -check-env-CONFIGURATION -check-env-FRAMEWORK -check-env-PREFIX

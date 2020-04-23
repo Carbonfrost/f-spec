@@ -21,7 +21,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
     public class TestRunResults : TestUnitResults {
 
         private DateTime _startedAt;
-        private DateTime _finishedAt;
 
         public override DateTime? StartedAt {
             get {
@@ -35,7 +34,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         public override DateTime? FinishedAt {
             get {
                 if (Children.Count == 0) {
-                    return _finishedAt;
+                    return _startedAt;
                 }
                 return base.FinishedAt;
             }

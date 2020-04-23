@@ -57,13 +57,8 @@ namespace Carbonfrost.CFSpec {
             if (!Options.NoUnifiedDiff) {
                 testRunnerOptions.AssertionMessageFormatMode |= AssertionMessageFormatModes.UseUnifiedDiff;
             }
-            foreach (var s in Options.FocusPatterns) {
-                testRunnerOptions.FocusPatterns.Add(s);
-            }
+            testRunnerOptions.PlanFilter.CopyFrom(Options.PlanFilter);
             testRunnerOptions.IgnoreFocus = Options.NoFocus;
-            foreach (var s in Options.SkipPatterns) {
-                testRunnerOptions.SkipPatterns.Add(s);
-            }
 
             testRunnerOptions.FixturePaths.AddAll(Options.FixturePaths);
             testRunnerOptions.FixturePaths.AddAll(PathCollection.FromEnvironment("FSPEC_FIXTURE_PATH"));

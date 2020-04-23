@@ -58,6 +58,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        internal TestStatus Status {
+            get {
+                if (Total == 0) {
+                    return TestStatus.Passed;
+                }
+                if (Failed > 0) {
+                    return TestStatus.Failed;
+                }
+                return TestStatus.Passed;
+            }
+        }
+
         public void Apply(TestStatus status) {
             _counts[(int)status]++;
         }

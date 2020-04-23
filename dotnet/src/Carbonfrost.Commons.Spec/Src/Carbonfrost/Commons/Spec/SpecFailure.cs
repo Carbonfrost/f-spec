@@ -35,6 +35,10 @@ namespace Carbonfrost.Commons.Spec {
             return new AssertException(SR.TestTimedOut(timeout));
         }
 
+        public static Exception CannotAliasDifferentTagNames() {
+            return new ArgumentNullException(SR.CannotAliasDifferentTagNames());
+        }
+
         public static InvalidOperationException FactMethodParamCount(string name) {
             return new InvalidOperationException(SR.FactMethodParamCount(name));
         }
@@ -156,6 +160,10 @@ namespace Carbonfrost.Commons.Spec {
 
         internal static Exception EmptyString(string argName) {
             return new InvalidOperationException();
+        }
+
+        internal static Exception AllWhitespace(string argName) {
+            return new ArgumentException(SR.AllWhitespace(), argName);
         }
 
         internal static Exception NotValidDataUri() {

@@ -15,6 +15,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
@@ -23,9 +24,9 @@ namespace Carbonfrost.Commons.Spec {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Assembly, AllowMultiple = false)]
     public sealed class TagsAttribute : Attribute, ITestTagProvider {
 
-        private readonly List<string> _tags;
+        private readonly List<TestTag> _tags;
 
-        public IReadOnlyList<string> Tags {
+        public IReadOnlyList<TestTag> Tags {
             get {
                 return _tags;
             }
@@ -38,10 +39,9 @@ namespace Carbonfrost.Commons.Spec {
             if (tags.Length == 0) {
                 throw SpecFailure.EmptyCollection(nameof(tags));
             }
-            foreach (var t in tags) {
-                TagAttribute.RequireValidTag(t);
-            }
-            _tags = new List<string>(tags);
+            _tags = new List<TestTag>(
+                tags.Select(s => TestTag.Parse(s))
+            );
         }
 
         public TagsAttribute(string tag) : this(new [] { tag }) {
@@ -53,7 +53,7 @@ namespace Carbonfrost.Commons.Spec {
         public TagsAttribute(string tag1, string tag2, string tag3) : this(new [] { tag1, tag2, tag3 }) {
         }
 
-        IEnumerable<string> ITestTagProvider.GetTags(TestContext context) {
+        IEnumerable<TestTag> ITestTagProvider.GetTags(TestContext context) {
             return Tags;
         }
     }

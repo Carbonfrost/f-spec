@@ -1,5 +1,5 @@
 //
-// Copyright 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     [TestUnitMetadataProvider(typeof(TagsMetadataProvider))]
     public interface ITestTagProvider {
-        IEnumerable<string> GetTags(TestContext context);
+        IEnumerable<TestTag> GetTags(TestContext context);
     }
 }

@@ -63,11 +63,25 @@ namespace Carbonfrost.Commons.Spec.Resources {
         }
 
 
+  /// <summary>Argument can't be all whitespace.</summary>
+    internal static string AllWhitespace(
+    
+    ) {
+        return string.Format(Culture, ResourceFinder("AllWhitespace") );
+    }
+
   /// <summary>Can't apply approximate comparisons to `${typeSelf}'.</summary>
     internal static string BadEpsilonComparerTypes(
     object @typeSelf
     ) {
         return string.Format(Culture, ResourceFinder("BadEpsilonComparerTypes") , @typeSelf);
+    }
+
+  /// <summary>Cannot create an alias when tags have different names</summary>
+    internal static string CannotAliasDifferentTagNames(
+    
+    ) {
+        return string.Format(Culture, ResourceFinder("CannotAliasDifferentTagNames") );
     }
 
   /// <summary>Can't use `ExpectedExceptionAttribute` or `ThrowsAttribute` on a test that throws assertions exceptions if those exceptions might be caught by the attribute.  Replace with `Assert.Throws`.</summary>

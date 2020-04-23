@@ -57,6 +57,7 @@
     <a href="#SYNOPSIS">SYNOPSIS</a>
     <a href="#DESCRIPTION">DESCRIPTION</a>
     <a href="#OPTIONS">OPTIONS</a>
+    <a href="#SELECTING-TESTS">SELECTING TESTS</a>
     <a href="#LOADER-PATH">LOADER PATH</a>
     <a href="#ENVIRONMENT">ENVIRONMENT</a>
     <a href="#EXIT-CODES">EXIT CODES</a>
@@ -92,9 +93,18 @@
 
 <dl>
 <dt>
-<code>--context-lines</code>=<var>COUNT</var>
+<code>--context-lines</code>=<var>count</var>
 </dt>
 <dd>When string comparisons generate differences, this parameter is used to control how many lines of context are displayed before and after a contiguous hunk.</dd>
+<dt>
+<code>--exclude</code>=<var>string</var>
+</dt>
+<dd>Skip tests whose full name excludes the specified <var>string</var>.  See [#SELECTING TESTS] for information about the syntax to use for <var>string</var>.</dd>
+<dt>
+<code>--exclude-pattern</code>=<var>regex</var>
+</dt>
+<dd>Skip tests whose full name excludes the specified <var>regex</var> pattern.  This is the same as specifying <code>--exclude=regex:</code><var>regex</var>
+</dd>
 <dt><code>--fail-fast</code></dt>
 <dd>Instead of running the entire test plan, run until the first test that fails.</dd>
 <dt><code>--fail-focused</code></dt>
@@ -102,15 +112,24 @@
 <dt><code>--fail-pending</code></dt>
 <dd>When used, specifies that the test plan fails if there are any pending tests.</dd>
 <dt>
-<code>--focus</code>=<var>REGEX</var>
+<code>-F, --focus</code>=<var>string</var>
 </dt>
-<dd>Focus tests whose descriptions or names match the given REGEX</dd>
+<dd>Focus tests whose descriptions or names match the given <var>string</var>.  See [#SELECTING TESTS] for information about the syntax to use for <var>string</var>.</dd>
 <dt>
-<code>-i, --fixture</code>=<var>PATH</var>
+<code>-i, --fixture</code>=<var>path</var>
 </dt>
 <dd>Add a path to the fixture search path.  If the path is a file, then the file can be loaded as a fixture.  If the path is a directory, then the directory is used as the prefix when searching for a fixture.  This option can be specified multiple times.</dd>
 <dt>
-<code>--loader-path</code>=<var>PATH</var>
+<code>-e, --include</code>=<var>string</var>
+</dt>
+<dd>Run tests whose full name includes the specified <var>string</var>.  See [#SELECTING TESTS] for information about the syntax to use for <var>string</var>.</dd>
+<dt>
+<code>-E, --include-pattern</code>=<var>regex</var>
+</dt>
+<dd>Run tests whose full name includes the specified <var>regex</var> pattern.  This is the same as specifying <code>--include=regex:</code><var>regex</var>
+</dd>
+<dt>
+<code>--loader-path</code>=<var>path</var>
 </dt>
 <dd>Add a path to the loader search path.  When the path is a file, this is the same as loading the specified assembly.  If the path is a directory, then the directory is used to search for assemblies when an assembly reference must be loaded.  This option can be specified multiple times.</dd>
 <dt><code>--no-diff</code></dt>
@@ -124,19 +143,19 @@
 <dt><code>--no-whitespace</code></dt>
 <dd>When comparing strings, special characters will not be used when printing whitespace in assertion failure messages</dd>
 <dt>
-<code>-p, --package</code>=<var>FORMULA</var>
+<code>-p, --package</code>=<var>formula</var>
 </dt>
-<dd>Load the NuGet package dependency <var>FORMULA</var>.  The <var>FORMULA</var> is in the format <var>NAME</var>[/<var>VERSION</var>].  Though technically optional, <span class="man-ref">fspec<span class="s">(1)</span></span> raises an error if the version is not specified.  This may change in a future version.</dd>
+<dd>Load the NuGet package dependency <var>formula</var>.  The <var>formula</var> is in the format <var>name</var>[/<var>version</var>].  Though technically optional, <span class="man-ref">fspec<span class="s">(1)</span></span> raises an error if the version is not specified.  This may change in a future version.</dd>
 <dt><code>--pause</code></dt>
 <dd>Attach tty and wait for a keypress before exiting.  This is primarily used when a debugger is attached to prevent <span class="man-ref">fspec<span class="s">(1)</span></span> from exiting too soon.</dd>
 <dt>
-<code>--plan-timeout</code>=<var>TIME</var>
+<code>--plan-timeout</code>=<var>time</var>
 </dt>
-<dd>Provides the limit on the amount of <var>TIME</var> that the entire test plan is allowed to take.  When reached, the test plan fails.  The value for <var>TIME</var> is either in seconds or using the format described in the description for  <code>--timeout</code>
+<dd>Provides the limit on the amount of <var>time</var> that the entire test plan is allowed to take.  When reached, the test plan fails.  The value for <var>time</var> is either in seconds or using the format described in the description for  <code>--timeout</code>
 </dd>
 <dt>
-<code>--random-seed</code>=<var>SEED</var> </dt>
-<dd>Use the specified <var>SEED</var> to randomize the ordering in which specs are executed</dd>
+<code>--random-seed</code>=<var>seed</var> </dt>
+<dd>Use the specified <var>seed</var> to randomize the ordering in which specs are executed</dd>
 <dt><code>--self-test</code></dt>
 <dd>If <code>fspec</code> was built with its own tests, then run the self-tests.</dd>
 <dt><code>--show-pass-explicit</code></dt>
@@ -146,13 +165,13 @@
 <dt><code>--show-whitespace</code></dt>
 <dd> When comparing strings, special characters will be used when printing whitespace in assertion failure messages.</dd>
 <dt>
-<code>--skip</code>=<var>REGEX</var>
+<code>-t, --tag</code>=<var>tag</var>
 </dt>
-<dd>Skip tests whose descriptions or names match the given REGEX</dd>
+<dd>Run tests that have the specified <var>tag</var>.  Tags are either simple names or key-value pairs.  For example, <code>acceptance</code> is a valid tag, and so is <code>platform:nixos</code>.  You can <em>exclude</em> tests that match the tag by using the prefix <code>~</code>.  For example, to exclude slow tests, you would specify <code>~slow</code>.  This flag can be specified multiple times.</dd>
 <dt>
-<code>--timeout</code>=<var>TIME</var>
+<code>--timeout</code>=<var>time</var>
 </dt>
-<dd>The maximum <var>TIME</var> allowed for any particular test to execute.  The syntax of TIME is either a floating point number representing the whole and partial seconds to allow or it is the syntax of <code>System.TimeSpan</code> which looks like <var>DAYS</var>.<var>HOURS</var>:<var>MINUTES</var>:<var>SECONDS</var>.<var>TICKS</var>
+<dd>The maximum <var>time</var> allowed for any particular test to execute.  The syntax of TIME is either a floating point number representing the whole and partial seconds to allow or it is the syntax of <code>System.TimeSpan</code> which looks like <var>days</var>.<var>hours</var>:<var>minutes</var>:<var>seconds</var>.<var>ticks</var>
 </dd>
 <dt>
 <code>--verify</code>={<strong>strict</strong>|<strong>none</strong>}</dt>
@@ -162,6 +181,20 @@
 <dt><code>--version</code></dt>
 <dd>Report the version information and exit</dd>
 </dl>
+
+<h2 id="SELECTING-TESTS">SELECTING TESTS</h2>
+
+<p>By default, all tests will be run in the test suite except for tests that are marked as "explicit".  Various options let you specify which tests are included in the test plan.  Each option has a string argument:</p>
+
+<ol>
+  <li>The string must be contained in the full name or description of the test (case insensitive).</li>
+  <li>
+<em>But</em> if a wildcard pattern character '*', '?', '[', or ']', is present, then the string must match the wildcard expression.  Therefore, if you specify <code>test</code>, the pattern will match strings that <em>contain "test"</em>, but if you specify <code>test*</code> the pattern will match strings that <em>start with "test"</em>.</li>
+  <li>When you prefix the string with <code>regex:</code>, then the string is interpretted as a regular expression and is case sensitive.</li>
+</ol>
+
+<p>If you specify none of the test selection options, then the default set of tests are run, which is all tests except those marked with "explicit".
+Otherwise, the tests that will be run will be the tests that match the <code>--include</code> or <code>--tag</code> options but do not match the <code>--exclude</code> option.</p>
 
 <h2 id="LOADER-PATH">LOADER PATH</h2>
 

@@ -1,7 +1,5 @@
-#if SELF_TEST
-
 //
-// Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
+// Copyright 2016-2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,21 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
-using System.Linq;
-using Carbonfrost.Commons.Spec;
 
-namespace Carbonfrost.SelfTest.Spec {
+namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    public class TagsAttributeTests : TestClass {
-
-        [Fact]
-        [Tags("a", "b", "c")]
-        public void CurrentTest_should_have_tags() {
-            Assert.Contains("a", TestContext.CurrentTest.Tags);
-            Assert.Contains("b", TestContext.CurrentTest.Tags);
-            Assert.Contains("c", TestContext.CurrentTest.Tags);
-        }
+    // Largely used to glue together TestContext and TestUnit
+    interface ITestUnitApiConventions {
+        TestTagCollection Tags { get; }
+        TestDataProviderCollection TestDataProviders { get; }
     }
 }
-#endif

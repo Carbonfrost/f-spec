@@ -67,17 +67,23 @@
   <data name="InvalidRandomSeed" xml:space="preserve">
     <value>invalid random seed</value>
   </data>
+  <data name="InvalidRegex" xml:space="preserve">
+    <value>invalid regex: {0}</value>
+  </data>
   <data name="InvalidTimeSpan" xml:space="preserve">
     <value>invalid time span</value>
   </data>
   <data name="InvalidVerify" xml:space="preserve">
     <value>invalid verification mode</value>
   </data>
-  <data name="ULoaderPath" xml:space="preserve">
-    <value>Add {{PATH}} to loader path</value>
-  </data>
   <data name="UContextLines" xml:space="preserve">
     <value>Show as many lines of context in unified diffs</value>
+  </data>
+  <data name="UExclude" xml:space="preserve">
+    <value>Skip tests whose descriptions or names match the given {{PATTERN}}</value>
+  </data>
+  <data name="UExcludePattern" xml:space="preserve">
+    <value>Skip tests whose full names match {{REGEX}}</value>
   </data>
   <data name="UFailFast" xml:space="preserve">
     <value>Exit when the first test fails</value>
@@ -89,13 +95,22 @@
     <value>Include a fixture search {{PATH}}</value>
   </data>
   <data name="UFocus" xml:space="preserve">
-    <value>Focus tests whose descriptions or names match the given {{REGEX}}</value>
+    <value>Focus tests whose descriptions or names match the given {{PATTERN}}</value>
   </data>
   <data name="UHelp" xml:space="preserve">
     <value>Display this help screen</value>
   </data>
+  <data name="UInclude" xml:space="preserve">
+    <value>Run tests whose full names match the given {{PATTERN}}</value>
+  </data>
+  <data name="UIncludePattern" xml:space="preserve">
+    <value>Run tests whose full names match {{REGEX}}</value>
+  </data>
   <data name="ULoaderOptions" xml:space="preserve">
     <value>Loader options</value>
+  </data>
+  <data name="ULoaderPath" xml:space="preserve">
+    <value>Add {{PATH}} to loader path</value>
   </data>
   <data name="UNoDiff" xml:space="preserve">
     <value>Don't use unified diffs when assertion messages contain long strings</value>
@@ -142,8 +157,8 @@
   <data name="UShowWhitespace" xml:space="preserve">
     <value>Use special characters when printing whitespace in assertion failure messages</value>
   </data>
-  <data name="USkip" xml:space="preserve">
-    <value>Skip tests whose descriptions or names match the given {{REGEX}}</value>
+  <data name="UTag" xml:space="preserve">
+    <value>Run tests with the specified TAG.  (Optionally, ~TAG for tests without tag)</value>
   </data>
   <data name="UTestSelectionOptions" xml:space="preserve">
     <value>Test selection options</value>
