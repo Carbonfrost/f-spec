@@ -230,8 +230,15 @@ namespace Carbonfrost.Commons.Spec {
 
         public class ContainsMatcher<TSource> : TestMatcher<IEnumerable<TSource>>, ITestMatcherWithEqualityComparerApiConventions<ContainsMatcher<TSource>, TSource> {
 
-            public TSource Expected { get; private set; }
-            public IEqualityComparer<TSource> Comparer { get; private set; }
+            public TSource Expected {
+                get;
+                private set;
+            }
+
+            public IEqualityComparer<TSource> Comparer {
+                get;
+                private set;
+            }
 
             public ContainsMatcher(TSource expected) {
                 Expected = expected;
@@ -239,7 +246,7 @@ namespace Carbonfrost.Commons.Spec {
 
             public ContainsMatcher(TSource expected, IEqualityComparer<TSource> comparer) {
                 if (expected == null) {
-                    throw new ArgumentNullException("expected");
+                    throw new ArgumentNullException(nameof(expected));
                 }
                 Expected = expected;
                 Comparer = comparer;
@@ -247,7 +254,7 @@ namespace Carbonfrost.Commons.Spec {
 
             public ContainsMatcher(TSource expected, Comparison<TSource> comparison) {
                 if (expected == null) {
-                    throw new ArgumentNullException("expected");
+                    throw new ArgumentNullException(nameof(expected));
                 }
                 Expected = expected;
                 if (comparison != null) {
@@ -266,6 +273,9 @@ namespace Carbonfrost.Commons.Spec {
             public override bool Matches(IEnumerable<TSource> actual) {
                 if (actual == null) {
                     throw new ArgumentNullException("actual");
+                }
+                if (Comparer == null && actual is ICollection<TSource> coll) {
+                    return coll.Contains(Expected);
                 }
                 return actual.Contains(Expected, Comparer ?? EqualityComparer<TSource>.Default);
             }
