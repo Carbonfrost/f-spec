@@ -39,9 +39,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public TestCase TestCase {
+        public TestCaseInfo TestCase {
             get {
-                return (TestCase) _inner.TestUnit;
+                return (TestCaseInfo) _inner.TestUnit;
             }
         }
 

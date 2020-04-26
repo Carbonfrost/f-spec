@@ -46,12 +46,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             get;
         }
 
-        public virtual ITestSubjectProvider TestSubjectProvider {
-            get {
-                return null;
-            }
-        }
-
         public virtual TestDataProviderCollection TestDataProviders {
             get {
                 return TestDataProviderCollection.Empty;
@@ -64,14 +58,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public virtual object FindTestObject() {
+        internal virtual object FindTestObject() {
             if (Parent != null) {
                 return Parent.FindTestObject();
             }
             return null;
         }
 
-        public virtual object FindTestSubject() {
+        internal virtual object FindTestSubject() {
             if (Parent != null) {
                 return Parent.FindTestSubject();
             }

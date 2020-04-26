@@ -75,7 +75,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             public TestUnitNode AppendStart(TestUnit item) {
                 TestUnitNode result = new StartTestUnitNode(this, item);
-                var testCase = item as TestCase;
+                var testCase = item as TestCaseInfo;
                 if (testCase != null) {
                     result = new TestCaseNode(result, testCase);
                 }
@@ -92,7 +92,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             private TestCaseResult _result;
 
-            public TestCaseNode(TestUnitNode parent, TestCase unit) : base(parent, unit) {
+            public TestCaseNode(TestUnitNode parent, TestCaseInfo unit) : base(parent, unit) {
             }
 
             public override TestUnitResult FindResult() {
@@ -100,7 +100,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
 
             internal override void Run(DefaultTestRunner runner) {
-                var myCase = (TestCase) Unit;
+                var myCase = (TestCaseInfo) Unit;
                 using (var context = runner.NewTestContext(Unit)) {
                     _result = myCase.RunTest(context);
                 }
@@ -108,7 +108,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
 
             internal override void Abort(DefaultTestRunner runner) {
-                var myCase = (TestCase) Unit;
+                var myCase = (TestCaseInfo) Unit;
                 var result = new TestCaseResult(myCase, TestStatus.Skipped);
                 result.Done(DateTime.Now);
                 Parent.FindResult().ContainerOrSelf.Children.Add(result);

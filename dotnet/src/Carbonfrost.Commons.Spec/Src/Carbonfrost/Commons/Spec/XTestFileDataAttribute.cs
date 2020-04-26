@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ namespace Carbonfrost.Commons.Spec {
             return ((ITestDataProvider)_inner).GetData(context);
         }
 
-        void ITestCaseMetadataFilter.Apply(TestCase testCase) {
+        void ITestCaseMetadataFilter.Apply(TestCaseInfo testCase) {
             testCase.IsPending = true;
             testCase.Reason = Reason;
         }

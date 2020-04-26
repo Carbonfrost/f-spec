@@ -20,7 +20,7 @@ using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    public abstract class TestCase : TestUnit {
+    public abstract partial class TestCaseInfo : TestUnit {
 
         private readonly List<ITestCaseFilter> _filters = new List<ITestCaseFilter>(0);
         private IReadOnlyList<Attribute> _attributesCache;
@@ -31,7 +31,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        internal TestStatus PredeterminedStatus {
+        private protected TestStatus PredeterminedStatus {
             get {
                 return TestUnit.ConvertToStatus(this).GetValueOrDefault(TestStatus.NotRun);
             }
@@ -48,7 +48,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         // These are the attributes that control the test case.  They
         // come from the method, its return parameter, and the corresponding
         // property
-        internal IReadOnlyList<Attribute> Attributes {
+        private protected IReadOnlyList<Attribute> Attributes {
             get {
                 if (_attributesCache == null) {
                     var cache = new List<object>();
@@ -108,19 +108,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public override TestUnitType Type {
-            get {
-                return TestUnitType.Case;
-            }
-        }
-
         public override string DisplayName {
             get {
                 return string.Concat(TestMethod.DeclaringType.FullName, ".", TestMethod.Name);
             }
         }
 
-        internal TestCase(MethodInfo testMethod) {
+        private protected TestCaseInfo(MethodInfo testMethod) {
             if (testMethod == null) {
                 throw new ArgumentNullException(nameof(testMethod));
             }

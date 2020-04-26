@@ -54,12 +54,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             var plan = CreatePlan(run);
             var testsWillRun = plan.WillRunTestCasesCount;
 
-            OnTestRunnerStarting(new TestRunnerStartingEventArgs(_opts, run, testsWillRun));
-            OnTestRunnerStarted(new TestRunnerStartedEventArgs(_opts, run, testsWillRun));
+            OnRunnerStarting(new TestRunnerStartingEventArgs(_opts, run, testsWillRun));
+            OnRunnerStarted(new TestRunnerStartedEventArgs(_opts, run, testsWillRun));
 
             var runResults = plan.RunTests();
             var e = new TestRunnerFinishedEventArgs(run, runResults, _opts);
-            OnTestRunnerFinished(e);
+            OnRunnerFinished(e);
             return runResults;
         }
 

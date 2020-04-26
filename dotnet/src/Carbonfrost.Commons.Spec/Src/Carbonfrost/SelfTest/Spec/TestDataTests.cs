@@ -257,7 +257,7 @@ namespace Carbonfrost.SelfTest.Spec {
                 }
             }
 
-            public override object TestObject {
+            internal override object TestObject {
                 get {
                     return _testObject;
                 }

@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
@@ -43,23 +42,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public TypeInfo Class {
             get {
-                return TestClass.TestType.GetTypeInfo();
+                return TestClass.TestClass.GetTypeInfo();
             }
         }
 
-        public object TestSubject {
+        public TestClassInfo TestClass {
             get {
-                var s = TestClass as TestClassSubjectBinding;
-                if (s == null) {
-                    return null;
-                }
-                return s.TestSubject;
-            }
-        }
-
-        internal ReflectedTestClass TestClass {
-            get {
-                return (ReflectedTestClass) _inner.TestUnit;
+                return (TestClassInfo) _inner.TestUnit;
             }
         }
 

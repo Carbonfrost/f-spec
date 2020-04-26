@@ -30,7 +30,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public virtual object TestObject {
+        internal virtual object TestObject {
             get {
                 if (Parent == null) {
                     return null;

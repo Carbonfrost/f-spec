@@ -15,26 +15,27 @@
 //
 using System;
 using System.Linq;
+using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    public class TestTheoryFinishedEventArgs : EventArgs {
+    public class TestSubjectClassBindingStartedEventArgs : EventArgs {
 
-        private TestUnitFinishedEventArgs _inner;
+        private readonly TestUnitStartedEventArgs _inner;
 
-        public TestTheory TestTheory {
+        public TestSubjectClassBinding SubjectClassBinding {
             get {
-                return (TestTheory) _inner.TestUnit;
+                return (TestSubjectClassBinding) _inner.TestUnit;
             }
         }
 
-        public TestUnitResults Results {
+        public object TestSubject {
             get {
-                return (TestUnitResults) _inner.Result;
+                return SubjectClassBinding.TestSubject;
             }
         }
 
-        internal TestTheoryFinishedEventArgs(TestUnitFinishedEventArgs inner) {
+        internal TestSubjectClassBindingStartedEventArgs(TestUnitStartedEventArgs inner) {
             _inner = inner;
         }
     }

@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -34,6 +34,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             _name = string.IsNullOrEmpty(data.Name) ? ("#" + _index) : (" @ " + data.Name);
             Reason = data.Reason;
             CopyFlags(data.Flags);
+        }
+
+        public override TestUnitType Type {
+            get {
+                return TestUnitType.Case;
+            }
         }
 
         public override string DisplayName {

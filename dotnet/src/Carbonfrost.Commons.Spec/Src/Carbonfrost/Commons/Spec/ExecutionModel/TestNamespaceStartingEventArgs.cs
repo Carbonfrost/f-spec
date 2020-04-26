@@ -41,7 +41,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        internal TestNamespace TestNamespace {
+        public TestNamespace TestNamespace {
             get {
                 return (TestNamespace) _inner.TestUnit;
             }

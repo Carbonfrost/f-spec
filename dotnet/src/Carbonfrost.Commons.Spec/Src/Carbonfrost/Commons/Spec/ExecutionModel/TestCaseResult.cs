@@ -47,7 +47,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             get; set;
         }
 
-        internal TestCaseResult(TestCase testCase, TestStatus status = TestStatus.NotRun) {
+        internal TestCaseResult(TestCaseInfo testCase, TestStatus status = TestStatus.NotRun) {
             _status = status;
             _displayName = testCase.DisplayName;
             Reason = testCase.Reason;

@@ -19,32 +19,26 @@ using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    class TestClassSubjectBinding : ReflectedTestClass {
+    class DefaultTestClassSubjectBinding : TestSubjectClassBinding {
 
         private readonly object _testSubject;
         private readonly object _testObject;
 
-        public object TestSubject {
+        public override object TestSubject {
             get {
                 return _testSubject;
-            }
-        }
-
-        public override TestUnitType Type {
-            get {
-                return TestUnitType.SubjectClassBinding;
             }
         }
 
         internal override TestUnitMetadata Metadata {
             get {
                 return new TestUnitMetadata(
-                    TestType.GetTypeInfo().GetCustomAttributes(false).Cast<Attribute>()
+                    TestClass.GetTypeInfo().GetCustomAttributes(false).Cast<Attribute>()
                 );
             }
         }
 
-        internal TestClassSubjectBinding(Type testClassType, object testSubject) : base(testClassType) {
+        internal DefaultTestClassSubjectBinding(Type testClassType, object testSubject) : base(testClassType) {
             if (testSubject == null) {
                 throw new ArgumentNullException(nameof(testSubject));
             }
@@ -60,17 +54,17 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public override object FindTestObject() {
+        internal override object FindTestObject() {
             return _testObject;
         }
 
-        public override object FindTestSubject() {
+        internal override object FindTestSubject() {
             return _testSubject;
         }
 
         protected override void Initialize(TestContext testContext) {
             Metadata.Apply(testContext);
-            AddTestMethods();
+            TestClassInfo.AddTestMethods(TestClass, Children);
             Metadata.ApplyDescendants(testContext, Descendants);
         }
     }

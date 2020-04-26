@@ -35,7 +35,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         private void ApplyCore(TestUnit unit) {
-            if (unit is TestCase testCase) {
+            if (unit is TestCaseInfo testCase) {
                 testCase.Filters.Add(this);
             }
         }

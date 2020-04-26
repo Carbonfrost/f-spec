@@ -13,13 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
+
 using System.Linq;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    abstract class ReflectedTestCase : TestCase {
+    abstract class ReflectedTestCase : TestCaseInfo {
 
         protected override TestCaseResult RunTestCore(TestContext testContext) {
             var opts = new TestOptions {
@@ -27,8 +27,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 Timeout = Timeout,
                 DisplayName = DisplayName,
             };
-            opts.Filters.AddAll(TestMethod.GetCustomAttributes(false)
-                                .OfType<ITestCaseFilter>());
+            opts.Filters.AddAll(Attributes.OfType<ITestCaseFilter>());
             opts.Filters.AddAll(Filters);
 
             return testContext.RunTest(CoreRunTest, opts);
@@ -60,7 +59,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         protected ReflectedTestCase(MethodInfo method) : base(method) {
         }
 
-        internal object InvokeMethodHelper(object testObject, object[] args) {
+        private protected object InvokeMethodHelper(object testObject, object[] args) {
             return SyncContextImpl.Run(TestMethod, testObject, args);
         }
     }

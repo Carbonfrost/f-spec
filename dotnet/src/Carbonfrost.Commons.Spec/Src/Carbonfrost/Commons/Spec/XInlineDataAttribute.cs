@@ -77,7 +77,7 @@ namespace Carbonfrost.Commons.Spec {
             return ((ITestDataProvider) _inner).GetData(context);
         }
 
-        void ITestCaseMetadataFilter.Apply(TestCase testCase) {
+        void ITestCaseMetadataFilter.Apply(TestCaseInfo testCase) {
             testCase.IsPending = true;
             testCase.Reason = Reason;
         }

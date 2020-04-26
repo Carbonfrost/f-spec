@@ -15,15 +15,20 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    class SkippedInitFailure : TestCase {
+    class SkippedInitFailure : TestCaseInfo {
 
         private readonly Exception _err;
         private string _reason;
+
+        public override TestUnitType Type {
+            get {
+                return TestUnitType.Case;
+            }
+        }
 
         public SkippedInitFailure(MethodInfo mi, Exception err) : base(mi) {
             _err = err;
@@ -49,10 +54,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public static TestCase DataProviderProblem(TestUnit item,
-                                                   string dataProvider,
-                                                   MethodInfo mi,
-                                                   Exception err) {
+        public static TestCaseInfo DataProviderProblem(TestUnit item,
+            string dataProvider,
+            MethodInfo mi,
+            Exception err
+        ) {
             string reason = string.Format("Problem with data provider {0}", dataProvider);
             return new SkippedInitFailure(mi, err) {
                 _reason = reason,

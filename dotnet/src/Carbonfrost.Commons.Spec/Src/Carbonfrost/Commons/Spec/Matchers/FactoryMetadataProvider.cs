@@ -27,7 +27,7 @@ namespace Carbonfrost.Commons.Spec.TestMatchers {
         }
 
         public void Apply(TestContext testContext) {
-            if (testContext.CurrentTest is TestCase t) {
+            if (testContext.CurrentTest is TestCaseInfo t) {
                 t.Filters.Add(this);
             }
         }
@@ -54,7 +54,7 @@ namespace Carbonfrost.Commons.Spec.TestMatchers {
         }
 
         public void Apply(TestContext testContext) {
-            if (testContext.CurrentTest is TestCase t) {
+            if (testContext.CurrentTest is TestCaseInfo t) {
                 t.Filters.Add(this);
             }
         }

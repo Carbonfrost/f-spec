@@ -14,61 +14,23 @@
 // limitations under the License.
 //
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    class ReflectedTestClass : TestUnit {
+    class ReflectedTestClass : TestClassInfo {
 
-        private readonly Type _type;
         private object _instanceCache;
         private ITestSubjectProvider _subjectProviderCache;
-        private readonly TestUnitCollection _children;
-
-        public Type TestType {
-            get {
-                return _type;
-            }
-        }
-
-        public override TestUnitType Type {
-            get {
-                return TestUnitType.Class;
-            }
-        }
 
         public override ITestSubjectProvider TestSubjectProvider {
             get {
                 return _subjectProviderCache ??
-                    (_subjectProviderCache = Spec.TestSubjectProvider.ForType(TestType));
+                    (_subjectProviderCache = Spec.TestSubjectProvider.ForType(TestClass));
             }
         }
 
-        public sealed override TestUnitCollection Children {
-            get {
-                return _children;
-            }
-        }
-
-        internal override TestUnitMetadata Metadata {
-            get {
-                return new TestUnitMetadata(
-                    TestType.GetTypeInfo().GetCustomAttributes(false).Cast<Attribute>()
-                );
-            }
-        }
-
-        internal ReflectedTestClass(Type type) {
-            _type = type;
-            _children = new TestUnitCollection(this);
-        }
-
-        public override string DisplayName {
-            get {
-                return _type.FullName;
-            }
+        internal ReflectedTestClass(Type type) : base(type) {
         }
 
         protected override void Initialize(TestContext testContext) {
@@ -78,27 +40,27 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             if (TestSubjectProvider != null) {
                 var subjects = TestSubjectProvider.GetTestSubjects(testContext);
                 foreach (var s in subjects) {
-                    Type testClassType = ClosedTestClassType(TestType, s);
-                    var binding = new TestClassSubjectBinding(testClassType, s);
+                    Type testClassType = ClosedTestClassType(TestClass, s);
+                    var binding = new DefaultTestClassSubjectBinding(testClassType, s);
                     Children.Add(binding);
                 }
                 _instanceCache = TestUnitAdapter.Empty;
 
             } else {
-                AddTestMethods();
+                TestClassInfo.AddTestMethods(TestClass, Children);
             }
 
             Metadata.ApplyDescendants(testContext, Descendants);
         }
 
-        public override object FindTestObject() {
+        internal override object FindTestObject() {
             if (_instanceCache == null) {
                 try {
-                    _instanceCache = Activator.CreateInstance(_type);
+                    _instanceCache = Activator.CreateInstance(TestClass);
                 } catch (TargetInvocationException ex) {
-                    _instanceCache = new TypeLoadFailure(_type, ex.InnerException);
+                    _instanceCache = new TypeLoadFailure(TestClass, ex.InnerException);
                 } catch (Exception ex) {
-                    _instanceCache = new TypeLoadFailure(_type, ex);
+                    _instanceCache = new TypeLoadFailure(TestClass, ex);
                 }
             }
             return _instanceCache;
@@ -116,41 +78,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
 
             base.BeforeExecuting(testContext);
-        }
-
-        internal void AddTestMethods() {
-            Type testType = TestType;
-            foreach (var m in testType.GetRuntimeMethods()) {
-                var attrs = m.GetCustomAttributes();
-                var myCase = CreateCase(m, attrs);
-                if (myCase != null) {
-                    Children.Add(myCase);
-                }
-            }
-            foreach (var p in testType.GetRuntimeProperties()) {
-                var attrs = (p.GetCustomAttributes() ?? Empty<Attribute>.Array)
-                    .Concat(p.GetMethod.GetCustomAttributes() ?? Empty<Attribute>.Array);
-                var myCase = CreateCase(p.GetMethod, attrs);
-                if (myCase != null) {
-                    Children.Add(myCase);
-                }
-            }
-        }
-
-        private TestUnit CreateCase(MethodInfo method, IEnumerable<Attribute> attrs) {
-            if (attrs == null) {
-                return null;
-            }
-            TestUnit testCase = null;
-            foreach (var attr in attrs.OfType<IReflectionTestUnitFactory>()) {
-                if (testCase == null) {
-                    testCase = attr.CreateTestCase(method);
-                } else {
-                    throw new NotImplementedException();
-                }
-            }
-
-            return testCase;
         }
 
         private static Type ClosedTestClassType(Type testClassType, object testSubject) {

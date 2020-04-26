@@ -14,13 +14,12 @@
 // limitations under the License.
 //
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    class TestAssembly : TestUnit {
+    public abstract class TestAssembly : TestUnit {
 
         private readonly Assembly _assembly;
         private readonly TestUnitCollection _children;
@@ -57,16 +56,21 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        private TestAssembly(Assembly assembly) {
+        private protected TestAssembly(Assembly assembly) {
             _assembly = assembly;
             _children = new TestUnitCollection(this);
         }
 
-        public static TestUnit Create(Assembly assembly) {
+        private class DefaultTestAssembly : TestAssembly {
+            public DefaultTestAssembly(Assembly assembly) : base(assembly) {
+            }
+        }
+
+        public static TestAssembly Create(Assembly assembly) {
             if (assembly == null) {
                 throw new ArgumentNullException(nameof(assembly));
             }
-            return new TestAssembly(assembly);
+            return new DefaultTestAssembly(assembly);
         }
 
         protected override void Initialize(TestContext testContext) {
@@ -74,7 +78,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             foreach (var nsGroup in _assembly.ExportedTypes.GroupBy(t => t.Namespace)) {
                 var tests = nsGroup.Select(t => TestUnitFromType(t));
-                var unit = new TestNamespace(nsGroup.Key, tests);
+                var unit = TestNamespace.Create(nsGroup.Key, tests);
                 SpecLog.DiscoveredTests(unit.Children);
                 if (unit.Children.Count == 0) {
                     // if the ns has no tests, we don't even report it exists
@@ -87,9 +91,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             Metadata.ApplyDescendants(testContext, Descendants);
         }
 
-        internal ReflectedTestClass TestUnitFromType(Type type) {
+        internal static ReflectedTestClass TestUnitFromType(Type type) {
             if (type == null) {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             var tt = type.GetTypeInfo();
             if (tt.IsAbstract || tt.IsValueType || tt.IsNested || !tt.IsVisible) {

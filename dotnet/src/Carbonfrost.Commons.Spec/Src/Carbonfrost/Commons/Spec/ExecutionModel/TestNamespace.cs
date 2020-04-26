@@ -19,7 +19,7 @@ using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    class TestNamespace : TestUnit {
+    public abstract class TestNamespace : TestUnit {
 
         private readonly string _namespace;
         private readonly TestUnitCollection _children;
@@ -48,7 +48,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public TestNamespace(string ns, IEnumerable<TestUnit> typeUnits) {
+        private protected TestNamespace(string ns, IEnumerable<TestUnit> typeUnits) {
             _namespace = ns;
             _children = new TestUnitCollection(this);
             foreach (var unit in typeUnits) {
@@ -57,6 +57,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
                 Children.Add(unit);
             }
+        }
+
+        private class DefaultTestNamespace : TestNamespace {
+            public DefaultTestNamespace(string ns, IEnumerable<TestUnit> typeUnits) : base(ns, typeUnits) {
+            }
+        }
+
+        internal static TestNamespace Create(string ns, IEnumerable<TestUnit> typeUnits) {
+            return new DefaultTestNamespace(ns, typeUnits);
         }
 
         public override string DisplayName {

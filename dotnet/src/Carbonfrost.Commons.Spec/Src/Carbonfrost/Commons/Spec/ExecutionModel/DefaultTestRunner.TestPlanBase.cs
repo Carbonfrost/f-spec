@@ -24,7 +24,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         internal abstract class TestPlanBase {
 
-            private readonly List<TestCase> _willRun;
+            private readonly List<TestCaseInfo> _willRun;
             private readonly DefaultTestRunner _runner;
             private readonly TestRunnerOptions _normalizedOpts;
             private readonly RootNode _root;
@@ -35,7 +35,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
             }
 
-            public List<TestCase> WillRunTestCases {
+            public List<TestCaseInfo> WillRunTestCases {
                 get {
                     return _willRun;
                 }
@@ -73,7 +73,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 _normalizedOpts.PlanFilter.Apply(testRun, normalized);
 
                 _willRun = PlanOrder.OfType<TestCaseNode>()
-                    .Select(t => (TestCase) t.Unit)
+                    .Select(t => (TestCaseInfo) t.Unit)
                     .Where(t => !t.Skipped)
                     .ToList();
             }

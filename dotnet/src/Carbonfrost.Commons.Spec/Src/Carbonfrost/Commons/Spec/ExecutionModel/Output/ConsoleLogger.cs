@@ -51,13 +51,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             };
         }
 
-        protected override void OnTestClassFinished(TestClassFinishedEventArgs e) {
-            if (IsProblem(e.Result)) {
-                _problems.Add(e.Result);
+        protected override void OnClassFinished(TestClassFinishedEventArgs e) {
+            if (IsProblem(e.Results)) {
+                _problems.Add(e.Results);
             }
         }
 
-        protected override void OnTestCaseFinished(TestCaseFinishedEventArgs e) {
+        protected override void OnCaseFinished(TestCaseFinishedEventArgs e) {
             e.Result.Messages.AddRange(_bufferLog);
             _bufferLog.Clear();
 
@@ -68,7 +68,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             _parts.onTestCaseFinished.Render(RenderContext, e.Result);
         }
 
-        protected override void OnTestTheoryStarted(TestTheoryStartedEventArgs e) {
+        protected override void OnTheoryStarted(TestTheoryStartedEventArgs e) {
             if ((_flags & DisplayFlags.ShowCaseStart) > 0) {
                 console.Gray();
                 console.WriteLine();
@@ -77,18 +77,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             }
         }
 
-        protected override void OnTestTheoryFinished(TestTheoryFinishedEventArgs e) {
-            e.Result.Messages.AddRange(_bufferLog);
+        protected override void OnTheoryFinished(TestTheoryFinishedEventArgs e) {
+            e.Results.Messages.AddRange(_bufferLog);
             _bufferLog.Clear();
 
-            if (IsProblem(e.Result)) {
-                _problems.Add(e.Result);
+            if (IsProblem(e.Results)) {
+                _problems.Add(e.Results);
             }
 
-            _parts.onTestTheoryFinished.Render(RenderContext, e.Result);
+            _parts.onTestTheoryFinished.Render(RenderContext, e.Results);
         }
 
-        protected override void OnTestRunnerStarting(TestRunnerStartingEventArgs e) {
+        protected override void OnRunnerStarting(TestRunnerStartingEventArgs e) {
             if (EnvironmentHelper.Debug) {
                 console.White();
                 console.WriteLine("Debug mode activated");
@@ -96,7 +96,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             }
         }
 
-        protected override void OnTestRunnerStarted(TestRunnerStartedEventArgs e) {
+        protected override void OnRunnerStarted(TestRunnerStartedEventArgs e) {
             console.White();
             console.WriteLine(string.Format("Will run {0} tests", e.WillRunTests));
             console.WriteLine(string.Format("Random Seed: {0}", e.Options.RandomSeed));
@@ -107,7 +107,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             console.ResetColor();
         }
 
-        protected override void OnTestRunnerFinished(TestRunnerFinishedEventArgs e) {
+        protected override void OnRunnerFinished(TestRunnerFinishedEventArgs e) {
             var duration = e.Results.ExecutionTime;
             var results = e.Results;
             console.White();
