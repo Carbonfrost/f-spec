@@ -57,6 +57,18 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
         }
 
         [Fact]
+        public void Matches_will_disable_validation_errors_inside_SatisfyAnyMatcher() {
+            var matcher = Matchers.SatisfyAny(
+                new InstanceOfMatcher(typeof(string)),
+                new NullMatcher()
+            );
+
+            // Normally, BeInstanceOf() when the argument is null throws an exception, but since
+            // it is in a list of other matchers, this validation is disabled
+            Assert.DoesNotThrow(() => matcher.Matches(null));
+        }
+
+        [Fact]
         public void Via_Assert_should_match() {
             Assert.IsInstanceOf(typeof(string), "tt");
             Assert.IsInstanceOf(typeof(int[]), new [] { 1, 2 });

@@ -152,20 +152,35 @@ namespace Carbonfrost.Commons.Spec {
 
     namespace TestMatchers {
 
-        public class InstanceOfMatcher : TestMatcher<object> {
+        public class InstanceOfMatcher : TestMatcher<object>, ITestMatcherValidations {
 
-            public Type Expected { get; private set; }
+            private bool _allowNull;
+
+            public Type Expected {
+                get;
+                private set;
+            }
+
+            object ITestMatcherValidations.AllowingNullActualValue() {
+                return AllowingNullActualValue();
+            }
+
+            public InstanceOfMatcher AllowingNullActualValue() {
+                return new InstanceOfMatcher(Expected) {
+                    _allowNull = true
+                };
+            }
 
             public InstanceOfMatcher(Type expected) {
                 if (expected == null) {
-                    throw new ArgumentNullException("expected");
+                    throw new ArgumentNullException(nameof(expected));
                 }
 
                 Expected = expected;
             }
 
             public override bool Matches(object actual) {
-                if (actual == null) {
+                if (actual == null && !_allowNull) {
                     throw SpecFailure.CannotUseInstanceOfOnNullActual();
                 }
 
@@ -173,5 +188,4 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
     }
-
 }

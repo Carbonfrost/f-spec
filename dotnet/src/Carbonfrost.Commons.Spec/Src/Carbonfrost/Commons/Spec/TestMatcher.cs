@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 
 using Carbonfrost.Commons.Spec.ExecutionModel;
+using Carbonfrost.Commons.Spec.TestMatchers;
 
 namespace Carbonfrost.Commons.Spec {
 
@@ -30,6 +31,13 @@ namespace Carbonfrost.Commons.Spec {
                 return Innermost(n.InnerMatcher);
             }
             return any;
+        }
+
+        internal static object AllowingNullActualValue(object matcher) {
+            if (matcher is ITestMatcherValidations val) {
+                return val.AllowingNullActualValue();
+            }
+            return matcher;
         }
 
         class InvariantMatcher : ITestMatcher {
@@ -54,10 +62,10 @@ namespace Carbonfrost.Commons.Spec {
         public abstract bool Matches(T actual);
 
         public virtual bool Matches(Func<T> actualFactory) {
-            if (actualFactory == null) {
-                throw new ArgumentNullException("actualFactory");
+            T actual = default(T);
+            if (actualFactory != null) {
+                actual = actualFactory();
             }
-            var actual = actualFactory();
             return Matches(actual);
         }
 

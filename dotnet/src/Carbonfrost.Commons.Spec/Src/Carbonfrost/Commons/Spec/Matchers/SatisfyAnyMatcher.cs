@@ -47,7 +47,10 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             public SatisfyAnyMatcher(params ITestMatcher<T>[] matchers) {
-                _matchers = matchers ?? Empty<ITestMatcher<T>>.Array;
+                _matchers = Array.ConvertAll(
+                    matchers ?? Empty<ITestMatcher<T>>.Array,
+                    m => (ITestMatcher<T>) TestMatcher.AllowingNullActualValue(m)
+                );
             }
 
             public bool Matches(Func<T> actualFactory) {
