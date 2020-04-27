@@ -26,11 +26,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             if (!Show) {
                 return;
             }
+
+            console.PushIndent();
             foreach (var desc in results.Descendants) {
                 if (desc.IsStatusExplicit && !desc.IsPending && !desc.Failed) {
-                    ConsoleLogger.DisplayResultDetails(-1, context, desc);
+                    parts.forResultDetails.Render(context, desc);
                 }
             }
+            console.PopIndent();
         }
     }
 }

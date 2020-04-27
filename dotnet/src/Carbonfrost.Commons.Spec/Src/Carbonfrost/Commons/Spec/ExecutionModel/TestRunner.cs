@@ -15,8 +15,6 @@
 //
 using System;
 using System.Reflection;
-using System.Linq;
-using System.IO;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 

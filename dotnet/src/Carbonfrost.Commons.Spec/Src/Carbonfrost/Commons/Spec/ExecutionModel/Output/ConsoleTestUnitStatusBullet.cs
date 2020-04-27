@@ -18,11 +18,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
     class ConsoleTestUnitStatusBullet : ConsoleOutputPart<TestUnitResult> {
 
+        public bool ShowSkipped {
+            get;
+            set;
+        }
+        
         protected override void RenderCore(TestUnitResult result) {
             var bullet = console.IsUnicodeEncoding ? "•" : ".";
             if (result.Skipped) {
-                console.Yellow();
-                console.Write("S");
+                if (ShowSkipped) {
+                    console.Yellow();
+                    console.Write("S");
+                }
 
             } else if (result.IsPending) {
                 console.Yellow();

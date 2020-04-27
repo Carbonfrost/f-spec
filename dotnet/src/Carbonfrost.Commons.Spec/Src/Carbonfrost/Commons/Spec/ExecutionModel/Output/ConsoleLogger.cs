@@ -23,7 +23,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
         private static readonly IConsoleWrapper console = ConsoleWrapper.Default;
         private readonly DisplayFlags _flags;
-        private readonly IList<TestMessageEventArgs> _bufferLog = new List<TestMessageEventArgs>();
         private readonly ConsoleOutputParts _parts;
         private readonly RenderContext _renderContext;
 
@@ -51,9 +50,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
         }
 
         protected override void OnCaseFinished(TestCaseFinishedEventArgs e) {
-            e.Result.Messages.AddRange(_bufferLog);
-            _bufferLog.Clear();
-
             _parts.onTestCaseFinished.Render(RenderContext, e.Result);
         }
 
@@ -67,9 +63,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
         }
 
         protected override void OnTheoryFinished(TestTheoryFinishedEventArgs e) {
-            e.Results.Messages.AddRange(_bufferLog);
-            _bufferLog.Clear();
-
             _parts.onTestTheoryFinished.Render(RenderContext, e.Results);
         }
 
@@ -111,70 +104,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             _parts.onTestRunFinished.Render(RenderContext, e.Results);
         }
 
-        protected override void OnMessage(TestMessageEventArgs e) {
-            _bufferLog.Add(e);
-        }
-
-        static void PrintMessage(TestMessageEventArgs e) {
-            switch (e.Severity) {
-                case TestMessageSeverity.Debug:
-                    console.Gray();
-                    break;
-                case TestMessageSeverity.Trace:
-                case TestMessageSeverity.Information:
-                    console.White();
-                    break;
-                case TestMessageSeverity.Warning:
-                    console.Yellow();
-                    break;
-                case TestMessageSeverity.Error:
-                case TestMessageSeverity.Fatal:
-                    console.Red();
-                    break;
-            }
-            console.Write(e.Severity.ToString().ToLowerInvariant());
-            console.Write(":  ");
-            console.ResetColor();
-            console.WriteLine(e.Message);
-        }
-
         static string PrettyCodeBase(Assembly assembly, bool makeRelative = false) {
             return Utility.PrettyCodeBase(assembly, makeRelative);
-        }
-
-        internal static void DisplayResultDetails(int number, RenderContext renderContext, TestUnitResult result) {
-            console.PushIndent();
-            if (number > 0) {
-                console.Write(number + ") ");
-            }
-            console.Write(result.DisplayName);
-            if (result.IsFocused) {
-                console.Write(" (focused)");
-            }
-            console.WriteLine();
-
-            console.ColorFor(result);
-            console.PushIndent();
-
-            if (result.Failed) {
-                console.Write("Failure: ");
-                console.WriteLineIfNotEmpty(result.Reason);
-            } else if (result.IsPending) {
-                console.Muted();
-                if (!string.IsNullOrEmpty(result.Reason)) {
-                    console.WriteLine("// " + result.Reason);
-                }
-            }
-
-            renderContext.Parts.onExceptionInfo.Render(renderContext, result.ExceptionInfo);
-
-            console.ResetColor();
-            foreach (var m in result.Messages) {
-                PrintMessage(m);
-            }
-            console.PopIndent();
-            console.PopIndent();
-            console.WriteLine();
         }
 
         static string FormatDuration(TimeSpan? duration) {

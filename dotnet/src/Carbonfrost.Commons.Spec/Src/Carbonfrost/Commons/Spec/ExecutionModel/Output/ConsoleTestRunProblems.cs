@@ -44,7 +44,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
                 console.PushIndent();
                 foreach (var p in problems.Pending) {
-                    ConsoleLogger.DisplayResultDetails(-1, context, p);
+                    parts.forResultDetails.Render(context, p);
                 }
                 console.PopIndent();
             }
@@ -57,7 +57,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
                 int number = 1;
                 foreach (var p in problems.Failures) {
-                    ConsoleLogger.DisplayResultDetails(number, context, p);
+                    if (number > 0) {
+                        console.Write(number + ") ");
+                    }
+                    parts.forResultDetails.Render(context, p);
                     number++;
                 }
 

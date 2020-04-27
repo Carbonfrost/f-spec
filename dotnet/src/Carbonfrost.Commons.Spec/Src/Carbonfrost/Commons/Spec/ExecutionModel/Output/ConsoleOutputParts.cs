@@ -21,10 +21,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
         public readonly ConsoleOutputPart<TestCaseResult> onTestCaseFinished;
         public readonly ConsoleOutputPart<TestUnitResults> onTestTheoryFinished;
         public readonly ConsoleOutputPart<TestRunResults> onTestRunFinished;
-        public readonly ConsoleOutputPart<ExceptionInfo> onExceptionInfo;
+        public readonly ConsoleOutputPart<ExceptionInfo> forExceptionInfo;
         public readonly ConsoleOutputPart<UserDataCollection> forUserData;
         public readonly ConsoleOutputPart<Patch> forPatch;
         public readonly ConsoleOutputPart<TestUnitResult> forStatus;
+        public readonly ConsoleOutputPart<TestUnitResult> forResultDetails;
+        public readonly ConsoleOutputPart<TestMessageEventArgs> forMessage;
 
         public ConsoleOutputParts(TestRunnerOptions opts) {
             onTestCaseFinished = ConsoleOutputPart.Compose(
@@ -42,7 +44,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                 },
                 new ConsoleTestRunResults()
             );
-            onExceptionInfo = ConsoleOutputPart.Compose(
+            forExceptionInfo = ConsoleOutputPart.Compose(
                 new ConsoleExceptionInfo()
             );
             forUserData = ConsoleOutputPart.Compose(
@@ -51,6 +53,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                         AssertionMessageFormatModes.PrintWhitespace
                     ),
                 }
+            );
+            forMessage = ConsoleOutputPart.Compose(
+                new ConsoleMessage()
             );
             forPatch = ConsoleOutputPart.Compose(
                 new ConsolePatch {
@@ -61,7 +66,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                 }
             );
             forStatus = ConsoleOutputPart.Compose(
-                new ConsoleTestUnitStatusBullet()
+                new ConsoleTestUnitStatusBullet {
+                    ShowSkipped = false,
+                }
+            );
+            forResultDetails = ConsoleOutputPart.Compose(
+                new ConsoleResultDetails()
             );
         }
     }

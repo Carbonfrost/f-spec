@@ -22,10 +22,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
     partial class DefaultTestRunner : TestRunner {
 
         private readonly TestRunnerOptions _opts;
+        private readonly BufferMessageEventCache _messageLogger;
         private Random _randomCache;
 
         public DefaultTestRunner(TestRunnerOptions opts) : base(opts) {
             _opts = Options.Normalize();
+            _messageLogger = new BufferMessageEventCache();
             Logger = new ConsoleLogger(opts);
         }
 
@@ -36,7 +38,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public ITestRunnerLogger Logger {
-            get; private set;
+            get;
+            private set;
         }
 
         internal DefaultTestRunner.TestPlanBase CreatePlan(TestRun run) {
@@ -65,6 +68,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         void SetupLogger() {
             SpecLog.DidSetupLogger(Logger);
+
+            // Message logger must handle events first
+            _messageLogger.Initialize(this, this);
             Logger.Initialize(this, this);
         }
 
