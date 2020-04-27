@@ -74,7 +74,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
 
             public TestUnitNode AppendStart(TestUnit item) {
-                TestUnitNode result = new StartTestUnitNode(this, item);
+                TestUnitNode result = StartTestUnitNode.Create(this, item);
                 var testCase = item as TestCaseInfo;
                 if (testCase != null) {
                     result = new TestCaseNode(result, testCase);
@@ -136,19 +136,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         }
 
-        class StartTestUnitNode : TestUnitNode {
+        abstract class StartTestUnitNode : TestUnitNode {
 
-            private readonly TestUnitResults _result;
             private TestContext _context;
 
-            public StartTestUnitNode(TestUnitNode parent, TestUnit unit) : base(parent, unit) {
+            protected StartTestUnitNode(TestUnitNode parent, TestUnit unit) : base(parent, unit) {
                 if (parent == null) {
                     throw new ArgumentNullException(nameof(parent));
-                }
-
-                if (unit.Type != TestUnitType.Case) {
-                    _result = new TestUnitResults(unit.DisplayName);
-                    parent.FindResult().ContainerOrSelf.Children.Add(_result);
                 }
             }
 
@@ -172,12 +166,39 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             internal override void Abort(DefaultTestRunner runner) {
             }
 
-            public override TestUnitResult FindResult() {
-                return _result ?? Parent.FindResult();
-            }
-
             public override TestContext FindTestContext() {
                 return _context;
+            }
+
+            internal static StartTestUnitNode Create(TestUnitNode parent, TestUnit item) {
+                if (item.Type == TestUnitType.Case) {
+                    return new StartLeafTestUnitNode(parent, (TestCaseInfo) item);
+                } else {
+                    return new StartCompositeTestUnitNode(parent, item);
+                }
+            }
+        }
+
+        class StartLeafTestUnitNode : StartTestUnitNode {
+
+            public StartLeafTestUnitNode(TestUnitNode parent, TestCaseInfo unit) : base(parent, unit) {
+            }
+        }
+
+        class StartCompositeTestUnitNode : StartTestUnitNode {
+
+            private readonly TestUnitResults _result;
+
+            public StartCompositeTestUnitNode(TestUnitNode parent, TestUnit unit) : base(parent, unit) {
+                _result = new TestUnitResults(unit.DisplayName);
+                parent.FindResult().ContainerOrSelf.Children.Add(_result);
+            }
+
+            internal override void Abort(DefaultTestRunner runner) {
+            }
+
+            public override TestUnitResult FindResult() {
+                return _result;
             }
         }
 
