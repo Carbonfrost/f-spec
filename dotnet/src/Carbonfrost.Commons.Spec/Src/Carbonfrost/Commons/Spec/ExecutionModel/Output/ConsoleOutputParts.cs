@@ -14,8 +14,6 @@
 // limitations under the License.
 //
 
-using System.Collections.Generic;
-
 namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
     class ConsoleOutputParts {
@@ -23,7 +21,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
         public readonly ConsoleOutputPart<TestCaseResult> onTestCaseFinished;
         public readonly ConsoleOutputPart<TestUnitResults> onTestTheoryFinished;
         public readonly ConsoleOutputPart<TestRunResults> onTestRunFinished;
-        public readonly ConsoleOutputPart<IList<TestUnitResult>> onTestRunFinishedWithProblems;
         public readonly ConsoleOutputPart<ExceptionInfo> onExceptionInfo;
         public readonly ConsoleOutputPart<UserDataCollection> forUserData;
         public readonly ConsoleOutputPart<Patch> forPatch;
@@ -37,10 +34,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                 new ConsoleTestTheoryStatus()
             );
             onTestRunFinished = ConsoleOutputPart.Compose(
+                new ConsoleTestRunExplicitlyPassed {
+                    Show = opts.ShowPassExplicitly,
+                },
+                new ConsoleTestRunProblems {
+                    Show = !opts.SuppressSummary,
+                },
                 new ConsoleTestRunResults()
-            );
-            onTestRunFinishedWithProblems = ConsoleOutputPart.Compose(
-                new ConsoleTestRunProblems()
             );
             onExceptionInfo = ConsoleOutputPart.Compose(
                 new ConsoleExceptionInfo()

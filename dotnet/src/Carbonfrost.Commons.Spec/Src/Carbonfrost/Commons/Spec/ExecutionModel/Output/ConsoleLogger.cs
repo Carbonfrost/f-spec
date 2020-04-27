@@ -22,7 +22,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
     class ConsoleLogger : TestRunnerLogger {
 
         private static readonly IConsoleWrapper console = ConsoleWrapper.Default;
-        private readonly IList<TestUnitResult> _problems = new List<TestUnitResult>();
         private readonly DisplayFlags _flags;
         private readonly IList<TestMessageEventArgs> _bufferLog = new List<TestMessageEventArgs>();
         private readonly ConsoleOutputParts _parts;
@@ -51,19 +50,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             };
         }
 
-        protected override void OnClassFinished(TestClassFinishedEventArgs e) {
-            if (IsProblem(e.Results)) {
-                _problems.Add(e.Results);
-            }
-        }
-
         protected override void OnCaseFinished(TestCaseFinishedEventArgs e) {
             e.Result.Messages.AddRange(_bufferLog);
             _bufferLog.Clear();
-
-            if (IsProblem(e.Result)) {
-                _problems.Add(e.Result);
-            }
 
             _parts.onTestCaseFinished.Render(RenderContext, e.Result);
         }
@@ -80,10 +69,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
         protected override void OnTheoryFinished(TestTheoryFinishedEventArgs e) {
             e.Results.Messages.AddRange(_bufferLog);
             _bufferLog.Clear();
-
-            if (IsProblem(e.Results)) {
-                _problems.Add(e.Results);
-            }
 
             _parts.onTestTheoryFinished.Render(RenderContext, e.Results);
         }
@@ -123,7 +108,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             console.WriteLine();
             console.ResetColor();
 
-            _parts.onTestRunFinishedWithProblems.Render(RenderContext, _problems);
             _parts.onTestRunFinished.Render(RenderContext, e.Results);
         }
 
@@ -156,39 +140,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
         static string PrettyCodeBase(Assembly assembly, bool makeRelative = false) {
             return Utility.PrettyCodeBase(assembly, makeRelative);
-        }
-
-        private void DisplayResult(TestUnitResult result) {
-            var shouldShowDetails = result.Failed || result.IsPending || result.Messages.Count > 0;
-            if ((_flags & DisplayFlags.ShowExplicitPasses) > 0
-                && result.Passed
-                && result.ExceptionInfo != null
-                && !string.IsNullOrEmpty(result.ExceptionInfo.Message)) {
-                shouldShowDetails = true;
-            }
-            if (shouldShowDetails) {
-                DisplayResultDetails(-1, RenderContext, result);
-            }
-            console.ResetColor();
-        }
-
-        private bool IsProblem(TestUnitResult result) {
-            if ((_flags & DisplayFlags.ShowExplicitPasses) > 0
-                && result.Passed
-                && result.ExceptionInfo != null
-                && !string.IsNullOrEmpty(result.ExceptionInfo.Message)) {
-
-                return true;
-            }
-
-            bool ignoreProblem = false;
-            if (result is TestUnitResults) {
-                // Because statuses rollup into the composite result (e.g. if composite contains
-                // only failed tests, then it rolls up as failed),
-                // only report composite results as a problem if there is a setup error.
-                ignoreProblem = result.ExceptionInfo == null && result.Messages.Count == 0;
-            }
-            return (result.IsPending || result.Skipped || result.Failed) && !ignoreProblem;
         }
 
         internal static void DisplayResultDetails(int number, RenderContext renderContext, TestUnitResult result) {

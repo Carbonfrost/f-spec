@@ -22,6 +22,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     public class TestUnitResultCollection : Collection<TestUnitResult> {
 
+        internal static readonly TestUnitResultCollection Empty = new TestUnitResultCollection(null) {
+            IsReadOnly = true
+        };
+
         private readonly TestUnitResults _owner;
         private TestUnitCounts _countsCache;
 
@@ -114,11 +118,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             ClearCache();
         }
 
-        public void MakeReadOnly() {
+        internal void MakeReadOnly() {
             IsReadOnly = true;
         }
 
-        public bool IsReadOnly { get; private set; }
+        public bool IsReadOnly {
+            get;
+            private set;
+        }
 
         private void ClearCache() {
             _countsCache = null;

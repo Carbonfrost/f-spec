@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -115,7 +116,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public TestUnitResultCollection Children {
+        public override TestUnitResultCollection Children {
             get {
                 return _children;
             }

@@ -15,6 +15,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
@@ -55,9 +56,28 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public virtual TestUnitResultCollection Children {
+            get {
+                return TestUnitResultCollection.Empty;
+            }
+        }
+
+        public IEnumerable<TestUnitResult> Descendants {
+            get {
+                return Children.SelectMany(c => c.DescendantsAndSelf);
+            }
+        }
+
+        public IEnumerable<TestUnitResult> DescendantsAndSelf {
+            get {
+                return new[] { this }.Concat(Descendants);
+            }
+        }
+
         // Was the status explicitly set as the result of Assert.Pass() or Assert.Fail()?
         public bool IsStatusExplicit {
-            get; set;
+            get;
+            set;
         }
 
         public bool IsRunning {

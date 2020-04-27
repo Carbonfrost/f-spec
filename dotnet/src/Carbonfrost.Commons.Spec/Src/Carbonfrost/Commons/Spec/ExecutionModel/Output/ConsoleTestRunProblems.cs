@@ -1,11 +1,11 @@
 //
-// Copyright 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2019, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,53 +14,49 @@
 // limitations under the License.
 //
 
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
-    class ConsoleTestRunProblems : ConsoleOutputPart<IList<TestUnitResult>> {
+    class ConsoleTestRunProblems : ConsoleOutputPart<TestRunResults> {
 
-        public bool ShortProblems { get; set; }
+        public bool Show {
+            get;
+            set;
+        }
 
-        protected override void RenderCore(IList<TestUnitResult> problems) {
+        protected override void RenderCore(TestRunResults results) {
+            if (!Show) {
+                return;
+            }
+            var problems = results.Problems;
             if (problems.Count == 0) {
                 return;
             }
 
             console.WriteLine();
 
-            var pending = new List<TestUnitResult>();
-            var failures = new List<TestUnitResult>();
-            foreach (var p in problems) {
-                if (p.IsPending) {
-                    pending.Add(p);
-                } else if (p.Failed) {
-                    failures.Add(p);
-                }
-            }
-
             // Print pending tests first so as to reduce scrollback
-            if (pending.Any()) {
+            if (problems.Pending.Any()) {
                 console.Yellow();
                 console.WriteLine("Pending: ");
                 console.ResetColor();
 
                 console.PushIndent();
-                foreach (var p in pending) {
+                foreach (var p in problems.Pending) {
                     ConsoleLogger.DisplayResultDetails(-1, context, p);
                 }
                 console.PopIndent();
             }
 
-            if (failures.Any()) {
+            if (problems.Failures.Any()) {
                 console.Red();
                 console.WriteLine("Failures: ");
                 console.ResetColor();
                 console.PushIndent();
 
                 int number = 1;
-                foreach (var p in failures) {
+                foreach (var p in problems.Failures) {
                     ConsoleLogger.DisplayResultDetails(number, context, p);
                     number++;
                 }
