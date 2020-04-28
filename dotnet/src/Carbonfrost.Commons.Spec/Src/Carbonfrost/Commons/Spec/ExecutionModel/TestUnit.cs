@@ -231,6 +231,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public virtual bool ContainsFocusedUnits {
             get {
+                if (Children.Count == 0) {
+                    return false;
+                }
                 return Children.Any(t => t.IsFocused || t.ContainsFocusedUnits);
             }
         }
