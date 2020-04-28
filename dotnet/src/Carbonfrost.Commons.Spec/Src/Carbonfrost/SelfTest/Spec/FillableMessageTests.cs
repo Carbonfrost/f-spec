@@ -17,10 +17,22 @@
 //
 
 using Carbonfrost.Commons.Spec;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.SelfTest.Spec {
 
-    public class TextUtilityTests : TestClass {
+    public class FillableMessageTests {
+
+        [Fact]
+        public void Fill_should_apply_format_strings() {
+            var dict = new UserDataCollection {
+                { "BoundsExclusive", "true" },
+            };
+            Assert.Equal(
+                "hello (exclusive)",
+                FillableMessage.Fill("hello {BoundsExclusive:B:(exclusive)}", dict).ToString()
+            );
+        }
     }
 }
 #endif

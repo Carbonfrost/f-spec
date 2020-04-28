@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec
 {
@@ -132,6 +133,9 @@ namespace Carbonfrost.Commons.Spec
                 }
                 return stringValue;
             }
+            if (value is Exception exceptionValue) {
+                return GetExceptionFiltered(exceptionValue);
+            }
 
             IEnumerable enumerableValue = value as IEnumerable;
 
@@ -160,6 +164,10 @@ namespace Carbonfrost.Commons.Spec
             return string.Format("{0} {{ {1} }}",
                                  ConvertToSimpleTypeName(value.GetType()),
                                  string.Join(", ", valueStrings.ToArray()));
+        }
+
+        internal static string GetExceptionFiltered(Exception exception) {
+            return ExceptionStackTraceFilter.Apply(exception).ToString();
         }
 
         internal static string ShowWhitespace(string text) {
