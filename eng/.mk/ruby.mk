@@ -1,7 +1,5 @@
+# Automatically detect whether Ruby is in use
 ENG_AUTODETECT_USING_RUBY = $(shell [ ! -f .ruby-version ] ; echo $$?)
-ENG_USING_RUBY ?= $(ENG_AUTODETECT_USING_RUBY)
-
-ENG_LATEST_RUBY_VERSION = 2.6.0
 
 .PHONY: \
 	-hint-unsupported-ruby \
@@ -12,6 +10,7 @@ ENG_LATEST_RUBY_VERSION = 2.6.0
 	ruby/init \
 	use/ruby \
 
+## Add support for Ruby to the project
 use/ruby: | -use/ruby-version -ruby/init -use/ruby-Gemfile
 
 # Enable the tasks if we are using ruby
@@ -24,10 +23,10 @@ ruby/init: -hint-unsupported-ruby
 endif
 
 -ruby/init: -check-command-rbenv
-	@    echo "Installing Ruby and Ruby dependencies..."
-	$(Q) rbenv install -s $(OUTPUT_HIDDEN)
-	$(Q) gem install bundler  $(OUTPUT_HIDDEN)
-	$(Q) [ -f Gemfile ] && bundle install  $(OUTPUT_HIDDEN)
+	@    echo "$(_GREEN)Installing Ruby and Ruby dependencies...$(_RESET)"
+	$(Q) $(OUTPUT_COLLAPSED) rbenv install -s
+	$(Q) $(OUTPUT_COLLAPSED) gem install bundler
+	$(Q) [ -f Gemfile ] && $(OUTPUT_HIDDEN) bundle install
 
 -use/ruby-Gemfile: -check-command-Gemfile
 	$(Q) [ -f Gemfile ] || bundle init
