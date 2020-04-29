@@ -21,7 +21,7 @@ namespace Carbonfrost.Commons.Spec {
 
     public struct TemporalExpectationBuilder : ITemporalExpectationBuilder {
 
-        private readonly ExpectationCommand _cmd;
+        private readonly ExpectationCommand<Unit> _cmd;
 
         public TemporalExpectationBuilder Not {
             get {
@@ -47,7 +47,7 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        internal TemporalExpectationBuilder(ExpectationCommand cmd) {
+        internal TemporalExpectationBuilder(ExpectationCommand<Unit> cmd) {
             _cmd = cmd;
         }
 

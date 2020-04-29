@@ -17,11 +17,16 @@ using System;
 
 namespace Carbonfrost.Commons.Spec {
 
-    [Flags]
-    public enum RecordExceptionFlags {
-        None,
-        UnwindTargetExceptions = 1,
-        StrictVerification = 2,
-        IgnoreAssertExceptions = 1 << 2,
+    public class TestCodeDispatchInfo {
+
+        public Exception Exception {
+            get;
+            private set;
+        }
+
+        internal TestCodeDispatchInfo(Exception exception) {
+            Exception = exception;
+        }
     }
+
 }

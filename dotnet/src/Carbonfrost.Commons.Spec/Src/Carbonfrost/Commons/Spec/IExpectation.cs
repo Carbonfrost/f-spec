@@ -16,10 +16,6 @@
 
 namespace Carbonfrost.Commons.Spec {
 
-    interface IExpectation {
-        ExpectationCommand ToCommand();
-    }
-
     interface IExpectation<T> {
         ExpectationCommand<T> ToCommand();
     }
@@ -34,8 +30,10 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        internal static void Should(this IExpectation self, ITestMatcher matcher, string message = null, params object[] args) {
-            var failure = self.ToCommand().Should(matcher);
+        internal static void Should(this IExpectation<Unit> self, ITestMatcher matcher, string message = null, params object[] args) {
+            var failure = self.ToCommand().Should(
+                TestMatcher.UnitWrapper(matcher)
+            );
 
             if (failure != null) {
                 throw failure.UpdateTestSubject().UpdateMessage(message, args).ToException();

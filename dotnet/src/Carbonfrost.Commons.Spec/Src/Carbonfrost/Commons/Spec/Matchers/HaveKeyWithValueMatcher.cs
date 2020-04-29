@@ -140,11 +140,11 @@ namespace Carbonfrost.Commons.Spec {
                 return actual.Any(kvp => kvp.Key.Equals(_key) && kvp.Contains(_value));
             }
 
-            public bool Matches(Func<IEnumerable<IGrouping<TKey, TValue>>> actualFactory) {
+            public bool Matches(ITestActualEvaluation<IEnumerable<IGrouping<TKey, TValue>>> actualFactory) {
                 if (actualFactory == null) {
                     throw new ArgumentNullException("actualFactory");
                 }
-                return Matches(actualFactory());
+                return Matches(actualFactory.Value);
             }
         }
     }

@@ -18,27 +18,12 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    abstract partial class ExpectationCommand {
-
-        public abstract TestFailure Should(ITestMatcher matcher);
-        public abstract ExpectationCommand Negated();
-
-        public virtual ExpectationCommand Eventually(TimeSpan delay) {
-            throw new NotImplementedException();
-        }
-
-        public virtual ExpectationCommand Consistently(TimeSpan delay) {
-            throw new NotImplementedException();
-        }
-
-        public virtual ExpectationCommand<Exception> CaptureException() {
-            throw new NotImplementedException();
-        }
+    static partial class ExpectationCommand {
     }
 
     abstract class ExpectationCommand<T> {
 
-        public virtual ExpectationCommand Untyped() {
+        public virtual ExpectationCommand<Unit> Untyped() {
             throw new NotImplementedException();
         }
 
@@ -75,6 +60,10 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public virtual ExpectationCommand<TResult> Property<TResult>(Func<T, TResult> accessor) {
+            throw new NotImplementedException();
+        }
+
+        public virtual ExpectationCommand<Exception> CaptureException() {
             throw new NotImplementedException();
         }
 

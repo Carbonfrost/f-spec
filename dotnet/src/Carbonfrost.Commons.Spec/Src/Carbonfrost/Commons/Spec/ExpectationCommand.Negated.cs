@@ -26,13 +26,6 @@ namespace Carbonfrost.Commons.Spec {
             }
             return cmd;
         }
-
-        internal static ExpectationCommand NegateIfNeeded(this ExpectationCommand cmd, bool negated) {
-            if (negated) {
-                cmd = cmd.Negated();
-            }
-            return cmd;
-        }
     }
 
     partial class ExpectationCommand {

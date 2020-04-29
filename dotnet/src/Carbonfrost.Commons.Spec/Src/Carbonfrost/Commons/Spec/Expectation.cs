@@ -17,12 +17,11 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 
-namespace Carbonfrost.Commons.Spec
-{
+namespace Carbonfrost.Commons.Spec {
 
-    public struct Expectation : IExpectation {
+    public struct Expectation : IExpectation<Unit> {
 
-        private readonly ExpectationCommand _cmd;
+        private readonly ExpectationCommand<Unit> _cmd;
 
         public Expectation Not {
             get {
@@ -30,7 +29,7 @@ namespace Carbonfrost.Commons.Spec
             }
         }
 
-        internal Expectation(ExpectationCommand cmd) {
+        internal Expectation(ExpectationCommand<Unit> cmd) {
             _cmd = cmd;
         }
 
@@ -40,7 +39,7 @@ namespace Carbonfrost.Commons.Spec
             throw new InvalidOperationException("Expectation.Equals should not be used");
         }
 
-        ExpectationCommand IExpectation.ToCommand() {
+        ExpectationCommand<Unit> IExpectation<Unit>.ToCommand() {
             return _cmd;
         }
     }

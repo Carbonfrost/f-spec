@@ -1,11 +1,11 @@
 //
-// Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,11 +17,21 @@ using System;
 
 namespace Carbonfrost.Commons.Spec {
 
-    [Flags]
-    public enum RecordExceptionFlags {
-        None,
-        UnwindTargetExceptions = 1,
-        StrictVerification = 2,
-        IgnoreAssertExceptions = 1 << 2,
+    struct Unit {
+        public static readonly Unit Value = default(Unit);
+
+        internal static Func<Unit> Thunk(Action action) {
+            return () => {
+                action();
+                return Unit.Value;
+            };
+        }
+
+        internal static Action DiscardResult<T>(Func<T> action) {
+            return () => {
+                action();
+            };
+        }
     }
+
 }

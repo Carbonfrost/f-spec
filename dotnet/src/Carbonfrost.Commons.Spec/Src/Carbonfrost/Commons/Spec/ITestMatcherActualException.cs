@@ -18,7 +18,6 @@ using System;
 namespace Carbonfrost.Commons.Spec {
 
     interface ITestMatcherActualException {
-        Exception ActualException { get;  }
     }
 
 }

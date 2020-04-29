@@ -15,8 +15,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
-using System.Linq;
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
@@ -48,7 +46,7 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
         public void Matches_should_fail_on_null_thunk() {
             var subj = new InstanceOfMatcher(typeof(string));
             try {
-                subj.Matches(() => (string) null);
+                subj.Matches(TestActual.Value((string) null));
 
                 Assert.Fail("Expected to fail with AssertException -- can't match null");
             } catch (AssertException) {

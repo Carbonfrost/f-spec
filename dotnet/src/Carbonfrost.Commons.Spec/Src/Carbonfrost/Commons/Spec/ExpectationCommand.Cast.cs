@@ -74,7 +74,7 @@ namespace Carbonfrost.Commons.Spec {
                     _real = real;
 
                     // Don't be reentrant with the cast provider type itself
-                    Debug.Assert(!_real.GetType().Name.Contains( "CastProvider"));
+                    Debug.Assert(!_real.GetType().Name.Contains("CastProvider"));
                 }
 
                 object ISupportTestMatcher.RealMatcher {
@@ -83,11 +83,11 @@ namespace Carbonfrost.Commons.Spec {
                     }
                 }
 
-                public bool Matches(Func<TFrom> actualFactory) {
+                public bool Matches(ITestActualEvaluation<TFrom> actualFactory) {
                     var real = TestMatcherName.FromType(_real.GetType());
                     Func<T> thunk = () => {
-                        var actual = actualFactory();
                         try {
+                            var actual = actualFactory.Value;
                             return (T) (object) actual;
 
                         } catch (InvalidCastException e) {
@@ -95,7 +95,7 @@ namespace Carbonfrost.Commons.Spec {
                         }
                     };
 
-                    return _real.Matches(thunk);
+                    return _real.Matches(TestActual.Of(thunk));
                 }
 
             }

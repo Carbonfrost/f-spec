@@ -1,5 +1,5 @@
 //
-// Copyright 2017, 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,12 +18,24 @@ using System;
 namespace Carbonfrost.Commons.Spec {
 
     public interface ITestMatcher<in T> {
-        bool Matches(Func<T> actualFactory);
+        bool Matches(ITestActualEvaluation<T> actual);
     }
 
     public interface ITestMatcher {
-        bool Matches(Action testCode);
+        bool Matches(ITestActualEvaluation testCode);
     }
 
+    static partial class Extensions {
+
+        public static bool Matches(this ITestMatcher self, Action testCode) {
+            return self.Matches(
+                TestActual.Of(Unit.Thunk(testCode))
+            );
+        }
+
+        internal static bool Matches<T>(this ITestMatcher<T> self, Func<T> actualFactory) {
+            return self.Matches(new TestActual<T>(actualFactory));
+        }
+    }
 
 }

@@ -21,7 +21,7 @@ namespace Carbonfrost.Commons.Spec {
 
     public struct ExpectationBuilder : IExpectationBuilder {
 
-        private readonly ExpectationCommand _cmd;
+        private readonly ExpectationCommand<Unit> _cmd;
 
         internal static TimeSpan DefaultDelay {
             get {
@@ -65,7 +65,7 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        internal ExpectationBuilder(ExpectationCommand cmd) {
+        internal ExpectationBuilder(ExpectationCommand<Unit> cmd) {
             _cmd = cmd;
         }
 

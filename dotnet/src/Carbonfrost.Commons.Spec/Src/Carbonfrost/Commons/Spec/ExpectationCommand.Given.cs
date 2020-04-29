@@ -27,49 +27,9 @@ namespace Carbonfrost.Commons.Spec {
             }
             return inner;
         }
-
-        internal static ExpectationCommand Given(this ExpectationCommand inner, string given) {
-            if (given != null) {
-                return new ExpectationCommand.GivenCommand(inner, given);
-            }
-            return inner;
-        }
-
     }
 
     partial class ExpectationCommand {
-
-        internal class GivenCommand : ExpectationCommand {
-
-            private readonly ExpectationCommand _inner;
-            private readonly string _given;
-
-            public GivenCommand(ExpectationCommand inner, string given) {
-                _inner = inner;
-                _given = given;
-            }
-
-            public override TestFailure Should(ITestMatcher matcher) {
-                var failure = _inner.Should(matcher);
-                if (failure == null) {
-                    return null;
-                }
-
-                return failure.UpdateGiven(_given);
-            }
-
-            public override ExpectationCommand Negated() {
-                return new GivenCommand(_inner.Negated(), _given);
-            }
-
-            public override ExpectationCommand Eventually(TimeSpan delay) {
-                return new GivenCommand(_inner.Eventually(delay), _given);
-            }
-
-            public override ExpectationCommand Consistently(TimeSpan delay) {
-                return new GivenCommand(_inner.Consistently(delay), _given);
-            }
-        }
 
         internal class GivenCommand<T> : ExpectationCommand<T> {
 
@@ -89,7 +49,7 @@ namespace Carbonfrost.Commons.Spec {
                 return new GivenCommand<T>(_inner.Negated(), _given);
             }
 
-            public override ExpectationCommand Untyped() {
+            public override ExpectationCommand<Unit> Untyped() {
                 return _inner.Untyped().Given(_given);
             }
 

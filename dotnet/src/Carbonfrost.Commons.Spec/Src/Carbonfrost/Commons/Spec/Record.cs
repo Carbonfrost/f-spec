@@ -20,6 +20,16 @@ namespace Carbonfrost.Commons.Spec {
 
     public static class Record {
 
+        public static TestCodeDispatchInfo DispatchInfo(Action action) {
+            return DispatchInfo(action, RecordExceptionFlags.None);
+        }
+
+        public static TestCodeDispatchInfo DispatchInfo(Action action, RecordExceptionFlags flags) {
+            return new TestCodeDispatchInfo(
+                Exception(action, flags)
+            );
+        }
+
         public static Exception Exception(Action action) {
             return Exception(action, RecordExceptionFlags.None);
         }
@@ -30,16 +40,22 @@ namespace Carbonfrost.Commons.Spec {
                 return null;
 
             } catch (Exception ex) {
-                if (ex is TargetInvocationException && flags.HasFlag(RecordExceptionFlags.UnwindTargetExceptions)) {
-                    ex = ex.InnerException;
+                if (ex is AssertException && flags.HasFlag(RecordExceptionFlags.IgnoreAssertExceptions)) {
+                    throw;
                 }
-                if (ex is AssertException && flags.HasFlag(RecordExceptionFlags.StrictVerification)) {
-                    throw SpecFailure.CannotAssertAssertExceptions();
-                }
-
-                return ex;
+                return ApplyFlags(ex, flags);
             }
         }
 
+        internal static Exception ApplyFlags(Exception ex, RecordExceptionFlags flags) {
+            if (ex is TargetInvocationException && flags.HasFlag(RecordExceptionFlags.UnwindTargetExceptions)) {
+                ex = ex.InnerException;
+            }
+            if (ex is AssertException && flags.HasFlag(RecordExceptionFlags.StrictVerification)) {
+                throw SpecFailure.CannotAssertAssertExceptions();
+            }
+
+            return ex;
+        }
     }
 }

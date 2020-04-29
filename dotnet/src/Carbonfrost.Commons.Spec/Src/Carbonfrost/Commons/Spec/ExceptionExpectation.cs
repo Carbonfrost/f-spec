@@ -18,9 +18,9 @@ using System.ComponentModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public struct ExceptionExpectation : IExpectation {
+    public struct ExceptionExpectation : IExpectation<Unit> {
 
-        private readonly ExpectationCommand _cmd;
+        private readonly ExpectationCommand<Unit> _cmd;
 
         public Expectation<string> Message {
             get {
@@ -44,7 +44,7 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        internal ExceptionExpectation(ExpectationCommand cmd) {
+        internal ExceptionExpectation(ExpectationCommand<Unit> cmd) {
             _cmd = cmd;
         }
 
@@ -54,7 +54,7 @@ namespace Carbonfrost.Commons.Spec {
             throw new InvalidOperationException("Expectation.Equals should not be used");
         }
 
-        ExpectationCommand IExpectation.ToCommand() {
+        ExpectationCommand<Unit> IExpectation<Unit>.ToCommand() {
             return _cmd;
         }
     }

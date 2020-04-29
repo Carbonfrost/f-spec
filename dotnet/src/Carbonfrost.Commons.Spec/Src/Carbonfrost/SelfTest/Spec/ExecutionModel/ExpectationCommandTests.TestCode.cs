@@ -34,11 +34,15 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
             Assert.Same(error, matcher.ActualException);
         }
 
-        class ActualExceptionReceiver : ITestMatcherActualException, ITestMatcher {
-            public Exception ActualException { get; set; }
+        class ActualExceptionReceiver : ITestMatcherActualException, ITestMatcher<Unit> {
+            
+            public Exception ActualException {
+                get;
+                set;
+            }
 
-            public bool Matches(Action testCode) {
-                ActualException = Record.Exception(testCode);
+            public bool Matches(ITestActualEvaluation<Unit> testCode) {
+                ActualException = testCode.Exception;
                 return true;
             }
         }

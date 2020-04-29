@@ -261,7 +261,6 @@ namespace Carbonfrost.Commons.Spec {
         public class ThrowsMatcher : ITestMatcher, ITestMatcherActualException {
 
             private readonly RecordExceptionFlags _flags;
-            private Exception _actualException;
 
             public Type Expected { get; private set; }
 
@@ -285,20 +284,12 @@ namespace Carbonfrost.Commons.Spec {
                 _flags = flags;
             }
 
-            public bool Matches(Action testCode) {
-                var ex = Record.Exception(testCode, _flags);
-                _actualException = ex;
-                return Expected.GetTypeInfo().IsInstanceOfType(ex);
-            }
-
-            // HACK We make this available so that it can be reported.
-            // Really, this means that the ThrowsMatcher is no longer reusable
-            // because we carry this state.
-
-            Exception ITestMatcherActualException.ActualException {
-                get {
-                    return _actualException;
+            public bool Matches(ITestActualEvaluation actual) {
+                if (actual == null) {
+                    throw new ArgumentNullException(nameof(actual));
                 }
+                var ex = Record.ApplyFlags(actual.Exception, _flags);
+                return Expected.GetTypeInfo().IsInstanceOfType(ex);
             }
 
             public ThrowsMatcher WithFlags(RecordExceptionFlags flags) {

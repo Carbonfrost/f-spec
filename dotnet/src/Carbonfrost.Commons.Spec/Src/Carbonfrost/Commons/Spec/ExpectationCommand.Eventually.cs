@@ -15,57 +15,12 @@
 //
 using System;
 using System.Diagnostics;
-using System.Linq;
-using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 using Carbonfrost.Commons.Spec.Resources;
 
 namespace Carbonfrost.Commons.Spec {
 
     partial class ExpectationCommand {
-
-        class EventuallyCommand : ExpectationCommand {
-
-            private readonly Action _thunk;
-            private readonly TimeSpan _duration;
-            private readonly bool _negated;
-
-            public EventuallyCommand(TimeSpan duration,
-                                     Action thunk,
-                                     bool negated = false) {
-                _duration = duration;
-                _thunk = thunk;
-                _negated = negated;
-            }
-
-            public override TestFailure Should(ITestMatcher matcher) {
-                var s = Stopwatch.StartNew();
-                var durationMS = (int) _duration.TotalMilliseconds;
-
-                while (s.ElapsedMilliseconds <= durationMS) {
-                    if (matcher.Matches(_thunk) != _negated) {
-                        return null;
-                    }
-                }
-
-                return new TestFailure("spec.eventually") {
-                    Message = SR.EventuallyTimedOutAfter(TextUtility.FormatDuration(_duration)),
-                    Children = { TestMatcherLocalizer.FailurePredicate(matcher) },
-                };
-            }
-
-            public override  ExpectationCommand Negated() {
-                return new EventuallyCommand(_duration, _thunk, !_negated);
-            }
-
-            public override ExpectationCommand Eventually(TimeSpan delay) {
-                throw new NotImplementedException();
-            }
-
-            public override ExpectationCommand Consistently(TimeSpan delay) {
-                throw new NotImplementedException();
-            }
-        }
 
         class EventuallyCommand<T> : ExpectationCommand<T> {
 
@@ -86,7 +41,7 @@ namespace Carbonfrost.Commons.Spec {
                 var durationMS = (int) _duration.TotalMilliseconds;
 
                 while (s.ElapsedMilliseconds <= durationMS) {
-                    if (matcher.Matches(_thunk) != _negated) {
+                    if (matcher.Matches(TestActual.Of(_thunk)) != _negated) {
                         return null;
                     }
                 }

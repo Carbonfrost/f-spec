@@ -28,13 +28,13 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
         [Fact]
         public void Matches_should_detect_nominal() {
             var subj = new OrMatcher<string>(Matchers.BeEmpty(), Matchers.HaveCount(0));
-            Assert.True(subj.Matches(""));
+            Assert.True(subj.Matches(TestActual.Value("")));
         }
 
         [Fact]
         public void Matches_should_detect_contra_nominal() {
             var subj = Matchers.Or(Matchers.BeEmpty(), Matchers.HaveCount(0));
-            Assert.False(subj.Matches(new List<string> { "A", "B" }));
+            Assert.False(subj.Matches(TestActual.Value(new List<string> { "A", "B" })));
         }
 
         [Fact]

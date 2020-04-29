@@ -23,43 +23,6 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class ExpectationCommand {
 
-        class ConsistentlyCommand : ExpectationCommand {
-
-            private readonly Action _thunk;
-            private readonly TimeSpan _duration;
-            private readonly bool _negated;
-
-            public ConsistentlyCommand(TimeSpan duration,
-                                       Action thunk,
-                                       bool negated = false) {
-                _duration = duration;
-                _thunk = thunk;
-                _negated = negated;
-            }
-
-            public override TestFailure Should(ITestMatcher matcher) {
-                var s = Stopwatch.StartNew();
-                var durationMS = (int) _duration.TotalMilliseconds;
-
-                do {
-                    if (matcher.Matches(_thunk) == _negated) {
-                        var aFailure = TestMatcherLocalizer.FailurePredicate(matcher);
-                        return new TestFailure("spec.consistently") {
-                            Message = SR.ConsistentlyElapsedBefore(TextUtility.FormatDuration(_duration)),
-                            Children = { aFailure },
-                        };
-                    }
-
-                } while (s.ElapsedMilliseconds <= durationMS);
-
-                return null;
-            }
-
-            public override ExpectationCommand Negated() {
-                return new ConsistentlyCommand(_duration, _thunk, !_negated);
-            }
-        }
-
         class ConsistentlyCommand<T> : ExpectationCommand<T> {
 
             private readonly Func<T> _thunk;
@@ -79,7 +42,7 @@ namespace Carbonfrost.Commons.Spec {
                 var durationMS = (int) _duration.TotalMilliseconds;
 
                 do {
-                    if (matcher.Matches(_thunk) == _negated) {
+                    if (matcher.Matches(TestActual.Of(_thunk)) == _negated) {
                         var actual = _thunk();
                         var aFailure = TestMatcherLocalizer.FailurePredicate(matcher);
                         var result = new TestFailure("spec.consistently") {

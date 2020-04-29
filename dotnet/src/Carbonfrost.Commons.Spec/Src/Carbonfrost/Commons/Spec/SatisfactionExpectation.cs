@@ -18,9 +18,9 @@ namespace Carbonfrost.Commons.Spec {
 
     public struct SatisfactionExpectation {
 
-        private readonly ExpectationCommand _cmd;
+        private readonly ExpectationCommand<Unit> _cmd;
 
-        internal SatisfactionExpectation(ExpectationCommand cmd) {
+        internal SatisfactionExpectation(ExpectationCommand<Unit> cmd) {
             _cmd = cmd;
         }
 

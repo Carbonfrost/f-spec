@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017, 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,11 +26,8 @@ namespace Carbonfrost.Commons.Spec {
         public static readonly ITestMatcher Anything = new InvariantMatcher(true);
         public static readonly ITestMatcher Nothing = new InvariantMatcher(false);
 
-        internal static object Innermost(object any) {
-            if (any is INotMatcher n) {
-                return Innermost(n.InnerMatcher);
-            }
-            return any;
+        internal static ITestMatcher<Unit> UnitWrapper(ITestMatcher matcher) {
+            return new DispatchWrapper(matcher);
         }
 
         internal static object AllowingNullActualValue(object matcher) {
@@ -48,8 +45,26 @@ namespace Carbonfrost.Commons.Spec {
                 _answer = answer;
             }
 
-            public bool Matches(Action testCode) {
+            public bool Matches(ITestActualEvaluation testCode) {
                 return _answer;
+            }
+        }
+
+        struct DispatchWrapper : ITestMatcher<Unit>, INotMatcher {
+            private ITestMatcher _matcher;
+
+            public object InnerMatcher {
+                get {
+                    return _matcher;
+                }
+            }
+
+            public DispatchWrapper(ITestMatcher matcher) {
+                _matcher = matcher;
+            }
+
+            public bool Matches(ITestActualEvaluation<Unit> actualFactory) {
+                return _matcher.Matches(actualFactory);
             }
         }
     }
@@ -61,12 +76,11 @@ namespace Carbonfrost.Commons.Spec {
 
         public abstract bool Matches(T actual);
 
-        public virtual bool Matches(Func<T> actualFactory) {
-            T actual = default(T);
-            if (actualFactory != null) {
-                actual = actualFactory();
+        public virtual bool Matches(ITestActualEvaluation<T> actual) {
+            if (actual == null) {
+                return false;
             }
-            return Matches(actual);
+            return Matches(actual.Value);
         }
 
         internal int CompareSafely(IComparer<T> comparer, T actual, T expected) {
@@ -87,7 +101,7 @@ namespace Carbonfrost.Commons.Spec {
                 _answer = answer;
             }
 
-            public bool Matches(Func<T> actualFactory) {
+            public bool Matches(ITestActualEvaluation<T> actualFactory) {
                 return _answer;
             }
         }

@@ -26,7 +26,9 @@ namespace Carbonfrost.SelfTest.Spec {
 
         public IEnumerable<MethodInfo> AllExtensionMethods {
             get {
-                return typeof(Extensions).GetTypeInfo().GetMethods().Where(t => t.IsStatic);
+                return typeof(Extensions).GetTypeInfo().GetMethods().Where(
+                    t => t.IsStatic
+                );
             }
         }
 
@@ -68,6 +70,7 @@ namespace Carbonfrost.SelfTest.Spec {
             //      M(..., message, args)
             // For now, this test doesn't check that the overload applies to each variation
 
+            DoesNotApplyToTestMatcherExtensions(methods);
             DoesNotApplyToCardinals(methods);
             var result = methods.Any(IsMessageFormatMethod);
             if (!result) {
@@ -121,6 +124,12 @@ namespace Carbonfrost.SelfTest.Spec {
 
             var fp = info.GetParameters()[0].ParameterType;
             return fp == typeof(EnumerableExpectation);
+        }
+
+        private void DoesNotApplyToTestMatcherExtensions(IGrouping<string, MethodInfo> methods) {
+            if (methods.First().GetParameters()[0].ParameterType == typeof(ITestMatcher)) {
+                Assert.Pass("Doesn't apply to this method group: " + methods.Key);
+            }
         }
 
         private void DoesNotApplyToCardinals(IGrouping<string, MethodInfo> methods) {

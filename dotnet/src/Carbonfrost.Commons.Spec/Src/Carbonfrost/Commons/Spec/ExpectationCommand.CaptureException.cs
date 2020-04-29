@@ -30,7 +30,7 @@ namespace Carbonfrost.Commons.Spec {
                 _negated = negated;
             }
 
-            public override ExpectationCommand Untyped() {
+            public override ExpectationCommand<Unit> Untyped() {
                 throw new NotImplementedException();
             }
 
@@ -40,7 +40,7 @@ namespace Carbonfrost.Commons.Spec {
                     matcher = Matchers.Not(matcher);
                 }
 
-                var matches = matcher.Matches(() => ex);
+                var matches = matcher.Matches(TestActual.Value(ex));
                 if (!matches) {
                     return TestMatcherLocalizer.Failure(matcher, ex);
                 }

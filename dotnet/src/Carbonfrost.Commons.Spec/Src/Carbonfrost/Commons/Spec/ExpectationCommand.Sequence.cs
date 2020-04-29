@@ -15,7 +15,6 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 using Carbonfrost.Commons.Spec.Resources;
 
@@ -53,7 +52,7 @@ namespace Carbonfrost.Commons.Spec {
                         break;
                     }
 
-                    var matches = matcher.Matches(() => item);
+                    var matches = matcher.Matches(TestActual.Value(item));
 
                     if (matches) {
                         result.Successes++;

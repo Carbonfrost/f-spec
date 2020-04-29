@@ -124,11 +124,10 @@ namespace Carbonfrost.Commons.Spec {
                 return Expected.GetTypeInfo().IsAssignableFrom(actual);
             }
 
-            bool ITestMatcher<TypeInfo>.Matches(Func<TypeInfo> actualFactory) {
-                var actual = actualFactory();
+            bool ITestMatcher<TypeInfo>.Matches(ITestActualEvaluation<TypeInfo> actualFactory) {
+                var actual = actualFactory.Value;
                 var matches = Expected.GetTypeInfo().IsAssignableFrom(actual);
                 return matches;
-                // return Result(negated, actual.AsType(), matches);
             }
         }
     }

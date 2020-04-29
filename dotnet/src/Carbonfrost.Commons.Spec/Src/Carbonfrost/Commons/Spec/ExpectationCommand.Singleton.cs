@@ -27,6 +27,10 @@ namespace Carbonfrost.Commons.Spec {
             return new SingletonCommand<T>(thunk);
         }
 
+        public static ExpectationCommand<Unit> TestCode(Action action) {
+            return new SingletonCommand<Unit>(Unit.Thunk(action));
+        }
+
         class SingletonCommand<T> : ExpectationCommand<T> {
 
             private readonly Func<T> _thunk;
@@ -39,7 +43,7 @@ namespace Carbonfrost.Commons.Spec {
                 return new NegationCommand<T>(this);
             }
 
-            public override ExpectationCommand Untyped() {
+            public override ExpectationCommand<Unit> Untyped() {
                 var myThunk = _thunk;
                 return TestCode(() => myThunk());
             }
@@ -65,11 +69,21 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             public override TestFailure Should(ITestMatcher<T> matcher) {
-                bool matches = matcher.Matches(_thunk);
+                var actual = TestActual.Of(_thunk);
+                bool matches = matcher.Matches(actual);
+
                 if (!matches) {
-                    return TestMatcherLocalizer.Failure(matcher, _thunk());
+                    object reportedActual = actual.Value;
+                    if (matcher is ITestMatcherActualException) {
+                        reportedActual = actual.Exception;
+                    }
+                    return TestMatcherLocalizer.Failure(matcher, reportedActual);
                 }
                 return null;
+            }
+
+            public override ExpectationCommand<Exception> CaptureException() {
+                return new CaptureExceptionCommand(Unit.DiscardResult(_thunk), false);
             }
 
             private Func<IEnumerable<object>> MakeThunkEnum() {
