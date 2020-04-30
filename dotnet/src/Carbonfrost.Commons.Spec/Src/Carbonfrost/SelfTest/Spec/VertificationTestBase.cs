@@ -16,21 +16,17 @@
 // limitations under the License.
 //
 using Carbonfrost.Commons.Spec;
-using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.SelfTest.Spec {
 
     public abstract class VerificationTestBase : TestClass {
 
-        private bool _previousMode;
-
         protected override void BeforeTest() {
-            _previousMode = Assert.UseStrictMode;
             Assert.UseStrictMode = true;
         }
 
         protected override void AfterTest() {
-            Assert.UseStrictMode = _previousMode;
+            Assert.UseStrictMode = false;
         }
     }
 }

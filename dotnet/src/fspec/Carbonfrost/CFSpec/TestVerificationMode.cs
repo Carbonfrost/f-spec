@@ -17,8 +17,8 @@
 namespace Carbonfrost.CFSpec {
 
     enum TestVerificationMode {
-        Strict,
         None,
+        Strict,
     }
 
 }

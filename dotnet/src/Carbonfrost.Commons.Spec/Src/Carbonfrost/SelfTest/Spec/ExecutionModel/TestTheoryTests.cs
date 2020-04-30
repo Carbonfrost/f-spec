@@ -39,13 +39,18 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
 
         [Fact]
         public void Children_empty_implies_theory_is_failed() {
-            var tt = new ReflectedTheory(GetType().GetMethod("PNoDataAttributesTheory"));
-            var runner = new FakeRunner();
-            var context = new TestContext(tt, runner, null, null);
-            tt.BeforeExecutingSafe(context);
+            Assert.UseStrictMode = true;
+            try {
+                var tt = new ReflectedTheory(GetType().GetMethod("PNoDataAttributesTheory"));
+                var runner = new FakeRunner();
+                var context = new TestContext(tt, runner, null, null);
+                tt.BeforeExecutingSafe(context);
 
-            Assert.True(tt.Failed);
-            Assert.Equal("No test data for theory", tt.Reason);
+                Assert.True(tt.Failed);
+                Assert.Equal("No test data for theory", tt.Reason);
+            } finally {
+                Assert.UseStrictMode = false;
+            }
         }
     }
 }
