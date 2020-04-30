@@ -13,25 +13,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
 namespace Carbonfrost.Commons.Spec {
 
     public struct SatisfactionExpectation {
 
         private readonly ExpectationCommand<Unit> _cmd;
 
+        private Expectation Expectation {
+            get {
+                return new Expectation(_cmd);
+            }
+        }
+
         internal SatisfactionExpectation(ExpectationCommand<Unit> cmd) {
             _cmd = cmd;
         }
 
         public void All(params ITestMatcher[] matchers) {
-            new Expectation(_cmd).Should(
-                Matchers.SatisfyAll(matchers));
+            Expectation.Should(Matchers.SatisfyAll(matchers));
         }
 
         public void Any(params ITestMatcher[] matchers) {
-            new Expectation(_cmd).Should(
-                Matchers.SatisfyAny(matchers));
+            Expectation.Should(Matchers.SatisfyAny(matchers));
         }
     }
 
@@ -39,16 +42,30 @@ namespace Carbonfrost.Commons.Spec {
 
         private readonly ExpectationCommand<T> _cmd;
 
+        private Expectation<T> Expectation {
+            get {
+                return new Expectation<T>(_cmd);
+            }
+        }
+
         internal SatisfactionExpectation(ExpectationCommand<T> cmd) {
             _cmd = cmd;
         }
 
         public void All(params ITestMatcher<T>[] matchers) {
-            new Expectation<T>(_cmd).Should(Matchers.SatisfyAll(matchers));
+            Expectation.Should(Matchers.SatisfyAll(matchers));
+        }
+
+        public void All(params ITestMatcher[] matchers) {
+            Expectation.Untyped().Should(Matchers.SatisfyAll(matchers));
         }
 
         public void Any(params ITestMatcher<T>[] matchers) {
-            new Expectation<T>(_cmd).Should(Matchers.SatisfyAny(matchers));
+            Expectation.Should(Matchers.SatisfyAny(matchers));
+        }
+
+        public void Any(params ITestMatcher[] matchers) {
+            Expectation.Untyped().Should(Matchers.SatisfyAny(matchers));
         }
     }
 }

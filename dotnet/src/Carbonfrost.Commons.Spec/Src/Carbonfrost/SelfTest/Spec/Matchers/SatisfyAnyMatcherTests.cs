@@ -62,6 +62,14 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
         }
 
         [Fact]
+        public void Expect_Given_fluent_reciever_on_untyped() {
+            Given("not an int").Expect(int.Parse).ToSatisfy.Any(
+                Matchers.Throw<FormatException>(),
+                Matchers.Throw<ArgumentException>()
+            );
+        }
+
+        [Fact]
         public void Expect_Given_fluent_expression() {
             Given("").Expect<string>(t => t).To(Matchers.SatisfyAny(Matchers.BeEmpty()));
         }
