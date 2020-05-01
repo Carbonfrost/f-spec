@@ -25,6 +25,7 @@ dotnet/generate:
 		dotnet/src/fspec/Automation/SR.properties \
 		--resx
 	$(Q) dotnet t4 $(TEXT_TEMPLATES)/GivenExpectationBuilder.tt -o $(TEXT_TEMPLATES)/GivenExpectationBuilder.cs
+	$(Q) dotnet t4 $(TEXT_TEMPLATES)/EnumerableExpectations.tt -o $(TEXT_TEMPLATES)/EnumerableExpectations.cs
 
 
 ## Run unit tests with code coverage

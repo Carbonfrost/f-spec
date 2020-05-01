@@ -53,8 +53,10 @@ namespace Carbonfrost.Commons.Spec {
             return Assert.Expect(value);
         }
 
-        public ExpectationBuilder<IEnumerable<TValue>> Expect<TValue>(params TValue[] value) {
-            return Assert.Expect((TValue[]) value);
+        public ExpectationBuilder<TValue[], TValue> Expect<TValue>(params TValue[] value) {
+            // FIXME Push to Assert
+            return new ExpectationBuilder<TValue[], TValue>(() => value, false, null);
+            // return Assert.Expect((TValue[]) value);
         }
 
         public ExpectationBuilder Expect(Action value) {

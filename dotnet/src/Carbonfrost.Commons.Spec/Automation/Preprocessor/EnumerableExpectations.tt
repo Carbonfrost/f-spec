@@ -1,0 +1,107 @@
+<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".g.cs" #>
+
+//
+// File was automatically generated at <#= DateTime.Now #>
+//
+
+using System;
+using System.Collections.Generic;
+
+<#
+    var nilSignatures = new [] {
+      "Distinct"
+    };
+
+    var predicateSignatures = new [] {
+      "Single"
+    };
+#>
+namespace Carbonfrost.Commons.Spec {
+
+  partial class Extensions {
+
+  <# foreach (var sig in nilSignatures) {
+        string name = sig;
+  #>
+
+        public static void <#= name #><TSource>(this Expectation<TSource[]> e) {
+            <#= name #><TSource>(e.As<IEnumerable<TSource>>(), message: (string) null);
+        }
+
+        public static void <#= name #><TSource>(this Expectation<TSource[]> e, Comparison<TSource> comparison) {
+            <#= name #><TSource>(e.As<IEnumerable<TSource>>(), comparison, message: (string) null);
+        }
+
+        public static void <#= name #><TSource>(this Expectation<TSource[]> e, IEqualityComparer<TSource> comparer) {
+            <#= name #><TSource>(e.As<IEnumerable<TSource>>(), comparer, message: (string) null);
+        }
+
+        public static void <#= name #><TSource>(this Expectation<TSource[]> e, string message, params object[] args) {
+            <#= name #><TSource>(e.As<IEnumerable<TSource>>(), message, (object[]) args);
+        }
+
+        public static void <#= name #><TSource>(this Expectation<TSource[]> e, Comparison<TSource> comparison, string message, params object[] args) {
+            <#= name #><TSource>(e.As<IEnumerable<TSource>>(), comparison, message, (object[]) args);
+        }
+
+        public static void <#= name #><TSource>(this Expectation<TSource[]> e, IEqualityComparer<TSource> comparer, string message, params object[] args) {
+            <#= name #><TSource>(e.As<IEnumerable<TSource>>(), comparer, message, (object[]) args);
+        }
+
+  <# } #>
+  }
+
+  partial class Extensions {
+
+  <# foreach (var sig in predicateSignatures) {
+        string name = sig;
+  #>
+
+        public static void <#= name #><TSource>(this Expectation<TSource[]> e) {
+            <#= name #><TSource>(e.As<IEnumerable<TSource>>(), message: (string) null);
+        }
+
+        public static void <#= name #><TSource>(this Expectation<TSource[]> e, Comparison<TSource> comparison) {
+            <#= name #><TSource>(e.As<IEnumerable<TSource>>(), comparison, message: (string) null);
+        }
+
+        public static void <#= name #><TSource>(this Expectation<TSource[]> e, IEqualityComparer<TSource> comparer) {
+            <#= name #><TSource>(e.As<IEnumerable<TSource>>(), comparer, message: (string) null);
+        }
+
+        public static void <#= name #><TSource>(this Expectation<TSource[]> e, string message, params object[] args) {
+            <#= name #><TSource>(e.As<IEnumerable<TSource>>(), message, (object[]) args);
+        }
+
+        public static void <#= name #><TSource>(this Expectation<TSource[]> e, Comparison<TSource> comparison, string message, params object[] args) {
+            <#= name #><TSource>(e.As<IEnumerable<TSource>>(), comparison, message, (object[]) args);
+        }
+
+        public static void <#= name #><TSource>(this Expectation<TSource[]> e, IEqualityComparer<TSource> comparer, string message, params object[] args) {
+            <#= name #><TSource>(e.As<IEnumerable<TSource>>(), comparer, message, (object[]) args);
+        }
+
+        public static void <#= name #><TSelf, TValue>(this EnumerableExpectation<TSelf, TValue> e, Predicate<TValue> predicate)
+            where TSelf: IEnumerable<TValue> {
+            <#= name #>(e.Lower(), predicate, message, (object[]) args);
+        }
+
+        public static void Single<TSelf, TValue>(this EnumerableExpectation<TSelf, TValue> e, Predicate<TValue> predicate)
+          where TSelf: IEnumerable<TValue> {
+            Single(e.Lower(), predicate, message: null);
+        }
+
+      public static void Single<TSelf, TValue>(this EnumerableExpectation<TSelf, TValue> e, Predicate<TValue> predicate)
+          where TSelf: IEnumerable<TValue> {
+            Single(e.Lower(), predicate, message: null);
+        }
+
+  <# } #>
+  }
+
+}
+

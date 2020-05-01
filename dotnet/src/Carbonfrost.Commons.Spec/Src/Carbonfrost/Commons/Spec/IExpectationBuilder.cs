@@ -28,7 +28,7 @@ namespace Carbonfrost.Commons.Spec {
 
     interface IExpectationBuilderBase<T> {
         Expectation<T> ToBe { get; }
-        EnumerableExpectation ToHave { get; }
+        EnumerableExpectation ToHave { get; } // FIXME Has to be IEnumerableExp
         SatisfactionExpectation<T> ToSatisfy { get; }
 
         void To(ITestMatcher<T> matcher, string message = null, params object[] args);

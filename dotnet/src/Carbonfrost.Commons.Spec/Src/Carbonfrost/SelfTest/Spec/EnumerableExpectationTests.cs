@@ -176,8 +176,8 @@ namespace Carbonfrost.SelfTest.Spec {
 
         [Fact]
         public void Any_All_extension_syntax() {
-            Expect(0, 1, 2).ToHave.Any<int>().GreaterThan(1);
-            Expect(0, 1, 2).ToHave.All<int>().GreaterThan(-1);
+            Expect(0, 1, 2).ToHave.Any.GreaterThan(1);
+            Expect(0, 1, 2).ToHave.All.GreaterThan(-1);
         }
 
         [Fact]

@@ -19,7 +19,11 @@ using System.Collections.Generic;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public struct EnumerableExpectation {
+    public struct EnumerableExpectation : IEnumerableExpectation {
+
+        // FIXME TRy implementing IEnumerable<object>
+        // : IEnumerableExpectation<IEnumerable<TValue>, TValue> {
+            // Drop IEnumerableExpectation
 
         private readonly ExpectationCommand<IEnumerable> _cmd;
 
@@ -94,7 +98,7 @@ namespace Carbonfrost.Commons.Spec {
         }
     }
 
-    public struct EnumerableExpectation<TValue> : IExpectation<IEnumerable<TValue>> {
+    public struct EnumerableExpectation<TValue> : IEnumerableExpectation<IEnumerable<TValue>, TValue> {
 
         private readonly ExpectationCommand<IEnumerable<TValue>> _cmd;
 
@@ -134,9 +138,15 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        public EnumerableExpectation<TValue> Not {
+        IEnumerableExpectation<IEnumerable<TValue>, TValue> IEnumerableExpectation<IEnumerable<TValue>, TValue>.Not {
             get {
-                return new EnumerableExpectation<TValue>(_cmd.Negated());
+                return Not;
+            }
+        }
+
+        public EnumerableExpectation<IEnumerable<TValue>, TValue> Not {
+            get {
+                return new EnumerableExpectation<IEnumerable<TValue>, TValue>(_cmd.Negated());
             }
         }
 
@@ -170,6 +180,96 @@ namespace Carbonfrost.Commons.Spec {
 
         ExpectationCommand<IEnumerable<TValue>> IExpectation<IEnumerable<TValue>>.ToCommand() {
             return ((IExpectation<IEnumerable<TValue>>) Self).ToCommand();
+        }
+    }
+
+    public struct EnumerableExpectation<TSelf, TValue> : IEnumerableExpectation<TSelf, TValue>
+        where TSelf : IEnumerable<TValue> {
+
+        private readonly ExpectationCommand<TSelf> _cmd;
+
+        public Expectation<TSelf> Self {
+            get {
+                return new Expectation<TSelf>(_cmd);
+            }
+        }
+
+        public Expectation<TValue> Any {
+            get {
+                return new Expectation<TValue>(_cmd.ToAny().As<TValue>());
+            }
+        }
+
+        public Expectation<TValue> All {
+            get {
+                return new Expectation<TValue>(_cmd.ToAll().As<TValue>());
+            }
+        }
+
+        public Expectation<TValue> Single {
+            get {
+                return Exactly(1);
+            }
+        }
+
+        public Expectation<TValue> None {
+            get {
+                return Exactly(0);
+            }
+        }
+
+        public Expectation<TValue> No {
+            get {
+                return Exactly(0);
+            }
+        }
+
+        public EnumerableExpectation<TSelf, TValue> Not {
+            get {
+                return new EnumerableExpectation<TSelf, TValue>(_cmd.Negated());
+            }
+        }
+
+        IEnumerableExpectation<TSelf, TValue> IEnumerableExpectation<TSelf, TValue>.Not {
+            get {
+                return Not;
+            }
+        }
+
+        internal EnumerableExpectation(ExpectationCommand<TSelf> cmd) {
+            _cmd = cmd;
+        }
+
+        internal EnumerableExpectation(Func<TSelf> thunk, bool negated, string given) {
+            _cmd = ExpectationCommand.Of(thunk).NegateIfNeeded(negated).Given(given);
+        }
+
+        public Expectation<TValue> Exactly(int count) {
+            return new Expectation<TValue>(_cmd.Cardinality(count, count).As<TValue>());
+        }
+
+        public Expectation<TValue> Between(int min, int max) {
+            return new Expectation<TValue>(_cmd.Cardinality(min, max).As<TValue>());
+        }
+
+        public Expectation<TValue> AtLeast(int min) {
+            return new Expectation<TValue>(_cmd.Cardinality(min, null).As<TValue>());
+        }
+
+        public Expectation<TValue> AtMost(int max) {
+            return new Expectation<TValue>(_cmd.Cardinality(null, max).As<TValue>());
+        }
+
+        public Expectation<TBase> As<TBase>() {
+            throw new NotImplementedException();
+        }
+
+        internal EnumerableExpectation<TValue> Lower() {
+            return new EnumerableExpectation<TValue>(_cmd.As<IEnumerable<TValue>>());
+        }
+
+        ExpectationCommand<TSelf> IExpectation<TSelf>.ToCommand() {
+            return ((IExpectation<TSelf>) Self).ToCommand();
         }
     }
 

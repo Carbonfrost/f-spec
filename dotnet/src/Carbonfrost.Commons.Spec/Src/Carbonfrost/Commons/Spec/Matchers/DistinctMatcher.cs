@@ -50,6 +50,11 @@ namespace Carbonfrost.Commons.Spec {
             Distinct(e, (string) null);
         }
 
+        // public static void Distinct<TSource>(this Expectation<TSource[]> e) {
+        //     Distinct<TSource>(e.As<IEnumerable<TSource>>(), (string) null);
+        // }
+
+        // FIXME Missing
         public static void Distinct<TSource>(this Expectation<IEnumerable<TSource>> e, Comparison<TSource> comparison) {
             Distinct(e, comparison, null);
         }
@@ -69,6 +74,16 @@ namespace Carbonfrost.Commons.Spec {
         public static void Distinct<TSource>(this Expectation<IEnumerable<TSource>> e, Comparison<TSource> comparison, string message, params object[] args) {
             e.As<IEnumerable<TSource>>().Should(Matchers.BeDistinct(comparison), message, (object[]) args);
         }
+
+        public static void Distinct<TSource, TValue>(this Expectation<TSource> e, string message, params object[] args)
+            where TSource: IEnumerable<TValue> {
+            e.As<IEnumerable<TSource>>().Should(Matchers.BeDistinct<TSource>(), message, (object[]) args);
+        }
+
+        // FIXME Missing
+        // public static void Distinct<TSource>(this Expectation<IEnumerable<TSource>> e, Comparison<TSource> comparison, string message, params object[] args) {
+        //     e.As<IEnumerable<TSource>>().Should(Matchers.BeDistinct(comparison), message, (object[]) args);
+        // }
 
         public static void Distinct(this Expectation<IEnumerable<string>> e, StringComparison comparison, string message, params object[] args) {
             e.As<IEnumerable<string>>().Should(Matchers.BeDistinct(comparison), message, (object[]) args);
