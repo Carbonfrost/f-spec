@@ -16,6 +16,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
@@ -23,10 +24,17 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         private readonly Assembly _assembly;
         private readonly TestUnitCollection _children;
+        private readonly TestAssemblyOptions _options;
 
         public Assembly Assembly {
             get {
                 return _assembly;
+            }
+        }
+
+        public TestAssemblyOptions Options {
+            get {
+                return _options;
             }
         }
 
@@ -59,6 +67,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         private protected TestAssembly(Assembly assembly) {
             _assembly = assembly;
             _children = new TestUnitCollection(this);
+            _options = TestAssemblyOptions.ForAssembly(assembly);
         }
 
         private class DefaultTestAssembly : TestAssembly {
@@ -76,7 +85,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         protected override void Initialize(TestContext testContext) {
             Metadata.Apply(testContext);
 
-            foreach (var nsGroup in _assembly.ExportedTypes.GroupBy(t => t.Namespace)) {
+            foreach (var nsGroup in GetTestTypes().GroupBy(t => t.Namespace)) {
                 var tests = nsGroup.Select(t => TestUnitFromType(t));
                 var unit = TestNamespace.Create(nsGroup.Key, tests);
                 SpecLog.DiscoveredTests(unit.Children);
@@ -91,25 +100,44 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             Metadata.ApplyDescendants(testContext, Descendants);
         }
 
-        internal static ReflectedTestClass TestUnitFromType(Type type) {
+        internal ReflectedTestClass TestUnitFromType(Type type) {
             if (type == null) {
                 throw new ArgumentNullException(nameof(type));
             }
-            var tt = type.GetTypeInfo();
-            if (tt.IsAbstract || tt.IsValueType || tt.IsNested || !tt.IsVisible) {
+            if (!type.IsClass) {
                 return null;
             }
-
             if (typeof(ITestUnitAdapter).IsAssignableFrom(type)) {
                 return new UserTestClassAdapter(type);
             }
 
-            if (type.GetRuntimeMethods().SelectMany(m => m.CustomAttributes).Any(
-                a => typeof(IReflectionTestUnitFactory).IsAssignableFrom(a.AttributeType))) {
+            if (IsTestClass(type)) {
                 return new ReflectedTestClass(type);
             }
 
             return null;
+        }
+
+        private IEnumerable<Type> GetTestTypes() {
+            if (Options.IncludeNonPublicTests) {
+                return _assembly.GetTypes();
+            }
+            return _assembly.ExportedTypes;
+        }
+
+        internal bool IsTestClass(Type type) {
+            var tt = type.GetTypeInfo();
+            if (tt.IsAbstract || tt.IsValueType || tt.IsNested) {
+                return false;
+            }
+
+            if (!Options.IncludeNonPublicTests && !tt.IsVisible) {
+                return false;
+            }
+
+            return type.GetRuntimeMethods().SelectMany(m => m.CustomAttributes).Any(
+                a => typeof(IReflectionTestUnitFactory).IsAssignableFrom(a.AttributeType)
+            );
         }
     }
 }
