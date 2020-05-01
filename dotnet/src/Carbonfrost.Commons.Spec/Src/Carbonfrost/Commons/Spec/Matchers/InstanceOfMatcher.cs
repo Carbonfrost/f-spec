@@ -27,6 +27,10 @@ namespace Carbonfrost.Commons.Spec {
             return new InstanceOfMatcher(expected);
         }
 
+        public static InstanceOfMatcher BeInstanceOf<T>() {
+            return new InstanceOfMatcher(typeof(T));
+        }
+
     }
 
     partial class Asserter {

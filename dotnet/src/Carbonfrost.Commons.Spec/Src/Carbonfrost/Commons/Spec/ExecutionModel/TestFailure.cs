@@ -14,8 +14,6 @@
 // limitations under the License.
 //
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Carbonfrost.Commons.Spec.Resources;
 
@@ -66,10 +64,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         internal string FormatMessage(string userMessage) {
             var err = new StringBuilder();
+            err.Append(userMessage);
 
-            if (!string.IsNullOrEmpty(userMessage)) {
-                err.AppendLine(userMessage);
-            }
             AppendChildren(err, 0);
             return err.ToString();
         }
@@ -78,6 +74,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             if (level == 2) {
                 return;
             }
+            if (Children.Count == 0) {
+                return;
+            }
+            err.AppendLine();
 
             string prefix = new string(' ', 2 * level) + "- ";
             foreach (var c in Children) {

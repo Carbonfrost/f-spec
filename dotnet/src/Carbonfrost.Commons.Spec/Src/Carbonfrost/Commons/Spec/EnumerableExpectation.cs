@@ -165,7 +165,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public Expectation<TBase> As<TBase>() {
-            throw new NotImplementedException();
+            return new Expectation<TBase>(_cmd.As<TBase>());
         }
 
         ExpectationCommand<IEnumerable<TValue>> IExpectation<IEnumerable<TValue>>.ToCommand() {

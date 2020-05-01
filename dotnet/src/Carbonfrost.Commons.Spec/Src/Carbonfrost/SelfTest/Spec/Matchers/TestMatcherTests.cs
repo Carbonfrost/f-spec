@@ -135,6 +135,9 @@ namespace Carbonfrost.SelfTest.Spec {
                 if (t.Name.Contains("Attribute")) {
                     continue;
                 }
+                if (t.Name.EndsWith("Operator")) {
+                    continue;
+                }
 
                 var type = t;
                 if (t.GetTypeInfo().IsGenericType) {

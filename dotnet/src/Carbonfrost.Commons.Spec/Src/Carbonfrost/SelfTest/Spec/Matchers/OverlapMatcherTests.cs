@@ -16,7 +16,6 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
@@ -48,12 +47,12 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
 
         [Fact]
         public void Expect_ToHave_should_have_fluent_expression() {
-            Expect(new [] { "a", "b", "c" }).ToHave.OverlapWith("a");
+            Expect(new [] { "a", "b", "c" }).ToHave.OverlapWith(new [] { "a" });
         }
 
         [Fact]
         public void Expect_ToHave_should_have_fluent_expression_negative() {
-            Expect(new [] { "a", "b", "c" }).Not.ToHave.OverlapWith("z");
+            Expect(new [] { "a", "b", "c" }).Not.ToHave.OverlapWith(new [] { "z" });
         }
 
     }

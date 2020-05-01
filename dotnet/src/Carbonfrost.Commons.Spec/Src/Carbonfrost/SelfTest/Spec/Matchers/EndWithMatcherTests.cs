@@ -15,14 +15,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
-using System.Linq;
+
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
 namespace Carbonfrost.SelfTest.Spec.TestMatchers {
 
-    public class EndsWithMatcherTests : TestClass {
+    public class EndWithMatcherTests : TestClass {
 
         [Fact]
         public void Matches_should_detect_suffix_nominal() {
