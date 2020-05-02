@@ -20,7 +20,8 @@ using System.ComponentModel;
 using System.Linq;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
-namespace Carbonfrost.Commons.Spec {
+namespace Carbonfrost.Commons.Spec
+{
 
     partial class Matchers {
 
@@ -391,7 +392,7 @@ namespace Carbonfrost.Commons.Spec {
 
     namespace TestMatchers {
 
-        public class EqualMatcher<T> : TestMatcher<T>, ITestMatcherWithComparer<T> {
+        public class EqualMatcher<T> : TestMatcher<T>, ITestMatcherWithComparer<T>, ITestMatcherActualDiff {
 
             public T Expected { get; private set; }
             public IEqualityComparer<T> Comparer { get; private set; }
@@ -434,6 +435,10 @@ namespace Carbonfrost.Commons.Spec {
 
             ITestMatcher<T> ITestMatcherWithComparer<T>.WithComparer(IComparer<T> comparer) {
                 return WithComparer(comparer);
+            }
+
+            Patch ITestMatcherActualDiff.GetPatch(object actual) {
+                return Patch.StandardTextPatch(actual, Expected);
             }
         }
     }

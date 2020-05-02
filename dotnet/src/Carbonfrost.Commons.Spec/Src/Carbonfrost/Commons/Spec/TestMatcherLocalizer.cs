@@ -32,12 +32,12 @@ namespace Carbonfrost.Commons.Spec {
             TestFailure failure = FailureMessageCore(false, matcher, false);
             var strActual = TextUtility.ConvertToString(actual);
             failure.UserData["Actual"] = strActual;
-
-            if (matcher is EqualMatcher<string> strMatcher) {
-                string strExpected = strMatcher.Expected;
-                var patch = new Patch(strExpected, strActual);
-                if (patch.ALineCount > 1 || patch.BLineCount > 1) {
-                    failure.UserData.Diff = patch;
+            if (matcher is ITestMatcherActualDiff diff) {
+                var patch = diff.GetPatch(actual);
+                if (patch != null) {
+                    if (patch.ALineCount > 1 || patch.BLineCount > 1) {
+                        failure.UserData.Diff = patch;
+                    }
                 }
             }
             return failure;

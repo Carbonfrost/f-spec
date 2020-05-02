@@ -278,7 +278,7 @@ namespace Carbonfrost.Commons.Spec {
 
     namespace TestMatchers {
 
-        public class SetEqualMatcher<TSource> : TestMatcher<IEnumerable<TSource>>, ITestMatcherWithEqualityComparerApiConventions<SetEqualMatcher<TSource>, TSource> {
+        public class SetEqualMatcher<TSource> : TestMatcher<IEnumerable<TSource>>, ITestMatcherWithEqualityComparerApiConventions<SetEqualMatcher<TSource>, TSource>, ITestMatcherActualDiff {
 
             public IEnumerable<TSource> Expected { get; private set; }
             public IEqualityComparer<TSource> Comparer { get; private set; }
@@ -319,6 +319,10 @@ namespace Carbonfrost.Commons.Spec {
                 var tally = new HashSet<TSource>(Expected, comparer);
                 tally.SymmetricExceptWith(actual);
                 return tally.Count == 0;
+            }
+
+            Patch ITestMatcherActualDiff.GetPatch(object actual) {
+                return Patch.StandardTextPatch(actual, Expected);
             }
         }
     }
