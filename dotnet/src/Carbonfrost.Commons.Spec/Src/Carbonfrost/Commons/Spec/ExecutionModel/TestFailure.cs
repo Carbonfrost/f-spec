@@ -24,7 +24,19 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         private readonly TestMatcherName _name;
         private readonly TestFailureCollection _children = new TestFailureCollection();
 
-        public string Message { get; set; }
+        public string Message {
+            get;
+            set;
+        }
+
+        internal IAsserterBehavior AsserterBehavior {
+            get {
+                if (UserData["_Assumption"] == "True") {
+                    return ExecutionModel.AsserterBehavior.Assumption;
+                }
+                return ExecutionModel.AsserterBehavior.Default;
+            }
+        }
 
         public TestFailureCollection Children {
             get {
@@ -85,6 +97,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 err.AppendLine(c.Message);
                 c.AppendChildren(err, level + 1);
             }
+        }
+
+        internal TestFailure UpdateAssumption(bool assumption) {
+            if (assumption) {
+                UserData["_Assumption"] = "True";
+            }
+            return this;
         }
 
         internal TestFailure UpdateGiven(string given) {

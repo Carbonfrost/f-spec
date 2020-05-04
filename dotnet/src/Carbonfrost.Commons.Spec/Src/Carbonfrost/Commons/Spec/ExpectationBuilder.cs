@@ -69,8 +69,8 @@ namespace Carbonfrost.Commons.Spec {
             _cmd = cmd;
         }
 
-        internal ExpectationBuilder(Action thunk, bool negated, string given) {
-            _cmd = ExpectationCommand.TestCode(thunk).NegateIfNeeded(negated).Given(given);
+        internal ExpectationBuilder(Action thunk, bool negated, string given, bool assumption) {
+            _cmd = ExpectationCommand.TestCode(thunk, negated, given, assumption);
         }
 
         public void To(ITestMatcher matcher, string message = null, params object[] args) {
@@ -136,11 +136,11 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        internal ExpectationBuilder(Func<T> thunk, bool negated, string given) {
-            _cmd = ExpectationCommand.Of(thunk).NegateIfNeeded(negated).Given(given);
+        internal ExpectationBuilder(Func<T> thunk, bool negated, string given, bool assumption) {
+            _cmd = ExpectationCommand.Of(thunk, negated, given, assumption);
         }
 
-        internal ExpectationBuilder(ExpectationCommand<T> cmd) {
+        private ExpectationBuilder(ExpectationCommand<T> cmd) {
             _cmd = cmd;
         }
 

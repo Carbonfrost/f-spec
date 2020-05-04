@@ -144,8 +144,8 @@ namespace Carbonfrost.Commons.Spec {
             _cmd = cmd;
         }
 
-        internal EnumerableExpectation(Func<IEnumerable<TValue>> thunk, bool negated, string given) {
-            _cmd = ExpectationCommand.Of(thunk).NegateIfNeeded(negated).Given(given);
+        internal EnumerableExpectation(Func<IEnumerable<TValue>> thunk, bool negated, string given, bool assumption) {
+            _cmd = ExpectationCommand.Of(thunk, negated, given, assumption);
         }
 
         public Expectation<TValue> Exactly(int count) {

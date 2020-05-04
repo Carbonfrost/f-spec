@@ -27,7 +27,11 @@ namespace Carbonfrost.Commons.Spec {
         static readonly IEqualityComparer DefaultInnerComparer
             = new AssertEqualityComparerAdapter<object>(new AssertEqualityComparer<object>());
 
-        static readonly Asserter Global = new Asserter();
+        static Asserter Global {
+            get {
+                return Asserter.Default;
+            }
+        }
 
         public static bool UseStrictMode {
             get;
@@ -35,27 +39,23 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public static ExpectationBuilder<IEnumerable> Expect() {
-            return new ExpectationBuilder<IEnumerable>(() => Empty<object>.Array, false, null);
+            return Global.Expect();
         }
 
         public static ExpectationBuilder<T> Expect<T>(T value) {
-            return new ExpectationBuilder<T>(() => value, false, null);
+            return Global.Expect<T>(value);
         }
 
         public static ExpectationBuilder<IEnumerable<TValue>> Expect<TValue>(params TValue[] value) {
-            return new ExpectationBuilder<IEnumerable<TValue>>(() => value, false, null);
+            return Global.Expect<TValue>(value);
         }
 
         public static ExpectationBuilder Expect(Action value) {
-            return new ExpectationBuilder(value, false, null);
+            return Global.Expect(value);
         }
 
         public static ExpectationBuilder<T> Expect<T>(Func<T> func) {
-            return Given().Expect(func);
-        }
-
-        static IComparer<T> GetComparer<T>() where T : IComparable {
-            return new AssertComparer<T>();
+            return Global.Expect<T>(func);
         }
 
         internal static IEqualityComparer<T> GetEqualityComparer<T>(bool skipTypeCheck = false, IEqualityComparer innerComparer = null) {

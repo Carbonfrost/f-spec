@@ -38,6 +38,10 @@ namespace Carbonfrost.Commons.Spec {
                 return new CastCommand<TFrom, T>(_inner.Negated());
             }
 
+            public override ExpectationCommand<T> Given(string given) {
+                return new CastCommand<TFrom, T>(_inner.Given(given));
+            }
+
             public override ExpectationCommand<object> ToAll() {
                 return _inner.ToAll();
             }
@@ -48,14 +52,6 @@ namespace Carbonfrost.Commons.Spec {
 
             public override ExpectationCommand<object> Cardinality(int? min, int? max) {
                 return _inner.Cardinality(min, max);
-            }
-
-            public override ExpectationCommand<T> Eventually(TimeSpan duration) {
-                return new CastCommand<TFrom, T>(_inner.Eventually(duration));
-            }
-
-            public override ExpectationCommand<T> Consistently(TimeSpan duration) {
-                return new CastCommand<TFrom, T>(_inner.Consistently(duration));
             }
 
             public override TestFailure Should(ITestMatcher<T> matcher) {

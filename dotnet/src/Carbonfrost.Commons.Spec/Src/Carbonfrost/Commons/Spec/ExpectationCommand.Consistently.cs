@@ -23,18 +23,19 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class ExpectationCommand {
 
-        class ConsistentlyCommand<T> : ExpectationCommand<T> {
+        internal class ConsistentlyCommand<T> : ExpectationCommand<T> {
 
-            private readonly Func<T> _thunk;
+            private readonly ExpectationCommand<T> _inner;
             private readonly TimeSpan _duration;
-            private readonly bool _negated;
 
             public ConsistentlyCommand(TimeSpan duration,
-                                       Func<T> thunk,
-                                       bool negated = false) {
+                                       ExpectationCommand<T> inner) {
                 _duration = duration;
-                _thunk = thunk;
-                _negated = negated;
+                _inner = inner;
+            }
+
+            public override ExpectationCommand<T> Given(string given) {
+                return new ConsistentlyCommand<T>(_duration, _inner.Given(given));
             }
 
             public override TestFailure Should(ITestMatcher<T> matcher) {
@@ -42,14 +43,15 @@ namespace Carbonfrost.Commons.Spec {
                 var durationMS = (int) _duration.TotalMilliseconds;
 
                 do {
-                    if (matcher.Matches(TestActual.Of(_thunk)) == _negated) {
-                        var actual = _thunk();
-                        var aFailure = TestMatcherLocalizer.FailurePredicate(matcher);
+                    var aFailure = _inner.Should(matcher);
+                    if (aFailure != null) {
                         var result = new TestFailure("spec.consistently") {
                             Message = SR.ConsistentlyElapsedBefore(TextUtility.FormatDuration(_duration)),
-                            Children = { aFailure },
+                            Children = {
+                                TestMatcherLocalizer.FailurePredicate(matcher)
+                             },
                         };
-                        result.UserData["Actual"] = TextUtility.ConvertToString(actual);
+                        result.UserData["Actual"] = aFailure.UserData["Actual"];
                         return result;
                     }
 
@@ -59,7 +61,7 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             public override ExpectationCommand<T> Negated() {
-                return new ConsistentlyCommand<T>(_duration, _thunk, !_negated);
+                return new ConsistentlyCommand<T>(_duration, _inner.Negated());
             }
         }
     }

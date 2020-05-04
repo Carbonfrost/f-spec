@@ -44,6 +44,10 @@ namespace Carbonfrost.Commons.Spec {
                 _inner.Implies(c);
             }
 
+            public override ExpectationCommand<T> Given(string given) {
+                return new ComparerCommand<T>(_comparer, _inner.Given(given));
+            }
+
             public override TestFailure Should(ITestMatcher<T> matcher) {
                 if (_comparer != null) {
                     matcher = ((ITestMatcherWithComparer<T>) matcher).WithComparer(_comparer);

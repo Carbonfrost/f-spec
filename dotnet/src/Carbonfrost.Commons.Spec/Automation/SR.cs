@@ -560,6 +560,20 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("LabelActual") );
     }
 
+  /// <summary>Actual count</summary>
+    internal static string LabelActualCount(
+    
+    ) {
+        return string.Format(Culture, ResourceFinder("LabelActualCount") );
+    }
+
+  /// <summary>Indexes</summary>
+    internal static string LabelIndexes(
+    
+    ) {
+        return string.Format(Culture, ResourceFinder("LabelIndexes") );
+    }
+
   /// <summary>Bounds Exclusive</summary>
     internal static string LabelBoundsExclusive(
     

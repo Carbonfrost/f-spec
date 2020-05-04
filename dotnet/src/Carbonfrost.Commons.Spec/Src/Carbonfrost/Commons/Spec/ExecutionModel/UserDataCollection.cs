@@ -169,6 +169,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             if (key == "Expected" && ExpectedConsumedInMessage) {
                 return true;
             }
+            if (key[0] == '_') {
+                return true;
+            }
 
             return false;
         }

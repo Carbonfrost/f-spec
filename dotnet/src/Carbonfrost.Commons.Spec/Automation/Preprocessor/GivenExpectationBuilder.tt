@@ -1,5 +1,5 @@
 <#@ template language="C#" #>
-<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Linq" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".g.cs" #>
@@ -27,6 +27,7 @@ namespace Carbonfrost.Commons.Spec {
    string args = List(typeArgsList.Zip(parms, (t, f) => (t + " " + f))); // T1 arg1, T2 arg2...
    string typeArgs = "<" + List(typeArgsList) + ">";
    string typeArgsResult = "<" + List(typeArgsList.Concat(new [] { "TResult" })) + ">";
+   string comma = (i == 0) ? "" : ", ";
 
    if (typeArgs == "<>") {
        typeArgs = "";
@@ -36,33 +37,48 @@ namespace Carbonfrost.Commons.Spec {
     partial class TestClass {
 
         public GivenExpectationBuilder<#= typeArgs #> Given<#= typeArgs #>(<#= args #>) {
-            return new GivenExpectationBuilder<#= typeArgs #>(<#= List(parms) #>);
+            return Assert.Given<#= typeArgs #>(<#= List(parms) #>);
         }
+    }
+
+    partial class Asserter {
+
+        public GivenExpectationBuilder<#= typeArgs #> Given<#= typeArgs #>(<#= args #>) {
+            return new GivenExpectationBuilder<#= typeArgs #>(<#= List(parms) #><#= comma #> _assumption);
+        }
+
     }
 
     partial class Assert {
 
         public static GivenExpectationBuilder<#= typeArgs #> Given<#= typeArgs #>(<#= args #>) {
-            return new GivenExpectationBuilder<#= typeArgs #>(<#= List(parms) #>);
+            return Global.Given<#= typeArgs #>(<#= List(parms) #>);
+        }
+
+    }
+
+    partial class Assume {
+
+        public static GivenExpectationBuilder<#= typeArgs #> Given<#= typeArgs #>(<#= args #>) {
+            return Global.Given<#= typeArgs #>(<#= List(parms) #>);
         }
 
     }
 
     public struct GivenExpectationBuilder<#= typeArgs #> {
 
+        private readonly bool _assumption;
+
 <# foreach (var m in typeArgsList.Zip(fields, (t, f) => (t + " " + f))) { #>
         private readonly <#= m #>;
 <# } #>
 
-<# if (args.Length > 0) { #>
-
-        internal GivenExpectationBuilder(<#= args #>) {
+        internal GivenExpectationBuilder(<#= args #><#= comma #>bool assumption) {
+          _assumption = assumption;
 <# foreach (var m in fields.Zip(parms, (t, f) => (t + " = " + f))) { #>
         <#= m #>;
 <# } #>
         }
-
-<# } #>
 
         public ExpectationBuilder<TResult> Expect<TResult>(Func<#= typeArgsResult #> func) {
 <# foreach (var m in parms.Zip(fields, (t, f) => (t + " = " + f))) { #>
@@ -70,7 +86,8 @@ namespace Carbonfrost.Commons.Spec {
 <# } #>
             return new ExpectationBuilder<TResult>(() => func(<#= List(parms) #>),
                                                    false,
-                                                   TextUtility.FormatArgs(<#= List(parms) #>));
+                                                   TextUtility.FormatArgs(<#= List(parms) #>),
+                                                   _assumption);
         }
 
         public ExpectationBuilder Expect(Action<#= typeArgs #> func) {
@@ -79,7 +96,8 @@ namespace Carbonfrost.Commons.Spec {
 <# } #>
             return new ExpectationBuilder(() => func(<#= List(parms) #>),
                                           false,
-                                          TextUtility.FormatArgs(<#= List(parms) #>));
+                                          TextUtility.FormatArgs(<#= List(parms) #>),
+                                          _assumption);
         }
     }
 

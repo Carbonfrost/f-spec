@@ -14,48 +14,54 @@
 // limitations under the License.
 //
 using System;
+using System.Diagnostics;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
     partial class ExpectationCommand {
 
-        class CaptureExceptionCommand : ExpectationCommand<Exception> {
+        internal sealed class CaptureExceptionCommand<T> : ExpectationCommand<Exception> {
 
-            private readonly Action _thunk;
-            private readonly bool _negated;
+            private readonly ExpectationCommand<T> _inner;
 
-            public CaptureExceptionCommand(Action thunk, bool negated) {
-                _thunk = thunk;
-                _negated = negated;
+            public CaptureExceptionCommand(ExpectationCommand<T> inner) {
+                _inner = inner;
             }
 
-            public override ExpectationCommand<Unit> Untyped() {
-                throw new NotImplementedException();
+            public override ExpectationCommand<Exception> Given(string given) {
+                return new CaptureExceptionCommand<T>(_inner.Given(given));
             }
 
             public override TestFailure Should(ITestMatcher<Exception> matcher) {
-                var ex = Record.Exception(_thunk);
-                if (_negated) {
-                    matcher = Matchers.Not(matcher);
-                }
-
-                var matches = matcher.Matches(TestActual.Value(ex));
-                if (!matches) {
-                    return TestMatcherLocalizer.Failure(matcher, ex);
-                }
-                return null;
+                return _inner.Should(new CaptureProvider(matcher));
             }
 
             public override ExpectationCommand<Exception> Negated() {
-                return new CaptureExceptionCommand(_thunk, !_negated);
+                return new CaptureExceptionCommand<T>(_inner.Negated());
             }
 
-            public override ExpectationCommand<TResult> Property<TResult>(Func<Exception, TResult> accessor) {
-                return ExpectationCommand.Of(() => accessor(Record.Exception(_thunk)));
+            struct CaptureProvider : ITestMatcher<T>, ISupportTestMatcher {
+
+                private readonly ITestMatcher<Exception> _real;
+
+                public CaptureProvider(ITestMatcher<Exception> real) {
+                    _real = real;
+
+                    // Don't be reentrant with the provider type itself
+                    Debug.Assert(!_real.GetType().Name.Contains("CaptureProvider"));
+                }
+
+                public bool Matches(ITestActualEvaluation<T> actualFactory) {
+                    return _real.Matches(TestActual.Value(actualFactory.Exception));
+                }
+
+                object ISupportTestMatcher.RealMatcher {
+                    get {
+                        return _real;
+                    }
+                }
             }
         }
-
     }
-
 }

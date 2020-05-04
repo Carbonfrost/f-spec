@@ -41,7 +41,7 @@ namespace Carbonfrost.Commons.Spec.TestMatchers {
             Action actual = () => next(testContext);
             string message = TestMatcherFactory.GetMessage(_provider);
 
-            new Expectation(ExpectationCommand.TestCode(actual)).Should(matcher, message);
+            new Expectation(ExpectationCommand.TestCode(actual, false, null, false)).Should(matcher, message, null);
         }
     }
 
@@ -70,7 +70,7 @@ namespace Carbonfrost.Commons.Spec.TestMatchers {
             var matcher = _provider.CreateMatcher(testContext);
             string message = TestMatcherFactory.GetMessage(_provider);
 
-            new Expectation<T>(ExpectationCommand.Of(actualFactory)).Should(matcher, message);
+            new Expectation<T>(ExpectationCommand.Of(actualFactory)).Should(matcher, message, null);
         }
 
     }

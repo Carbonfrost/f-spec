@@ -14,6 +14,8 @@
 // limitations under the License.
 //
 
+using Carbonfrost.Commons.Spec.ExecutionModel;
+
 namespace Carbonfrost.Commons.Spec {
 
     interface IExpectation<T> {
@@ -22,21 +24,22 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class Extensions {
 
-        internal static void Should<T>(this IExpectation<T> self, ITestMatcher<T> matcher, string message = null, params object[] args) {
+        internal static void Should<T>(this IExpectation<T> self, ITestMatcher<T> matcher, string message = null, object[] args = null) {
             var failure = self.ToCommand().Should(matcher);
-
             if (failure != null) {
-                throw failure.UpdateTestSubject().UpdateMessage(message, args).ToException();
+                IAsserterBehavior behavior = failure.AsserterBehavior;
+                behavior.Assert(failure.UpdateTestSubject().UpdateMessage(message, args));
             }
         }
 
-        internal static void Should(this IExpectation<Unit> self, ITestMatcher matcher, string message = null, params object[] args) {
+        internal static void Should(this IExpectation<Unit> self, ITestMatcher matcher, string message = null, object[] args = null) {
             var failure = self.ToCommand().Should(
                 TestMatcher.UnitWrapper(matcher)
             );
 
             if (failure != null) {
-                throw failure.UpdateTestSubject().UpdateMessage(message, args).ToException();
+                IAsserterBehavior behavior = failure.AsserterBehavior;
+                behavior.Assert(failure.UpdateTestSubject().UpdateMessage(message, args));
             }
         }
     }

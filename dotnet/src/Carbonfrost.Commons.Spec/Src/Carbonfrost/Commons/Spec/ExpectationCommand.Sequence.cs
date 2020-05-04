@@ -1,11 +1,11 @@
 //
-// Copyright 2017, 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2018, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +14,9 @@
 // limitations under the License.
 //
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 using Carbonfrost.Commons.Spec.Resources;
 
@@ -31,7 +33,7 @@ namespace Carbonfrost.Commons.Spec {
             public TestFailure AFailure;
 
             public static Tally New<T>(
-                Func<IEnumerable<T>> thunk,
+                IEnumerable<T> items,
                 ITestMatcher<T> matcher,
                 Predicate<Tally> stop,
                 TestFailure predicateFailure = null) {
@@ -46,7 +48,7 @@ namespace Carbonfrost.Commons.Spec {
                 var result = new Tally();
                 result.Indexes = new List<int>();
                 int index = 0;
-                foreach (var item in thunk()) {
+                foreach (var item in items) {
                     if (stop(result)) {
                         result.Stopped = true;
                         break;
@@ -90,28 +92,67 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        abstract class SequenceCommandBase<T> : ExpectationCommand<T> {
+        // Assertion on one or more of the items in a list.  Since we use the non-generic
+        // IEnumerable, we have no idea what the type of the items could be so, we can only
+        // assert on object
+        //
+        abstract class SequenceCommandBase : ExpectationCommand<object>, ITestMatcher<IEnumerable> {
 
-            protected readonly Func<IEnumerable<T>> thunk;
+            private readonly ExpectationCommand<IEnumerable> _inner;
+            private ITestMatcher<object> _real;
 
-            protected SequenceCommandBase(Func<IEnumerable<T>> thunk) {
-                this.thunk = thunk;
+            // Somewhat hackish, but we share the result with the parent
+            public TestFailure Result;
+
+            protected ExpectationCommand<IEnumerable> Inner {
+                get {
+                    return _inner;
+                }
             }
 
+            protected SequenceCommandBase(ExpectationCommand<IEnumerable> inner) {
+                _inner = inner;
+            }
+
+            public sealed override TestFailure Should(ITestMatcher<object> matcher) {
+                _real = matcher;
+                var _ = _inner.Should(this);
+                return Result;
+            }
+
+            protected abstract TestFailure ShouldCore(
+                IEnumerable<object> items,
+                ITestMatcher<object> baseMatcher
+            );
+
+            public bool Matches(ITestActualEvaluation<IEnumerable> actualFactory) {
+                var items = actualFactory.Value;
+                if (items == null) {
+                    throw SpecFailure.SequenceNullConversion();
+                }
+
+                Result = ShouldCore(items.Cast<object>(), _real);
+                return Result == null;
+            }
         }
 
         // All and NotAny give up after 5 failures
+        class AllCommand : SequenceCommandBase {
 
-        class AllCommand<T> : SequenceCommandBase<T> {
+            public AllCommand(ExpectationCommand<IEnumerable> inner) : base(inner) {}
 
-            public AllCommand(Func<IEnumerable<T>> thunk) : base(thunk) {}
-
-            public override ExpectationCommand<T> Negated() {
-                return new NotAllCommand<T>(thunk);
+            public override ExpectationCommand<object> Negated() {
+                return new NotAllCommand(Inner);
             }
 
-            public override TestFailure Should(ITestMatcher<T> matcher) {
-                var tally = Tally.New(thunk, matcher, t => (t.Failures == 5));
+            public override ExpectationCommand<object> Given(string given) {
+                return new AllCommand(Inner.Given(given));
+            }
+
+            protected override TestFailure ShouldCore(IEnumerable<object> items,
+                ITestMatcher<object> baseMatcher
+            ) {
+                var tally = Tally.New(items, baseMatcher, t => (t.Failures == 5));
                 return tally.Lift("spec.all", SR.ExpectedAllElementsTo());
             }
         }
@@ -120,36 +161,44 @@ namespace Carbonfrost.Commons.Spec {
         // the negated matcher; however, in order to get the right (non-double negative)
         // message from the matcher, we should use the bare matcher for the localized message
 
-        class NotAnyCommand<T> : SequenceCommandBase<T> {
+        class NotAnyCommand : SequenceCommandBase {
 
-            public NotAnyCommand(Func<IEnumerable<T>> thunk) : base(thunk) {}
+            public NotAnyCommand(ExpectationCommand<IEnumerable> inner) : base(inner) {}
 
-            public override ExpectationCommand<T> Negated() {
-                return new AnyCommand<T>(thunk);
+            public override ExpectationCommand<object> Negated() {
+                return new AnyCommand(Inner);
             }
 
-            public override TestFailure Should(ITestMatcher<T> matcher) {
-                var tally = Tally.New(thunk,
-                                      Matchers.Not(matcher),
+            public override ExpectationCommand<object> Given(string given) {
+                return new NotAnyCommand(Inner.Given(given));
+            }
+
+            protected override TestFailure ShouldCore(IEnumerable<object> items, ITestMatcher<object> baseMatcher) {
+                var tally = Tally.New(items,
+                                      Matchers.Not(baseMatcher),
                                       t => (t.Failures == 5),
-                                      TestMatcherLocalizer.FailurePredicate(matcher));
+                                      TestMatcherLocalizer.FailurePredicate(baseMatcher));
                 return tally.Lift("spec.notAny", SR.ExpectedNotAnyElementTo());
             }
         }
 
-        class NotAllCommand<T> : SequenceCommandBase<T> {
+        class NotAllCommand : SequenceCommandBase {
 
-            public NotAllCommand(Func<IEnumerable<T>> thunk) : base(thunk) {}
+            public NotAllCommand(ExpectationCommand<IEnumerable> inner) : base(inner) {}
 
-            public override ExpectationCommand<T> Negated() {
-                return new AllCommand<T>(thunk);
+            public override ExpectationCommand<object> Negated() {
+                return new AllCommand(Inner);
             }
 
-            public override TestFailure Should(ITestMatcher<T> matcher) {
-                var tally = Tally.New(thunk,
-                                      Matchers.Not(matcher),
+            public override ExpectationCommand<object> Given(string given) {
+                return new NotAllCommand(Inner.Given(given));
+            }
+
+            protected override TestFailure ShouldCore(IEnumerable<object> items, ITestMatcher<object> baseMatcher) {
+                var tally = Tally.New(items,
+                                      Matchers.Not(baseMatcher),
                                       t => (t.Successes > 0),
-                                      TestMatcherLocalizer.FailurePredicate(matcher));
+                                      TestMatcherLocalizer.FailurePredicate(baseMatcher));
                 if (tally.Successes > 0) {
                     return null;
                 }
@@ -157,16 +206,20 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        class AnyCommand<T> : SequenceCommandBase<T> {
+        class AnyCommand : SequenceCommandBase {
 
-            public AnyCommand(Func<IEnumerable<T>> thunk) : base(thunk) {}
+            public AnyCommand(ExpectationCommand<IEnumerable> inner) : base(inner) {}
 
-            public override ExpectationCommand<T> Negated() {
-                return new NotAnyCommand<T>(thunk);
+            public override ExpectationCommand<object> Negated() {
+                return new NotAnyCommand(Inner);
             }
 
-            public override TestFailure Should(ITestMatcher<T> matcher) {
-                var tally = Tally.New(thunk, matcher, t => (t.Successes > 0));
+            public override ExpectationCommand<object> Given(string given) {
+                return new AnyCommand(Inner.Given(given));
+            }
+
+            protected override TestFailure ShouldCore(IEnumerable<object> items, ITestMatcher<object> baseMatcher) {
+                var tally = Tally.New(items, baseMatcher, t => (t.Successes > 0));
                 if (tally.Successes > 0) {
                     return null;
                 }
@@ -174,7 +227,7 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        class CardinalityCommand<T> : SequenceCommandBase<T> {
+        class CardinalityCommand : SequenceCommandBase {
 
             private readonly int? _min;
             private readonly int? _max;
@@ -186,14 +239,18 @@ namespace Carbonfrost.Commons.Spec {
                 }
             }
 
-            public CardinalityCommand(Func<IEnumerable<T>> thunk, int? min, int? max, bool outer) : base(thunk) {
+            public CardinalityCommand(ExpectationCommand<IEnumerable> inner, int? min, int? max, bool outer) : base(inner) {
                 _min = min;
                 _max = max;
                 _outer = outer;
             }
 
-            public override ExpectationCommand<T> Negated() {
-                return new CardinalityCommand<T>(thunk, _min, _max, !_outer);
+            public override ExpectationCommand<object> Negated() {
+                return new CardinalityCommand(Inner, _min, _max, !_outer);
+            }
+
+            public override ExpectationCommand<object> Given(string given) {
+                return new CardinalityCommand(Inner.Given(given), _min, _max, _outer);
             }
 
             public override void Implies(CommandCondition c) {
@@ -232,7 +289,7 @@ namespace Carbonfrost.Commons.Spec {
                 return message;
             }
 
-            public override TestFailure Should(ITestMatcher<T> matcher) {
+            protected override TestFailure ShouldCore(IEnumerable<object> items, ITestMatcher<object> baseMatcher) {
                 if (ShouldVerify) {
                     if (_max < _min) {
                         throw SpecFailure.CardinalityMinGreaterThanMax();
@@ -250,7 +307,7 @@ namespace Carbonfrost.Commons.Spec {
                     stopper = t => t.Successes > _max;
                 }
 
-                var tally = Tally.New(thunk, matcher, stopper);
+                var tally = Tally.New(items, baseMatcher, stopper);
                 bool outOfRange = (_max.HasValue && tally.Successes > _max.Value)
                     || (_min.HasValue && tally.Successes < _min.Value);
 
@@ -260,7 +317,7 @@ namespace Carbonfrost.Commons.Spec {
 
                 if (outOfRange) {
                     string message = Message();
-                    tally.AFailure = TestMatcherLocalizer.FailurePredicate(matcher);
+                    tally.AFailure = TestMatcherLocalizer.FailurePredicate(baseMatcher);
 
                     if (tally.AFailure.Message == "") {
                         tally.AFailure = null;

@@ -271,6 +271,12 @@
   <data name="LabelActual" xml:space="preserve">
     <value>Actual</value>
   </data>
+  <data name="LabelActualCount" xml:space="preserve">
+    <value>Actual count</value>
+  </data>
+  <data name="LabelIndexes" xml:space="preserve">
+    <value>Indexes</value>
+  </data>
   <data name="LabelBoundsExclusive" xml:space="preserve">
     <value>Bounds Exclusive</value>
   </data>
