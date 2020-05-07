@@ -74,8 +74,11 @@ namespace Carbonfrost.SelfTest.Spec {
             var methods = typeof(TestMatcherFactory).GetMethods().Where(m => m.Name == expected).ToArray();
             Assert.HasCount(2, methods, "Should have {0}() and {0}(string,object[])", expected);
 
+            // Look for the message and args method
             var parameters = methods.Select(t => t.GetParameters().Select(p => p.ParameterType).ToArray());
-            Expect(parameters).ToHave.Single<IEnumerable<Type>>().EndsWith(new[] { typeof(string), typeof(object[]) });
+            Expect(parameters).ToHave.Single<IEnumerable<Type>>().EndsWith(
+                new[] { typeof(string), typeof(object[]) }
+            );
         }
 
         [Theory]

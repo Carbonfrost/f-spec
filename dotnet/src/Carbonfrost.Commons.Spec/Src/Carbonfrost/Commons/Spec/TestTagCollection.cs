@@ -23,9 +23,10 @@ namespace Carbonfrost.Commons.Spec {
 
     public partial class TestTagCollection : ICollection<TestTag>, ICollection<string> {
 
-        private readonly IDictionary<string, HashSet<string>> _tags = new Dictionary<string, HashSet<string>>(
+        private readonly Dictionary<string, HashSet<string>> _tags = new Dictionary<string, HashSet<string>>(
             StringComparer.OrdinalIgnoreCase
         );
+        private static readonly TestTagCollection Empty = new TestTagCollection(true);
 
         public int Count {
             get {
@@ -50,6 +51,32 @@ namespace Carbonfrost.Commons.Spec {
             get {
                 return new IndexCollection(_tags);
             }
+        }
+
+        public TestTagCollection() {
+        }
+
+        private TestTagCollection(bool dummy) {
+            MakeReadOnly();
+        }
+
+        public TestTagCollection(IEnumerable<TestTag> items) {
+            if (items == null) {
+                throw new ArgumentNullException(nameof(items));
+            }
+            foreach (var i in items) {
+                Add(i);
+            }
+        }
+
+        internal static TestTagCollection Create(IEnumerable<TestTag> items) {
+            if (items == null) {
+                return Empty;
+            }
+            if (items.Any()) {
+                return new TestTagCollection(items);
+            }
+            return Empty;
         }
 
         public bool Contains(string name, string value) {

@@ -15,21 +15,20 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec {
 
     static class EpsilonComparer {
 
-        public static IComparer<T> Create<T>(T epsilon) {
-            if (typeof(T) == typeof(double)) {
-                return (IComparer<T>) new DoubleComparer((double) (object) epsilon);
-            }
+        internal static IComparer<T> Create<T>(T epsilon) {
             return Create<T, T>(epsilon);
         }
 
         public static IComparer<TSelf> Create<TSelf, TEpsilon>(TEpsilon epsilon) {
+            if (typeof(TSelf) == typeof(double) && typeof(TEpsilon) == typeof(double)) {
+                return (IComparer<TSelf>) new DoubleComparer((double) (object) epsilon);
+            }
             var epsilonSubMethod = typeof(TSelf).GetTypeInfo()
                 .GetMethod("op_Subtraction", new [] { typeof(TSelf), typeof(TSelf) });
 
@@ -45,7 +44,6 @@ namespace Carbonfrost.Commons.Spec {
             var type = typeof(ReflectedEpsilonComparer<,>).MakeGenericType(typeof(TSelf), epsilonType);
             return (IComparer<TSelf>) Activator.CreateInstance(type, epsilon);
         }
-
 
         class DoubleComparer : IComparer<double> {
 

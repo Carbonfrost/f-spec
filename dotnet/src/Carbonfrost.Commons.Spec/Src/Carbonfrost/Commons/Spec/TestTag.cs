@@ -30,6 +30,7 @@ namespace Carbonfrost.Commons.Spec {
         public static readonly TestTag macOSPlatform = Platform("macos");
 
         private static readonly TestTag OSXPlatform = Alias(Platform("osx"), macOSPlatform);
+        public static readonly TestTag Slow = "slow";
 
         private readonly string _name;
         private readonly string _value;
@@ -66,11 +67,11 @@ namespace Carbonfrost.Commons.Spec {
 
         public TestTag(string name, string value) {
             _name = RequireName(name);
-            _value = value;
+            _value = string.IsNullOrEmpty(value) ? null : value;
         }
 
         public override string ToString() {
-            if (Value == null) {
+            if (string.IsNullOrEmpty(Value)) {
                 return Name;
             }
             return string.Concat(Name, ":", Value);
@@ -168,6 +169,10 @@ namespace Carbonfrost.Commons.Spec {
             ) || (
                 IsAlias && AliasTo.Equals(other)
             );
+        }
+
+        public static implicit operator TestTag(string value) {
+            return Parse(value);
         }
 
         public static bool operator ==(TestTag x, TestTag y) {

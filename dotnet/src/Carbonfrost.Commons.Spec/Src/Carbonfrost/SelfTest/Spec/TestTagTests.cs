@@ -90,6 +90,11 @@ namespace Carbonfrost.SelfTest.Spec {
             );
         }
 
+        [Fact]
+        public void Equals_treats_null_and_empty_string_value_as_equal() {
+            Assert.Equal(new TestTag("slow", ""), new TestTag("slow", null));
+        }
+
     }
 }
 

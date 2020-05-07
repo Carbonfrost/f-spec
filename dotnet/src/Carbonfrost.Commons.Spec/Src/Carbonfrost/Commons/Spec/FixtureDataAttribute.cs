@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Carbonfrost.Commons.Spec.ExecutionModel;
-using Carbonfrost.Commons.Spec;
 
 namespace Carbonfrost.Commons.Spec {
 
@@ -25,6 +24,7 @@ namespace Carbonfrost.Commons.Spec {
     public sealed class FixtureDataAttribute : Attribute, ITestDataApiAttributeConventions {
 
         private readonly TestFileInput _input;
+        private readonly TestTagCache _tags = new TestTagCache();
 
         public string PathPattern {
             get {
@@ -53,6 +53,24 @@ namespace Carbonfrost.Commons.Spec {
             set;
         }
 
+        public string[] Tags {
+            get {
+                return _tags.Tags;
+            }
+            set {
+                _tags.Tags = value;
+            }
+        }
+
+        public string Tag {
+            get {
+                return _tags.Tag;
+            }
+            set {
+                _tags.Tag = value;
+            }
+        }
+
         public FixtureDataAttribute(string pathPattern) {
             _input = new TestFileInput(pathPattern);
         }
@@ -62,17 +80,41 @@ namespace Carbonfrost.Commons.Spec {
             var rt = (TestTheory) unit;
             return _input.ReadInputs(
                 context,
-                u => CoreLoadFixture(context.DownloadFixture(Url), rt, null),
-                f => CoreLoadFixture(context.LoadFixture(f.FileName), rt, f.Data))
-                .SelectMany(t => t);
+                u => CoreLoadFixture(Url, url => context.DownloadFixture(url), rt, null),
+                f => CoreLoadFixture(f.FileName, fn => context.LoadFixture(fn), rt, f.Data)
+            ).SelectMany(t => t);
         }
 
-        IEnumerable<TestData> CoreLoadFixture(TestFixture fixture,
-                                              TestTheory rt,
-                                              IEnumerable<KeyValuePair<string, string>> fixturePatternVariables) {
+        IEnumerable<TestData> CoreLoadFixture<TLocation>(
+            TLocation location,
+            Func<TLocation, TestFixture> fixtureFunc,
+            TestTheory rt,
+            IEnumerable<KeyValuePair<string, string>> fixturePatternVariables
+        ) {
+            TestFixture fixture;
+            try {
+                fixture = fixtureFunc(location);
+
+            } catch (Exception ex) {
+                string message = ex is ParserException
+                    ? ex.Message
+                    : "parser error";
+                return new [] {
+                    new TestData().WithTags(_tags).VerifiableProblem(
+                        false,
+                        string.Format("Failed to load fixture {0} ({1})", TextUtility.FormatLocation(location), message)
+                    )
+                };
+            }
+
             var items = fixture.Items;
             if (items.Count == 0) {
-                return Empty<TestData>.Array;
+                return new [] {
+                    new TestData().WithTags(_tags).VerifiableProblem(
+                        false,
+                        string.Format("Empty fixture {0}", TextUtility.FormatLocation(location))
+                    )
+                };
             }
             if (fixturePatternVariables != null) {
                 foreach (var t in items) {
@@ -91,7 +133,7 @@ namespace Carbonfrost.Commons.Spec {
             var binder = TestDataBinder.Create(rt.TestMethod, keySet);
             var results = new List<TestData>(items.Count);
             foreach (var t in items) {
-                results.Add(new TestData(binder.Bind(t.Values)).Update(
+                results.Add(new TestData(binder.Bind(t.Values)).WithTags(_tags).Update(
                     Name, Reason, Explicit ? TestUnitFlags.Explicit : TestUnitFlags.None
                 ));
             }

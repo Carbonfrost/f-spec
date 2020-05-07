@@ -59,7 +59,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public override string DisplayName {
             get {
-                return TestClass.FullName;
+                return TextUtility.ConvertToSimpleTypeName(TestClass, qualified: true);
             }
         }
 

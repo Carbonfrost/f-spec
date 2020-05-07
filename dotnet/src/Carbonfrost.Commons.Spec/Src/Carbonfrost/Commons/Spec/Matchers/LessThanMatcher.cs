@@ -16,7 +16,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using Carbonfrost.Commons.Spec.TestMatchers;
 
 namespace Carbonfrost.Commons.Spec {
@@ -39,30 +39,29 @@ namespace Carbonfrost.Commons.Spec {
 
     static partial class Extensions {
 
-        public static void LessThan<T>(this Expectation<T> e, T expected) {
-            LessThan(e, expected, (string) null);
+        public static void LessThan<T>(this IExpectation<T> e, T expected) {
+            Operators.LessThan.Apply(e, expected, (string) null);
         }
 
-        public static void LessThan<T>(this Expectation<T> e, T expected, IComparer<T> comparer) {
-            LessThan(e, expected, comparer, null);
+        public static void LessThan<T>(this IExpectation<T> e, T expected, IComparer<T> comparer) {
+            Operators.LessThan.Apply(e, expected, comparer, null);
         }
 
-        public static void LessThan<T>(this Expectation<T> e, T expected, Comparison<T> comparison) {
-            LessThan(e, expected, comparison, null);
+        public static void LessThan<T>(this IExpectation<T> e, T expected, Comparison<T> comparison) {
+            Operators.LessThan.Apply(e, expected, comparison, null);
         }
 
-        public static void LessThan<T>(this Expectation<T> e, T expected, string message, params object[] args) {
-            e.Should(Matchers.BeLessThan<T>(expected), message, (object[]) args);
+        public static void LessThan<T>(this IExpectation<T> e, T expected, string message, params object[] args) {
+            Operators.LessThan.Apply(e, expected, message, (object[]) args);
         }
 
-        public static void LessThan<T>(this Expectation<T> e, T expected, IComparer<T> comparer, string message, params object[] args) {
-            e.Should(Matchers.BeLessThan<T>(expected, comparer), message, (object[]) args);
+        public static void LessThan<T>(this IExpectation<T> e, T expected, IComparer<T> comparer, string message, params object[] args) {
+            Operators.LessThan.Apply(e, expected, comparer, message, (object[]) args);
         }
 
-        public static void LessThan<T>(this Expectation<T> e, T expected, Comparison<T> comparison, string message, params object[] args) {
-            e.Should(Matchers.BeLessThan<T>(expected, comparison), message, (object[]) args);
+        public static void LessThan<T>(this IExpectation<T> e, T expected, Comparison<T> comparison, string message, params object[] args) {
+            Operators.LessThan.Apply(e, expected, comparison, message, (object[]) args);
         }
-
     }
 
 
@@ -155,8 +154,15 @@ namespace Carbonfrost.Commons.Spec {
 
         public class LessThanMatcher<T> : TestMatcher<T>, ITestMatcherWithComparer<T> {
 
-            public T Expected { get; private set; }
-            public IComparer<T> Comparer { get; private set; }
+            public T Expected {
+                get;
+                private set;
+            }
+
+            public IComparer<T> Comparer {
+                get;
+                private set;
+            }
 
             public LessThanMatcher(T expected, IComparer<T> comparer = null) {
                 Expected = expected;
@@ -186,6 +192,25 @@ namespace Carbonfrost.Commons.Spec {
             ITestMatcher<T> ITestMatcherWithComparer<T>.WithComparer(IComparer<T> comparer) {
                 return WithComparer(comparer);
             }
+        }
+
+        class LessThanOperator : ComparisonOperator {
+
+            protected override ITestMatcher<T> CreateMatcher<T>(T expected) {
+                return Matchers.BeLessThan(expected);
+            }
+
+            protected override ITestMatcher<T> CreateMatcher<T>(T expected, IComparer<T> comparer) {
+                return Matchers.BeLessThan(expected, comparer);
+            }
+
+            protected override ITestMatcher<T> CreateMatcher<T>(T expected, Comparison<T> comparison) {
+                return Matchers.BeLessThan(expected, comparison);
+            }
+        }
+
+        static partial class Operators {
+            internal static readonly IComparisonOperator LessThan = new LessThanOperator();
         }
     }
 }

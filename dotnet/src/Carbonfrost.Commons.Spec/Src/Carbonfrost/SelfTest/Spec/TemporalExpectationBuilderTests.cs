@@ -30,7 +30,7 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
 
         [Fact]
         public void Eventually_ShouldNot_should_pass_nominal() {
-            Expect(Generator(2, 2, 2, 0)).Eventually.ToNot(Matchers.Equal(2));
+            Expect(Generator(2, 2, 2, 0)).Eventually.NotTo(Matchers.Equal(2));
         }
 
         [Fact]

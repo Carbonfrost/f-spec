@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections;
-using System.Linq;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
 namespace Carbonfrost.Commons.Spec {
@@ -137,28 +136,20 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class Extensions {
 
-        public static void Length<T>(this Expectation<T> e, int length) {
+        public static void Length<T>(this IExpectation<T> e, int length) {
             Length<T>(e, length, null);
         }
 
-        public static void Length(this EnumerableExpectation e, int length) {
-            Length(e, length, null);
-        }
-
-        public static void Length<TSource>(this EnumerableExpectation<TSource> e, int length) {
+        public static void Length<TSource>(this IEnumerableExpectation<TSource> e, int length) {
             Length<TSource>(e, length, null);
         }
 
-        public static void Length<T>(this Expectation<T> e, int length, string message, params object[] args) {
-            e.As<IEnumerable>().Should(Matchers.HaveLength(length), message, (object[]) args);
+        public static void Length<T>(this IExpectation<T> e, int length, string message, params object[] args) {
+            e.As<IEnumerable>().Like(Matchers.HaveLength(length), message, (object[]) args);
         }
 
-        public static void Length(this EnumerableExpectation e, int length, string message, params object[] args) {
-            e.Self.Should(Matchers.HaveLength(length), message, (object[]) args);
-        }
-
-        public static void Length<TSource>(this EnumerableExpectation<TSource> e, int length, string message, params object[] args) {
-            e.Self.Should(Matchers.HaveLength(length), message, (object[]) args);
+        public static void Length<TSource>(this IEnumerableExpectation<TSource> e, int length, string message, params object[] args) {
+            e.Self.Like(Matchers.HaveLength(length), message, (object[]) args);
         }
 
     }

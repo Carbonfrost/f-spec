@@ -40,37 +40,13 @@ namespace Carbonfrost.SelfTest.Spec {
 
         [Theory]
         [PropertyData("ExtensionMethods")]
-        public void EnumerableExpectation_should_also_have_untyped_overload(IGrouping<string, MethodInfo> methods) {
-            // If the method M<TValue>(EnumerableExpectation<TValue>, ...) exists then we also
-            // want          M(EnumerableExpectation) to exist.
-
-            // This helps with the ToHave expressions
-            // Expect(new [] { "a" }).ToHave.M("a");
-
-            // "Substring" is a special case and should be marked with the attribute to opt
-            // out of this
-
-            var applies = methods.Any(IsEnumerableOfTMethod) || methods.Any(IsEnumerableUntypedMethod);
-            bool optOut = methods.Any(m => m.IsDefined(typeof(IgnoreEnumerableExpectationAttribute)));
-            if (optOut || !applies) {
-                Assert.Pass("Doesn't apply to this method group: " + methods.Key);
-            }
-            DoesNotApplyToCardinals(methods);
-
-            var result = methods.Any(IsEnumerableOfTMethod) && methods.Any(IsEnumerableUntypedMethod);
-            if (!result) {
-                Assert.Fail($"{methods.Key}: Method group should have both M(EnumerableExpectation, ...) and M(EnumerableExpectation<T>, ...)");
-            }
-        }
-
-        [Theory]
-        [PropertyData("ExtensionMethods")]
         public void Methods_should_have_message_overloads(IGrouping<string, MethodInfo> methods) {
             // There should be at least one overload with
             //      M(..., message, args)
             // For now, this test doesn't check that the overload applies to each variation
 
             DoesNotApplyToTestMatcherExtensions(methods);
+            DoesNotApplyToExpectationBuilderAsserterExtensions(methods);
             DoesNotApplyToCardinals(methods);
             var result = methods.Any(IsMessageFormatMethod);
             if (!result) {
@@ -105,29 +81,14 @@ namespace Carbonfrost.SelfTest.Spec {
                 && args.ParameterType == typeof(object[]);
         }
 
-        // M(EnumerableExpectation<T>, ...)
-        static bool IsEnumerableOfTMethod(MethodInfo info) {
-            if (!info.IsGenericMethod || info.GetParameters().Length < 1) {
-                return false;
-            }
-
-            var fp = info.GetParameters()[0].ParameterType.GetTypeInfo();
-            return fp.IsGenericType
-                && fp.GetGenericTypeDefinition() == typeof(EnumerableExpectation<>);
-        }
-
-        // M(EnumerableExpectation, ...)
-        static bool IsEnumerableUntypedMethod(MethodInfo info) {
-            if (info.GetParameters().Length < 1) {
-                return false;
-            }
-
-            var fp = info.GetParameters()[0].ParameterType;
-            return fp == typeof(EnumerableExpectation);
-        }
-
         private void DoesNotApplyToTestMatcherExtensions(IGrouping<string, MethodInfo> methods) {
             if (methods.First().GetParameters()[0].ParameterType == typeof(ITestMatcher)) {
+                Assert.Pass("Doesn't apply to this method group: " + methods.Key);
+            }
+        }
+
+        private void DoesNotApplyToExpectationBuilderAsserterExtensions(IGrouping<string, MethodInfo> methods) {
+            if (methods.First().GetParameters()[0].ParameterType == typeof(IExpectationBuilderAsserter)) {
                 Assert.Pass("Doesn't apply to this method group: " + methods.Key);
             }
         }

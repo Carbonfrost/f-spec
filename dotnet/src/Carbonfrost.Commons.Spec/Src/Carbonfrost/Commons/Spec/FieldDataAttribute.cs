@@ -24,6 +24,25 @@ namespace Carbonfrost.Commons.Spec {
     public sealed class FieldDataAttribute : Attribute, ITestDataApiAttributeConventions {
 
         private readonly string[] _fields;
+        private readonly TestTagCache _tags = new TestTagCache();
+
+        public string[] Tags {
+            get {
+                return _tags.Tags;
+            }
+            set {
+                _tags.Tags = value;
+            }
+        }
+
+        public string Tag {
+            get {
+                return _tags.Tag;
+            }
+            set {
+                _tags.Tag = value;
+            }
+        }
 
         public IReadOnlyList<string> Fields {
             get {
@@ -77,7 +96,7 @@ namespace Carbonfrost.Commons.Spec {
                 }
                 all.Add(MemberAccessors.Field(fld));
             }
-            return this.WithNames(TestDataProvider.FromMemberAccessors(all).GetData(context));
+            return this.WithNames(TestDataProvider.FromMemberAccessors(all).GetData(context), _tags.TestTags);
         }
     }
 }

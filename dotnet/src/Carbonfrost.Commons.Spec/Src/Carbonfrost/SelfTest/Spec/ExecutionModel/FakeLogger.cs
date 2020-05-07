@@ -22,24 +22,6 @@ using System.Collections.Generic;
 
 namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
 
-    class FakeRunner : TestRunner {
-
-        public FakeLogger Logger {
-            get;
-            private set;
-        }
-
-        public FakeRunner() : base(new TestRunnerOptions()) {
-            Logger = new FakeLogger();
-            Logger.Initialize(this, null);
-        }
-
-        protected override TestRunResults RunTestsCore(TestRun run) {
-            throw new NotImplementedException();
-        }
-
-    }
-
     class FakeLogger : TestRunnerLogger {
 
         public List<EventArgs> Events {

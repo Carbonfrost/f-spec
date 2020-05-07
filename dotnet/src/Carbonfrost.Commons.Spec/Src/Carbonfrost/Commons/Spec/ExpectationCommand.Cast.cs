@@ -14,7 +14,10 @@
 // limitations under the License.
 //
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
@@ -38,6 +41,10 @@ namespace Carbonfrost.Commons.Spec {
                 return new CastCommand<TFrom, T>(_inner.Negated());
             }
 
+            public override ExpectationCommand<T> Given(string given) {
+                return new CastCommand<TFrom, T>(_inner.Given(given));
+            }
+
             public override ExpectationCommand<object> ToAll() {
                 return _inner.ToAll();
             }
@@ -50,19 +57,11 @@ namespace Carbonfrost.Commons.Spec {
                 return _inner.Cardinality(min, max);
             }
 
-            public override ExpectationCommand<T> Eventually(TimeSpan duration) {
-                return new CastCommand<TFrom, T>(_inner.Eventually(duration));
-            }
-
-            public override ExpectationCommand<T> Consistently(TimeSpan duration) {
-                return new CastCommand<TFrom, T>(_inner.Consistently(duration));
-            }
-
             public override TestFailure Should(ITestMatcher<T> matcher) {
                 return _inner.Should(new CastProvider(matcher));
             }
 
-            public override void Implies(CommandCondition c) {
+            internal override void Implies(CommandCondition c) {
                 _inner.Implies(c);
             }
 

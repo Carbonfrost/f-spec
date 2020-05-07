@@ -25,7 +25,7 @@ namespace Carbonfrost.Commons.Spec {
         public struct IndexCollection : IReadOnlyDictionary<string, ICollection<string>> {
             private readonly IDictionary<string, HashSet<string>> _keys;
 
-            public IndexCollection(IDictionary<string, HashSet<string>> keys) {
+            internal IndexCollection(IDictionary<string, HashSet<string>> keys) {
                 _keys = keys;
             }
 

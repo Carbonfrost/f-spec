@@ -13,16 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
 
 namespace Carbonfrost.Commons.Spec {
 
-    interface ITemporalExpectationBuilder : IExpectationBuilderBase {
-        TemporalExpectationBuilder Not { get; }
+    public interface ITemporalExpectationBuilder : IExpectationBuilderAsserter {
+        IExpectation Will { get; }
+        IExceptionExpectation ToThrow { get; }
+        ISatisfactionExpectation ToSatisfy { get; }
+        ITemporalExpectationBuilder Not { get; }
     }
 
-    interface ITemporalExpectationBuilder<T> : IExpectationBuilderBase<T> {
-        TemporalExpectationBuilder<T> Not { get; }
-        TemporalExpectationBuilder<TBase> As<TBase>();
+    public interface ITemporalExpectationBuilder<out T> : IExpectationBuilderAsserter<T> {
+        IExpectation<T> ToBe { get; }
+        IEnumerableExpectation ToHave { get; }
+        ISatisfactionExpectation<T> ToSatisfy { get; }
+        ITemporalExpectationBuilder<T> Not { get; }
+        ITemporalExpectationBuilder<TBase> As<TBase>();
     }
 }

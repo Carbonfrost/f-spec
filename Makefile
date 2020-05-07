@@ -1,6 +1,8 @@
 FRAMEWORK ?= netcoreapp3.0
 PREFIX = /usr/local
 
+TEXT_TEMPLATES = dotnet/src/Carbonfrost.Commons.Spec/Automation/Preprocessor/
+
 .PHONY: dotnet/install dotnet/generate -generate-docs -install-manuals
 
 ## Install dotnet outputs
@@ -22,6 +24,7 @@ dotnet/generate:
 		-r Carbonfrost.CFSpec.Resources.SR \
 		dotnet/src/fspec/Automation/SR.properties \
 		--resx
+	$(Q) dotnet t4 $(TEXT_TEMPLATES)/GivenExpectationBuilder.tt -o $(TEXT_TEMPLATES)/GivenExpectationBuilder.cs
 
 
 ## Run unit tests with code coverage

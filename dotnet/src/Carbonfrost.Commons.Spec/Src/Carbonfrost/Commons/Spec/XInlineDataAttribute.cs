@@ -24,6 +24,24 @@ namespace Carbonfrost.Commons.Spec {
 
         private readonly InlineDataAttribute _inner;
 
+        public string[] Tags {
+            get {
+                return _inner.Tags;
+            }
+            set {
+                _inner.Tags = value;
+            }
+        }
+
+        public string Tag {
+            get {
+                return _inner.Tag;
+            }
+            set {
+                _inner.Tag = value;
+            }
+        }
+
         public IReadOnlyList<object> Data {
             get {
                 return _inner.Data;

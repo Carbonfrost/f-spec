@@ -41,28 +41,28 @@ namespace Carbonfrost.Commons.Spec {
 
     static partial class Extensions {
 
-        public static void Match(this Expectation<string> e, string expected) {
+        public static void Match(this IExpectation<string> e, string expected) {
             Match(e, expected, (string) null);
         }
 
-        public static void Match(this Expectation<string> e, string expected, RegexOptions options) {
+        public static void Match(this IExpectation<string> e, string expected, RegexOptions options) {
             Match(e, expected, options, (string) null);
         }
 
-        public static void Match(this Expectation<string> e, Regex expected) {
+        public static void Match(this IExpectation<string> e, Regex expected) {
             Match(e, expected, (string) null);
         }
 
-        public static void Match(this Expectation<string> e, string expected, string message, params object[] args) {
-            e.Should(Matchers.Match(expected), message, (object[]) args);
+        public static void Match(this IExpectation<string> e, string expected, string message, params object[] args) {
+            e.Like(Matchers.Match(expected), message, (object[]) args);
         }
 
-        public static void Match(this Expectation<string> e, string expected, RegexOptions options, string message, params object[] args) {
-            e.Should(Matchers.Match(expected, options), message, (object[]) args);
+        public static void Match(this IExpectation<string> e, string expected, RegexOptions options, string message, params object[] args) {
+            e.Like(Matchers.Match(expected, options), message, (object[]) args);
         }
 
-        public static void Match(this Expectation<string> e, Regex expected, string message, params object[] args) {
-            e.Should(Matchers.Match(expected), message, (object[]) args);
+        public static void Match(this IExpectation<string> e, Regex expected, string message, params object[] args) {
+            e.Like(Matchers.Match(expected), message, (object[]) args);
         }
 
     }

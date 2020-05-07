@@ -64,6 +64,9 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
             if (m.Name == "Parse") {
                 return false;
             }
+            if (m.Name.StartsWith("op_")) {
+                return false;
+            }
 
             var pms = m.GetParameters();
             if (pms.Length != 1) {

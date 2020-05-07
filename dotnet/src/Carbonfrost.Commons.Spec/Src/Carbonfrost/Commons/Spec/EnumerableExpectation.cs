@@ -19,65 +19,77 @@ using System.Collections.Generic;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public struct EnumerableExpectation {
+    struct EnumerableExpectation : IEnumerableExpectation {
 
         private readonly ExpectationCommand<IEnumerable> _cmd;
 
-        public Expectation<IEnumerable> Self {
+        IExpectation<IEnumerable<object>> IEnumerableExpectation<object>.Self {
+            get {
+                return new Expectation<IEnumerable<object>>(_cmd.Items());
+            }
+        }
+
+        public IExpectation<IEnumerable> Self {
             get {
                 return As<IEnumerable>();
             }
         }
 
-        public Expectation<object> Any {
+        public IExpectation<object> Any {
             get {
                 return new Expectation<object>(_cmd.ToAny());
             }
         }
 
-        public Expectation<object> All {
+        public IExpectation<object> All {
             get {
                 return new Expectation<object>(_cmd.ToAll());
             }
         }
 
-        public Expectation<object> Single {
+        public IExpectation<object> Single {
             get {
                 return Exactly(1);
             }
         }
 
-        public Expectation<object> None {
+        public IExpectation<object> None {
             get {
                 return Exactly(0);
             }
         }
 
-        public Expectation<object> No {
+        public IExpectation<object> No {
             get {
                 return Exactly(0);
             }
         }
 
-        public EnumerableExpectation Not {
+        IEnumerableExpectation<object> IEnumerableExpectation<object>.Not {
             get {
                 return new EnumerableExpectation(_cmd.Negated());
             }
         }
 
-        public Expectation<object> Exactly(int count) {
+        public IEnumerableExpectation Not {
+            get {
+                return new EnumerableExpectation(_cmd.Negated());
+            }
+        }
+
+        public IExpectation<object> Exactly(int count) {
             return new Expectation<object>(_cmd.Cardinality(count, count));
         }
 
-        public Expectation<object> Between(int min, int max) {
+        public IExpectation<object> Between(int min, int max) {
             return new Expectation<object>(_cmd.Cardinality(min, max));
         }
 
-        public Expectation<object> AtLeast(int min) {
+        public IExpectation<object> AtLeast(int min) {
             return new Expectation<object>(_cmd.Cardinality(min, null));
         }
 
-        public Expectation<object> AtMost(int max) {
+        public IExpectation<object> AtMost(int max) {
             return new Expectation<object>(_cmd.Cardinality(null, max));
         }
 
@@ -85,56 +97,68 @@ namespace Carbonfrost.Commons.Spec {
             _cmd = cmd;
         }
 
-        public Expectation<TBase> As<TBase>() {
+        public IExpectation<TBase> As<TBase>() {
             return new Expectation<TBase>(_cmd.As<TBase>());
         }
 
-        public EnumerableExpectation<T> Cast<T>() {
+        public IEnumerableExpectation<T> Cast<T>() {
             return new EnumerableExpectation<T>(_cmd.As<IEnumerable<T>>());
+        }
+
+        public void Like(ITestMatcher<IEnumerable<object>> matcher, string message = null, object[] args = null) {
+            _cmd.Items().Should(matcher, message, (object[]) args);
+        }
+
+        public void Like(ITestMatcher<IEnumerable> matcher, string message = null, object[] args = null) {
+            _cmd.Should(matcher, message, (object[]) args);
+        }
+
+        public void Like(ITestMatcher matcher, string message = null, object[] args = null) {
+            _cmd.Untyped().Should(matcher, message, (object[]) args);
         }
     }
 
-    public struct EnumerableExpectation<TValue> : IExpectation<IEnumerable<TValue>> {
+    struct EnumerableExpectation<TValue> : IEnumerableExpectation<TValue> {
 
         private readonly ExpectationCommand<IEnumerable<TValue>> _cmd;
 
-        public Expectation<IEnumerable<TValue>> Self {
+        public IExpectation<IEnumerable<TValue>> Self {
             get {
                 return new Expectation<IEnumerable<TValue>>(_cmd);
             }
         }
 
-        public Expectation<TValue> Any {
+        public IExpectation<TValue> Any {
             get {
                 return new Expectation<TValue>(_cmd.ToAny().As<TValue>());
             }
         }
 
-        public Expectation<TValue> All {
+        public IExpectation<TValue> All {
             get {
                 return new Expectation<TValue>(_cmd.ToAll().As<TValue>());
             }
         }
 
-        public Expectation<TValue> Single {
+        public IExpectation<TValue> Single {
             get {
                 return Exactly(1);
             }
         }
 
-        public Expectation<TValue> None {
+        public IExpectation<TValue> None {
             get {
                 return Exactly(0);
             }
         }
 
-        public Expectation<TValue> No {
+        public IExpectation<TValue> No {
             get {
                 return Exactly(0);
             }
         }
 
-        public EnumerableExpectation<TValue> Not {
+        public IEnumerableExpectation<TValue> Not {
             get {
                 return new EnumerableExpectation<TValue>(_cmd.Negated());
             }
@@ -144,66 +168,74 @@ namespace Carbonfrost.Commons.Spec {
             _cmd = cmd;
         }
 
-        internal EnumerableExpectation(Func<IEnumerable<TValue>> thunk, bool negated, string given) {
-            _cmd = ExpectationCommand.Of(thunk).NegateIfNeeded(negated).Given(given);
+        internal EnumerableExpectation(Func<IEnumerable<TValue>> thunk, bool negated, string given, bool assumption) {
+            _cmd = ExpectationCommand.Of(thunk, negated, given, assumption);
         }
 
-        public Expectation<TValue> Exactly(int count) {
+        public IExpectation<TValue> Exactly(int count) {
             return new Expectation<TValue>(_cmd.Cardinality(count, count).As<TValue>());
         }
 
-        public Expectation<TValue> Between(int min, int max) {
+        public IExpectation<TValue> Between(int min, int max) {
             return new Expectation<TValue>(_cmd.Cardinality(min, max).As<TValue>());
         }
 
-        public Expectation<TValue> AtLeast(int min) {
+        public IExpectation<TValue> AtLeast(int min) {
             return new Expectation<TValue>(_cmd.Cardinality(min, null).As<TValue>());
         }
 
-        public Expectation<TValue> AtMost(int max) {
+        public IExpectation<TValue> AtMost(int max) {
             return new Expectation<TValue>(_cmd.Cardinality(null, max).As<TValue>());
         }
 
-        public Expectation<TBase> As<TBase>() {
-            throw new NotImplementedException();
+        public IExpectation<TBase> As<TBase>() {
+            return new Expectation<TBase>(_cmd.As<TBase>());
         }
 
-        ExpectationCommand<IEnumerable<TValue>> IExpectation<IEnumerable<TValue>>.ToCommand() {
-            return ((IExpectation<IEnumerable<TValue>>) Self).ToCommand();
+        public IEnumerableExpectation<TResult> Cast<TResult>() {
+            return new EnumerableExpectation<TResult>(_cmd.As<IEnumerable>().Items<TResult>());
+        }
+
+        public void Like(ITestMatcher<IEnumerable<TValue>> matcher, string message = null, object[] args = null) {
+            Self.Like(matcher, message, (object[]) args);
+        }
+
+        public void Like(ITestMatcher matcher, string message = null, object[] args = null) {
+            Self.Like(matcher, message, (object[]) args);
         }
     }
 
     partial class Extensions {
 
-        public static Expectation<TSource> Any<TSource>(this EnumerableExpectation e) {
+        public static IExpectation<TSource> Any<TSource>(this IEnumerableExpectation e) {
             return e.Cast<TSource>().Any;
         }
 
-        public static Expectation<TSource> All<TSource>(this EnumerableExpectation e) {
+        public static IExpectation<TSource> All<TSource>(this IEnumerableExpectation e) {
             return e.Cast<TSource>().All;
         }
 
-        public static Expectation<TSource> Single<TSource>(this EnumerableExpectation e) {
+        public static IExpectation<TSource> Single<TSource>(this IEnumerableExpectation e) {
             return e.Cast<TSource>().Single;
         }
 
-        public static Expectation<TSource> AtLeast<TSource>(this EnumerableExpectation e, int min) {
+        public static IExpectation<TSource> AtLeast<TSource>(this IEnumerableExpectation e, int min) {
             return e.Cast<TSource>().AtLeast(min);
         }
 
-        public static Expectation<TSource> AtMost<TSource>(this EnumerableExpectation e, int max) {
+        public static IExpectation<TSource> AtMost<TSource>(this IEnumerableExpectation e, int max) {
             return e.Cast<TSource>().AtMost(max);
         }
 
-        public static Expectation<TSource> Between<TSource>(this EnumerableExpectation e, int min, int max) {
+        public static IExpectation<TSource> Between<TSource>(this IEnumerableExpectation e, int min, int max) {
             return e.Cast<TSource>().Between(min, max);
         }
 
-        public static Expectation<TSource> No<TSource>(this EnumerableExpectation e) {
+        public static IExpectation<TSource> No<TSource>(this IEnumerableExpectation e) {
             return e.Cast<TSource>().No;
         }
 
-        public static Expectation<TSource> None<TSource>(this EnumerableExpectation e) {
+        public static IExpectation<TSource> None<TSource>(this IEnumerableExpectation e) {
             return e.Cast<TSource>().None;
         }
 

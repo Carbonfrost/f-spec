@@ -41,65 +41,6 @@ namespace Carbonfrost.Commons.Spec {
         }
     }
 
-    static partial class Extensions {
-
-        public static void OverlapWith<TSource>(this EnumerableExpectation<TSource> e, params TSource[] expected) {
-            e.Should(Matchers.Overlap<TSource>(expected));
-        }
-
-        public static void OverlapWith<TSource>(this EnumerableExpectation<TSource> e, IEnumerable<TSource> expected, IEqualityComparer<TSource> comparer) {
-            OverlapWith<TSource>(e, expected, comparer, null);
-        }
-
-        public static void OverlapWith<TSource>(this EnumerableExpectation<TSource> e, IEnumerable<TSource> expected, Comparison<TSource> comparison) {
-            OverlapWith<TSource>(e, expected, comparison, null);
-        }
-
-        public static void OverlapWith<TSource>(this EnumerableExpectation<TSource> e, IEnumerable<TSource> expected) {
-            OverlapWith<TSource>(e, expected, (string) null);
-        }
-
-        public static void OverlapWith(this EnumerableExpectation e, params object[] expected) {
-            e.Cast<object>().Should(Matchers.Overlap<object>(expected));
-        }
-
-        public static void OverlapWith(this EnumerableExpectation e, IEnumerable expected, IEqualityComparer comparer) {
-            OverlapWith(e, expected, comparer, null);
-        }
-
-        public static void OverlapWith(this EnumerableExpectation e, IEnumerable expected, Comparison<object> comparison) {
-            OverlapWith(e, expected, comparison, null);
-        }
-
-        public static void OverlapWith(this EnumerableExpectation e, IEnumerable expected) {
-            OverlapWith(e, expected, (string) null);
-        }
-
-        public static void OverlapWith<TSource>(this EnumerableExpectation<TSource> e, IEnumerable<TSource> expected, IEqualityComparer<TSource> comparer, string message, params object[] args) {
-            e.Should(Matchers.Overlap<TSource>(expected, comparer), message, (object[]) args);
-        }
-
-        public static void OverlapWith<TSource>(this EnumerableExpectation<TSource> e, IEnumerable<TSource> expected, Comparison<TSource> comparison, string message, params object[] args) {
-            e.Should(Matchers.Overlap<TSource>(expected, comparison), message, (object[]) args);
-        }
-
-        public static void OverlapWith<TSource>(this EnumerableExpectation<TSource> e, IEnumerable<TSource> expected, string message, params object[] args) {
-            e.Should(Matchers.Overlap<TSource>(expected), message, (object[]) args);
-        }
-
-        public static void OverlapWith(this EnumerableExpectation e, IEnumerable expected, IEqualityComparer comparer, string message, params object[] args) {
-            e.Cast<object>().Should(Matchers.Overlap<object>(expected, comparer), message, (object[]) args);
-        }
-
-        public static void OverlapWith(this EnumerableExpectation e, IEnumerable expected, Comparison<object> comparison, string message, params object[] args) {
-            e.Cast<object>().Should(Matchers.Overlap<object>(expected, comparison), message, (object[]) args);
-        }
-
-        public static void OverlapWith(this EnumerableExpectation e, IEnumerable expected, string message, params object[] args) {
-            e.Cast<object>().Should(Matchers.Overlap<object>(expected), message, (object[]) args);
-        }
-    }
-
     partial class Asserter {
 
         public void Overlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual) {
@@ -114,16 +55,16 @@ namespace Carbonfrost.Commons.Spec {
             Overlaps(expected, actual, comparison, (string) null);
         }
 
-        public void NotOverlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual) {
-            NotOverlaps(expected, actual, (string) null);
+        public void DoesNotOverlap<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual) {
+            DoesNotOverlap(expected, actual, (string) null);
         }
 
-        public void NotOverlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, IEqualityComparer<TSource> comparer) {
-            NotOverlaps(expected, actual, comparer, (string) null);
+        public void DoesNotOverlap<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, IEqualityComparer<TSource> comparer) {
+            DoesNotOverlap(expected, actual, comparer, (string) null);
         }
 
-        public void NotOverlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, Comparison<TSource> comparison) {
-            NotOverlaps(expected, actual, comparison, (string) null);
+        public void DoesNotOverlap<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, Comparison<TSource> comparison) {
+            DoesNotOverlap(expected, actual, comparison, (string) null);
         }
 
         public void Overlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, string message, params object[] args) {
@@ -138,15 +79,15 @@ namespace Carbonfrost.Commons.Spec {
             That(actual, Matchers.Overlap(expected, comparison), message, (object[]) args);
         }
 
-        public void NotOverlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, string message, params object[] args) {
+        public void DoesNotOverlap<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, string message, params object[] args) {
             NotThat(actual, Matchers.Overlap(expected), message, (object[]) args);
         }
 
-        public void NotOverlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, IEqualityComparer<TSource> comparer, string message, params object[] args) {
+        public void DoesNotOverlap<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, IEqualityComparer<TSource> comparer, string message, params object[] args) {
             NotThat(actual, Matchers.Overlap(expected, comparer), message, (object[]) args);
         }
 
-        public void NotOverlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, Comparison<TSource> comparison, string message, params object[] args) {
+        public void DoesNotOverlap<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, Comparison<TSource> comparison, string message, params object[] args) {
             NotThat(actual, Matchers.Overlap(expected, comparison), message, (object[]) args);
         }
     }
@@ -165,16 +106,16 @@ namespace Carbonfrost.Commons.Spec {
             Global.Overlaps<TSource>(expected, actual, comparison);
         }
 
-        public static void NotOverlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual) {
-            Global.NotOverlaps<TSource>(expected, actual);
+        public static void DoesNotOverlap<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual) {
+            Global.DoesNotOverlap<TSource>(expected, actual);
         }
 
-        public static void NotOverlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, IEqualityComparer<TSource> comparer) {
-            Global.NotOverlaps<TSource>(expected, actual, comparer);
+        public static void DoesNotOverlap<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, IEqualityComparer<TSource> comparer) {
+            Global.DoesNotOverlap<TSource>(expected, actual, comparer);
         }
 
-        public static void NotOverlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, Comparison<TSource> comparison) {
-            Global.NotOverlaps<TSource>(expected, actual, comparison);
+        public static void DoesNotOverlap<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, Comparison<TSource> comparison) {
+            Global.DoesNotOverlap<TSource>(expected, actual, comparison);
         }
 
         public static void Overlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, string message, params object[] args) {
@@ -189,16 +130,16 @@ namespace Carbonfrost.Commons.Spec {
             Global.Overlaps<TSource>(expected, actual, comparison, message, (object[]) args);
         }
 
-        public static void NotOverlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, string message, params object[] args) {
-            Global.NotOverlaps<TSource>(expected, actual, message, (object[]) args);
+        public static void DoesNotOverlap<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, string message, params object[] args) {
+            Global.DoesNotOverlap<TSource>(expected, actual, message, (object[]) args);
         }
 
-        public static void NotOverlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, IEqualityComparer<TSource> comparer, string message, params object[] args) {
-            Global.NotOverlaps<TSource>(expected, actual, comparer, message, (object[]) args);
+        public static void DoesNotOverlap<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, IEqualityComparer<TSource> comparer, string message, params object[] args) {
+            Global.DoesNotOverlap<TSource>(expected, actual, comparer, message, (object[]) args);
         }
 
-        public static void NotOverlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, Comparison<TSource> comparison, string message, params object[] args) {
-            Global.NotOverlaps<TSource>(expected, actual, comparison, message, (object[]) args);
+        public static void DoesNotOverlap<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, Comparison<TSource> comparison, string message, params object[] args) {
+            Global.DoesNotOverlap<TSource>(expected, actual, comparison, message, (object[]) args);
         }
     }
 
@@ -216,16 +157,16 @@ namespace Carbonfrost.Commons.Spec {
             Global.Overlaps<TSource>(expected, actual, comparison);
         }
 
-        public static void NotOverlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual) {
-            Global.NotOverlaps<TSource>(expected, actual);
+        public static void DoesNotOverlap<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual) {
+            Global.DoesNotOverlap<TSource>(expected, actual);
         }
 
-        public static void NotOverlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, IEqualityComparer<TSource> comparer) {
-            Global.NotOverlaps<TSource>(expected, actual, comparer);
+        public static void DoesNotOverlap<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, IEqualityComparer<TSource> comparer) {
+            Global.DoesNotOverlap<TSource>(expected, actual, comparer);
         }
 
-        public static void NotOverlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, Comparison<TSource> comparison) {
-            Global.NotOverlaps<TSource>(expected, actual, comparison);
+        public static void DoesNotOverlap<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, Comparison<TSource> comparison) {
+            Global.DoesNotOverlap<TSource>(expected, actual, comparison);
         }
 
         public static void Overlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, string message, params object[] args) {
@@ -240,26 +181,63 @@ namespace Carbonfrost.Commons.Spec {
             Global.Overlaps<TSource>(expected, actual, comparison, message, (object[]) args);
         }
 
-        public static void NotOverlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, string message, params object[] args) {
-            Global.NotOverlaps<TSource>(expected, actual, message, (object[]) args);
+        public static void DoesNotOverlap<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, string message, params object[] args) {
+            Global.DoesNotOverlap<TSource>(expected, actual, message, (object[]) args);
         }
 
-        public static void NotOverlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, IEqualityComparer<TSource> comparer, string message, params object[] args) {
-            Global.NotOverlaps<TSource>(expected, actual, comparer, message, (object[]) args);
+        public static void DoesNotOverlap<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, IEqualityComparer<TSource> comparer, string message, params object[] args) {
+            Global.DoesNotOverlap<TSource>(expected, actual, comparer, message, (object[]) args);
         }
 
-        public static void NotOverlaps<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, Comparison<TSource> comparison, string message, params object[] args) {
-            Global.NotOverlaps<TSource>(expected, actual, comparison, message, (object[]) args);
+        public static void DoesNotOverlap<TSource>(IEnumerable<TSource> expected, IEnumerable<TSource> actual, Comparison<TSource> comparison, string message, params object[] args) {
+            Global.DoesNotOverlap<TSource>(expected, actual, comparison, message, (object[]) args);
         }
     }
 
+    static partial class Extensions {
+
+        public static void OverlapWith<TValue>(this IEnumerableExpectation<TValue> e, IEnumerable<TValue> expected) {
+            Operators.Overlap.Apply(e, expected);
+        }
+
+        public static void OverlapWith<TValue>(this IEnumerableExpectation<TValue> e, IEnumerable<TValue> expected, string message, params object[] args) {
+            Operators.Overlap.Apply(e, expected, message, args);
+        }
+
+        public static void OverlapWith<TValue>(this IEnumerableExpectation<TValue> e, IEnumerable<TValue> expected, Comparison<TValue> comparison) {
+            Operators.Overlap.Apply(e, expected, comparison);
+        }
+
+        public static void OverlapWith<TValue>(this IEnumerableExpectation<TValue> e, IEnumerable<TValue> expected, Comparison<TValue> comparison, string message, params object[] args) {
+            Operators.Overlap.Apply(e, expected, comparison, message, args);
+        }
+
+        public static void OverlapWith<TValue>(this IEnumerableExpectation<TValue> e, IEnumerable<TValue> expected, IEqualityComparer<TValue> comparer) {
+            Operators.Overlap.Apply(e, expected, comparer);
+        }
+
+        public static void OverlapWith<TValue>(this IEnumerableExpectation<TValue> e, IEnumerable<TValue> expected, IEqualityComparer<TValue> comparer, string message, params object[] args) {
+            Operators.Overlap.Apply(e, expected, comparer, message, args);
+        }
+
+        public static void OverlapWith<TValue>(this IEnumerableExpectation<TValue> e, params TValue[] expected) {
+            Operators.Overlap.Apply(e, expected);
+        }
+    }
 
     namespace TestMatchers {
 
         public class OverlapMatcher<TSource> : TestMatcher<IEnumerable<TSource>>, ITestMatcherWithEqualityComparerApiConventions<OverlapMatcher<TSource>, TSource> {
 
-            public IEnumerable<TSource> Expected { get; private set; }
-            public IEqualityComparer<TSource> Comparer { get; private set; }
+            public IEnumerable<TSource> Expected {
+                get;
+                private set;
+            }
+
+            public IEqualityComparer<TSource> Comparer {
+                get;
+                private set;
+            }
 
             public OverlapMatcher(IEnumerable<TSource> expected, IEqualityComparer<TSource> comparer = null) {
                 Expected = expected;
@@ -288,6 +266,25 @@ namespace Carbonfrost.Commons.Spec {
                 }
                 return Expected.Intersect(actual, comparer).Any();
             }
+        }
+
+        class OverlapOperator : EnumerableComparisonOperator {
+
+            protected override ITestMatcher<IEnumerable<TValue>> CreateMatcher<TValue>(IEnumerable<TValue> expected) {
+                return Matchers.Overlap<TValue>(expected);
+            }
+
+            protected override ITestMatcher<IEnumerable<TValue>> CreateMatcher<TValue>(IEnumerable<TValue> expected, IEqualityComparer<TValue> comparer) {
+                return Matchers.Overlap<TValue>(expected, comparer);
+            }
+
+            protected override ITestMatcher<IEnumerable<TValue>> CreateMatcher<TValue>(IEnumerable<TValue> expected, Comparison<TValue> comparison) {
+                return Matchers.Overlap<TValue>(expected, comparison);
+            }
+        }
+
+        partial class Operators {
+            internal static readonly IEnumerableComparisonOperator Overlap = new OverlapOperator();
         }
     }
 }

@@ -50,7 +50,7 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
 
         [Fact]
         public void Expect_ToHave_should_have_fluent_expression() {
-            Expect(new [] { "now", "here", "this" }).ToHave.All<string>().Match("\\w+");
+            Expect(new [] { "now", "here", "this" }).ToHave.All.Match("\\w+");
         }
 
         [Fact]

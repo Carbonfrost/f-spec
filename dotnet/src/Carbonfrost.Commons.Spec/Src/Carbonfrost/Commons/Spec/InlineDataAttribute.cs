@@ -23,6 +23,25 @@ namespace Carbonfrost.Commons.Spec {
     public sealed class InlineDataAttribute : Attribute, ITestDataApiAttributeConventions {
 
         private readonly object[] _data;
+        private readonly TestTagCache _tags = new TestTagCache();
+
+        public string[] Tags {
+            get {
+                return _tags.Tags;
+            }
+            set {
+                _tags.Tags = value;
+            }
+        }
+
+        public string Tag {
+            get {
+                return _tags.Tag;
+            }
+            set {
+                _tags.Tag = value;
+            }
+        }
 
         public IReadOnlyList<object> Data {
             get {
@@ -64,7 +83,7 @@ namespace Carbonfrost.Commons.Spec {
         IEnumerable<TestData> ITestDataProvider.GetData(TestContext context) {
             yield return new TestData(_data).Update(
                 Name, Reason, Explicit ? TestUnitFlags.Explicit : TestUnitFlags.None
-            );
+            ).WithTags(_tags);
         }
 
     }

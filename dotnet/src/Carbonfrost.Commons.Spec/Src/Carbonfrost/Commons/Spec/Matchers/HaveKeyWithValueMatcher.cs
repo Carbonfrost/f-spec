@@ -89,20 +89,20 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class Extensions {
 
-        public static void KeyWithValue<TKey, TValue>(this EnumerableExpectation e, TKey key, TValue value) {
+        public static void KeyWithValue<TKey, TValue>(this IEnumerableExpectation<KeyValuePair<TKey, TValue>> e, TKey key, TValue value) {
             KeyWithValue(e, key, value, null);
         }
 
-        public static void KeyWithValue<TKey, TValue>(this EnumerableExpectation e, TKey key, TValue value, string message, params object[] args) {
-            e.As<IEnumerable<KeyValuePair<TKey, TValue>>>().Should(Matchers.HaveKeyWithValue<TKey, TValue>(key, value), message, (object[]) args);
-        }
-
-        public static void KeyWithValue<TKey, TValue>(this EnumerableExpectation<KeyValuePair<TKey, TValue>> e, TKey key, TValue value) {
+        public static void KeyWithValue<TKey, TValue>(this IEnumerableExpectation<object> e, TKey key, TValue value) {
             KeyWithValue(e, key, value, null);
         }
 
-        public static void KeyWithValue<TKey, TValue>(this EnumerableExpectation<KeyValuePair<TKey, TValue>> e, TKey key, TValue value, string message, params object[] args) {
-            e.As<IEnumerable<KeyValuePair<TKey, TValue>>>().Should(Matchers.HaveKeyWithValue<TKey, TValue>(key, value), message, (object[]) args);
+        public static void KeyWithValue<TKey, TValue>(this IEnumerableExpectation<KeyValuePair<TKey, TValue>> e, TKey key, TValue value, string message, params object[] args) {
+            e.Like(Matchers.HaveKeyWithValue<TKey, TValue>(key, value), message, (object[]) args);
+        }
+
+        public static void KeyWithValue<TKey, TValue>(this IEnumerableExpectation<object> e, TKey key, TValue value, string message, params object[] args) {
+            e.As<IEnumerable<KeyValuePair<TKey, TValue>>>().Like(Matchers.HaveKeyWithValue<TKey, TValue>(key, value), message, (object[]) args);
         }
     }
 

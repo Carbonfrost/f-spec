@@ -31,15 +31,15 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class Extensions {
 
-        public static void Empty<T>(this Expectation<T> e) {
+        public static void Empty<T>(this IExpectation<T> e) {
             Empty(e, null);
         }
 
-        public static void Empty<T>(this Expectation<T> e, string message, params object[] args) {
+        public static void Empty<T>(this IExpectation<T> e, string message, params object[] args) {
             // We have to enforce the constraint at runtime because Expectation<object>
             // is possible and it is meant to represent type erasure caused
             // with EnumerableExpectation.All() or Any()
-            e.As<IEnumerable>().Should(Matchers.BeEmpty(), message, (object[]) args);
+            e.As<IEnumerable>().Like(Matchers.BeEmpty(), message, (object[]) args);
         }
 
     }

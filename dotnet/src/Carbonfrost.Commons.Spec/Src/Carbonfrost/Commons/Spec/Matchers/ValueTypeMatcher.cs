@@ -90,12 +90,12 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class Extensions {
 
-        public static void ValueType<T>(this Expectation<T> e) {
-            e.As<object>().Should(Matchers.BeValueType());
+        public static void ValueType<T>(this IExpectation<T> e) {
+            e.As<object>().Like(Matchers.BeValueType());
         }
 
-        public static void ValueType<T>(this Expectation<T> e, string message, params object[] args) {
-            e.As<object>().Should(Matchers.BeValueType(), message, args);
+        public static void ValueType<T>(this IExpectation<T> e, string message, params object[] args) {
+            e.As<object>().Like(Matchers.BeValueType(), message, args);
         }
 
     }

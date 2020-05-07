@@ -18,11 +18,11 @@ using System.ComponentModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public struct ExceptionExpectation : IExpectation<Unit> {
+    struct ExceptionExpectation : IExceptionExpectation {
 
         private readonly ExpectationCommand<Unit> _cmd;
 
-        public Expectation<string> Message {
+        public IExpectation<string> Message {
             get {
                 return new Expectation<string>(
                     _cmd.CaptureException().Property(ex => ex.Message)
@@ -30,13 +30,13 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        public Expectation<Exception> Value {
+        public IExpectation<Exception> Value {
             get {
                 return new Expectation<Exception>(_cmd.CaptureException());
             }
         }
 
-        public Expectation<Exception> InnerException {
+        public IExpectation<Exception> InnerException {
             get {
                 return new Expectation<Exception>(
                     _cmd.CaptureException().Property(ex => ex.InnerException)
@@ -44,18 +44,22 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        public IExpectation Not {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         internal ExceptionExpectation(ExpectationCommand<Unit> cmd) {
             _cmd = cmd;
         }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete("This is an override of Object.Equals(). Call Assert.Equal() instead.", true)]
         public new bool Equals(object b) {
             throw new InvalidOperationException("Expectation.Equals should not be used");
         }
 
-        ExpectationCommand<Unit> IExpectation<Unit>.ToCommand() {
-            return _cmd;
+        public void Like(ITestMatcher matcher, string message, params object[] args) {
+            _cmd.Should(matcher, message, (object[]) args);
         }
     }
 }

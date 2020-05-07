@@ -15,61 +15,73 @@
 //
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
     partial class ExpectationCommand {
 
+        public static ExpectationCommand<T> Of<T>(Func<T> thunk, bool negated, string given, bool assumption) {
+            return new SingletonCommand<T>(thunk, negated, given, assumption);
+        }
+
         public static ExpectationCommand<T> Of<T>(Func<T> thunk) {
-            return new SingletonCommand<T>(thunk);
+            return Of(thunk, false, null, false);
+        }
+
+        public static ExpectationCommand<Unit> TestCode(Action action, bool negated, string given, bool assumption) {
+            return new SingletonCommand<Unit>(Unit.Thunk(action), negated, given, assumption);
         }
 
         public static ExpectationCommand<Unit> TestCode(Action action) {
-            return new SingletonCommand<Unit>(Unit.Thunk(action));
+            return TestCode(action, false, null, false);
         }
 
         class SingletonCommand<T> : ExpectationCommand<T> {
 
             private readonly Func<T> _thunk;
+            private readonly bool _negated;
+            private readonly string _given;
+            private readonly bool _assumption;
 
-            public SingletonCommand(Func<T> thunk) {
+            public SingletonCommand(Func<T> thunk, bool negated, string given, bool assumption) {
                 _thunk = thunk;
+                _negated = negated;
+                _given = given;
+                _assumption = assumption;
             }
 
             public override ExpectationCommand<T> Negated() {
-                return new NegationCommand<T>(this);
+                return new SingletonCommand<T>(_thunk, !_negated, _given, _assumption);
             }
 
-            public override ExpectationCommand<Unit> Untyped() {
+            public override ExpectationCommand<T> Given(string given) {
+                return new SingletonCommand<T>(_thunk, _negated, given, _assumption);
+            }
+
+            internal override ExpectationCommand<Unit> Untyped() {
                 var myThunk = _thunk;
-                return TestCode(() => myThunk());
+                return TestCode(() => myThunk(), _negated, _given, _assumption);
             }
 
             public override ExpectationCommand<object> ToAll() {
-                return new AllCommand<object>(MakeThunkEnum());
+                return new AllCommand(this.As<IEnumerable>()).NegateIfNeeded(_negated);
             }
 
             public override ExpectationCommand<object> ToAny() {
-                return new AnyCommand<object>(MakeThunkEnum());
+                return new AnyCommand(this.As<IEnumerable>()).NegateIfNeeded(_negated);
             }
 
             public override ExpectationCommand<object> Cardinality(int? min, int? max) {
-                return new CardinalityCommand<object>(MakeThunkEnum(), min, max, false);
-            }
-
-            public override ExpectationCommand<T> Eventually(TimeSpan duration) {
-                return new EventuallyCommand<T>(duration, _thunk);
-            }
-
-            public override ExpectationCommand<T> Consistently(TimeSpan duration) {
-                return new ConsistentlyCommand<T>(duration, _thunk);
+                return new CardinalityCommand(this.As<IEnumerable>(), min, max, false).NegateIfNeeded(_negated);
             }
 
             public override TestFailure Should(ITestMatcher<T> matcher) {
                 var actual = TestActual.Of(_thunk);
+                if (_negated) {
+                    matcher = Matchers.Not(matcher);
+                }
                 bool matches = matcher.Matches(actual);
 
                 if (!matches) {
@@ -77,32 +89,11 @@ namespace Carbonfrost.Commons.Spec {
                     if (matcher is ITestMatcherActualException) {
                         reportedActual = actual.Exception;
                     }
-                    return TestMatcherLocalizer.Failure(matcher, reportedActual);
+                    return TestMatcherLocalizer.Failure(matcher, reportedActual)
+                        .UpdateGiven(_given)
+                        .UpdateAssumption(_assumption);
                 }
                 return null;
-            }
-
-            public override ExpectationCommand<Exception> CaptureException() {
-                return new CaptureExceptionCommand(Unit.DiscardResult(_thunk), false);
-            }
-
-            private Func<IEnumerable<object>> MakeThunkEnum() {
-                var t = _thunk;
-                return () => {
-                    IEnumerable e;
-
-                    try {
-                        e = ((IEnumerable) t());
-
-                    } catch (InvalidCastException ex) {
-                        throw SpecFailure.CastRequiredByMatcherFailure(ex, "sequence");
-                    }
-
-                    if (e == null) {
-                        throw SpecFailure.SequenceNullConversion();
-                    }
-                    return e.Cast<object>();
-                };
             }
         }
     }

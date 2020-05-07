@@ -15,7 +15,7 @@
 //
 namespace Carbonfrost.Commons.Spec {
 
-    public struct SatisfactionExpectation {
+    struct SatisfactionExpectation : ISatisfactionExpectation {
 
         private readonly ExpectationCommand<Unit> _cmd;
 
@@ -30,15 +30,15 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public void All(params ITestMatcher[] matchers) {
-            Expectation.Should(Matchers.SatisfyAll(matchers));
+            Expectation.Like(Matchers.SatisfyAll(matchers));
         }
 
         public void Any(params ITestMatcher[] matchers) {
-            Expectation.Should(Matchers.SatisfyAny(matchers));
+            Expectation.Like(Matchers.SatisfyAny(matchers));
         }
     }
 
-    public struct SatisfactionExpectation<T> {
+    struct SatisfactionExpectation<T> : ISatisfactionExpectation<T> {
 
         private readonly ExpectationCommand<T> _cmd;
 
@@ -53,19 +53,19 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public void All(params ITestMatcher<T>[] matchers) {
-            Expectation.Should(Matchers.SatisfyAll(matchers));
+            Expectation.Like(Matchers.SatisfyAll(matchers));
         }
 
         public void All(params ITestMatcher[] matchers) {
-            Expectation.Untyped().Should(Matchers.SatisfyAll(matchers));
+            Expectation.Untyped().Like(Matchers.SatisfyAll(matchers));
         }
 
         public void Any(params ITestMatcher<T>[] matchers) {
-            Expectation.Should(Matchers.SatisfyAny(matchers));
+            Expectation.Like(Matchers.SatisfyAny(matchers));
         }
 
         public void Any(params ITestMatcher[] matchers) {
-            Expectation.Untyped().Should(Matchers.SatisfyAny(matchers));
+            Expectation.Untyped().Like(Matchers.SatisfyAny(matchers));
         }
     }
 }

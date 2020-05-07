@@ -46,36 +46,36 @@ namespace Carbonfrost.Commons.Spec {
 
     static partial class Extensions {
 
-        public static void Distinct<TSource>(this Expectation<IEnumerable<TSource>> e) {
+        public static void Distinct<TSource>(this IExpectation<IEnumerable<TSource>> e) {
             Distinct(e, (string) null);
         }
 
-        public static void Distinct<TSource>(this Expectation<IEnumerable<TSource>> e, Comparison<TSource> comparison) {
+        public static void Distinct<TSource>(this IExpectation<IEnumerable<TSource>> e, Comparison<TSource> comparison) {
             Distinct(e, comparison, null);
         }
 
-        public static void Distinct(this Expectation<IEnumerable<string>> e, StringComparison comparison) {
+        public static void Distinct(this IExpectation<IEnumerable<string>> e, StringComparison comparison) {
             Distinct(e, comparison, null);
         }
 
-        public static void Distinct<TSource>(this Expectation<IEnumerable<TSource>> e, IEqualityComparer<TSource> comparer) {
+        public static void Distinct<TSource>(this IExpectation<IEnumerable<TSource>> e, IEqualityComparer<TSource> comparer) {
             Distinct(e, comparer, null);
         }
 
-        public static void Distinct<TSource>(this Expectation<IEnumerable<TSource>> e, string message, params object[] args) {
-            e.As<IEnumerable<TSource>>().Should(Matchers.BeDistinct<TSource>(), message, (object[]) args);
+        public static void Distinct<TSource>(this IExpectation<IEnumerable<TSource>> e, string message, params object[] args) {
+            e.As<IEnumerable<TSource>>().Like(Matchers.BeDistinct<TSource>(), message, (object[]) args);
         }
 
-        public static void Distinct<TSource>(this Expectation<IEnumerable<TSource>> e, Comparison<TSource> comparison, string message, params object[] args) {
-            e.As<IEnumerable<TSource>>().Should(Matchers.BeDistinct(comparison), message, (object[]) args);
+        public static void Distinct<TSource>(this IExpectation<IEnumerable<TSource>> e, Comparison<TSource> comparison, string message, params object[] args) {
+            e.As<IEnumerable<TSource>>().Like(Matchers.BeDistinct(comparison), message, (object[]) args);
         }
 
-        public static void Distinct(this Expectation<IEnumerable<string>> e, StringComparison comparison, string message, params object[] args) {
-            e.As<IEnumerable<string>>().Should(Matchers.BeDistinct(comparison), message, (object[]) args);
+        public static void Distinct(this IExpectation<IEnumerable<string>> e, StringComparison comparison, string message, params object[] args) {
+            e.As<IEnumerable<string>>().Like(Matchers.BeDistinct(comparison), message, (object[]) args);
         }
 
-        public static void Distinct<TSource>(this Expectation<IEnumerable<TSource>> e, IEqualityComparer<TSource> comparer, string message, params object[] args) {
-            e.As<IEnumerable<TSource>>().Should(Matchers.BeDistinct(comparer), message, (object[]) args);
+        public static void Distinct<TSource>(this IExpectation<IEnumerable<TSource>> e, IEqualityComparer<TSource> comparer, string message, params object[] args) {
+            e.As<IEnumerable<TSource>>().Like(Matchers.BeDistinct(comparer), message, (object[]) args);
         }
     }
 

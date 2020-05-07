@@ -100,7 +100,7 @@ namespace Carbonfrost.Commons.Spec {
 
             string[] kvp = line.Split(new[] { ':' }, 2);
             if (kvp.Length != 2) {
-                throw new FormatException();
+                throw SpecFailure.FixtureParserMissingFieldSeparator(_lex.Line);
             }
             return new KeyValuePair<string, string>(kvp[0].Trim(), kvp[1].Trim());
         }

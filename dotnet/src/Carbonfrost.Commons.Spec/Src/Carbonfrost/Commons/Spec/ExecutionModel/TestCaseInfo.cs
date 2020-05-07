@@ -110,7 +110,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public override string DisplayName {
             get {
-                return string.Concat(TestMethod.DeclaringType.FullName, ".", TestMethod.Name);
+                return string.Concat(Parent.DisplayName, ".", TestMethod.Name);
             }
         }
 

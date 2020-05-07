@@ -38,20 +38,20 @@ namespace Carbonfrost.Commons.Spec {
         // as a value instead of as an enumerable in order to use its built-in semantics
 
         [IgnoreEnumerableExpectationAttribute]
-        public static void Substring(this EnumerableExpectation e, string substring) {
+        public static void Substring(this IEnumerableExpectation e, string substring) {
             Substring(e, substring, (string) null);
         }
 
-        public static void Substring(this EnumerableExpectation e, string substring, StringComparison comparison) {
+        public static void Substring(this IEnumerableExpectation e, string substring, StringComparison comparison) {
             Substring(e, substring, comparison, null);
         }
 
-        public static void Substring(this EnumerableExpectation e, string substring, string message, params object[] args) {
-            e.As<string>().Should(Matchers.ContainSubstring(substring), message, (object[]) args);
+        public static void Substring(this IEnumerableExpectation e, string substring, string message, params object[] args) {
+            e.As<string>().Like(Matchers.ContainSubstring(substring), message, (object[]) args);
         }
 
-        public static void Substring(this EnumerableExpectation e, string substring, StringComparison comparison, string message, params object[] args) {
-            e.As<string>().Should(Matchers.ContainSubstring(substring, comparison), message, (object[]) args);
+        public static void Substring(this IEnumerableExpectation e, string substring, StringComparison comparison, string message, params object[] args) {
+            e.As<string>().Like(Matchers.ContainSubstring(substring, comparison), message, (object[]) args);
         }
 
     }

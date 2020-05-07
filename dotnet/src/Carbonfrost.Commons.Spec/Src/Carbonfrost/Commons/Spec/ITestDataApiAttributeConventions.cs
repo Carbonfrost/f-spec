@@ -16,7 +16,7 @@
 
 namespace Carbonfrost.Commons.Spec {
 
-    interface ITestDataApiAttributeConventions : ITestDataProvider {
+    interface ITestDataApiAttributeConventions : ITestDataProvider, ITestTagApiConventions {
 
         string Name {
             get;

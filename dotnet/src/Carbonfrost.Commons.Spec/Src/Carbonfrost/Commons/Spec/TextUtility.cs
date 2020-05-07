@@ -20,10 +20,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
-namespace Carbonfrost.Commons.Spec
-{
+namespace Carbonfrost.Commons.Spec {
 
     static class TextUtility {
 
@@ -57,6 +57,25 @@ namespace Carbonfrost.Commons.Spec
                 return string.Format("{0:0.000} seconds", duration.TotalSeconds);
             }
             return duration.ToString();
+        }
+
+        internal static string FormatLocation(object location) {
+            if (location is Uri url) {
+                if (url.IsAbsoluteUri) {
+                    if (url.Scheme == "data") {
+                        return string.Format(
+                            "<(data){0}>",
+                            TextUtility.Escape(TextUtility.Truncate(Uri.UnescapeDataString(url.PathAndQuery)))
+                        );
+                    }
+                    if (url.Scheme == "file") {
+                        return url.LocalPath;
+                    }
+                }
+                return url.ToString();
+            }
+
+            return location.ToString();
         }
 
         public static string FormatArgs(params object[] data) {
@@ -100,9 +119,15 @@ namespace Carbonfrost.Commons.Spec
             return StringComparison.Ordinal;
         }
 
-        private static string ConvertToSimpleTypeName(Type type) {
+        internal static string ConvertToSimpleTypeName(Type type, bool qualified = false) {
+            string prefix = null;
+            if (qualified) {
+                prefix = type.DeclaringType != null
+                    ? ConvertToSimpleTypeName(type.DeclaringType, true) + "+"
+                    : type.Namespace + ".";
+            }
             if (!type.GetTypeInfo().IsGenericType) {
-                return type.Name;
+                return prefix + type.Name;
             }
 
             Type[] genericTypes = type.GetTypeInfo().GetGenericArguments();
@@ -119,7 +144,11 @@ namespace Carbonfrost.Commons.Spec
 
             // F# doesn't use backticks for generic type names
             var withoutTicks = baseTypeName.Substring(0, backTickIdx);
-            return string.Format("{0}<{1}>", withoutTicks, String.Join(", ", simpleNames));
+            return string.Format("{0}{1}<{2}>", prefix, RemoveCompilerMangle(withoutTicks), String.Join(", ", simpleNames));
+        }
+
+        private static string RemoveCompilerMangle(string typeName) {
+            return Regex.Replace(typeName, @"(<.+?>)(d__\d+)", "$1");
         }
 
         internal static string ConvertToString(object value, int depth = 0) {
@@ -172,6 +201,14 @@ namespace Carbonfrost.Commons.Spec
 
         internal static string ShowWhitespace(string text) {
             return new WhitespaceVisibleString(text).ToString();
+        }
+
+        internal static string Escape(string text) {
+            return text
+                .Replace("\t", "\\t")
+                .Replace("\r\n", "\\r\\n")
+                .Replace("\r", "\\r")
+                .Replace("\n", "\\n");
         }
     }
 }

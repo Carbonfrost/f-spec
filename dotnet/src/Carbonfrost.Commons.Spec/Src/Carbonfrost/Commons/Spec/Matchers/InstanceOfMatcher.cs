@@ -27,6 +27,10 @@ namespace Carbonfrost.Commons.Spec {
             return new InstanceOfMatcher(expected);
         }
 
+        public static InstanceOfMatcher BeInstanceOf<T>() {
+            return new InstanceOfMatcher(typeof(T));
+        }
+
     }
 
     partial class Asserter {
@@ -140,14 +144,13 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class Extensions {
 
-        public static void InstanceOf<T>(this Expectation<T> e, Type expected) {
-            e.As<object>().Should(Matchers.BeInstanceOf(expected));
+        public static void InstanceOf<T>(this IExpectation<T> e, Type expected) {
+            e.As<object>().Like(Matchers.BeInstanceOf(expected));
         }
 
-        public static void InstanceOf<T>(this Expectation<T> e, Type expected, string message, params object[] args) {
-            e.As<object>().Should(Matchers.BeInstanceOf(expected), message, args);
+        public static void InstanceOf<T>(this IExpectation<T> e, Type expected, string message, params object[] args) {
+            e.As<object>().Like(Matchers.BeInstanceOf(expected), message, args);
         }
-
     }
 
     namespace TestMatchers {

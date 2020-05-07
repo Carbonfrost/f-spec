@@ -39,36 +39,36 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class Extensions {
 
-        public static void Throw<TException>(this Expectation e) where TException : Exception{
+        public static void Throw<TException>(this IExpectation e) where TException : Exception{
             Throw<TException>(e, null);
         }
 
-        public static void Throw(this Expectation e) {
+        public static void Throw(this IExpectation e) {
             Throw(e, null);
         }
 
-        public static void Throw<TException>(this Expectation e, string message, params object[] args) where TException : Exception{
-            e.Should(Matchers.Throw<TException>(), message, (object[]) args);
+        public static void Throw<TException>(this IExpectation e, string message, params object[] args) where TException : Exception{
+            e.Like(Matchers.Throw<TException>(), message, (object[]) args);
         }
 
-        public static void Throw(this Expectation e, string message, params object[] args) {
-            e.Should(Matchers.Throw(), message, (object[]) args);
+        public static void Throw(this IExpectation e, string message, params object[] args) {
+            e.Like(Matchers.Throw(), message, (object[]) args);
         }
 
-        public static void Exception<TException>(this ExceptionExpectation e) where TException : Exception{
+        public static void Exception<TException>(this IExceptionExpectation e) where TException : Exception{
             Exception<TException>(e, null);
         }
 
-        public static void Exception(this ExceptionExpectation e) {
+        public static void Exception(this IExceptionExpectation e) {
             Exception(e, null);
         }
 
-        public static void Exception<TException>(this ExceptionExpectation e, string message, params object[] args) where TException : Exception{
-            e.Should(Matchers.Throw<TException>(), message, (object[]) args);
+        public static void Exception<TException>(this IExceptionExpectation e, string message, params object[] args) where TException : Exception{
+            e.Like(Matchers.Throw<TException>(), message, (object[]) args);
         }
 
-        public static void Exception(this ExceptionExpectation e, string message, params object[] args) {
-            e.Should(Matchers.Throw(), message, (object[]) args);
+        public static void Exception(this IExceptionExpectation e, string message, params object[] args) {
+            e.Like(Matchers.Throw(), message, (object[]) args);
         }
 
     }

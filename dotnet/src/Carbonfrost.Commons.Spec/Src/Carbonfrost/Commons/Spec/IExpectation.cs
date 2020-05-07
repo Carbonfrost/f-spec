@@ -16,28 +16,20 @@
 
 namespace Carbonfrost.Commons.Spec {
 
-    interface IExpectation<T> {
-        ExpectationCommand<T> ToCommand();
+    public interface IExpectation : IExpectationAsserter {
+        IExpectation Not { get; }
     }
 
-    partial class Extensions {
+    public interface IExpectation<out T> : IExpectationAsserter<T> {
+        IExpectation<T> Not { get; }
+        IExpectation<T> Approximately<TEpsilon>(TEpsilon epsilon);
+        IExpectation<TBase> As<TBase>();
 
-        internal static void Should<T>(this IExpectation<T> self, ITestMatcher<T> matcher, string message = null, params object[] args) {
-            var failure = self.ToCommand().Should(matcher);
-
-            if (failure != null) {
-                throw failure.UpdateTestSubject().UpdateMessage(message, args).ToException();
-            }
-        }
-
-        internal static void Should(this IExpectation<Unit> self, ITestMatcher matcher, string message = null, params object[] args) {
-            var failure = self.ToCommand().Should(
-                TestMatcher.UnitWrapper(matcher)
-            );
-
-            if (failure != null) {
-                throw failure.UpdateTestSubject().UpdateMessage(message, args).ToException();
-            }
-        }
+        void InstanceOf<TExpected>();
+        void InstanceOf<TExpected>(string message, params object[] args);
+        void Item();
+        void Item(string message, params object[] args);
+        void Items();
+        void Items(string message, params object[] args);
     }
 }

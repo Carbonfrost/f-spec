@@ -84,7 +84,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public static AssertException HaveLengthWorksWith(Type type) {
-            return new AssertException(SR.HaveLengthWorksWith(type));
+            return new AssertException(SR.HaveLengthWorksWith());
         }
 
         public static AssertException CannotTreatAsDictionaryOrGroupings(Type type) {
@@ -182,9 +182,16 @@ namespace Carbonfrost.Commons.Spec {
             return new SpecException(SR.FailedToLoadAssemblyGeneralIO(asmPath, message));
         }
 
-        internal static FormatException FixtureParserIllegalTabs(int line) {
-            return new FormatException(SR.ParserErrorLinePosition(
+        internal static ParserException FixtureParserIllegalTabs(int line) {
+            return new ParserException(SR.ParserErrorLinePosition(
                 SR.FixtureParserIllegalTabs(),
+                line
+            ));
+        }
+
+        internal static ParserException FixtureParserMissingFieldSeparator(int line) {
+            return new ParserException(SR.ParserErrorLinePosition(
+                SR.FixtureParserMissingFieldSeparator(),
                 line
             ));
         }

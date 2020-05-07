@@ -546,11 +546,18 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("FixtureParserIllegalTabs") );
     }
 
-  /// <summary>Can't assert length on type `${type}'.  It works only for strings and arrays.  Investigate asserting on count for collections instead.</summary>
-    internal static string HaveLengthWorksWith(
-    object @type
+  /// <summary>Expected `:'</summary>
+    internal static string FixtureParserMissingFieldSeparator(
+    
     ) {
-        return string.Format(Culture, ResourceFinder("HaveLengthWorksWith") , @type);
+        return string.Format(Culture, ResourceFinder("FixtureParserMissingFieldSeparator") );
+    }
+
+  /// <summary>Can't assert length with objects of this type.  It works only for strings and arrays.  Investigate asserting on count for collections instead.</summary>
+    internal static string HaveLengthWorksWith(
+    
+    ) {
+        return string.Format(Culture, ResourceFinder("HaveLengthWorksWith") );
     }
 
   /// <summary>Actual</summary>
@@ -558,6 +565,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
     
     ) {
         return string.Format(Culture, ResourceFinder("LabelActual") );
+    }
+
+  /// <summary>Actual count</summary>
+    internal static string LabelActualCount(
+    
+    ) {
+        return string.Format(Culture, ResourceFinder("LabelActualCount") );
     }
 
   /// <summary>Bounds Exclusive</summary>
@@ -621,6 +635,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
     
     ) {
         return string.Format(Culture, ResourceFinder("LabelHigh") );
+    }
+
+  /// <summary>Indexes</summary>
+    internal static string LabelIndexes(
+    
+    ) {
+        return string.Format(Culture, ResourceFinder("LabelIndexes") );
     }
 
   /// <summary>Low</summary>

@@ -15,9 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
@@ -90,7 +88,7 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
                 Expect(new List<int>()).ToHave.Length(0);
 
             } catch (AssertException e) {
-                Assert.StartsWith("Can't assert length on type `System.Collections.Generic.List`1[System.Int32]'", e.Message);
+                Assert.StartsWith("Can't assert length", e.Message);
             }
         }
 

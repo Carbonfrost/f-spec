@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 using System;
+using System.Collections.Generic;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
@@ -21,15 +22,45 @@ namespace Carbonfrost.Commons.Spec {
     static partial class ExpectationCommand {
     }
 
+    partial class Extensions {
+
+        internal static ExpectationCommand<T> NegateIfNeeded<T>(this ExpectationCommand<T> cmd, bool negated) {
+            if (negated) {
+                cmd = cmd.Negated();
+            }
+            return cmd;
+        }
+
+        internal static void Should<T>(this ExpectationCommand<T> self, ITestMatcher<T> matcher, string message = null, object[] args = null) {
+            var failure = self.Should(matcher);
+            if (failure != null) {
+                IAsserterBehavior behavior = failure.AsserterBehavior;
+                behavior.Assert(failure.UpdateTestSubject().UpdateMessage(message, args));
+            }
+        }
+
+        internal static void Should(this ExpectationCommand<Unit> self, ITestMatcher matcher, string message = null, object[] args = null) {
+            var failure = self.Should(
+                TestMatcher.UnitWrapper(matcher)
+            );
+
+            if (failure != null) {
+                IAsserterBehavior behavior = failure.AsserterBehavior;
+                behavior.Assert(failure.UpdateTestSubject().UpdateMessage(message, args));
+            }
+        }
+    }
+
     abstract class ExpectationCommand<T> {
 
-        public virtual ExpectationCommand<Unit> Untyped() {
-            throw new NotImplementedException();
+        internal virtual ExpectationCommand<Unit> Untyped() {
+            throw new NotSupportedException();
         }
 
         public abstract TestFailure Should(ITestMatcher<T> matcher);
 
         public abstract ExpectationCommand<T> Negated();
+        public abstract ExpectationCommand<T> Given(string given);
 
         public virtual ExpectationCommand<TBase> As<TBase>() {
             return new ExpectationCommand.CastCommand<T, TBase>(this);
@@ -40,34 +71,34 @@ namespace Carbonfrost.Commons.Spec {
         // then TValue is unknown to us).  So we use object here, and implementations
         // should implicitly apply As<TValue>()
         public virtual ExpectationCommand<object> ToAll() {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public virtual ExpectationCommand<object> ToAny() {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public virtual ExpectationCommand<object> Cardinality(int? min, int? max) {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
-        public virtual ExpectationCommand<T> Eventually(TimeSpan duration) {
-            throw new NotImplementedException();
+        public ExpectationCommand<T> Eventually(TimeSpan duration) {
+            return new ExpectationCommand.EventuallyCommand<T>(duration, this);
         }
 
-        public virtual ExpectationCommand<T> Consistently(TimeSpan duration) {
-            throw new NotImplementedException();
+        public ExpectationCommand<T> Consistently(TimeSpan duration) {
+            return new ExpectationCommand.ConsistentlyCommand<T>(duration, this);
         }
 
-        public virtual ExpectationCommand<TResult> Property<TResult>(Func<T, TResult> accessor) {
-            throw new NotImplementedException();
+        public ExpectationCommand<TResult> Property<TResult>(Func<T, TResult> accessor) {
+            return new ExpectationCommand.PropertyCommand<T, TResult>(this, accessor);
         }
 
-        public virtual ExpectationCommand<Exception> CaptureException() {
-            throw new NotImplementedException();
+        public ExpectationCommand<Exception> CaptureException() {
+            return new ExpectationCommand.CaptureExceptionCommand<T>(this);
         }
 
-        public virtual void Implies(CommandCondition c) {
+        internal virtual void Implies(CommandCondition c) {
         }
     }
 

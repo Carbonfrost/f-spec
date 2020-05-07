@@ -34,20 +34,20 @@ namespace Carbonfrost.Commons.Spec {
 
     static partial class Extensions {
 
-        public static void StartsWith(this Expectation<string> e, string expected) {
+        public static void StartsWith(this IExpectation<string> e, string expected) {
             StartsWith(e, expected, (string) null);
         }
 
-        public static void StartsWith(this Expectation<string> e, string expected, StringComparison comparison) {
+        public static void StartsWith(this IExpectation<string> e, string expected, StringComparison comparison) {
             StartsWith(e, expected, comparison, (string) null);
         }
 
-        public static void StartsWith(this Expectation<string> e, string expected, string message, params object[] args) {
-            e.Should(Matchers.StartWithSubstring(expected), message, (object[]) args);
+        public static void StartsWith(this IExpectation<string> e, string expected, string message, params object[] args) {
+            e.Like(Matchers.StartWithSubstring(expected), message, (object[]) args);
         }
 
-        public static void StartsWith(this Expectation<string> e, string expected, StringComparison comparison, string message, params object[] args) {
-            e.Should(Matchers.StartWithSubstring(expected, comparison), message, (object[]) args);
+        public static void StartsWith(this IExpectation<string> e, string expected, StringComparison comparison, string message, params object[] args) {
+            e.Like(Matchers.StartWithSubstring(expected, comparison), message, (object[]) args);
         }
 
     }

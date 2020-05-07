@@ -40,8 +40,12 @@ namespace Carbonfrost.Commons.Spec {
                 return new ComparerCommand<T>(_comparer, _inner.Negated());
             }
 
-            public override void Implies(CommandCondition c) {
+            internal override void Implies(CommandCondition c) {
                 _inner.Implies(c);
+            }
+
+            public override ExpectationCommand<T> Given(string given) {
+                return new ComparerCommand<T>(_comparer, _inner.Given(given));
             }
 
             public override TestFailure Should(ITestMatcher<T> matcher) {

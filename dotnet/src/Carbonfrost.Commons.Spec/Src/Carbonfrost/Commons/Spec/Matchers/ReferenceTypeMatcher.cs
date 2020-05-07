@@ -90,12 +90,12 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class Extensions {
 
-        public static void ReferenceType<T>(this Expectation<T> e) {
-            e.As<object>().Should(Matchers.BeReferenceType());
+        public static void ReferenceType<T>(this IExpectation<T> e) {
+            e.As<object>().Like(Matchers.BeReferenceType());
         }
 
-        public static void ReferenceType<T>(this Expectation<T> e, string message, params object[] args) {
-            e.As<object>().Should(Matchers.BeReferenceType(), message, args);
+        public static void ReferenceType<T>(this IExpectation<T> e, string message, params object[] args) {
+            e.As<object>().Like(Matchers.BeReferenceType(), message, args);
         }
 
     }

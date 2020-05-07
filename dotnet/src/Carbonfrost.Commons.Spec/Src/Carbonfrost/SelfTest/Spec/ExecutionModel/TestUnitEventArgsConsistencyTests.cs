@@ -66,8 +66,9 @@ namespace Carbonfrost.SelfTest.Spec {
         [Theory]
         [PropertyData("EventArgsTypes")]
         public void EventArgs_should_have_no_public_constructor(TypeInfo type) {
-            Expect(type.DeclaredConstructors).ToHave.Count<ConstructorInfo>(
-                0, t => t.IsPublic);
+            Expect(type.DeclaredConstructors.ToArray()).ToHave.Count(
+                0, t => t.IsPublic
+            );
         }
 
         [Theory]

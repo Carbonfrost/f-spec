@@ -24,6 +24,24 @@ namespace Carbonfrost.Commons.Spec {
 
         private readonly FixtureDataAttribute _inner;
 
+        public string[] Tags {
+            get {
+                return _inner.Tags;
+            }
+            set {
+                _inner.Tags = value;
+            }
+        }
+
+        public string Tag {
+            get {
+                return _inner.Tag;
+            }
+            set {
+                _inner.Tag = value;
+            }
+        }
+
         public string PathPattern {
             get {
                 return _inner.PathPattern;

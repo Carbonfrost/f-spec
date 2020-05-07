@@ -13,10 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
 
 namespace Carbonfrost.Commons.Spec {
 
+    // Indicates that the actual value that is reported should be exception that
+    // was thrown instead of a return value.
     interface ITestMatcherActualException {
     }
 

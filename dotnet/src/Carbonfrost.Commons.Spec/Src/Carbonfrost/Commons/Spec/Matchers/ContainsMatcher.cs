@@ -39,36 +39,36 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class Extensions {
 
-        public static void Element(this EnumerableExpectation e, object item) {
+        public static void Element(this IEnumerableExpectation e, object item) {
             Element(e, item, (string) null);
         }
 
-        public static void Element(this EnumerableExpectation e, object item, string message, params object[] args) {
-            e.Cast<object>().Should(Matchers.Contain(item), message, (object[]) args);
+        public static void Element(this IEnumerableExpectation e, object item, string message, params object[] args) {
+            e.Cast<object>().Like(Matchers.Contain(item), message, (object[]) args);
         }
 
-        public static void Element<TSource>(this EnumerableExpectation<TSource> e, TSource item) {
+        public static void Element<TSource>(this IEnumerableExpectation<TSource> e, TSource item) {
             Element<TSource>(e, item, (string) null);
         }
 
-        public static void Element<TSource>(this EnumerableExpectation<TSource> e, TSource item, string message, params object[] args) {
-            e.Should(Matchers.Contain(item), message, (object[]) args);
+        public static void Element<TSource>(this IEnumerableExpectation<TSource> e, TSource item, string message, params object[] args) {
+            e.Like(Matchers.Contain(item), message, (object[]) args);
         }
 
-        public static void Element<TSource>(this EnumerableExpectation<TSource> e, TSource item, IEqualityComparer<TSource> comparer) {
+        public static void Element<TSource>(this IEnumerableExpectation<TSource> e, TSource item, IEqualityComparer<TSource> comparer) {
             Element<TSource>(e, item, comparer, (string) null);
         }
 
-        public static void Element<TSource>(this EnumerableExpectation<TSource> e, TSource item, IEqualityComparer<TSource> comparer, string message, params object[] args) {
-            e.Should(Matchers.Contain(item, comparer), message, (object[]) args);
+        public static void Element<TSource>(this IEnumerableExpectation<TSource> e, TSource item, IEqualityComparer<TSource> comparer, string message, params object[] args) {
+            e.Like(Matchers.Contain(item, comparer), message, (object[]) args);
         }
 
-        public static void Element<TSource>(this EnumerableExpectation<TSource> e, TSource item, Comparison<TSource> comparison) {
+        public static void Element<TSource>(this IEnumerableExpectation<TSource> e, TSource item, Comparison<TSource> comparison) {
             Element<TSource>(e, item, comparison, (string) null);
         }
 
-        public static void Element<TSource>(this EnumerableExpectation<TSource> e, TSource item, Comparison<TSource> comparison, string message, params object[] args) {
-            e.Should(Matchers.Contain(item, comparison), message, (object[]) args);
+        public static void Element<TSource>(this IEnumerableExpectation<TSource> e, TSource item, Comparison<TSource> comparison, string message, params object[] args) {
+            e.Like(Matchers.Contain(item, comparison), message, (object[]) args);
         }
     }
 

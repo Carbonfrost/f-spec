@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
 namespace Carbonfrost.Commons.Spec {
@@ -44,36 +43,36 @@ namespace Carbonfrost.Commons.Spec {
 
     static partial class Extensions {
 
-        public static void EqualTo<T>(this Expectation<T> e, T expected) {
+        public static void EqualTo<T>(this IExpectation<T> e, T expected) {
             EqualTo<T>(e, expected, (string) null);
         }
 
-        public static void EqualTo<T>(this Expectation<T> e, T expected, Comparison<T> comparison) {
+        public static void EqualTo<T>(this IExpectation<T> e, T expected, Comparison<T> comparison) {
             EqualTo<T>(e, expected, comparison, null);
         }
 
-        public static void EqualTo(this Expectation<string> e, string expected, StringComparison comparison) {
+        public static void EqualTo(this IExpectation<string> e, string expected, StringComparison comparison) {
             EqualTo(e, expected, comparison, null);
         }
 
-        public static void EqualTo<T>(this Expectation<T> e, T expected, IEqualityComparer<T> comparer) {
+        public static void EqualTo<T>(this IExpectation<T> e, T expected, IEqualityComparer<T> comparer) {
             EqualTo(e, expected, comparer, null);
         }
 
-        public static void EqualTo<T>(this Expectation<T> e, T expected, string message, params object[] args) {
-            e.Should(Matchers.Equal(expected));
+        public static void EqualTo<T>(this IExpectation<T> e, T expected, string message, params object[] args) {
+            e.Like(Matchers.Equal(expected));
         }
 
-        public static void EqualTo<T>(this Expectation<T> e, T expected, Comparison<T> comparison, string message, params object[] args) {
-            e.Should(Matchers.Equal(expected, comparison));
+        public static void EqualTo<T>(this IExpectation<T> e, T expected, Comparison<T> comparison, string message, params object[] args) {
+            e.Like(Matchers.Equal(expected, comparison));
         }
 
-        public static void EqualTo(this Expectation<string> e, string expected, StringComparison comparison, string message, params object[] args) {
-            e.Should(Matchers.Equal(expected, comparison));
+        public static void EqualTo(this IExpectation<string> e, string expected, StringComparison comparison, string message, params object[] args) {
+            e.Like(Matchers.Equal(expected, comparison));
         }
 
-        public static void EqualTo<T>(this Expectation<T> e, T expected, IEqualityComparer<T> comparer, string message, params object[] args) {
-            e.Should(Matchers.Equal(expected, comparer));
+        public static void EqualTo<T>(this IExpectation<T> e, T expected, IEqualityComparer<T> comparer, string message, params object[] args) {
+            e.Like(Matchers.Equal(expected, comparer));
         }
 
     }
@@ -391,7 +390,7 @@ namespace Carbonfrost.Commons.Spec {
 
     namespace TestMatchers {
 
-        public class EqualMatcher<T> : TestMatcher<T>, ITestMatcherWithComparer<T> {
+        public class EqualMatcher<T> : TestMatcher<T>, ITestMatcherWithComparer<T>, ITestMatcherActualDiff {
 
             public T Expected { get; private set; }
             public IEqualityComparer<T> Comparer { get; private set; }
@@ -434,6 +433,10 @@ namespace Carbonfrost.Commons.Spec {
 
             ITestMatcher<T> ITestMatcherWithComparer<T>.WithComparer(IComparer<T> comparer) {
                 return WithComparer(comparer);
+            }
+
+            Patch ITestMatcherActualDiff.GetPatch(object actual) {
+                return Patch.StandardTextPatch(actual, Expected);
             }
         }
     }

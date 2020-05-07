@@ -16,11 +16,22 @@
 // limitations under the License.
 //
 
+using System.Linq;
+
 using Carbonfrost.Commons.Spec;
 
 namespace Carbonfrost.SelfTest.Spec {
 
     public class TextUtilityTests : TestClass {
+
+        [Fact]
+        public void ConvertToString_linq_operator_should_reduce_noise() {
+            var cast = new object[] { 3, "string" }.OfType<string>();
+            Assert.Equal(
+                "<OfTypeIterator><String> { \"string\" }",
+                TextUtility.ConvertToString(cast)
+            );
+        }
     }
 }
 #endif

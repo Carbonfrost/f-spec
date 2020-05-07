@@ -27,7 +27,14 @@ namespace Carbonfrost.Commons.Spec {
         private readonly string _name;
         private readonly string _reason;
         private readonly object[] _data;
+        private readonly TestTagCollection _tags;
         private readonly TestUnitFlags _flags;
+
+        public TestTagCollection Tags {
+            get {
+                return _tags;
+            }
+        }
 
         internal TestUnitFlags Flags {
             get {
@@ -83,15 +90,17 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        private TestData(string name, string reason, TestUnitFlags flags, object[] data) {
+        private TestData(string name, string reason, TestUnitFlags flags, object[] data, IEnumerable<TestTag> tags) {
             _name = name;
             _reason = reason;
             _flags = flags;
             _data = data ?? Array.Empty<object>();
+            _tags = TestTagCollection.Create(tags);
+            _tags.MakeReadOnly();
         }
 
         public TestData(params object[] data)
-            : this(null, null, TestUnitFlags.None, data) {
+            : this(null, null, TestUnitFlags.None, (object[]) data, null) {
         }
 
         public static TestData Create(params object[] data) {
@@ -99,11 +108,11 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public static TestData FCreate(params object[] data) {
-            return new TestData(null, null, TestUnitFlags.Focus, (object[]) data);
+            return new TestData(null, null, TestUnitFlags.Focus, (object[]) data, null);
         }
 
         public static TestData XCreate(params object[] data) {
-            return new TestData(null, null, TestUnitFlags.Pending, (object[]) data);
+            return new TestData(null, null, TestUnitFlags.Pending, (object[]) data, null);
         }
 
         public TestData WithName(string name) {
@@ -112,6 +121,10 @@ namespace Carbonfrost.Commons.Spec {
 
         public TestData WithReason(string reason) {
             return Update(Name, reason, _flags);
+        }
+
+        public TestData WithTags(IEnumerable<TestTag> tags) {
+            return new TestData(Name, Reason, _flags, (object[]) _data, tags);
         }
 
         public TestData Skip() {
@@ -155,7 +168,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         internal TestData Update(string name, string reason, TestUnitFlags flags) {
-            return new TestData(name, reason, flags, _data);
+            return new TestData(name, reason, flags, (object[]) _data, _tags);
         }
 
         public object this[int index] {
@@ -284,6 +297,13 @@ namespace Carbonfrost.Commons.Spec {
                 }
             }
             return result;
+        }
+
+        internal TestData VerifiableProblem(bool shouldVerify, string reason) {
+            if (shouldVerify) {
+                return Fail(reason);
+            }
+            return Pending(reason);
         }
     }
 }

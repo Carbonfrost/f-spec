@@ -14,8 +14,6 @@
 // limitations under the License.
 //
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Carbonfrost.Commons.Spec.Resources;
 
@@ -26,7 +24,19 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         private readonly TestMatcherName _name;
         private readonly TestFailureCollection _children = new TestFailureCollection();
 
-        public string Message { get; set; }
+        public string Message {
+            get;
+            set;
+        }
+
+        internal IAsserterBehavior AsserterBehavior {
+            get {
+                if (UserData["_Assumption"] == "True") {
+                    return ExecutionModel.AsserterBehavior.Assumption;
+                }
+                return ExecutionModel.AsserterBehavior.Default;
+            }
+        }
 
         public TestFailureCollection Children {
             get {
@@ -66,10 +76,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         internal string FormatMessage(string userMessage) {
             var err = new StringBuilder();
+            err.Append(userMessage);
 
-            if (!string.IsNullOrEmpty(userMessage)) {
-                err.AppendLine(userMessage);
-            }
             AppendChildren(err, 0);
             return err.ToString();
         }
@@ -78,6 +86,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             if (level == 2) {
                 return;
             }
+            if (Children.Count == 0) {
+                return;
+            }
+            err.AppendLine();
 
             string prefix = new string(' ', 2 * level) + "- ";
             foreach (var c in Children) {
@@ -85,6 +97,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 err.AppendLine(c.Message);
                 c.AppendChildren(err, level + 1);
             }
+        }
+
+        internal TestFailure UpdateAssumption(bool assumption) {
+            if (assumption) {
+                UserData["_Assumption"] = "True";
+            }
+            return this;
         }
 
         internal TestFailure UpdateGiven(string given) {

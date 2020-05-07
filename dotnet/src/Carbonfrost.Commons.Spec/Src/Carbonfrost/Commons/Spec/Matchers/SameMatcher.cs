@@ -89,12 +89,12 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class Extensions {
 
-        public static void SameAs<T>(this Expectation<T> e, object other) where T : class {
+        public static void SameAs<T>(this IExpectation<T> e, object other) where T : class {
             SameAs(e, other, null);
         }
 
-        public static void SameAs<T>(this Expectation<T> e, object other, string message, params object[] args) where T : class {
-            e.Should(Matchers.BeSameAs(other), message, (object[]) args);
+        public static void SameAs<T>(this IExpectation<T> e, object other, string message, params object[] args) where T : class {
+            e.Like(Matchers.BeSameAs(other), message, (object[]) args);
         }
 
     }
