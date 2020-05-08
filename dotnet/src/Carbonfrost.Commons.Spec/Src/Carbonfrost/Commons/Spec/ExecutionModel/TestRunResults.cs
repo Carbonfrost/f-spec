@@ -24,10 +24,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public override DateTime? StartedAt {
             get {
-                if (Children.Count == 0) {
-                    return _startedAt;
-                }
-                return base.StartedAt;
+                return _startedAt;
             }
         }
 

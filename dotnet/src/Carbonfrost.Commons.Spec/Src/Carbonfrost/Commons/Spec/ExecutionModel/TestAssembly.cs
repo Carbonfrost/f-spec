@@ -104,14 +104,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             if (type == null) {
                 throw new ArgumentNullException(nameof(type));
             }
-            if (!type.IsClass) {
+            if (!IsTestClassByAccess(type)) {
                 return null;
             }
             if (typeof(ITestUnitAdapter).IsAssignableFrom(type)) {
                 return new UserTestClassAdapter(type);
             }
-
-            if (IsTestClass(type)) {
+            if (IsTestClassByConvention(type)) {
                 return new ReflectedTestClass(type);
             }
 
@@ -125,9 +124,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return _assembly.ExportedTypes;
         }
 
-        internal bool IsTestClass(Type type) {
+        internal bool IsTestClassByAccess(Type type) {
             var tt = type.GetTypeInfo();
-            if (tt.IsAbstract || tt.IsValueType || tt.IsNested) {
+            if (!tt.IsClass || tt.IsAbstract || tt.IsValueType || tt.IsNested) {
                 return false;
             }
 
@@ -135,6 +134,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 return false;
             }
 
+            return true;
+        }
+
+        private bool IsTestClassByConvention(Type type) {
             return type.GetRuntimeMethods().SelectMany(m => m.CustomAttributes).Any(
                 a => typeof(IReflectionTestUnitFactory).IsAssignableFrom(a.AttributeType)
             );

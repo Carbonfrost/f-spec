@@ -43,7 +43,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 if (Count == 0) {
                     return null;
                 }
-                return Items.Last().FinishedAt;
+                foreach (var item in Items.Reverse()) {
+                    if (item.FinishedAt.HasValue) {
+                        return item.FinishedAt;
+                    }
+                }
+                return null;
             }
         }
 

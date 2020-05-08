@@ -27,9 +27,9 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
         [InlineData(typeof(PInternalTestClass))]
         [InlineData(typeof(PDerivedTestClass))]
         [InlineData(typeof(PInternalTestClassInternalMethod))]
-        public void IsTestClass_should_find_private_classes(Type type) {
+        public void IsTestClassByAccess_should_find_private_classes(Type type) {
             var asm = TestAssembly.Create(GetType().Assembly);
-            Assert.True(asm.IsTestClass(type));
+            Assert.True(asm.IsTestClassByAccess(type));
         }
 
         [Theory]
