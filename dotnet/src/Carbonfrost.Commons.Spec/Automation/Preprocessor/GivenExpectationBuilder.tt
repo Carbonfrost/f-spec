@@ -99,6 +99,50 @@ namespace Carbonfrost.Commons.Spec {
                                           TextUtility.FormatArgs(<#= List(parms) #>),
                                           _assumption);
         }
+
+        public GivenRecord Record {
+            get {
+                return new GivenRecord(this);
+            }
+        }
+
+        public struct GivenRecord {
+
+          private readonly GivenExpectationBuilder<#= typeArgs #> _parent;
+
+          internal GivenRecord(GivenExpectationBuilder<#= typeArgs #> parent) {
+              _parent = parent;
+          }
+
+          public Exception Exception<TResult>(Func<#= typeArgsResult #> func) {
+<# foreach (var m in parms.Zip(fields, (t, f) => (t + " = _parent." + f))) { #>
+              var <#= m #>;
+<# } #>
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func(<#= List(parms) #>));
+          }
+
+          public Exception Exception(Action<#= typeArgs #> func) {
+<# foreach (var m in parms.Zip(fields, (t, f) => (t + " = _parent." + f))) { #>
+              var <#= m #>;
+<# } #>
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func(<#= List(parms) #>));
+          }
+
+          public TestCodeDispatchInfo DispatchInfo<TResult>(Func<#= typeArgsResult #> func, RecordExceptionFlags flags) {
+<# foreach (var m in parms.Zip(fields, (t, f) => (t + " = _parent." + f))) { #>
+              var <#= m #>;
+<# } #>
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(<#= List(parms) #>), flags);
+          }
+
+          public TestCodeDispatchInfo DispatchInfo(Action<#= typeArgs #> func, RecordExceptionFlags flags) {
+<# foreach (var m in parms.Zip(fields, (t, f) => (t + " = _parent." + f))) { #>
+              var <#= m #>;
+<# } #>
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(<#= List(parms) #>), flags);
+          }
+
+        }
     }
 
 <# } #>

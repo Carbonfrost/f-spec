@@ -1,6 +1,6 @@
 
 //
-// File was automatically generated at 05/07/2020 18:58:17
+// File was automatically generated at 05/09/2020 13:33:19
 //
 
 using System;
@@ -61,6 +61,38 @@ namespace Carbonfrost.Commons.Spec {
                                           TextUtility.FormatArgs(),
                                           _assumption);
         }
+
+        public GivenRecord Record {
+            get {
+                return new GivenRecord(this);
+            }
+        }
+
+        public struct GivenRecord {
+
+          private readonly GivenExpectationBuilder _parent;
+
+          internal GivenRecord(GivenExpectationBuilder parent) {
+              _parent = parent;
+          }
+
+          public Exception Exception<TResult>(Func<TResult> func) {
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func());
+          }
+
+          public Exception Exception(Action func) {
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func());
+          }
+
+          public TestCodeDispatchInfo DispatchInfo<TResult>(Func<TResult> func, RecordExceptionFlags flags) {
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(), flags);
+          }
+
+          public TestCodeDispatchInfo DispatchInfo(Action func, RecordExceptionFlags flags) {
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(), flags);
+          }
+
+        }
     }
 
 
@@ -120,6 +152,42 @@ namespace Carbonfrost.Commons.Spec {
                                           false,
                                           TextUtility.FormatArgs(arg1),
                                           _assumption);
+        }
+
+        public GivenRecord Record {
+            get {
+                return new GivenRecord(this);
+            }
+        }
+
+        public struct GivenRecord {
+
+          private readonly GivenExpectationBuilder<T> _parent;
+
+          internal GivenRecord(GivenExpectationBuilder<T> parent) {
+              _parent = parent;
+          }
+
+          public Exception Exception<TResult>(Func<T, TResult> func) {
+              var arg1 = _parent._arg1;
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func(arg1));
+          }
+
+          public Exception Exception(Action<T> func) {
+              var arg1 = _parent._arg1;
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func(arg1));
+          }
+
+          public TestCodeDispatchInfo DispatchInfo<TResult>(Func<T, TResult> func, RecordExceptionFlags flags) {
+              var arg1 = _parent._arg1;
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(arg1), flags);
+          }
+
+          public TestCodeDispatchInfo DispatchInfo(Action<T> func, RecordExceptionFlags flags) {
+              var arg1 = _parent._arg1;
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(arg1), flags);
+          }
+
         }
     }
 
@@ -184,6 +252,46 @@ namespace Carbonfrost.Commons.Spec {
                                           false,
                                           TextUtility.FormatArgs(arg1, arg2),
                                           _assumption);
+        }
+
+        public GivenRecord Record {
+            get {
+                return new GivenRecord(this);
+            }
+        }
+
+        public struct GivenRecord {
+
+          private readonly GivenExpectationBuilder<T1, T2> _parent;
+
+          internal GivenRecord(GivenExpectationBuilder<T1, T2> parent) {
+              _parent = parent;
+          }
+
+          public Exception Exception<TResult>(Func<T1, T2, TResult> func) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func(arg1, arg2));
+          }
+
+          public Exception Exception(Action<T1, T2> func) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func(arg1, arg2));
+          }
+
+          public TestCodeDispatchInfo DispatchInfo<TResult>(Func<T1, T2, TResult> func, RecordExceptionFlags flags) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(arg1, arg2), flags);
+          }
+
+          public TestCodeDispatchInfo DispatchInfo(Action<T1, T2> func, RecordExceptionFlags flags) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(arg1, arg2), flags);
+          }
+
         }
     }
 
@@ -252,6 +360,50 @@ namespace Carbonfrost.Commons.Spec {
                                           false,
                                           TextUtility.FormatArgs(arg1, arg2, arg3),
                                           _assumption);
+        }
+
+        public GivenRecord Record {
+            get {
+                return new GivenRecord(this);
+            }
+        }
+
+        public struct GivenRecord {
+
+          private readonly GivenExpectationBuilder<T1, T2, T3> _parent;
+
+          internal GivenRecord(GivenExpectationBuilder<T1, T2, T3> parent) {
+              _parent = parent;
+          }
+
+          public Exception Exception<TResult>(Func<T1, T2, T3, TResult> func) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func(arg1, arg2, arg3));
+          }
+
+          public Exception Exception(Action<T1, T2, T3> func) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func(arg1, arg2, arg3));
+          }
+
+          public TestCodeDispatchInfo DispatchInfo<TResult>(Func<T1, T2, T3, TResult> func, RecordExceptionFlags flags) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(arg1, arg2, arg3), flags);
+          }
+
+          public TestCodeDispatchInfo DispatchInfo(Action<T1, T2, T3> func, RecordExceptionFlags flags) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(arg1, arg2, arg3), flags);
+          }
+
         }
     }
 
@@ -324,6 +476,54 @@ namespace Carbonfrost.Commons.Spec {
                                           false,
                                           TextUtility.FormatArgs(arg1, arg2, arg3, arg4),
                                           _assumption);
+        }
+
+        public GivenRecord Record {
+            get {
+                return new GivenRecord(this);
+            }
+        }
+
+        public struct GivenRecord {
+
+          private readonly GivenExpectationBuilder<T1, T2, T3, T4> _parent;
+
+          internal GivenRecord(GivenExpectationBuilder<T1, T2, T3, T4> parent) {
+              _parent = parent;
+          }
+
+          public Exception Exception<TResult>(Func<T1, T2, T3, T4, TResult> func) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func(arg1, arg2, arg3, arg4));
+          }
+
+          public Exception Exception(Action<T1, T2, T3, T4> func) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func(arg1, arg2, arg3, arg4));
+          }
+
+          public TestCodeDispatchInfo DispatchInfo<TResult>(Func<T1, T2, T3, T4, TResult> func, RecordExceptionFlags flags) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(arg1, arg2, arg3, arg4), flags);
+          }
+
+          public TestCodeDispatchInfo DispatchInfo(Action<T1, T2, T3, T4> func, RecordExceptionFlags flags) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(arg1, arg2, arg3, arg4), flags);
+          }
+
         }
     }
 
@@ -400,6 +600,58 @@ namespace Carbonfrost.Commons.Spec {
                                           false,
                                           TextUtility.FormatArgs(arg1, arg2, arg3, arg4, arg5),
                                           _assumption);
+        }
+
+        public GivenRecord Record {
+            get {
+                return new GivenRecord(this);
+            }
+        }
+
+        public struct GivenRecord {
+
+          private readonly GivenExpectationBuilder<T1, T2, T3, T4, T5> _parent;
+
+          internal GivenRecord(GivenExpectationBuilder<T1, T2, T3, T4, T5> parent) {
+              _parent = parent;
+          }
+
+          public Exception Exception<TResult>(Func<T1, T2, T3, T4, T5, TResult> func) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              var arg5 = _parent._arg5;
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func(arg1, arg2, arg3, arg4, arg5));
+          }
+
+          public Exception Exception(Action<T1, T2, T3, T4, T5> func) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              var arg5 = _parent._arg5;
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func(arg1, arg2, arg3, arg4, arg5));
+          }
+
+          public TestCodeDispatchInfo DispatchInfo<TResult>(Func<T1, T2, T3, T4, T5, TResult> func, RecordExceptionFlags flags) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              var arg5 = _parent._arg5;
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(arg1, arg2, arg3, arg4, arg5), flags);
+          }
+
+          public TestCodeDispatchInfo DispatchInfo(Action<T1, T2, T3, T4, T5> func, RecordExceptionFlags flags) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              var arg5 = _parent._arg5;
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(arg1, arg2, arg3, arg4, arg5), flags);
+          }
+
         }
     }
 
@@ -480,6 +732,62 @@ namespace Carbonfrost.Commons.Spec {
                                           false,
                                           TextUtility.FormatArgs(arg1, arg2, arg3, arg4, arg5, arg6),
                                           _assumption);
+        }
+
+        public GivenRecord Record {
+            get {
+                return new GivenRecord(this);
+            }
+        }
+
+        public struct GivenRecord {
+
+          private readonly GivenExpectationBuilder<T1, T2, T3, T4, T5, T6> _parent;
+
+          internal GivenRecord(GivenExpectationBuilder<T1, T2, T3, T4, T5, T6> parent) {
+              _parent = parent;
+          }
+
+          public Exception Exception<TResult>(Func<T1, T2, T3, T4, T5, T6, TResult> func) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              var arg5 = _parent._arg5;
+              var arg6 = _parent._arg6;
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func(arg1, arg2, arg3, arg4, arg5, arg6));
+          }
+
+          public Exception Exception(Action<T1, T2, T3, T4, T5, T6> func) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              var arg5 = _parent._arg5;
+              var arg6 = _parent._arg6;
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func(arg1, arg2, arg3, arg4, arg5, arg6));
+          }
+
+          public TestCodeDispatchInfo DispatchInfo<TResult>(Func<T1, T2, T3, T4, T5, T6, TResult> func, RecordExceptionFlags flags) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              var arg5 = _parent._arg5;
+              var arg6 = _parent._arg6;
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(arg1, arg2, arg3, arg4, arg5, arg6), flags);
+          }
+
+          public TestCodeDispatchInfo DispatchInfo(Action<T1, T2, T3, T4, T5, T6> func, RecordExceptionFlags flags) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              var arg5 = _parent._arg5;
+              var arg6 = _parent._arg6;
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(arg1, arg2, arg3, arg4, arg5, arg6), flags);
+          }
+
         }
     }
 
@@ -564,6 +872,66 @@ namespace Carbonfrost.Commons.Spec {
                                           false,
                                           TextUtility.FormatArgs(arg1, arg2, arg3, arg4, arg5, arg6, arg7),
                                           _assumption);
+        }
+
+        public GivenRecord Record {
+            get {
+                return new GivenRecord(this);
+            }
+        }
+
+        public struct GivenRecord {
+
+          private readonly GivenExpectationBuilder<T1, T2, T3, T4, T5, T6, T7> _parent;
+
+          internal GivenRecord(GivenExpectationBuilder<T1, T2, T3, T4, T5, T6, T7> parent) {
+              _parent = parent;
+          }
+
+          public Exception Exception<TResult>(Func<T1, T2, T3, T4, T5, T6, T7, TResult> func) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              var arg5 = _parent._arg5;
+              var arg6 = _parent._arg6;
+              var arg7 = _parent._arg7;
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func(arg1, arg2, arg3, arg4, arg5, arg6, arg7));
+          }
+
+          public Exception Exception(Action<T1, T2, T3, T4, T5, T6, T7> func) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              var arg5 = _parent._arg5;
+              var arg6 = _parent._arg6;
+              var arg7 = _parent._arg7;
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func(arg1, arg2, arg3, arg4, arg5, arg6, arg7));
+          }
+
+          public TestCodeDispatchInfo DispatchInfo<TResult>(Func<T1, T2, T3, T4, T5, T6, T7, TResult> func, RecordExceptionFlags flags) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              var arg5 = _parent._arg5;
+              var arg6 = _parent._arg6;
+              var arg7 = _parent._arg7;
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(arg1, arg2, arg3, arg4, arg5, arg6, arg7), flags);
+          }
+
+          public TestCodeDispatchInfo DispatchInfo(Action<T1, T2, T3, T4, T5, T6, T7> func, RecordExceptionFlags flags) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              var arg5 = _parent._arg5;
+              var arg6 = _parent._arg6;
+              var arg7 = _parent._arg7;
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(arg1, arg2, arg3, arg4, arg5, arg6, arg7), flags);
+          }
+
         }
     }
 
@@ -652,6 +1020,70 @@ namespace Carbonfrost.Commons.Spec {
                                           false,
                                           TextUtility.FormatArgs(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8),
                                           _assumption);
+        }
+
+        public GivenRecord Record {
+            get {
+                return new GivenRecord(this);
+            }
+        }
+
+        public struct GivenRecord {
+
+          private readonly GivenExpectationBuilder<T1, T2, T3, T4, T5, T6, T7, T8> _parent;
+
+          internal GivenRecord(GivenExpectationBuilder<T1, T2, T3, T4, T5, T6, T7, T8> parent) {
+              _parent = parent;
+          }
+
+          public Exception Exception<TResult>(Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> func) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              var arg5 = _parent._arg5;
+              var arg6 = _parent._arg6;
+              var arg7 = _parent._arg7;
+              var arg8 = _parent._arg8;
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
+          }
+
+          public Exception Exception(Action<T1, T2, T3, T4, T5, T6, T7, T8> func) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              var arg5 = _parent._arg5;
+              var arg6 = _parent._arg6;
+              var arg7 = _parent._arg7;
+              var arg8 = _parent._arg8;
+              return Carbonfrost.Commons.Spec.Record.Exception(() => func(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
+          }
+
+          public TestCodeDispatchInfo DispatchInfo<TResult>(Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> func, RecordExceptionFlags flags) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              var arg5 = _parent._arg5;
+              var arg6 = _parent._arg6;
+              var arg7 = _parent._arg7;
+              var arg8 = _parent._arg8;
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8), flags);
+          }
+
+          public TestCodeDispatchInfo DispatchInfo(Action<T1, T2, T3, T4, T5, T6, T7, T8> func, RecordExceptionFlags flags) {
+              var arg1 = _parent._arg1;
+              var arg2 = _parent._arg2;
+              var arg3 = _parent._arg3;
+              var arg4 = _parent._arg4;
+              var arg5 = _parent._arg5;
+              var arg6 = _parent._arg6;
+              var arg7 = _parent._arg7;
+              var arg8 = _parent._arg8;
+              return Carbonfrost.Commons.Spec.Record.DispatchInfo(() => func(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8), flags);
+          }
+
         }
     }
 
