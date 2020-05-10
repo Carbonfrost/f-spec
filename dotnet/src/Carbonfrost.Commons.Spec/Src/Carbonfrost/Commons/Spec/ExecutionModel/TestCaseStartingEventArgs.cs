@@ -14,13 +14,21 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    public class TestCaseStartingEventArgs : EventArgs {
+    public class TestCaseStartingEventArgs : EventArgs, ITestUnitStartingEventArgs {
 
         private readonly TestUnitStartingEventArgs _inner;
+
+        public string Reason {
+            get {
+                return _inner.Reason;
+            }
+            set {
+                _inner.Reason = value;
+            }
+        }
 
         public bool Cancel {
             get {
@@ -31,9 +39,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public TestCase TestCase {
+        public TestCaseInfo TestCase {
             get {
-                return (TestCase) _inner.TestUnit;
+                return (TestCaseInfo) _inner.TestUnit;
             }
         }
 

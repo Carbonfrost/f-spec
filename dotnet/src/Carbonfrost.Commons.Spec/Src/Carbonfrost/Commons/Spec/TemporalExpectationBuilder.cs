@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,56 +19,52 @@ using System.ComponentModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public struct TemporalExpectationBuilder : ITemporalExpectationBuilder {
+    struct TemporalExpectationBuilder : ITemporalExpectationBuilder {
 
-        private readonly IExpectationCommand _cmd;
+        private readonly ExpectationCommand<Unit> _cmd;
 
-        public TemporalExpectationBuilder Not {
+        public ITemporalExpectationBuilder Not {
             get {
                 return new TemporalExpectationBuilder(_cmd.Negated());
             }
         }
 
-        public SatisfactionExpectation ToSatisfy {
+        public ISatisfactionExpectation ToSatisfy {
             get {
                 return new SatisfactionExpectation(_cmd);
             }
         }
 
-        public Expectation Will {
+        public IExceptionExpectation ToThrow {
+            get {
+                return new ExceptionExpectation(_cmd);
+            }
+        }
+
+        public IExpectation Will {
             get {
                 return new Expectation(_cmd);
             }
         }
 
-        internal TemporalExpectationBuilder(IExpectationCommand cmd) {
+        internal TemporalExpectationBuilder(ExpectationCommand<Unit> cmd) {
             _cmd = cmd;
         }
 
         public void To(ITestMatcher matcher, string message = null, params object[] args) {
-            ToExpectation().Should(matcher, message, args);
+            _cmd.Should(matcher, message, args);
         }
 
-        public void NotTo(ITestMatcher matcher, string message = null, params object[] args) {
-            ToExpectation().Should(Matchers.Not(matcher), message, args);
-        }
-
-        public void ToNot(ITestMatcher matcher, string message = null, params object[] args) {
-            ToExpectation().Should(Matchers.Not(matcher), message, args);
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete("This is an override of Object.Equals(). Call Assert.Equal() instead.", true)]
         public new bool Equals(object b) {
             throw new InvalidOperationException("TemporalExpectationBuilder.Equals should not be used");
         }
 
-        private Expectation ToExpectation() {
-            return new Expectation(_cmd);
+        public void Like(ITestMatcher matcher, string message, params object[] args) {
+            _cmd.Should(matcher, message, (object[]) args);
         }
     }
 
-    public struct TemporalExpectationBuilder<T> : ITemporalExpectationBuilder<T> {
+    struct TemporalExpectationBuilder<T> : ITemporalExpectationBuilder<T> {
 
         private readonly ExpectationCommand<T> _cmd;
 
@@ -76,64 +72,54 @@ namespace Carbonfrost.Commons.Spec {
             _cmd = cmd;
         }
 
-        public Expectation<T> ToBe {
+        public IExpectation<T> ToBe {
             get {
                 return new Expectation<T>(_cmd);
             }
         }
 
-        public EnumerableExpectation ToHave {
+        public IEnumerableExpectation ToHave {
             get {
                 return new EnumerableExpectation(_cmd.As<IEnumerable>());
             }
         }
 
-        public SatisfactionExpectation<T> ToSatisfy {
+        public ISatisfactionExpectation<T> ToSatisfy {
             get {
                 return new SatisfactionExpectation<T>(_cmd);
             }
         }
 
-        public TemporalExpectationBuilder<T> Not {
+        public ITemporalExpectationBuilder<T> Not {
             get {
                 return new TemporalExpectationBuilder<T>(_cmd.Negated());
             }
         }
 
-        public TemporalExpectationBuilder<TBase> As<TBase>() {
+        public ITemporalExpectationBuilder<TBase> As<TBase>() {
             return new TemporalExpectationBuilder<TBase>(_cmd.As<TBase>());
         }
 
+        public void Like(ITestMatcher matcher, string message, params object[] args) {
+            _cmd.Untyped().Should(matcher, message, (object[]) args);
+        }
+
+        public void Like(ITestMatcher<T> matcher, string message, params object[] args) {
+            _cmd.Should(matcher, message, (object[]) args);
+        }
+
         public void To(ITestMatcher matcher, string message = null, params object[] args) {
-            ToExpectation(false).Untyped().Should(matcher, message, args);
+            _cmd.Untyped().Should(matcher, message, args);
         }
 
         public void To(ITestMatcher<T> matcher, string message = null, params object[] args) {
-            ToExpectation(false).Should(matcher, message, args);
+            _cmd.Should(matcher, message, args);
         }
 
-        public void NotTo(ITestMatcher matcher, string message = null, params object[] args) {
-            ToExpectation(true).Untyped().Should(matcher, message, args);
+        public void To(ITestMatcher<object> matcher, string message = null, params object[] args) {
+            _cmd.As<object>().Should(matcher, message, args);
         }
 
-        public void NotTo(ITestMatcher<T> matcher, string message = null, params object[] args) {
-            ToExpectation(true).Should(matcher, message, args);
-        }
-
-        public void ToNot(ITestMatcher matcher, string message = null, params object[] args) {
-            ToExpectation(true).Untyped().Should(matcher, message, args);
-        }
-
-        public void ToNot(ITestMatcher<T> matcher, string message = null, params object[] args) {
-            ToExpectation(true).Should(matcher, message, args);
-        }
-
-        private Expectation<T> ToExpectation(bool negated) {
-            return new Expectation<T>(_cmd.NegateIfNeeded(negated));
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete("This is an override of Object.Equals(). Call Assert.Equal() instead.", true)]
         public new bool Equals(object b) {
             throw new InvalidOperationException("TemporalExpectationBuilder.Equals should not be used");
         }

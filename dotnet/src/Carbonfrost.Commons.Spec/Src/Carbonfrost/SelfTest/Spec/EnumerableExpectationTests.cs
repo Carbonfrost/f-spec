@@ -176,8 +176,8 @@ namespace Carbonfrost.SelfTest.Spec {
 
         [Fact]
         public void Any_All_extension_syntax() {
-            Expect(0, 1, 2).ToHave.Any<int>().GreaterThan(1);
-            Expect(0, 1, 2).ToHave.All<int>().GreaterThan(-1);
+            Expect(0, 1, 2).ToHave.Any.GreaterThan(1);
+            Expect(0, 1, 2).ToHave.All.GreaterThan(-1);
         }
 
         [Fact]
@@ -244,6 +244,11 @@ namespace Carbonfrost.SelfTest.Spec {
         [Fact]
         public void Expect_No_Items_should_pass() {
             Expect().ToHave.No.Items();
+        }
+
+        [Fact]
+        public void Expect_with_type_of_items() {
+            Expect("hello").ToHave.Any<char>().EqualTo('o');
         }
     }
 }

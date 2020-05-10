@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,14 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    class TestNamespace : TestUnit {
+    public abstract class TestNamespace : TestUnit {
 
         private readonly string _namespace;
         private readonly TestUnitCollection _children;
@@ -43,7 +42,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public TestNamespace(string ns, IEnumerable<TestUnit> typeUnits) {
+        internal override TestUnitMetadata Metadata {
+            get {
+                return TestUnitMetadata.Empty;
+            }
+        }
+
+        private protected TestNamespace(string ns, IEnumerable<TestUnit> typeUnits) {
             _namespace = ns;
             _children = new TestUnitCollection(this);
             foreach (var unit in typeUnits) {
@@ -52,6 +57,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
                 Children.Add(unit);
             }
+        }
+
+        private class DefaultTestNamespace : TestNamespace {
+            public DefaultTestNamespace(string ns, IEnumerable<TestUnit> typeUnits) : base(ns, typeUnits) {
+            }
+        }
+
+        internal static TestNamespace Create(string ns, IEnumerable<TestUnit> typeUnits) {
+            return new DefaultTestNamespace(ns, typeUnits);
         }
 
         public override string DisplayName {

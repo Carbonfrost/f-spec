@@ -1,11 +1,11 @@
 //
-// Copyright 2016-2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016-2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,11 +18,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-using Carbonfrost.Commons.Spec.ExecutionModel;
-
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    public abstract class TestUnit {
+    public abstract class TestUnit : ITestUnitState, ITestUnitApiConventions {
 
         private int _isDisposed;
         private TestUnitFlags _flags;
@@ -30,7 +28,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         private Exception _initializeError;
         private TimeSpan? _timeout;
         private TestUnit _parent;
-        private readonly HashSet<string> _tags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private readonly TestTagCollection _tags = new TestTagCollection();
 
         protected bool IsDisposed {
             get {
@@ -44,10 +42,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public virtual ITestSubjectProvider TestSubjectProvider {
-            get {
-                return null;
-            }
+        internal abstract TestUnitMetadata Metadata {
+            get;
         }
 
         public virtual TestDataProviderCollection TestDataProviders {
@@ -62,14 +58,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public virtual object FindTestObject() {
+        internal virtual object FindTestObject() {
             if (Parent != null) {
                 return Parent.FindTestObject();
             }
             return null;
         }
 
-        public virtual object FindTestSubject() {
+        internal virtual object FindTestSubject() {
             if (Parent != null) {
                 return Parent.FindTestSubject();
             }
@@ -124,8 +120,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         protected virtual void AfterExecutingDescendant(TestContext descendantTestContext) {
         }
 
-        internal bool NotifyStarting(ITestRunnerEventSink events) {
-            var e = new TestUnitStartingEventArgs(this);
+        internal bool NotifyStarting(ITestRunnerEventSink events, out TestUnitStartingEventArgs e) {
+            e = new TestUnitStartingEventArgs(this);
             events.NotifyUnitStarting(e);
             return !e.Cancel;
         }
@@ -188,6 +184,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public bool Failed {
+            get {
+                return _flags.HasFlag(TestUnitFlags.Failed);
+            }
+            set {
+                WritePreamble();
+                SetFlag(TestUnitFlags.Failed, value);
+            }
+        }
+
         public string Reason {
             get {
                 return _reason;
@@ -225,11 +231,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public virtual bool ContainsFocusedUnits {
             get {
-                return Children.Any(t => t.ContainsFocusedUnits || t.IsFocused);
+                if (Children.Count == 0) {
+                    return false;
+                }
+                return Children.Any(t => t.IsFocused || t.ContainsFocusedUnits);
             }
         }
 
-        public ICollection<string> Tags {
+        public TestTagCollection Tags {
             get {
                 return _tags;
             }
@@ -286,12 +295,26 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return Type + " " + DisplayName;
         }
 
-        internal void ForceSkipped() {
-            SetFlag(TestUnitFlags.Skip, true);
+        internal void ForcePredeterminedStatus(TestUnitFlags flags, string reason) {
+            SetFlag(flags, true);
+            _reason = reason;
 
             foreach (var c in Children) {
-                c.ForceSkipped();
+                c.ForcePredeterminedStatus(flags, null);
             }
+        }
+
+        internal static TestStatus? ConvertToStatus(ITestUnitState state) {
+            if (state.Skipped && !state.IsFocused) { // Skip unless focussed
+                return TestStatus.Skipped;
+            }
+            if (state.IsPending) {
+                return TestStatus.Pending;
+            }
+            if (state.Failed) {
+                return TestStatus.Failed;
+            }
+            return null;
         }
 
         private void ThrowIfSealed() {
@@ -305,6 +328,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             Children.MakeReadOnly();
         }
 
+        internal void CopyFlags(TestUnitFlags flags) {
+            _flags |= flags;
+        }
+
         private void SetFlag(TestUnitFlags tuf, bool value) {
             if (value) {
                 _flags |= tuf;
@@ -312,16 +339,5 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 _flags &= ~tuf;
             }
         }
-
-        [Flags]
-        enum TestUnitFlags {
-            Sealed = 1,
-            Focus = 2,
-            Skip = 4,
-            Pending = 8,
-            Explicit = 0x10,
-            PassExplicitly = 0x20,
-        }
-
     }
 }

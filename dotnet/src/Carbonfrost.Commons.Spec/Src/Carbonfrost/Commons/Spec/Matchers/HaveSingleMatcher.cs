@@ -69,6 +69,33 @@ namespace Carbonfrost.Commons.Spec {
         }
     }
 
+    static partial class Extensions {
+
+        public static void Single<TValue>(this IEnumerableExpectation<TValue> e) {
+            Operators.Single.Apply(e);
+        }
+
+        public static void Single<TValue>(this IEnumerableExpectation<TValue> e, string message, params object[] args) {
+            Operators.Single.Apply(e, message, args);
+        }
+
+        public static void Single<TValue>(this IEnumerableExpectation<TValue> e, Predicate<TValue> predicate) {
+            Operators.Single.Apply(e, predicate);
+        }
+
+        public static void Single<TValue>(this IEnumerableExpectation<object> e, Predicate<TValue> predicate) {
+            Operators.Single.Apply(e.Cast<TValue>(), predicate);
+        }
+
+        public static void Single<TValue>(this IEnumerableExpectation<TValue> e, Predicate<TValue> predicate, string message, params object[] args) {
+            Operators.Single.Apply(e, predicate, message, args);
+        }
+
+        public static void Single<TValue>(this IEnumerableExpectation<object> e, Predicate<TValue> predicate, string message, params object[] args) {
+            Operators.Single.Apply(e.Cast<TValue>(), predicate, message, args);
+        }
+    }
+
     partial class Assert {
 
         public static void Single(IEnumerable collection) {
@@ -139,49 +166,13 @@ namespace Carbonfrost.Commons.Spec {
         }
     }
 
-
-    partial class Extensions {
-
-        public static void Single<TValue>(this EnumerableExpectation<TValue> e) {
-            Single<TValue>(e, (string) null);
-        }
-
-        public static void Single(this EnumerableExpectation e) {
-            Single(e, (string) null);
-        }
-
-        public static void Single<TValue>(this EnumerableExpectation<TValue> e, string message, params object[] args) {
-            e.As<IEnumerable>().Should(Matchers.HaveSingle(), message, (object[]) args);
-        }
-
-        public static void Single(this EnumerableExpectation e, string message, params object[] args) {
-            e.As<IEnumerable>().Should(Matchers.HaveSingle(), message, (object[]) args);
-        }
-
-        public static void Single<TValue>(this EnumerableExpectation<TValue> e, Predicate<TValue> predicate) {
-            Single<TValue>(e, predicate, null);
-        }
-
-        public static void Single<TValue>(this EnumerableExpectation e, Predicate<TValue> predicate) {
-            Single(e,  predicate, null);
-        }
-
-        public static void Single<TValue>(this EnumerableExpectation<TValue> e, Predicate<TValue> predicate, string message, params object[] args) {
-            e.Should(Matchers.HaveSingle(predicate), message, (object[]) args);
-        }
-
-        public static void Single<TValue>(this EnumerableExpectation e, Predicate<TValue> predicate, string message, params object[] args) {
-            e.Cast<TValue>().Should(Matchers.HaveSingle(predicate), message, (object[]) args);
-        }
-    }
-
     namespace TestMatchers {
 
         public class HaveSingleMatcher : TestMatcher<IEnumerable> {
 
             public override bool Matches(IEnumerable actual) {
                 if (actual == null) {
-                    throw new ArgumentNullException("actual");
+                    throw new ArgumentNullException(nameof(actual));
                 }
                 return CountEstimate(actual) == 1;
             }
@@ -205,7 +196,7 @@ namespace Carbonfrost.Commons.Spec {
 
             public override bool Matches(IEnumerable<TSource> actual) {
                 if (actual == null) {
-                    throw new ArgumentNullException("actual");
+                    throw new ArgumentNullException(nameof(actual));
                 }
                 return CountEstimate(actual) == 1;
             }
@@ -214,6 +205,21 @@ namespace Carbonfrost.Commons.Spec {
                 Func<TSource, bool> f = t => Predicate(t);
                 return actual.Where(f).Take(2).Count();
             }
+        }
+
+        class HaveSingleOperator : PredicateOperator {
+
+            protected override ITestMatcher<IEnumerable> CreateMatcher() {
+                return Matchers.HaveSingle();
+            }
+
+            protected override ITestMatcher<IEnumerable<T>> CreateMatcher<T>(Predicate<T> predicate) {
+                return Matchers.HaveSingle(predicate);
+            }
+        }
+
+        static partial class Operators {
+            internal static readonly IPredicateOperator Single = new HaveSingleOperator();
         }
     }
 

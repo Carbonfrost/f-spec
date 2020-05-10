@@ -93,6 +93,13 @@ namespace Carbonfrost.SelfTest.Spec {
                 Assert.Pass();
             }
         }
+
+        [Fact]
+        public void Given_Record_should_capture_argument_and_exception() {
+            var ex = Given("hello", "world").Record.Exception((x, y) => throw new Exception(x + y));
+            Assert.NotNull(ex);
+            Assert.Equal("helloworld", ex.Message);
+        }
     }
 }
 #endif

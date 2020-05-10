@@ -89,20 +89,20 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class Extensions {
 
-        public static void KeyWithValue<TKey, TValue>(this EnumerableExpectation e, TKey key, TValue value) {
+        public static void KeyWithValue<TKey, TValue>(this IEnumerableExpectation<KeyValuePair<TKey, TValue>> e, TKey key, TValue value) {
             KeyWithValue(e, key, value, null);
         }
 
-        public static void KeyWithValue<TKey, TValue>(this EnumerableExpectation e, TKey key, TValue value, string message, params object[] args) {
-            e.As<IEnumerable<KeyValuePair<TKey, TValue>>>().Should(Matchers.HaveKeyWithValue<TKey, TValue>(key, value), message, (object[]) args);
-        }
-
-        public static void KeyWithValue<TKey, TValue>(this EnumerableExpectation<KeyValuePair<TKey, TValue>> e, TKey key, TValue value) {
+        public static void KeyWithValue<TKey, TValue>(this IEnumerableExpectation<object> e, TKey key, TValue value) {
             KeyWithValue(e, key, value, null);
         }
 
-        public static void KeyWithValue<TKey, TValue>(this EnumerableExpectation<KeyValuePair<TKey, TValue>> e, TKey key, TValue value, string message, params object[] args) {
-            e.As<IEnumerable<KeyValuePair<TKey, TValue>>>().Should(Matchers.HaveKeyWithValue<TKey, TValue>(key, value), message, (object[]) args);
+        public static void KeyWithValue<TKey, TValue>(this IEnumerableExpectation<KeyValuePair<TKey, TValue>> e, TKey key, TValue value, string message, params object[] args) {
+            e.Like(Matchers.HaveKeyWithValue<TKey, TValue>(key, value), message, (object[]) args);
+        }
+
+        public static void KeyWithValue<TKey, TValue>(this IEnumerableExpectation<object> e, TKey key, TValue value, string message, params object[] args) {
+            e.As<IEnumerable<KeyValuePair<TKey, TValue>>>().Like(Matchers.HaveKeyWithValue<TKey, TValue>(key, value), message, (object[]) args);
         }
     }
 
@@ -140,11 +140,11 @@ namespace Carbonfrost.Commons.Spec {
                 return actual.Any(kvp => kvp.Key.Equals(_key) && kvp.Contains(_value));
             }
 
-            public bool Matches(Func<IEnumerable<IGrouping<TKey, TValue>>> actualFactory) {
+            public bool Matches(ITestActualEvaluation<IEnumerable<IGrouping<TKey, TValue>>> actualFactory) {
                 if (actualFactory == null) {
                     throw new ArgumentNullException("actualFactory");
                 }
-                return Matches(actualFactory());
+                return Matches(actualFactory.Value);
             }
         }
     }

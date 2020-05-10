@@ -64,12 +64,12 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class Extensions {
 
-        public static void False(this Expectation<bool> e) {
+        public static void False(this IExpectation<bool> e) {
             False(e, null);
         }
 
-        public static void False(this Expectation<bool> e, string message, params object[] args) {
-            e.Should(Matchers.BeFalse(), message, (object[]) args);
+        public static void False(this IExpectation<bool> e, string message, params object[] args) {
+            e.Like(Matchers.BeFalse(), message, (object[]) args);
         }
 
     }

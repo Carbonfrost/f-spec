@@ -19,50 +19,11 @@ namespace Carbonfrost.Commons.Spec {
 
     static class ParseUtility {
 
-        internal static bool TryParseTimeSpan(string text, out TimeSpan result) {
-            if (string.IsNullOrWhiteSpace(text)) {
-                result = TimeSpan.Zero;
-                return true;
-            }
-
-            text = text.Trim();
-
-            if (text == "max" || text == "Infinite") {
-                result = TimeSpan.MaxValue;
-                return true;
-            }
-            if (text == "min") {
-                result = TimeSpan.MinValue;
-                return true;
-            }
-
-            if (ConvertUnits(text, TS_UNITS, TS_CONVERSIONS, out result)) {
-                return true;
-            }
-
-            return TimeSpan.TryParse(text, out result);
-        }
-
-        static readonly string[] TS_UNITS = {
-            "d",
-            "h",
-            "ms",
-            "min",
-            "s",
-        };
-
-        static readonly Func<Double, TimeSpan>[] TS_CONVERSIONS = {
-            TimeSpan.FromDays,
-            TimeSpan.FromHours,
-            TimeSpan.FromMilliseconds,
-            TimeSpan.FromMinutes,
-            TimeSpan.FromSeconds,
-        };
-
-        static bool ConvertUnits<T>(string text,
-                                    string[] units,
-                                    Func<Double, T>[] conversions,
-                                    out T value) {
+        internal static bool ConvertUnits<T>(string text,
+            string[] units,
+            Func<Double, T>[] conversions,
+            out T value
+        ) {
             for (int i = 0; i < units.Length; i++) {
                 string unit = units[i];
                 if (text.EndsWith(unit, StringComparison.OrdinalIgnoreCase)) {

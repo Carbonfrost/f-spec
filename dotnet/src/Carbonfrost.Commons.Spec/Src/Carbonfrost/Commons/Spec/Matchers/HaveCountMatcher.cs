@@ -142,36 +142,20 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class Extensions {
 
-        public static void Count<TSource>(this EnumerableExpectation<TSource> e, int count) {
+        public static void Count<TSource>(this IEnumerableExpectation<TSource> e, int count) {
             Count<TSource>(e, count, (string) null);
         }
 
-        public static void Count(this EnumerableExpectation e, int count) {
-            Count(e, count, (string) null);
+        public static void Count<TSource>(this IEnumerableExpectation<TSource> e, int count, string message, params object[] args) {
+            e.As<IEnumerable>().Like(Matchers.HaveCount(count), message, (object[]) args);
         }
 
-        public static void Count<TSource>(this EnumerableExpectation<TSource> e, int count, string message, params object[] args) {
-            e.As<IEnumerable>().Should(Matchers.HaveCount(count), message, (object[]) args);
-        }
-
-        public static void Count(this EnumerableExpectation e, int count, string message, params object[] args) {
-            e.As<IEnumerable>().Should(Matchers.HaveCount(count), message, (object[]) args);
-        }
-
-		public static void Count<TSource>(this EnumerableExpectation<TSource> e, int count, Predicate<TSource> predicate) {
+		public static void Count<TSource>(this IEnumerableExpectation<TSource> e, int count, Predicate<TSource> predicate) {
             Count<TSource>(e, count, predicate, null);
         }
 
-        public static void Count<TSource>(this EnumerableExpectation e, int count, Predicate<TSource> predicate) {
-            Count(e, count, predicate, null);
-        }
-
-        public static void Count<TSource>(this EnumerableExpectation<TSource> e, int count, Predicate<TSource> predicate, string message, params object[] args) {
-            e.Should(Matchers.HaveCount(count, predicate), message, (object[]) args);
-        }
-
-        public static void Count<TSource>(this EnumerableExpectation e, int count, Predicate<TSource> predicate, string message, params object[] args) {
-            e.Cast<TSource>().Should(Matchers.HaveCount(count, predicate), message, (object[]) args);
+        public static void Count<TSource>(this IEnumerableExpectation<TSource> e, int count, Predicate<TSource> predicate, string message, params object[] args) {
+            e.Like(Matchers.HaveCount(count, predicate), message, (object[]) args);
         }
     }
 
@@ -187,7 +171,7 @@ namespace Carbonfrost.Commons.Spec {
 
             public override bool Matches(IEnumerable actual) {
                 if (actual == null) {
-                    throw new ArgumentNullException("actual");
+                    throw new ArgumentNullException(nameof(actual));
                 }
                 return ActualCount(actual) == Expected;
             }

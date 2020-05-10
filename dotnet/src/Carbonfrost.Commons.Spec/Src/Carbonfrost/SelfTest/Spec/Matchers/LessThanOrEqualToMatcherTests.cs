@@ -40,6 +40,18 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
         public void Expect_ToHave_should_have_fluent_expression_negative() {
             Expect("Aura").Not.ToBe.LessThanOrEqualTo("Audience", StringComparer.OrdinalIgnoreCase);
         }
+
+        [Fact]
+        public void OrClose_should_return_different_instance() {
+            var matcher = Matchers.BeLessThanOrEqualTo(5.0);
+            Assert.NotSame(matcher, matcher.OrClose(0.03));
+            Assert.IsInstanceOf<LessThanOrEqualToMatcher<double>>(matcher);
+        }
+
+        [Fact]
+        public void ExpectTo_OrClose_should_obtain_matcher_approximation() {
+            Expect(5.02).To(Matchers.BeLessThanOrEqualTo(5.0).OrClose(0.03));
+        }
     }
 }
 #endif

@@ -1,5 +1,5 @@
 //
-// Copyright 2016-2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,9 +20,27 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 namespace Carbonfrost.Commons.Spec {
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public sealed class FInlineDataAttribute : Attribute, ITestDataProvider, ITestCaseMetadataFilter {
+    public sealed class FInlineDataAttribute : Attribute, ITestDataApiAttributeConventions, ITestCaseMetadataFilter {
 
         private readonly InlineDataAttribute _inner;
+
+        public string[] Tags {
+            get {
+                return _inner.Tags;
+            }
+            set {
+                _inner.Tags = value;
+            }
+        }
+
+        public string Tag {
+            get {
+                return _inner.Tag;
+            }
+            set {
+                _inner.Tag = value;
+            }
+        }
 
         public IReadOnlyList<object> Data {
             get {
@@ -39,15 +57,45 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        public string Reason {
+            get {
+                return _inner.Reason;
+            }
+            set {
+                _inner.Reason = value;
+            }
+        }
+
+        public bool Explicit {
+            get {
+                return _inner.Explicit;
+            }
+            set {
+                _inner.Explicit = value;
+            }
+        }
+
         public FInlineDataAttribute(params object[] data) {
             _inner = new InlineDataAttribute(data);
+        }
+
+        public FInlineDataAttribute(object data) {
+            _inner = new InlineDataAttribute(data);
+        }
+
+        public FInlineDataAttribute(object data1, object data2) {
+            _inner = new InlineDataAttribute(data1, data2);
+        }
+
+        public FInlineDataAttribute(object data1, object data2, object data3) {
+            _inner = new InlineDataAttribute(data1, data2, data3);
         }
 
         IEnumerable<TestData> ITestDataProvider.GetData(TestContext context) {
             return ((ITestDataProvider) _inner).GetData(context);
         }
 
-        void ITestCaseMetadataFilter.Apply(TestCase testCase) {
+        void ITestCaseMetadataFilter.Apply(TestCaseInfo testCase) {
             testCase.IsFocused = true;
         }
     }

@@ -31,7 +31,7 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
                 Matchers.BeEmpty(),
                 Matchers.HaveCount(0)
             );
-            var val = subj.Matches(() => new int[0]);
+            var val = subj.Matches(TestActual.Value(new int[0]));
             Assert.True(val);
         }
 
@@ -41,7 +41,7 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
                 Matchers.BeEmpty(),
                 Matchers.HaveCount(1)
             );
-            var val = subj.Matches(() => new int[0]);
+            var val = subj.Matches(TestActual.Value(new int[0]));
             Assert.False(val);
         }
 

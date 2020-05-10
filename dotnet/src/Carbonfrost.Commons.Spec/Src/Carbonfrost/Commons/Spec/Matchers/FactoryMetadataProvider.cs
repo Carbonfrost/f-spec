@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,12 +14,11 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec.TestMatchers {
 
-    class FactoryMetadataProvider : ITestUnitMetadataProvider, ITestCaseFilter {
+    class FactoryMetadataProvider : ITestUnitMetadataProvider, ITestUnitDescendantMetadataProvider, ITestCaseFilter {
 
         private readonly ITestMatcherFactory _provider;
 
@@ -28,8 +27,13 @@ namespace Carbonfrost.Commons.Spec.TestMatchers {
         }
 
         public void Apply(TestContext testContext) {
-            var t = (TestCase) testContext.CurrentTest;
-            t.Filters.Add(this);
+            if (testContext.CurrentTest is TestCaseInfo t) {
+                t.Filters.Add(this);
+            }
+        }
+
+        public void ApplyDescendant(TestContext testContext) {
+            Apply(testContext);
         }
 
         void ITestCaseFilter.RunTest(TestContext testContext, Action<TestContext> next) {
@@ -37,11 +41,11 @@ namespace Carbonfrost.Commons.Spec.TestMatchers {
             Action actual = () => next(testContext);
             string message = TestMatcherFactory.GetMessage(_provider);
 
-            new Expectation(ExpectationCommand.TestCode(actual)).Should(matcher, message);
+            new Expectation(ExpectationCommand.TestCode(actual, false, null, false)).Like(matcher, message, null);
         }
     }
 
-    class FactoryMetadataProvider<T> : ITestUnitMetadataProvider, ITestCaseFilter {
+    class FactoryMetadataProvider<T> : ITestUnitMetadataProvider, ITestUnitDescendantMetadataProvider, ITestCaseFilter {
 
         private readonly ITestMatcherFactory<T> _provider;
 
@@ -50,8 +54,13 @@ namespace Carbonfrost.Commons.Spec.TestMatchers {
         }
 
         public void Apply(TestContext testContext) {
-            var t = (TestCase) testContext.CurrentTest;
-            t.Filters.Add(this);
+            if (testContext.CurrentTest is TestCaseInfo t) {
+                t.Filters.Add(this);
+            }
+        }
+
+        public void ApplyDescendant(TestContext testContext) {
+            Apply(testContext);
         }
 
         void ITestCaseFilter.RunTest(TestContext testContext, Action<TestContext> next) {
@@ -61,7 +70,7 @@ namespace Carbonfrost.Commons.Spec.TestMatchers {
             var matcher = _provider.CreateMatcher(testContext);
             string message = TestMatcherFactory.GetMessage(_provider);
 
-            new Expectation<T>(ExpectationCommand.Of(actualFactory)).Should(matcher, message);
+            new Expectation<T>(ExpectationCommand.Of(actualFactory)).Like(matcher, message, null);
         }
 
     }

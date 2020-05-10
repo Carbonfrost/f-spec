@@ -58,8 +58,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, srgen, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
   </resheader>
+  <data name="AllWhitespace" xml:space="preserve">
+    <value>Argument can't be all whitespace.</value>
+  </data>
   <data name="BadEpsilonComparerTypes" xml:space="preserve">
     <value>Can't apply approximate comparisons to `{0}'.</value>
+  </data>
+  <data name="CannotAliasDifferentTagNames" xml:space="preserve">
+    <value>Cannot create an alias when tags have different names</value>
   </data>
   <data name="CannotAssertAssertExceptions" xml:space="preserve">
     <value>Can't use `ExpectedExceptionAttribute` or `ThrowsAttribute` on a test that throws assertions exceptions if those exceptions might be caught by the attribute.  Replace with `Assert.Throws`.</value>
@@ -133,6 +139,9 @@
   <data name="ExpectedContainsSubstring" xml:space="preserve">
     <value>Expected to contain substring "{Expected}"</value>
   </data>
+  <data name="ExpectedDistinct" xml:space="preserve">
+    <value>Expected to be distinct</value>
+  </data>
   <data name="ExpectedEmpty" xml:space="preserve">
     <value>Expected empty</value>
   </data>
@@ -143,7 +152,7 @@
     <value>Expected to end with substring {Expected}</value>
   </data>
   <data name="ExpectedEqual" xml:space="preserve">
-    <value>Expected equal {Expected}</value>
+    <value>Expected equal</value>
   </data>
   <data name="ExpectedEqualDownloadContents" xml:space="preserve">
     <value>Expected to equal download contents {Source}</value>
@@ -181,9 +190,6 @@
   <data name="ExpectedInstanceOf" xml:space="preserve">
     <value>Expected instance of {Expected}</value>
   </data>
-  <data name="ExpectedInstanceOfType" xml:space="preserve">
-    <value>Expected instance of type</value>
-  </data>
   <data name="ExpectedLessThan" xml:space="preserve">
     <value>Expected &lt; {Expected}</value>
   </data>
@@ -204,6 +210,9 @@
   </data>
   <data name="ExpectedOverlap" xml:space="preserve">
     <value>Expected overlap</value>
+  </data>
+  <data name="ExpectedReferenceType" xml:space="preserve">
+    <value>Expected reference type</value>
   </data>
   <data name="ExpectedSame" xml:space="preserve">
     <value>Expected same</value>
@@ -232,6 +241,9 @@
   <data name="ExpectedTrue" xml:space="preserve">
     <value>Expected true</value>
   </data>
+  <data name="ExpectedValueType" xml:space="preserve">
+    <value>Expected value type</value>
+  </data>
   <data name="ExplicitPassNotSet" xml:space="preserve">
     <value>Test is configured to require explicitly passing, but test completed without invoking Assert.Pass().</value>
   </data>
@@ -250,11 +262,20 @@
   <data name="FailedToLoadAssemblyPath" xml:space="preserve">
     <value>Assembly file not found: {0}</value>
   </data>
+  <data name="FixtureParserIllegalTabs" xml:space="preserve">
+    <value>Illegal tabs</value>
+  </data>
+  <data name="FixtureParserMissingFieldSeparator" xml:space="preserve">
+    <value>Expected `:'</value>
+  </data>
   <data name="HaveLengthWorksWith" xml:space="preserve">
-    <value>Can't assert length on type `{0}'.  It works only for strings and arrays.  Investigate asserting on count for collections instead.</value>
+    <value>Can't assert length with objects of this type.  It works only for strings and arrays.  Investigate asserting on count for collections instead.</value>
   </data>
   <data name="LabelActual" xml:space="preserve">
     <value>Actual</value>
+  </data>
+  <data name="LabelActualCount" xml:space="preserve">
+    <value>Actual count</value>
   </data>
   <data name="LabelBoundsExclusive" xml:space="preserve">
     <value>Bounds Exclusive</value>
@@ -274,11 +295,17 @@
   <data name="LabelFileName" xml:space="preserve">
     <value>File name</value>
   </data>
+  <data name="LabelFlags" xml:space="preserve">
+    <value>Flags</value>
+  </data>
   <data name="LabelGiven" xml:space="preserve">
     <value>Given</value>
   </data>
   <data name="LabelHigh" xml:space="preserve">
     <value>High</value>
+  </data>
+  <data name="LabelIndexes" xml:space="preserve">
+    <value>Indexes</value>
   </data>
   <data name="LabelLow" xml:space="preserve">
     <value>Low</value>
@@ -297,6 +324,9 @@
   </data>
   <data name="MultiAccessorsTheoryParameterMismatch" xml:space="preserve">
     <value>Invalid cross join: Theory method must have exactly as many parameters as members in the data source.</value>
+  </data>
+  <data name="MultipleTestUnitFactories" xml:space="preserve">
+    <value>Method has more than one fact or theory attribute</value>
   </data>
   <data name="NegativeCardinality" xml:space="preserve">
     <value>Make sure that AtLeast or min value is non-negative</value>
@@ -324,6 +354,9 @@
   </data>
   <data name="NotExpectedContainsSubstring" xml:space="preserve">
     <value>Not expected to contain substring "{Expected}"</value>
+  </data>
+  <data name="NotExpectedDistinct" xml:space="preserve">
+    <value>Not expected to be distinct</value>
   </data>
   <data name="NotExpectedEmpty" xml:space="preserve">
     <value>Not expected to be empty</value>
@@ -385,6 +418,9 @@
   <data name="NotExpectedOverlap" xml:space="preserve">
     <value>Not expected to overlap</value>
   </data>
+  <data name="NotExpectedReferenceType" xml:space="preserve">
+    <value>Expected not reference type</value>
+  </data>
   <data name="NotExpectedSame" xml:space="preserve">
     <value>Not expected to be same</value>
   </data>
@@ -412,6 +448,9 @@
   <data name="NotExpectedTrue" xml:space="preserve">
     <value>Not expected to be true</value>
   </data>
+  <data name="NotExpectedValueType" xml:space="preserve">
+    <value>Expected not value type</value>
+  </data>
   <data name="NotPredicateAssignableFrom" xml:space="preserve">
     <value>not be assignable from {Expected}</value>
   </data>
@@ -423,6 +462,9 @@
   </data>
   <data name="NotPredicateContainsSubstring" xml:space="preserve">
     <value>not to contain substring "{Expected}"</value>
+  </data>
+  <data name="NotPredicateDistinct" xml:space="preserve">
+    <value>not be distinct</value>
   </data>
   <data name="NotPredicateEmpty" xml:space="preserve">
     <value>not be empty</value>
@@ -484,6 +526,9 @@
   <data name="NotPredicateOverlap" xml:space="preserve">
     <value>not overlap</value>
   </data>
+  <data name="NotPredicateReferenceType" xml:space="preserve">
+    <value>not be reference type</value>
+  </data>
   <data name="NotPredicateSame" xml:space="preserve">
     <value>not be same</value>
   </data>
@@ -508,6 +553,12 @@
   <data name="NotPredicateTrue" xml:space="preserve">
     <value>not be true</value>
   </data>
+  <data name="NotPredicateValueType" xml:space="preserve">
+    <value>not be value type</value>
+  </data>
+  <data name="ParserErrorLinePosition" xml:space="preserve">
+    <value>{0}, line {1}</value>
+  </data>
   <data name="Passed" xml:space="preserve">
     <value>Explicitly passed</value>
   </data>
@@ -525,6 +576,9 @@
   </data>
   <data name="PredicateContainsSubstring" xml:space="preserve">
     <value>to contain substring "{Expected}"</value>
+  </data>
+  <data name="PredicateDistinct" xml:space="preserve">
+    <value>be distinct</value>
   </data>
   <data name="PredicateEmpty" xml:space="preserve">
     <value>be empty</value>
@@ -586,6 +640,9 @@
   <data name="PredicateOverlap" xml:space="preserve">
     <value>overlap</value>
   </data>
+  <data name="PredicateReferenceType" xml:space="preserve">
+    <value>be reference type</value>
+  </data>
   <data name="PredicateSame" xml:space="preserve">
     <value>be same</value>
   </data>
@@ -609,6 +666,12 @@
   </data>
   <data name="PredicateTrue" xml:space="preserve">
     <value>be true</value>
+  </data>
+  <data name="PredicateValueType" xml:space="preserve">
+    <value>be value type</value>
+  </data>
+  <data name="Sealed" xml:space="preserve">
+    <value>Can't modify the object right now because it has been sealed from further modifications.</value>
   </data>
   <data name="SequenceNullConversion" xml:space="preserve">
     <value>Unexpectedly tried to assert on a sequence that was a null reference.</value>

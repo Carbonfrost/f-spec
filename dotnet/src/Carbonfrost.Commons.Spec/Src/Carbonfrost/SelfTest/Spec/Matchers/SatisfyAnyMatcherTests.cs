@@ -30,7 +30,7 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
                 Matchers.BeEmpty(),
                 Matchers.HaveCount(10)
             );
-            var val = subj.Matches(() => new int[0]);
+            var val = subj.Matches(TestActual.Value(new int[0]));
             Assert.True(val);
         }
 
@@ -40,7 +40,7 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
                 Matchers.BeEmpty(),
                 Matchers.HaveCount(10)
             );
-            var val = subj.Matches(() => new int[] { 2 });
+            var val = subj.Matches(TestActual.Value(new int[] { 2 }));
             Assert.False(val);
         }
 
@@ -59,6 +59,14 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
         public void Expect_ToSatisfy_all_should_obtain_matcher_action() {
             Expect(() => { throw new InvalidOperationException(); }).ToSatisfy.Any(
                 Matchers.Throw());
+        }
+
+        [Fact]
+        public void Expect_Given_fluent_reciever_on_untyped() {
+            Given("not an int").Expect(int.Parse).ToSatisfy.Any(
+                Matchers.Throw<FormatException>(),
+                Matchers.Throw<ArgumentException>()
+            );
         }
 
         [Fact]

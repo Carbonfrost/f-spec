@@ -16,7 +16,6 @@
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    [TestUnitMetadataProvider(typeof(TestCaseExecutionFilterSetup))]
     public interface ITestExecutionFilter {
         void BeforeExecuting(TestContext testContext);
         void AfterExecuting(TestContext testContext);

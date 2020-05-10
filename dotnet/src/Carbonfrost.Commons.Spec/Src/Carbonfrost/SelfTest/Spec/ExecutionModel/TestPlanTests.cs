@@ -1,7 +1,7 @@
 #if SELF_TEST
 
 //
-// Copyright 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
             [Fact] public void TestA1() {}
         }
 
-        [Focus]
+        [Focus] // fixture
         class B {
             [Fact] public void TestB1() {}
             [Focus, Fact] public void TestB2() {}
@@ -43,7 +43,7 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
             [Fact] public void TestC3() {}
         }
 
-        [Focus]
+        [Focus] // fixture
         class D {
             [Fact]
             public void TestD1() {}
@@ -67,7 +67,7 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
             testRun.Children.AddAll(TestUnits("A", "B"));
 
             var runner = new DefaultTestRunner(opts);
-            var plan = runner.CreatePlan(testRun);
+            var plan = (DefaultTestRunner.TestPlan) runner.CreatePlan(testRun);
             var names = WillRun(plan);
             Assert.Equal(new [] { "TestA1", "TestB1", "TestB2", "TestB3"  }, names);
         }
@@ -89,15 +89,12 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
 
         [Fact]
         public void WillRunTestCases_should_contain_focus_match_names() {
-            var opts = new TestRunnerOptions {
-                FocusPatterns = {
-                    "(2|3)$",
-                },
-            };
+            var opts = new TestRunnerOptions();
+            opts.PlanFilter.FocusPatterns.AddNew("regex:(2|3)$");
             var testRun = new TestRun();
             testRun.Children.AddAll(TestUnits("C"));
             var runner = new DefaultTestRunner(opts);
-            var plan = runner.CreatePlan(testRun);
+            var plan = (DefaultTestRunner.TestPlan) runner.CreatePlan(testRun);
 
             var names = WillRun(plan);
             Assert.Equal(new [] { "TestC2", "TestC3" }, names);
@@ -105,15 +102,13 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
 
         [Fact]
         public void WillRunTestCases_should_prefer_focus_specified_by_options() {
-            var opts = new TestRunnerOptions {
-                FocusPatterns = {
-                    "2$",
-                },
-            };
+            var opts = new TestRunnerOptions();
+            opts.PlanFilter.FocusPatterns.AddNew("regex:2$");
+
             var testRun = new TestRun();
             testRun.Children.AddAll(TestUnits("A", "B", "C", "D"));
             var runner = new DefaultTestRunner(opts);
-            var plan = runner.CreatePlan(testRun);
+            var plan = (DefaultTestRunner.TestPlan) runner.CreatePlan(testRun);
 
             var names = WillRun(plan);
             Assert.Equal(new [] { "TestB2", "TestC2", "TestD2" }, names);
@@ -124,7 +119,7 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
             var testRun = new TestRun();
             testRun.Children.AddAll(TestUnits(names));
             var runner = new DefaultTestRunner(opts);
-            return runner.CreatePlan(testRun);
+            return (DefaultTestRunner.TestPlan) runner.CreatePlan(testRun);
         }
 
         private static IEnumerable<TestUnit> TestUnits(params string[] names) {

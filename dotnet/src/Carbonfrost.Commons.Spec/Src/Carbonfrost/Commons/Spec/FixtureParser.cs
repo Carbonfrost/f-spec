@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,17 +15,16 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Carbonfrost.Commons.Spec {
 
-    class FixtureParser {
+    partial class FixtureParser {
 
         static readonly char[] LINE_TERM =  { '\r', '\n' };
         static readonly Regex RECORD = new Regex(@"^\s*-{3,}\s*$");
-        static readonly Regex HEREDOC = new Regex(@"^(?<FileName>.+) \s*: \s* (?<Fold>[>+\|-]+?)? \s*$",
+        static readonly Regex HEREDOC = new Regex(@"^(?<FileName>.+) \s*: \s* (?<Fold>[_>+\|-]+?)? \s*$",
                                                   RegexOptions.IgnorePatternWhitespace);
 
         private readonly Uri _baseUri;
@@ -101,32 +100,38 @@ namespace Carbonfrost.Commons.Spec {
 
             string[] kvp = line.Split(new[] { ':' }, 2);
             if (kvp.Length != 2) {
-                throw new FormatException();
+                throw SpecFailure.FixtureParserMissingFieldSeparator(_lex.Line);
             }
             return new KeyValuePair<string, string>(kvp[0].Trim(), kvp[1].Trim());
         }
 
         private KeyValuePair<string, string> ParseHeredoc(Match match) {
             string fileName = match.Groups["FileName"].Value;
-            FoldLines fold = GetFoldType(match.Groups["Fold"].Value);
+            (FoldLines fold, FinalFold final) = GetFoldType(match.Groups["Fold"].Value);
 
             if (!MoveNext()) {
                 return new KeyValuePair<string, string>(fileName, string.Empty);
             }
 
-            StringBuilder sb = new StringBuilder();
             string indentation = Regex.Match(Current, @"^\s*").Value;
+            if (indentation.Contains("\t")) {
+                throw SpecFailure.FixtureParserIllegalTabs(_lex.Line);
+            }
+
+            StringBuilder sb = new StringBuilder();
             if (indentation.Length == 0) {
                 // Encountered an empty here doc, treat as value
                 _lex.MovePrevious();
                 return new KeyValuePair<string, string>(fileName, string.Empty);
             }
 
+            string previous = null;
             foreach (var canonical in ReadHeredocLines(indentation)) {
-                fold(sb, canonical);
+                fold(sb, canonical, previous);
+                previous = canonical;
             }
 
-            var body = sb.ToString();
+            var body = final(sb);
             _lex.MovePrevious();
             return new KeyValuePair<string, string>(fileName, body);
         }
@@ -144,65 +149,8 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        static FoldLines GetFoldType(string value) {
-            switch (value) {
-                case "-":
-                    return KeepIndentationFold;
-                case "|":
-                    return TotalFold;
-                case ">-":
-                    return StandardFoldLineEnds;
-                case ">+":
-                    return TotalFoldInternalWS;
-                case ">":
-                default:
-                    return StandardFold;
-            }
-        }
-
         private static bool IsBlank(string text) {
             return string.IsNullOrWhiteSpace(text) || text.StartsWith("#");
-        }
-
-        delegate void FoldLines(StringBuilder sb, string line);
-
-        static void StandardFold(StringBuilder sb, string line) { // >
-            if (sb.Length > 0) {
-                sb.Append(" "); // fold lines
-            }
-            sb.Append(line.Trim());
-        }
-
-        static void KeepIndentationFold(StringBuilder sb, string line) { // -
-            // trim leading indentation, trailing spaces (except if the line ends
-            // with a backslash), leave other whitespace, including separators
-            if (sb.Length > 0) {
-                sb.AppendLine(); // fold lines
-            }
-            if (line.EndsWith("\\", StringComparison.Ordinal)) {
-                line = line.Substring(0, line.Length - 1);
-                sb.Append(line);
-            } else {
-                sb.Append(line.TrimEnd());
-            }
-        }
-
-        static void TotalFold(StringBuilder sb, string line) { // |
-            // remove all whitespace (useful for binary data)
-            sb.Append(Regex.Replace(line, @"\s+", ""));
-        }
-
-        static void StandardFoldLineEnds(StringBuilder sb, string line) { // >-
-            // trim lines, join lines with line sep
-            if (sb.Length > 0) {
-                sb.AppendLine();
-            }
-            sb.Append(line.Trim());
-        }
-
-        static void TotalFoldInternalWS(StringBuilder sb, string line) { // >+
-            // trim lines, join lines as is
-            sb.Append(line.TrimEnd());
         }
 
         class Scanner : IEnumerator<string> {
@@ -223,6 +171,12 @@ namespace Carbonfrost.Commons.Spec {
             public string Current {
                 get {
                     return _inner[_index];
+                }
+            }
+
+            public int Line {
+                get {
+                    return _index + 1;
                 }
             }
 

@@ -1,11 +1,11 @@
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,18 +14,35 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     public class TestRunResults : TestUnitResults {
 
+        private DateTime _startedAt;
+        private TestRunProblems _problems;
+
+        public override DateTime? StartedAt {
+            get {
+                return _startedAt;
+            }
+        }
+
+        public override DateTime? FinishedAt {
+            get {
+                if (Children.Count == 0) {
+                    return _startedAt;
+                }
+                return base.FinishedAt;
+            }
+        }
+
         public TestRunFailureReason FailureReason {
             get {
-                if (FailedCount > 0) {
+                if (Failed) {
                     return TestRunFailureReason.Failure;
                 }
-                if (PendingCount > 0) {
+                if (IsPending) {
                     return TestRunFailureReason.ContainsPendingElements;
                 }
                 if (ContainsFocusedUnits) {
@@ -35,8 +52,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public TestRunProblems Problems {
+            get {
+                return _problems ?? (_problems = new TestRunProblems(Descendants));
+            }
+        }
+
         public TestRunResults()
             : base("<>") {
+        }
+
+        internal void RunStarting() {
+            _startedAt = DateTime.Now;
         }
     }
 }

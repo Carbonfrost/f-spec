@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
@@ -25,7 +24,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         internal abstract class TestPlanBase {
 
-            private readonly List<TestCase> _willRun;
+            private readonly List<TestCaseInfo> _willRun;
             private readonly DefaultTestRunner _runner;
             private readonly TestRunnerOptions _normalizedOpts;
             private readonly RootNode _root;
@@ -36,7 +35,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
             }
 
-            public List<TestCase> WillRunTestCases {
+            public List<TestCaseInfo> WillRunTestCases {
                 get {
                     return _willRun;
                 }
@@ -70,73 +69,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
                 _root.AppendEnd(null);
 
-                // Apply rules from the options
-                if (normalized.FocusPatterns.Count > 0) {
-                    ApplyPatterns(NewRegex(normalized.FocusPatterns),
-                                  testRun,
-                                  t => t.IsFocused = true);
-                }
-                if (normalized.SkipPatterns.Count > 0) {
-                    ApplyPatterns(NewRegex(normalized.SkipPatterns),
-                                  testRun,
-                                  t => t.Skipped = true);
-                }
-
-                // If any focused nodes, then only run focused nodes
-                if (!_normalizedOpts.IgnoreFocus && testRun.ContainsFocusedUnits) {
-                    ApplyFocussing(testRun);
-                }
-
-                // Look for explicit tests
-                SkipExplicitTests(testRun);
-
-                // Scan the tree for other situations
-                InheritBiasToChildren(testRun);
+                // Apply filter rules from the options
+                _normalizedOpts.PlanFilter.Apply(testRun, normalized);
 
                 _willRun = PlanOrder.OfType<TestCaseNode>()
-                    .Select(t => (TestCase) t.Unit)
+                    .Select(t => (TestCaseInfo) t.Unit)
                     .Where(t => !t.Skipped)
                     .ToList();
             }
 
             public abstract TestRunResults RunTests();
-
-            void ApplyPatterns(IList<Regex> patterns, TestUnit m, Action<TestUnit> action) {
-                if (patterns.Any(t => t.IsMatch(m.DisplayName))) {
-                    action(m);
-                } else {
-                    foreach (var c in m.Children) {
-                        ApplyPatterns(patterns, c, action);
-                    }
-                }
-            }
-
-            static IList<Regex> NewRegex(IEnumerable<string> patterns) {
-                return patterns.Select(t => new Regex(t, RegexOptions.IgnorePatternWhitespace))
-                    .ToList();
-            }
-
-            void ApplyFocussing(TestUnit m) {
-                if (m.ContainsFocusedUnits) {
-                    foreach (var c in m.Children) {
-                        ApplyFocussing(c);
-                    }
-
-                } else if (m.IsFocused) {
-
-                } else {
-                    m.Skipped = true;
-                }
-            }
-
-            void SkipExplicitTests(TestUnit m) {
-                if (m.IsExplicit) {
-                    m.Skipped = !m.IsFocused;
-                }
-                foreach (var c in m.Children) {
-                    SkipExplicitTests(c);
-                }
-            }
 
             private void Push(TestUnitNode parent, TestContext context, TestUnit item) {
                 if (parent == null) {
@@ -147,7 +89,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 TestUnitNode startNode = parent.AppendStart(item);
 
                 IEnumerable<TestUnit> children = item.Children;
-                if (_normalizedOpts.RandomizeSpecs) {
+                if (_normalizedOpts.RandomizeSpecs)     {
                     children = item.Children.Shuffle(new Random(_normalizedOpts.RandomSeed));
                 }
                 foreach (var c in children) {

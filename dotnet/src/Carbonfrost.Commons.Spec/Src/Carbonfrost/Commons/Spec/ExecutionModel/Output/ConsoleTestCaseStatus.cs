@@ -1,5 +1,5 @@
 //
-// Copyright 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2019-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,24 +19,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
     class ConsoleTestCaseStatus : ConsoleOutputPart<TestCaseResult> {
 
         protected override void RenderCore(TestCaseResult result) {
-            var bullet = console.IsUnicodeEncoding ? "•" : ".";
-            if (result.Skipped) {
-                console.Yellow();
-                console.Write("S");
-
-            } else if (result.IsPending) {
-                console.Yellow();
-                console.Write("*");
-
-            } else if (result.Failed) {
-                console.Red();
-                console.Write("F");
-
-            } else {
-                console.White();
-                console.Write(bullet);
-            }
-            console.ResetColor();
+            parts.forStatus.Render(context, result);
         }
     }
+
 }

@@ -43,36 +43,36 @@ namespace Carbonfrost.Commons.Spec {
 
     static partial class Extensions {
 
-        public static void Between<T>(this Expectation<T> e, T low, T high) {
+        public static void Between<T>(this IExpectation<T> e, T low, T high) {
             Between<T>(e, low, high, (string) null);
         }
 
-        public static void Between<T>(this Expectation<T> e, T low, T high, Comparison<T> comparison) {
+        public static void Between<T>(this IExpectation<T> e, T low, T high, Comparison<T> comparison) {
             Between<T>(e, low, high, comparison, null);
         }
 
-        public static void Between(this Expectation<string> e, string low, string high, StringComparison comparison) {
+        public static void Between(this IExpectation<string> e, string low, string high, StringComparison comparison) {
             Between(e, low, high, comparison, null);
         }
 
-        public static void Between<T>(this Expectation<T> e, T low, T high, IComparer<T> comparer) {
+        public static void Between<T>(this IExpectation<T> e, T low, T high, IComparer<T> comparer) {
             Between(e, low, high, comparer, (string) null);
         }
 
-        public static void Between<T>(this Expectation<T> e, T low, T high, string message, params object[] args) {
-            e.Should(Matchers.BeBetween(low, high), message, (object[]) args);
+        public static void Between<T>(this IExpectation<T> e, T low, T high, string message, params object[] args) {
+            e.Like(Matchers.BeBetween(low, high), message, (object[]) args);
         }
 
-        public static void Between<T>(this Expectation<T> e, T low, T high, Comparison<T> comparison, string message, params object[] args) {
-            e.Should(Matchers.BeBetween(low, high, comparison), message, (object[]) args);
+        public static void Between<T>(this IExpectation<T> e, T low, T high, Comparison<T> comparison, string message, params object[] args) {
+            e.Like(Matchers.BeBetween(low, high, comparison), message, (object[]) args);
         }
 
-        public static void Between(this Expectation<string> e, string low, string high, StringComparison comparison, string message, params object[] args) {
-            e.Should(Matchers.BeBetween(low, high, comparison), message, (object[]) args);
+        public static void Between(this IExpectation<string> e, string low, string high, StringComparison comparison, string message, params object[] args) {
+            e.Like(Matchers.BeBetween(low, high, comparison), message, (object[]) args);
         }
 
-        public static void Between<T>(this Expectation<T> e, T low, T high, IComparer<T> comparer, string message, params object[] args) {
-            e.Should(Matchers.BeBetween(low, high, comparer), message, (object[]) args);
+        public static void Between<T>(this IExpectation<T> e, T low, T high, IComparer<T> comparer, string message, params object[] args) {
+            e.Like(Matchers.BeBetween(low, high, comparer), message, (object[]) args);
         }
 
     }

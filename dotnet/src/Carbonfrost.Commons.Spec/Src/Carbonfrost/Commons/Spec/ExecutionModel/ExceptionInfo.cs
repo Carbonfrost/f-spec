@@ -52,46 +52,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public static ExceptionInfo FromException(Exception ex) {
-            var sb = new StringBuilder();
-            FormatStackTrace(sb, ex);
+            var fmt = ExceptionStackTraceFilter.Apply(ex);
             TestFailure failure = null;
             if (ex is AssertException aex) {
                 failure = aex.TestFailure;
             }
 
             return new ExceptionInfo {
-                StackTrace = sb.ToString(),
-                Message = FormatExceptionMessage(ex),
+                StackTrace = fmt.StackTrace,
+                Message = fmt.Message,
                 ExceptionType = ex.GetType(),
                 TestFailure = failure,
             };
-        }
-
-        static string FormatExceptionMessage(Exception ex) {
-            string message = ex.Message;
-            string className = ex.GetType().FullName;
-            // Don't use assertion exception text since it is redundant
-            if (ex is AssertException) {
-                return message;
-            }
-            if (message == null || message.Length <= 0) {
-                return className;
-            }
-            return className + ": " + message;
-        }
-
-        static void FormatStackTrace(StringBuilder sb, Exception ex) {
-            if (ex.InnerException != null) {
-                sb.Append(" ---> ");
-                sb.AppendLine(FormatExceptionMessage(ex.InnerException));
-                FormatStackTrace(sb, ex.InnerException);
-                sb.AppendLine();
-                sb.AppendLine("   --- End of inner exception stack trace ---");
-            }
-            string stackTrace = ex.StackTrace;
-            if (stackTrace != null) {
-                sb.Append(stackTrace);
-            }
         }
     }
 }

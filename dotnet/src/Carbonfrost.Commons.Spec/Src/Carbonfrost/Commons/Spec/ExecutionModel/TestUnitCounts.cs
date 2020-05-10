@@ -1,5 +1,5 @@
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
+
 using System.Linq;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
@@ -25,6 +25,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         public int Total {
             get {
                 return _counts.Sum();
+            }
+        }
+
+        public bool StrictlyPassed {
+            get {
+                return Total == Passed;
             }
         }
 
@@ -49,6 +55,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         public int Pending {
             get {
                 return _counts[(int)TestStatus.Pending];
+            }
+        }
+
+        internal TestStatus Status {
+            get {
+                if (Total == 0) {
+                    return TestStatus.Passed;
+                }
+                if (Failed > 0) {
+                    return TestStatus.Failed;
+                }
+                return TestStatus.Passed;
             }
         }
 

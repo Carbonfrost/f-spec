@@ -1,13 +1,13 @@
 #if SELF_TEST
 
 //
-// Copyright 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,8 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
@@ -25,7 +26,7 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
     public class ThrowsMatcherTests : TestClass {
 
         private void ThrowingMethod() {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException("Error", new AccessViolationException());
         }
 
         private object ThrowingFunc() {
@@ -65,16 +66,32 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
         [Fact]
         public void Throws_fluent_Expression() {
             Expect(ThrowingMethod).Will.Throw<InvalidOperationException>();
+            Expect(ThrowingMethod).ToThrow.Exception<InvalidOperationException>();
         }
 
         [Fact]
         public void Throws_Not_fluent_Expression() {
             Expect(NonThrowingMethod).Will.Not.Throw<InvalidOperationException>();
+            Expect(ThrowingMethod).Not.ToThrow.Exception<InvalidCastException>();
+        }
+
+        [Fact]
+        public void Throws_message_match() {
+            Expect(ThrowingMethod).ToThrow.Message.EqualTo("Error");
+            Expect(ThrowingMethod).ToThrow.InnerException.InstanceOf<AccessViolationException>();
         }
 
         [Fact]
         public void Assert_Throws_should_detect_error() {
             Assert.Throws(typeof(InvalidOperationException), (Action) ThrowingMethod);
+        }
+
+        [Fact]
+        public void Assert_Throws_should_detect_target_error() {
+            var method = ((Action) ThrowingMethod).Method;
+            Expect(() => method.Invoke(this, null)).To(Matchers.Throw(
+                typeof(InvalidOperationException)).UnwindingTargetExceptions
+            );
         }
 
         [Fact]
@@ -90,7 +107,25 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
         public void Expect_Given_fluent_expression_action() {
             Given().Expect(() => { throw new InvalidOperationException(); })
                 .To(Matchers.Throw<InvalidOperationException>());
+        }
 
+        [Fact]
+        public void Assert_Throws_should_not_unwrap_TargetInvocationException_by_default() {
+            Assert.Throws<TargetInvocationException>(
+                () => throw new TargetInvocationException(new Exception())
+            );
+        }
+
+        [Explicit("This test is designed to fail.  Assertions happen on the output")]
+        [Fact]
+        [Tag("acceptance")]
+        public void Assert_on_async_should_have_redirected_stack_trace() {
+            Expect(AsyncMethod).Not.To(Matchers.Throw());
+        }
+
+        private static async void AsyncMethod() {
+            await Task.Delay(20);
+            throw new ArgumentException();
         }
     }
 }

@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
 //
 using System;
 using System.Diagnostics;
-using System.Linq;
-using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 using Carbonfrost.Commons.Spec.Resources;
 
@@ -24,89 +22,42 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class ExpectationCommand {
 
-        class EventuallyCommand : IExpectationCommand {
+        internal class EventuallyCommand<T> : ExpectationCommand<T> {
 
-            private readonly Action _thunk;
             private readonly TimeSpan _duration;
-            private readonly bool _negated;
+            private readonly ExpectationCommand<T> _inner;
 
-            public EventuallyCommand(TimeSpan duration,
-                                     Action thunk,
-                                     bool negated = false) {
+            public EventuallyCommand(TimeSpan duration, ExpectationCommand<T> inner) {
                 _duration = duration;
-                _thunk = thunk;
-                _negated = negated;
+                _inner = inner;
             }
 
-            public TestFailure Should(ITestMatcher matcher) {
-                var s = Stopwatch.StartNew();
-                var durationMS = (int) _duration.TotalMilliseconds;
-
-                while (s.ElapsedMilliseconds <= durationMS) {
-                    if (matcher.Matches(_thunk) != _negated) {
-                        return null;
-                    }
-                }
-
-                return new TestFailure("spec.eventually") {
-                    Message = SR.EventuallyTimedOutAfter(TextUtility.FormatDuration(_duration)),
-                    Children = { TestMatcherLocalizer.FailurePredicate(matcher) },
-                };
-            }
-
-            public IExpectationCommand Negated() {
-                return new EventuallyCommand(_duration, _thunk, !_negated);
-            }
-
-            public IExpectationCommand Eventually(TimeSpan delay) {
-                throw new NotImplementedException();
-            }
-
-            public IExpectationCommand Consistently(TimeSpan delay) {
-                throw new NotImplementedException();
-            }
-        }
-
-        class EventuallyCommand<T> : ExpectationCommand<T> {
-
-            private readonly Func<T> _thunk;
-            private readonly TimeSpan _duration;
-            private readonly bool _negated;
-
-            public EventuallyCommand(TimeSpan duration,
-                                     Func<T> thunk,
-                                     bool negated = false) {
-                _duration = duration;
-                _thunk = thunk;
-                _negated = negated;
+            public override ExpectationCommand<T> Given(string given) {
+                return new EventuallyCommand<T>(_duration, _inner.Given(given));
             }
 
             public override TestFailure Should(ITestMatcher<T> matcher) {
                 var s = Stopwatch.StartNew();
                 var durationMS = (int) _duration.TotalMilliseconds;
+                TestFailure aFailure = null;
 
                 while (s.ElapsedMilliseconds <= durationMS) {
-                    if (matcher.Matches(_thunk) != _negated) {
+                    aFailure = _inner.Should(matcher);
+                    if (aFailure == null) {
                         return null;
                     }
                 }
 
-                var actual = _thunk();
-                var aFailure = TestMatcherLocalizer.FailurePredicate(matcher);
                 var result = new TestFailure("spec.eventually") {
                     Message = SR.EventuallyTimedOutAfter(TextUtility.FormatDuration(_duration)),
-                    Children = { aFailure },
+                    Children = { TestMatcherLocalizer.FailurePredicate(matcher) },
                 };
-                result.UserData["Actual"] = TextUtility.ConvertToString(actual);
+                result.UserData["Actual"] = aFailure.UserData["Actual"];
                 return result;
             }
 
-            public override ExpectationCommand<TBase> As<TBase>() {
-                return new CastCommand<T, TBase>(this);
-            }
-
             public override ExpectationCommand<T> Negated() {
-                return new EventuallyCommand<T>(_duration, _thunk, !_negated);
+                return new EventuallyCommand<T>(_duration, _inner.Negated());
             }
         }
 

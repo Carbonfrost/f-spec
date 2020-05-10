@@ -1,11 +1,11 @@
 //
-// Copyright 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,6 +33,10 @@ namespace Carbonfrost.Commons.Spec {
 
         public static AssertException TestTimedOut(TimeSpan timeout) {
             return new AssertException(SR.TestTimedOut(timeout));
+        }
+
+        public static Exception CannotAliasDifferentTagNames() {
+            return new ArgumentNullException(SR.CannotAliasDifferentTagNames());
         }
 
         public static InvalidOperationException FactMethodParamCount(string name) {
@@ -80,7 +84,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public static AssertException HaveLengthWorksWith(Type type) {
-            return new AssertException(SR.HaveLengthWorksWith(type));
+            return new AssertException(SR.HaveLengthWorksWith());
         }
 
         public static AssertException CannotTreatAsDictionaryOrGroupings(Type type) {
@@ -135,7 +139,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public static Exception Sealed() {
-            return new InvalidOperationException();
+            return new InvalidOperationException(SR.Sealed());
         }
 
         public static Exception Disposed(string name) {
@@ -158,6 +162,10 @@ namespace Carbonfrost.Commons.Spec {
             return new InvalidOperationException();
         }
 
+        internal static Exception AllWhitespace(string argName) {
+            return new ArgumentException(SR.AllWhitespace(), argName);
+        }
+
         internal static Exception NotValidDataUri() {
             return new ArgumentException();
         }
@@ -171,7 +179,25 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         internal static Exception FailedToLoadAssemblyGeneralIO(string asmPath, string message) {
-            return new SpecException( SR.FailedToLoadAssemblyGeneralIO(asmPath, message));
+            return new SpecException(SR.FailedToLoadAssemblyGeneralIO(asmPath, message));
+        }
+
+        internal static ParserException FixtureParserIllegalTabs(int line) {
+            return new ParserException(SR.ParserErrorLinePosition(
+                SR.FixtureParserIllegalTabs(),
+                line
+            ));
+        }
+
+        internal static ParserException FixtureParserMissingFieldSeparator(int line) {
+            return new ParserException(SR.ParserErrorLinePosition(
+                SR.FixtureParserMissingFieldSeparator(),
+                line
+            ));
+        }
+
+        internal static Exception MultipleTestUnitFactories() {
+            return new SpecException(SR.MultipleTestUnitFactories());
         }
     }
 }

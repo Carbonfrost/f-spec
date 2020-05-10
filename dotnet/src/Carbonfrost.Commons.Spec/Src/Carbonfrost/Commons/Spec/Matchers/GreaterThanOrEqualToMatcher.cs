@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
 namespace Carbonfrost.Commons.Spec {
@@ -39,28 +38,28 @@ namespace Carbonfrost.Commons.Spec {
 
     static partial class Extensions {
 
-        public static void GreaterThanOrEqualTo<T>(this Expectation<T> e, T expected) {
-            GreaterThanOrEqualTo(e, expected, (string) null);
+        public static void GreaterThanOrEqualTo<T>(this IExpectation<T> e, T expected) {
+            Operators.GreaterThanOrEqualTo.Apply(e, expected, (string) null);
         }
 
-        public static void GreaterThanOrEqualTo<T>(this Expectation<T> e, T expected, IComparer<T> comparer) {
-            GreaterThanOrEqualTo(e, expected, comparer, null);
+        public static void GreaterThanOrEqualTo<T>(this IExpectation<T> e, T expected, IComparer<T> comparer) {
+            Operators.GreaterThanOrEqualTo.Apply(e, expected, comparer, null);
         }
 
-        public static void GreaterThanOrEqualTo<T>(this Expectation<T> e, T expected, Comparison<T> comparison) {
-            GreaterThanOrEqualTo(e, expected, comparison, null);
+        public static void GreaterThanOrEqualTo<T>(this IExpectation<T> e, T expected, Comparison<T> comparison) {
+            Operators.GreaterThanOrEqualTo.Apply(e, expected, comparison, null);
         }
 
-        public static void GreaterThanOrEqualTo<T>(this Expectation<T> e, T expected, string message, params object[] args) {
-            e.Should(Matchers.BeGreaterThanOrEqualTo<T>(expected), message, (object[]) args);
+        public static void GreaterThanOrEqualTo<T>(this IExpectation<T> e, T expected, string message, params object[] args) {
+            Operators.GreaterThanOrEqualTo.Apply(e, expected, message, (object[]) args);
         }
 
-        public static void GreaterThanOrEqualTo<T>(this Expectation<T> e, T expected, IComparer<T> comparer, string message, params object[] args) {
-            e.Should(Matchers.BeGreaterThanOrEqualTo<T>(expected, comparer), message, (object[]) args);
+        public static void GreaterThanOrEqualTo<T>(this IExpectation<T> e, T expected, IComparer<T> comparer, string message, params object[] args) {
+            Operators.GreaterThanOrEqualTo.Apply(e, expected, comparer, message, (object[]) args);
         }
 
-        public static void GreaterThanOrEqualTo<T>(this Expectation<T> e, T expected, Comparison<T> comparison, string message, params object[] args) {
-            e.Should(Matchers.BeGreaterThanOrEqualTo<T>(expected, comparison), message, (object[]) args);
+        public static void GreaterThanOrEqualTo<T>(this IExpectation<T> e, T expected, Comparison<T> comparison, string message, params object[] args) {
+            Operators.GreaterThanOrEqualTo.Apply(e, expected, comparison, message, (object[]) args);
         }
     }
 
@@ -153,8 +152,15 @@ namespace Carbonfrost.Commons.Spec {
 
         public class GreaterThanOrEqualToMatcher<T> : TestMatcher<T>, ITestMatcherWithComparer<T> {
 
-            public T Expected { get; private set; }
-            public IComparer<T> Comparer { get; private set; }
+            public T Expected {
+                get;
+                private set;
+            }
+
+            public IComparer<T> Comparer {
+                get;
+                private set;
+            }
 
             public GreaterThanOrEqualToMatcher(T expected, IComparer<T> comparer = null) {
                 Expected = expected;
@@ -184,6 +190,25 @@ namespace Carbonfrost.Commons.Spec {
             ITestMatcher<T> ITestMatcherWithComparer<T>.WithComparer(IComparer<T> comparer) {
                 return WithComparer(comparer);
             }
+        }
+
+        class GreaterThanOrEqualToOperator : ComparisonOperator {
+
+            protected override ITestMatcher<T> CreateMatcher<T>(T expected) {
+                return Matchers.BeGreaterThanOrEqualTo(expected);
+            }
+
+            protected override ITestMatcher<T> CreateMatcher<T>(T expected, IComparer<T> comparer) {
+                return Matchers.BeGreaterThanOrEqualTo(expected, comparer);
+            }
+
+            protected override ITestMatcher<T> CreateMatcher<T>(T expected, Comparison<T> comparison) {
+                return Matchers.BeGreaterThanOrEqualTo(expected, comparison);
+            }
+        }
+
+        static partial class Operators {
+            internal static readonly IComparisonOperator GreaterThanOrEqualTo = new GreaterThanOrEqualToOperator();
         }
     }
 }

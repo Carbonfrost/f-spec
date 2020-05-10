@@ -1,5 +1,5 @@
 //
-// Copyright 2016-2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016-2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
 //
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
@@ -25,16 +27,32 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         private Flags _flags;
         private TimeSpan? _testTimeout;
         private TimeSpan? _planTimeout;
-        private readonly MakeReadOnlyList<string> _focusPatterns = new MakeReadOnlyList<string>();
-        private readonly MakeReadOnlyList<string> _skipPatterns = new MakeReadOnlyList<string>();
         private AssertionMessageFormatModes _assertionMessageFormatMode;
         private int _contextLines = -1;
         private readonly PathCollection _fixturePaths = new PathCollection();
-        private readonly LoaderPathCollection _loaderPaths = new LoaderPathCollection();
+        private readonly MakeReadOnlyList<PackageReference> _packageReferences = new MakeReadOnlyList<PackageReference>();
+        private readonly AssemblyLoader _loader = new AssemblyLoader();
+        private readonly PathCollection _loaderPaths = new PathCollection();
+        private readonly TestPlanFilter _planFilter = new TestPlanFilter();
 
         internal bool IsSelfTest {
-            get;
-            set;
+            get {
+                return (_flags & Flags.SelfTest) > 0;
+            }
+            set {
+                WritePreamble();
+                SetFlag(value, Flags.SelfTest);
+            }
+        }
+
+        public bool FailFast {
+            get {
+                return (_flags & Flags.FailFast) > 0;
+            }
+            set {
+                WritePreamble();
+                SetFlag(value, Flags.FailFast);
+            }
         }
 
         public int ContextLines {
@@ -101,22 +119,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public Func<string, Assembly> LoadAssemblyFromPath {
             get {
-                return _loaderPaths.LoadAssemblyFromPath;
+                return _loader.LoadAssemblyFromPath;
             }
             set {
-                _loaderPaths.LoadAssemblyFromPath = value;
-            }
-        }
-
-        public IList<string> SkipPatterns {
-            get {
-                return _skipPatterns;
-            }
-        }
-
-        public IList<string> FocusPatterns {
-            get {
-                return _focusPatterns;
+                WritePreamble();
+                _loader.LoadAssemblyFromPath = value;
             }
         }
 
@@ -126,7 +133,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
             set {
                 WritePreamble();
-                _flags = value ? (_flags | Flags.RandomizeSpecs) : (_flags & ~Flags.RandomizeSpecs);
+                SetFlag(value, Flags.RandomizeSpecs);
             }
         }
 
@@ -136,7 +143,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
             set {
                 WritePreamble();
-                _flags = value ? (_flags | Flags.IgnoreFocus) : (_flags & ~Flags.IgnoreFocus);
+                SetFlag(value, Flags.IgnoreFocus);
             }
         }
 
@@ -146,7 +153,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
             set {
                 WritePreamble();
-                _flags = value ? (_flags | Flags.ShowPassExplicitly) : (_flags & ~Flags.ShowPassExplicitly);
+                SetFlag(value, Flags.ShowPassExplicitly);
             }
         }
 
@@ -156,7 +163,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
             set {
                 WritePreamble();
-                _flags = value ? (_flags | Flags.ShowTestNames) : (_flags & ~Flags.ShowTestNames);
+                SetFlag(value, Flags.ShowTestNames);
             }
         }
 
@@ -166,7 +173,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
             set {
                 WritePreamble();
-                _flags = value ? (_flags | Flags.SuppressSummary) : (_flags & ~Flags.SuppressSummary);
+                SetFlag(value, Flags.SuppressSummary);
             }
         }
 
@@ -175,16 +182,27 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             private set;
         }
 
-        public TestRunnerOptions() {}
+        public IList<PackageReference> PackageReferences {
+            get {
+                return _packageReferences;
+            }
+        }
+
+        public TestPlanFilter PlanFilter {
+             get {
+                 return _planFilter;
+             }
+        }
+
+        public TestRunnerOptions() : this(null) {
+        }
 
         public TestRunnerOptions(TestRunnerOptions copyFrom) {
             if (copyFrom == null) {
                 return;
             }
 
-            SkipPatterns.AddAll(copyFrom.SkipPatterns);
             IgnoreFocus = copyFrom.IgnoreFocus;
-            FocusPatterns.AddAll(copyFrom.FocusPatterns);
             FixturePaths.AddAll(copyFrom.FixturePaths);
             LoaderPaths.AddAll(copyFrom.LoaderPaths);
             LoadAssemblyFromPath = copyFrom.LoadAssemblyFromPath;
@@ -192,6 +210,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             _flags = copyFrom._flags;
             ContextLines = copyFrom.ContextLines;
             IsSelfTest = copyFrom.IsSelfTest;
+            PackageReferences.AddAll(copyFrom.PackageReferences);
+            PlanFilter.CopyFrom(copyFrom.PlanFilter);
         }
 
         internal TestRunnerOptions Normalize() {
@@ -208,14 +228,28 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public void MakeReadOnly() {
             IsReadOnly = true;
-            _focusPatterns.MakeReadOnly();
-            _skipPatterns.MakeReadOnly();
             _fixturePaths.MakeReadOnly();
             _loaderPaths.MakeReadOnly();
+            _packageReferences.MakeReadOnly();
+            _planFilter.MakeReadOnly();
         }
 
         public TestRunnerOptions Clone() {
             return new TestRunnerOptions(this);
+        }
+
+        internal IEnumerable<Assembly> LoadAssembliesAndBindLoader() {
+            var list = new List<Assembly>();
+            list.AddRange(_loader.LoadAssemblies(LoaderPaths));
+
+            _loader.RegisterAssemblyResolve(
+                list.Select(t => Path.GetDirectoryName(new Uri(t.CodeBase).LocalPath)).Distinct()
+            );
+
+            list.AddRange(
+                _loader.LoadAssemblies(PackageReferences.Select(pkg => pkg.ResolveAssembly()))
+            );
+            return list;
         }
 
         private void WritePreamble() {
@@ -224,13 +258,19 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        private void SetFlag(bool value, Flags flag) {
+            _flags = value ? (_flags | flag) : (_flags & ~flag);
+        }
+
         [Flags]
         enum Flags {
-            RandomizeSpecs,
-            IgnoreFocus,
-            ShowPassExplicitly,
-            ShowTestNames,
-            SuppressSummary,
+            RandomizeSpecs = 1 << 0,
+            IgnoreFocus = 1 << 1,
+            ShowPassExplicitly = 1 << 2,
+            ShowTestNames = 1 << 3,
+            SuppressSummary = 1 << 4,
+            FailFast = 1 << 5,
+            SelfTest = 1 << 6,
         }
     }
 }

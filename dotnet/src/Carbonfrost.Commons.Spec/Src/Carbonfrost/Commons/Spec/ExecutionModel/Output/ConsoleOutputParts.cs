@@ -14,34 +14,64 @@
 // limitations under the License.
 //
 
-using System.Collections.Generic;
-
 namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
     class ConsoleOutputParts {
 
         public readonly ConsoleOutputPart<TestCaseResult> onTestCaseFinished;
+        public readonly ConsoleOutputPart<TestUnitResults> onTestTheoryFinished;
         public readonly ConsoleOutputPart<TestRunResults> onTestRunFinished;
-        public readonly ConsoleOutputPart<IList<TestUnitResult>> onTestRunFinishedWithProblems;
-        public readonly ConsoleOutputPart<ExceptionInfo> onExceptionInfo;
+        public readonly ConsoleOutputPart<ExceptionInfo> forExceptionInfo;
+        public readonly ConsoleOutputPart<UserDataCollection> forUserData;
+        public readonly ConsoleOutputPart<Patch> forPatch;
+        public readonly ConsoleOutputPart<TestUnitResult> forStatus;
+        public readonly ConsoleOutputPart<TestUnitResult> forResultDetails;
+        public readonly ConsoleOutputPart<TestMessageEventArgs> forMessage;
 
         public ConsoleOutputParts(TestRunnerOptions opts) {
             onTestCaseFinished = ConsoleOutputPart.Compose(
                 new ConsoleTestCaseStatus()
             );
+            onTestTheoryFinished = ConsoleOutputPart.Compose(
+                new ConsoleTestTheoryStatus()
+            );
             onTestRunFinished = ConsoleOutputPart.Compose(
+                new ConsoleTestRunExplicitlyPassed {
+                    Show = opts.ShowPassExplicitly,
+                },
+                new ConsoleTestRunProblems {
+                    Show = !opts.SuppressSummary,
+                },
                 new ConsoleTestRunResults()
             );
-            onTestRunFinishedWithProblems = ConsoleOutputPart.Compose(
-                new ConsoleTestRunProblems()
+            forExceptionInfo = ConsoleOutputPart.Compose(
+                new ConsoleExceptionInfo()
             );
-            onExceptionInfo = ConsoleOutputPart.Compose(
-                new ConsoleExceptionInfo {
+            forUserData = ConsoleOutputPart.Compose(
+                new ConsoleUserData {
+                    ShowWhitespace = opts.AssertionMessageFormatMode.HasFlag(
+                        AssertionMessageFormatModes.PrintWhitespace
+                    ),
+                }
+            );
+            forMessage = ConsoleOutputPart.Compose(
+                new ConsoleMessage()
+            );
+            forPatch = ConsoleOutputPart.Compose(
+                new ConsolePatch {
                     ContextLines = opts.ContextLines,
                     ShowWhitespace = opts.AssertionMessageFormatMode.HasFlag(
                         AssertionMessageFormatModes.PrintWhitespace
                     ),
                 }
+            );
+            forStatus = ConsoleOutputPart.Compose(
+                new ConsoleTestUnitStatusBullet {
+                    ShowSkipped = false,
+                }
+            );
+            forResultDetails = ConsoleOutputPart.Compose(
+                new ConsoleResultDetails()
             );
         }
     }

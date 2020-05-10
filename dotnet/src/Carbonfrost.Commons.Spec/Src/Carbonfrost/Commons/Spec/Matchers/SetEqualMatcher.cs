@@ -1,5 +1,5 @@
 //
-// Copyright 2017, 2018-2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2018-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
 namespace Carbonfrost.Commons.Spec {
@@ -43,37 +42,42 @@ namespace Carbonfrost.Commons.Spec {
 
     static partial class Extensions {
 
-        public static void SetEqualTo<TSource>(this Expectation<IEnumerable<TSource>> e, IEnumerable<TSource> expected) {
-            SetEqualTo(e, expected, (string) null);
+        public static void SetEqualTo<T>(this IExpectation<IEnumerable<T>> e, params T[] expected) {
+            Operators.SetEqual.Apply<T>(e, expected, (string) null);
         }
 
-        public static void SetEqualTo<TSource>(this Expectation<IEnumerable<TSource>> e, IEnumerable<TSource> expected, Comparison<TSource> comparison) {
+        public static void SetEqualTo<T>(this IExpectation<IEnumerable<T>> e, IEnumerable<T> expected, IEqualityComparer<T> comparer) {
+            Operators.SetEqual.Apply<T>(e, expected, comparer, null);
+        }
+
+        public static void SetEqualTo<T>(this IExpectation<IEnumerable<T>> e, IEnumerable<T> expected, Comparison<T> comparison) {
+            Operators.SetEqual.Apply<T>(e, expected, comparison, null);
+        }
+
+        public static void SetEqualTo<T>(this IExpectation<IEnumerable<T>> e, IEnumerable<T> expected) {
+            Operators.SetEqual.Apply<T>(e, expected, (string) null);
+        }
+
+        public static void SetEqualTo<T>(this IExpectation<IEnumerable<T>> e, IEnumerable<T> expected, IEqualityComparer<T> comparer, string message, params object[] args) {
+            Operators.SetEqual.Apply<T>(e, expected, message, (object[]) args);
+        }
+
+        public static void SetEqualTo<T>(this IExpectation<IEnumerable<T>> e, IEnumerable<T> expected, Comparison<T> comparison, string message, params object[] args) {
+            Operators.SetEqual.Apply<T>(e, expected, comparison, message, (object[]) args);
+        }
+
+        public static void SetEqualTo<T>(this IExpectation<IEnumerable<T>> e, IEnumerable<T> expected, string message, params object[] args) {
+            Operators.SetEqual.Apply<T>(e, expected, message, (object[]) args);
+        }
+
+        public static void SetEqualTo(this IExpectation<IEnumerable<string>> e, IEnumerable<string> expected, StringComparison comparison) {
             SetEqualTo(e, expected, comparison, null);
         }
 
-        public static void SetEqualTo(this Expectation<IEnumerable<string>> e, IEnumerable<string> expected, StringComparison comparison) {
-            SetEqualTo(e, expected, comparison, null);
+        public static void SetEqualTo(this IExpectation<IEnumerable<string>> e, IEnumerable<string> expected, StringComparison comparison, string message, params object[] args) {
+            e.As<IEnumerable<string>>().Like(Matchers.BeSetEqualTo(expected, comparison), message, (object[]) args);
         }
 
-        public static void SetEqualTo<TSource>(this Expectation<IEnumerable<TSource>> e, IEnumerable<TSource> expected, IEqualityComparer<TSource> comparer) {
-            SetEqualTo(e, expected, comparer, null);
-        }
-
-        public static void SetEqualTo<TSource>(this Expectation<IEnumerable<TSource>> e, IEnumerable<TSource> expected, string message, params object[] args) {
-            e.As<IEnumerable<TSource>>().Should(Matchers.BeSetEqualTo(expected), message, (object[]) args);
-        }
-
-        public static void SetEqualTo<TSource>(this Expectation<IEnumerable<TSource>> e, IEnumerable<TSource> expected, Comparison<TSource> comparison, string message, params object[] args) {
-            e.As<IEnumerable<TSource>>().Should(Matchers.BeSetEqualTo(expected, comparison), message, (object[]) args);
-        }
-
-        public static void SetEqualTo(this Expectation<IEnumerable<string>> e, IEnumerable<string> expected, StringComparison comparison, string message, params object[] args) {
-            e.As<IEnumerable<string>>().Should(Matchers.BeSetEqualTo(expected, comparison), message, (object[]) args);
-        }
-
-        public static void SetEqualTo<TSource>(this Expectation<IEnumerable<TSource>> e, IEnumerable<TSource> expected, IEqualityComparer<TSource> comparer, string message, params object[] args) {
-            e.As<IEnumerable<TSource>>().Should(Matchers.BeSetEqualTo(expected, comparer), message, (object[]) args);
-        }
     }
 
     partial class Asserter {
@@ -279,14 +283,32 @@ namespace Carbonfrost.Commons.Spec {
 
     namespace TestMatchers {
 
-        public class SetEqualMatcher<TSource> : TestMatcher<IEnumerable<TSource>> {
+        public class SetEqualMatcher<TSource> : TestMatcher<IEnumerable<TSource>>, ITestMatcherWithEqualityComparerApiConventions<SetEqualMatcher<TSource>, TSource>, ITestMatcherActualDiff {
 
-            public IEnumerable<TSource> Expected { get; private set; }
-            public IEqualityComparer<TSource> Comparer { get; private set; }
+            public IEnumerable<TSource> Expected {
+                get;
+                private set;
+            }
 
-            public SetEqualMatcher(IEnumerable<TSource> expected, IEqualityComparer<TSource> comparer = null) {
+            public IEqualityComparer<TSource> Comparer {
+                get;
+                private set;
+            }
+
+            public SetEqualMatcher(IEnumerable<TSource> expected) {
+                Expected = expected;
+            }
+
+            public SetEqualMatcher(IEnumerable<TSource> expected, IEqualityComparer<TSource> comparer) {
                 Expected = expected;
                 Comparer = comparer;
+            }
+
+            public SetEqualMatcher(IEnumerable<TSource> expected, Comparison<TSource> comparison) {
+                Expected = expected;
+                if (comparison != null) {
+                    Comparer = new Assert.EqualityComparisonAdapter<TSource>(comparison);
+                }
             }
 
             public SetEqualMatcher<TSource> WithComparer(IEqualityComparer<TSource> comparer) {
@@ -295,13 +317,13 @@ namespace Carbonfrost.Commons.Spec {
 
             public SetEqualMatcher<TSource> WithComparer(IComparer<TSource> comparer) {
                 if (comparer == null) {
-                    return new SetEqualMatcher<TSource>(Expected, null);
+                    return new SetEqualMatcher<TSource>(Expected);
                 }
                 return new SetEqualMatcher<TSource>(Expected, new Assert.EqualityComparerAdapter<TSource>(comparer));
             }
 
-            public SetEqualMatcher<TSource> WithComparison(IEqualityComparer<TSource> comparer) {
-                return new SetEqualMatcher<TSource>(Expected, comparer);
+            public SetEqualMatcher<TSource> WithComparison(Comparison<TSource> comparison) {
+                return new SetEqualMatcher<TSource>(Expected, comparison);
             }
 
             public override bool Matches(IEnumerable<TSource> actual) {
@@ -310,6 +332,29 @@ namespace Carbonfrost.Commons.Spec {
                 tally.SymmetricExceptWith(actual);
                 return tally.Count == 0;
             }
+
+            Patch ITestMatcherActualDiff.GetPatch(object actual) {
+                return Patch.StandardTextPatch(actual, Expected);
+            }
+        }
+
+        class SetEqualOperator : SequenceComparisonOperator {
+
+            protected override ITestMatcher<IEnumerable<T>> CreateMatcher<T>(IEnumerable<T> expected) {
+                return Matchers.BeSetEqualTo<T>(expected);
+            }
+
+            protected override ITestMatcher<IEnumerable<T>> CreateMatcher<T>(IEnumerable<T> expected, IEqualityComparer<T> comparer) {
+                return Matchers.BeSetEqualTo<T>(expected, comparer);
+            }
+
+            protected override ITestMatcher<IEnumerable<T>> CreateMatcher<T>(IEnumerable<T> expected, Comparison<T> comparison) {
+                return Matchers.BeSetEqualTo<T>(expected, comparison);
+            }
+        }
+
+        partial class Operators {
+            internal static readonly ISequenceComparisonOperator SetEqual = new SetEqualOperator();
         }
     }
 

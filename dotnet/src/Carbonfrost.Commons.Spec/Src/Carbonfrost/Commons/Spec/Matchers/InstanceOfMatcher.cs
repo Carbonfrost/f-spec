@@ -27,6 +27,10 @@ namespace Carbonfrost.Commons.Spec {
             return new InstanceOfMatcher(expected);
         }
 
+        public static InstanceOfMatcher BeInstanceOf<T>() {
+            return new InstanceOfMatcher(typeof(T));
+        }
+
     }
 
     partial class Asserter {
@@ -140,32 +144,46 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class Extensions {
 
-        public static void InstanceOf<T>(this Expectation<T> e, Type expected) {
-            e.As<object>().Should(Matchers.BeInstanceOf(expected));
+        public static void InstanceOf<T>(this IExpectation<T> e, Type expected) {
+            e.As<object>().Like(Matchers.BeInstanceOf(expected));
         }
 
-        public static void InstanceOf<T>(this Expectation<T> e, Type expected, string message, params object[] args) {
-            e.As<object>().Should(Matchers.BeInstanceOf(expected), message, args);
+        public static void InstanceOf<T>(this IExpectation<T> e, Type expected, string message, params object[] args) {
+            e.As<object>().Like(Matchers.BeInstanceOf(expected), message, args);
         }
-
     }
 
     namespace TestMatchers {
 
-        public class InstanceOfMatcher : TestMatcher<object> {
+        public class InstanceOfMatcher : TestMatcher<object>, ITestMatcherValidations {
 
-            public Type Expected { get; private set; }
+            private bool _allowNull;
+
+            public Type Expected {
+                get;
+                private set;
+            }
+
+            object ITestMatcherValidations.AllowingNullActualValue() {
+                return AllowingNullActualValue();
+            }
+
+            public InstanceOfMatcher AllowingNullActualValue() {
+                return new InstanceOfMatcher(Expected) {
+                    _allowNull = true
+                };
+            }
 
             public InstanceOfMatcher(Type expected) {
                 if (expected == null) {
-                    throw new ArgumentNullException("expected");
+                    throw new ArgumentNullException(nameof(expected));
                 }
 
                 Expected = expected;
             }
 
             public override bool Matches(object actual) {
-                if (actual == null) {
+                if (actual == null && !_allowNull) {
                     throw SpecFailure.CannotUseInstanceOfOnNullActual();
                 }
 
@@ -173,5 +191,4 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
     }
-
 }

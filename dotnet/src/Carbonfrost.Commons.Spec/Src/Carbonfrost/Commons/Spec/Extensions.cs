@@ -1,5 +1,5 @@
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,9 @@
 // limitations under the License.
 //
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
@@ -36,6 +39,12 @@ namespace Carbonfrost.Commons.Spec {
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        internal static IEnumerable<TestData> WithNames(this ITestDataApiAttributeConventions self, IEnumerable<TestData> data, TestTag[] tags) {
+            return data.Select(d => d.Update(
+                self.Name, self.Reason, d.Flags | (self.Explicit ? TestUnitFlags.Explicit : TestUnitFlags.None)
+            ).WithTags(tags));
         }
 
         // IgnoreCase versions are odd values

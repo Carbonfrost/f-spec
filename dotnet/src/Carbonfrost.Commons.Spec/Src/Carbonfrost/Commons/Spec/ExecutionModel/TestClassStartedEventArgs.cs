@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
@@ -25,29 +24,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public TypeInfo Class {
             get {
-                return TestClass.TestType.GetTypeInfo();
+                return TestClass.TestClass.GetTypeInfo();
             }
         }
 
-        public object TestSubject {
+        public TestClassInfo TestClass {
             get {
-                var s = TestClass as TestClassSubjectBinding;
-                if (s == null) {
-                    return null;
-                }
-                return s.TestSubject;
+                return (TestClassInfo) _inner.TestUnit;
             }
         }
 
-        internal ReflectedTestClass TestClass {
-            get {
-                return (ReflectedTestClass) _inner.TestUnit;
-            }
-        }
         internal TestClassStartedEventArgs(TestUnitStartedEventArgs inner) {
             _inner = inner;
         }
     }
-
-
 }

@@ -59,7 +59,7 @@ namespace Carbonfrost.Commons.Spec {
             } else {
                 result.SetSuccess();
             }
-            result.Done();
+            result.Done(null);
             return result;
         }
 

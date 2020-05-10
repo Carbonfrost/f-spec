@@ -1,5 +1,5 @@
 //
-// Copyright 2016-2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,10 +22,25 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public struct TestData : IReadOnlyList<object> {
+    public readonly struct TestData : ITestData, ITestUnitStateApiConventions<TestData> {
 
         private readonly string _name;
+        private readonly string _reason;
         private readonly object[] _data;
+        private readonly TestTagCollection _tags;
+        private readonly TestUnitFlags _flags;
+
+        public TestTagCollection Tags {
+            get {
+                return _tags;
+            }
+        }
+
+        internal TestUnitFlags Flags {
+            get {
+                return _flags;
+            }
+        }
 
         public string Name {
             get {
@@ -33,17 +48,127 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        private TestData(string name, object[] data) {
+        public string Reason {
+            get {
+                return _reason;
+            }
+        }
+
+        public bool IsExplicit {
+            get {
+                return _flags.HasFlag(TestUnitFlags.Explicit);
+            }
+        }
+
+        public bool IsFocused {
+            get {
+                return _flags.HasFlag(TestUnitFlags.Focus);
+            }
+        }
+
+        public bool IsPending {
+            get {
+                return _flags.HasFlag(TestUnitFlags.Pending);
+            }
+        }
+
+        public bool PassExplicitly {
+            get {
+                return _flags.HasFlag(TestUnitFlags.PassExplicitly);
+            }
+        }
+
+        public bool Skipped {
+            get {
+                return _flags.HasFlag(TestUnitFlags.Skip);
+            }
+        }
+
+        public bool Failed {
+            get {
+                return _flags.HasFlag(TestUnitFlags.Failed);
+            }
+        }
+
+        private TestData(string name, string reason, TestUnitFlags flags, object[] data, IEnumerable<TestTag> tags) {
             _name = name;
+            _reason = reason;
+            _flags = flags;
             _data = data ?? Array.Empty<object>();
+            _tags = TestTagCollection.Create(tags);
+            _tags.MakeReadOnly();
         }
 
         public TestData(params object[] data)
-            : this(null, data) {
+            : this(null, null, TestUnitFlags.None, (object[]) data, null) {
+        }
+
+        public static TestData Create(params object[] data) {
+            return new TestData((object[]) data);
+        }
+
+        public static TestData FCreate(params object[] data) {
+            return new TestData(null, null, TestUnitFlags.Focus, (object[]) data, null);
+        }
+
+        public static TestData XCreate(params object[] data) {
+            return new TestData(null, null, TestUnitFlags.Pending, (object[]) data, null);
         }
 
         public TestData WithName(string name) {
-            return new TestData(name, _data);
+            return Update(name, Reason, _flags);
+        }
+
+        public TestData WithReason(string reason) {
+            return Update(Name, reason, _flags);
+        }
+
+        public TestData WithTags(IEnumerable<TestTag> tags) {
+            return new TestData(Name, Reason, _flags, (object[]) _data, tags);
+        }
+
+        public TestData Skip() {
+            return Skip(null);
+        }
+
+        public TestData Skip(string reason) {
+            return Update(Name, reason ?? Reason, _flags | TestUnitFlags.Skip);
+        }
+
+        public TestData Fail() {
+            return Fail(null);
+        }
+
+        public TestData Fail(string reason) {
+            return Update(Name, reason ?? Reason, _flags | TestUnitFlags.Failed);
+        }
+
+        public TestData Focus() {
+            return Update(Name, Reason, _flags | TestUnitFlags.Focus);
+        }
+
+        public TestData Focus(string reason) {
+            return Update(Name, reason, _flags | TestUnitFlags.Focus);
+        }
+
+        public TestData Pending() {
+            return Update(Name, Reason, _flags | TestUnitFlags.Pending);
+        }
+
+        public TestData Pending(string reason) {
+            return Update(Name, reason, _flags | TestUnitFlags.Pending);
+        }
+
+        public TestData Explicit() {
+            return Explicit(null);
+        }
+
+        public TestData Explicit(string reason) {
+            return Update(Name, reason ?? Reason, _flags | TestUnitFlags.Explicit);
+        }
+
+        internal TestData Update(string name, string reason, TestUnitFlags flags) {
+            return new TestData(name, reason, flags, (object[]) _data, _tags);
         }
 
         public object this[int index] {
@@ -67,7 +192,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         internal IEnumerable<object> Evaluate(TestContext testContext) {
-            var method = ((TestCase) testContext.CurrentTest).TestMethod;
+            var method = ((TestCaseInfo) testContext.CurrentTest).TestMethod;
             var pms = method.GetParameters();
             int index = 0;
 
@@ -172,6 +297,13 @@ namespace Carbonfrost.Commons.Spec {
                 }
             }
             return result;
+        }
+
+        internal TestData VerifiableProblem(bool shouldVerify, string reason) {
+            if (shouldVerify) {
+                return Fail(reason);
+            }
+            return Pending(reason);
         }
     }
 }

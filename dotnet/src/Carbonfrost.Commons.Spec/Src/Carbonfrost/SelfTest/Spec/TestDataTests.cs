@@ -194,6 +194,56 @@ namespace Carbonfrost.SelfTest.Spec {
             Assert.Contains("b, d, g", all);
         }
 
+        [Fact]
+        public void FCreate_should_create_focused_test_data() {
+            Assert.True(TestData.FCreate("arg").Focus().IsFocused);
+        }
+
+        [Fact]
+        public void XCreate_should_create_pending_test_data() {
+            Assert.True(TestData.XCreate("arg").Pending().IsPending);
+        }
+
+        [Fact]
+        public void FTestData_Constructor_should_create_focused_test_data() {
+            Assert.True(new FTestData("arg").IsFocused);
+        }
+
+        [Fact]
+        public void FTestData_Constructor_empty_should_create_focused_test_data() {
+            Assert.True(new FTestData().IsFocused);
+        }
+
+        [Fact]
+        public void FTestData_conversion_should_create_focused_test_data() {
+            Assert.True(((TestData) new FTestData("arg")).IsFocused);
+        }
+
+        [Fact]
+        public void FTestData_conversion_empty_should_create_focused_test_data() {
+            Assert.True(((TestData) new FTestData()).IsFocused);
+        }
+
+        [Fact]
+        public void XTestData_Constructor_should_create_focused_test_data() {
+            Assert.True(new XTestData("arg").IsPending);
+        }
+
+        [Fact]
+        public void XTestData_Constructor_empty_should_create_focused_test_data() {
+            Assert.True(new XTestData().IsPending);
+        }
+
+        [Fact]
+        public void XTestData_conversion_should_create_focused_test_data() {
+            Assert.True(((TestData) new XTestData("arg")).IsPending);
+        }
+
+        [Fact]
+        public void XTestData_conversion_empty_should_create_focused_test_data() {
+            Assert.True(((TestData) new XTestData()).IsPending);
+        }
+
         static PropertyInfo Property(string property) {
             return typeof(TestDataTests).GetProperty(property, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
         }
@@ -207,7 +257,7 @@ namespace Carbonfrost.SelfTest.Spec {
                 }
             }
 
-            public override object TestObject {
+            internal override object TestObject {
                 get {
                     return _testObject;
                 }

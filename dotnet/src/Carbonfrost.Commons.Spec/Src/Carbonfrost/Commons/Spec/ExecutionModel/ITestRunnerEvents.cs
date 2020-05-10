@@ -1,11 +1,11 @@
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,29 +14,34 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     public interface ITestRunnerEvents {
         event EventHandler<TestMessageEventArgs> Message;
-        event EventHandler<TestClassStartingEventArgs> TestClassStarting;
-        event EventHandler<TestClassStartedEventArgs> TestClassStarted;
-        event EventHandler<TestClassFinishedEventArgs> TestClassFinished;
-        event EventHandler<TestAssemblyStartingEventArgs> TestAssemblyStarting;
-        event EventHandler<TestAssemblyStartedEventArgs> TestAssemblyStarted;
-        event EventHandler<TestAssemblyFinishedEventArgs> TestAssemblyFinished;
-        event EventHandler<TestNamespaceStartingEventArgs> TestNamespaceStarting;
-        event EventHandler<TestNamespaceStartedEventArgs> TestNamespaceStarted;
-        event EventHandler<TestNamespaceFinishedEventArgs> TestNamespaceFinished;
-        event EventHandler<TestCaseStartingEventArgs> TestCaseStarting;
-        event EventHandler<TestCaseStartedEventArgs> TestCaseStarted;
-        event EventHandler<TestCaseFinishedEventArgs> TestCaseFinished;
-        event EventHandler<TestRunnerStartingEventArgs> TestRunnerStarting;
-        event EventHandler<TestRunnerStartedEventArgs> TestRunnerStarted;
-        event EventHandler<TestRunnerFinishedEventArgs> TestRunnerFinished;
-        event EventHandler<TestUnitStartingEventArgs> TestUnitStarting;
-        event EventHandler<TestUnitStartedEventArgs> TestUnitStarted;
-        event EventHandler<TestUnitFinishedEventArgs> TestUnitFinished;
+        event EventHandler<TestClassStartingEventArgs> ClassStarting;
+        event EventHandler<TestClassStartedEventArgs> ClassStarted;
+        event EventHandler<TestClassFinishedEventArgs> ClassFinished;
+        event EventHandler<TestSubjectClassBindingStartingEventArgs> SubjectClassBindingStarting;
+        event EventHandler<TestSubjectClassBindingStartedEventArgs> SubjectClassBindingStarted;
+        event EventHandler<TestSubjectClassBindingFinishedEventArgs> SubjectClassBindingFinished;
+        event EventHandler<TestAssemblyStartingEventArgs> AssemblyStarting;
+        event EventHandler<TestAssemblyStartedEventArgs> AssemblyStarted;
+        event EventHandler<TestAssemblyFinishedEventArgs> AssemblyFinished;
+        event EventHandler<TestNamespaceStartingEventArgs> NamespaceStarting;
+        event EventHandler<TestNamespaceStartedEventArgs> NamespaceStarted;
+        event EventHandler<TestNamespaceFinishedEventArgs> NamespaceFinished;
+        event EventHandler<TestCaseStartingEventArgs> CaseStarting;
+        event EventHandler<TestCaseStartedEventArgs> CaseStarted;
+        event EventHandler<TestCaseFinishedEventArgs> CaseFinished;
+        event EventHandler<TestRunnerStartingEventArgs> RunnerStarting;
+        event EventHandler<TestRunnerStartedEventArgs> RunnerStarted;
+        event EventHandler<TestRunnerFinishedEventArgs> RunnerFinished;
+        event EventHandler<TestUnitStartingEventArgs> UnitStarting;
+        event EventHandler<TestUnitStartedEventArgs> UnitStarted;
+        event EventHandler<TestUnitFinishedEventArgs> UnitFinished;
+        event EventHandler<TestTheoryStartingEventArgs> TheoryStarting;
+        event EventHandler<TestTheoryStartedEventArgs> TheoryStarted;
+        event EventHandler<TestTheoryFinishedEventArgs> TheoryFinished;
     }
 }

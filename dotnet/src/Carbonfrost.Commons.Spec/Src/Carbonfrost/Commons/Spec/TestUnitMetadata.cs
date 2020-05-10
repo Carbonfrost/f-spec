@@ -1,11 +1,11 @@
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,24 +22,58 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    static class TestUnitMetadata {
+    class TestUnitMetadata {
+        private readonly IReadOnlyList<Attribute> _attrs;
 
-        public static void ApplyMetadata(this IEnumerable<Attribute> attributes, TestContext ctx) {
-            foreach (var attr in attributes) {
-                var pro = attr as ITestUnitMetadataProvider;
+        internal static readonly TestUnitMetadata Empty = new TestUnitMetadata(Array.Empty<Attribute>());
 
-                if (pro != null) {
-                    pro.Apply(ctx);
+        public IEnumerable<ITestUnitDescendantMetadataProvider> DescendantProviders {
+            get {
+                return GetProvidersFromAttributes<ITestUnitDescendantMetadataProvider>(pp => pp.DescendantMetadataProviderType);
+            }
+        }
+
+        public IEnumerable<ITestUnitMetadataProvider> Providers {
+            get {
+                return GetProvidersFromAttributes<ITestUnitMetadataProvider>(pp => pp.MetadataProviderType);
+            }
+        }
+
+        public TestUnitMetadata(IEnumerable<Attribute> attrs) {
+            _attrs = attrs.ToArray();
+        }
+
+        public void Apply(TestContext ctx) {
+            foreach (var pro in Providers) {
+                pro.Apply(ctx);
+            }
+        }
+
+        public void ApplyDescendants(TestContext ctx, IEnumerable<TestUnit> descendants) {
+            foreach (var pro in DescendantProviders) {
+                foreach (var desc in descendants) {
+                    pro.ApplyDescendant(ctx.WithSelf(desc));
+                }
+            }
+        }
+
+        private IEnumerable<T> GetProvidersFromAttributes<T>(Func<TestUnitMetadataProviderAttribute, Type> providerTypeFunc) {
+            foreach (var attr in _attrs) {
+                if (attr is T pro) {
+                    yield return pro;
 
                 } else {
-                    foreach (var mp in CreateProviders(attr)) {
-                        mp.Apply(ctx);
+                    foreach (var mp in CreateProviders<T>(attr, providerTypeFunc)) {
+                        yield return mp;
                     }
                 }
             }
         }
 
-        internal static IEnumerable<ITestUnitMetadataProvider> CreateProviders(object adaptee) {
+        private static IEnumerable<T> CreateProviders<T>(
+            object adaptee,
+            Func<TestUnitMetadataProviderAttribute, Type> providerTypeFunc
+        ) {
             var type = adaptee.GetType();
 
             IEnumerable<Type> interfaces = type.GetTypeInfo().GetInterfaces();
@@ -51,8 +85,12 @@ namespace Carbonfrost.Commons.Spec {
                 if (!i.IsDefined(typeof(TestUnitMetadataProviderAttribute))) {
                     continue;
                 }
-                var requiredType = ((TestUnitMetadataProviderAttribute) i.GetCustomAttribute(typeof(TestUnitMetadataProviderAttribute)))
-                    .MetadataProviderType;
+                var requiredType = providerTypeFunc(
+                    ((TestUnitMetadataProviderAttribute) i.GetCustomAttribute(typeof(TestUnitMetadataProviderAttribute)))
+                );
+                if (requiredType == null) {
+                    continue;
+                }
 
                 if (requiredType.GetTypeInfo().IsGenericTypeDefinition) {
                     // Propagate generics from the adaptee to the adapter.
@@ -65,9 +103,9 @@ namespace Carbonfrost.Commons.Spec {
                 var parameters = activationCtor.GetParameters();
 
                 if (parameters.Length == 0) {
-                    yield return (ITestUnitMetadataProvider) activationCtor.Invoke(Array.Empty<object>());
+                    yield return (T) activationCtor.Invoke(Array.Empty<object>());
                 } else {
-                    yield return (ITestUnitMetadataProvider) activationCtor.Invoke(new [] { adaptee });
+                    yield return (T) activationCtor.Invoke(new [] { adaptee });
                 }
             }
         }

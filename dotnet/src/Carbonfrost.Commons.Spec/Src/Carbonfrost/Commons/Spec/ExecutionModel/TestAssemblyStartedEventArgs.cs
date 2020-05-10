@@ -1,5 +1,5 @@
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
@@ -27,7 +26,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             _inner = inner;
         }
 
-        internal TestAssembly TestAssembly {
+        public TestAssembly TestAssembly {
             get {
                 return (TestAssembly) _inner.TestUnit;
             }

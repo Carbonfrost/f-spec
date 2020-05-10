@@ -1,5 +1,5 @@
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
 using System.Threading;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
@@ -31,30 +30,33 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
             _serviceProvider = serviceProvider;
             _events = events;
-            events.TestClassStarting += events_TestClassStarting;
-            events.TestClassStarted += events_TestClassStarted;
-            events.TestClassFinished += events_TestClassFinished;
-            events.TestAssemblyStarting += events_TestAssemblyStarting;
-            events.TestAssemblyStarted += events_TestAssemblyStarted;
-            events.TestAssemblyFinished += events_TestAssemblyFinished;
-            events.TestNamespaceStarting += events_TestNamespaceStarting;
-            events.TestNamespaceStarted += events_TestNamespaceStarted;
-            events.TestNamespaceFinished += events_TestNamespaceFinished;
-            events.TestCaseStarting += events_TestCaseStarting;
-            events.TestCaseStarted += events_TestCaseStarted;
-            events.TestCaseFinished += events_TestCaseFinished;
-            events.TestRunnerFinished += events_TestRunnerFinished;
-            events.TestRunnerStarted += events_TestRunnerStarted;
-            events.TestRunnerStarting += events_TestRunnerStarting;
-            events.TestUnitStarted += events_TestUnitStarted;
-            events.TestUnitStarting += events_TestUnitStarting;
-            events.TestUnitFinished += events_TestUnitFinished;
+            events.ClassStarting += events_TestClassStarting;
+            events.ClassStarted += events_TestClassStarted;
+            events.ClassFinished += events_TestClassFinished;
+            events.AssemblyStarting += events_TestAssemblyStarting;
+            events.AssemblyStarted += events_TestAssemblyStarted;
+            events.AssemblyFinished += events_TestAssemblyFinished;
+            events.NamespaceStarting += events_TestNamespaceStarting;
+            events.NamespaceStarted += events_TestNamespaceStarted;
+            events.NamespaceFinished += events_TestNamespaceFinished;
+            events.CaseStarting += events_TestCaseStarting;
+            events.CaseStarted += events_TestCaseStarted;
+            events.CaseFinished += events_TestCaseFinished;
+            events.RunnerFinished += events_TestRunnerFinished;
+            events.RunnerStarted += events_TestRunnerStarted;
+            events.RunnerStarting += events_TestRunnerStarting;
+            events.UnitStarted += events_TestUnitStarted;
+            events.UnitStarting += events_TestUnitStarting;
+            events.UnitFinished += events_TestUnitFinished;
+            events.TheoryStarted += events_TestTheoryStarted;
+            events.TheoryStarting += events_TestTheoryStarting;
+            events.TheoryFinished += events_TestTheoryFinished;
             events.Message += events_Message;
         }
 
         public virtual object GetService(Type serviceType) {
             if (serviceType == null) {
-                throw new ArgumentNullException("serviceType");
+                throw new ArgumentNullException(nameof(serviceType));
             }
             return _serviceProvider.GetService(serviceType);
         }
@@ -74,25 +76,31 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         protected virtual void Dispose(bool disposing) {
             if (_events != null) {
-                _events.TestClassStarting -= events_TestClassStarting;
-                _events.TestClassStarted -= events_TestClassStarted;
-                _events.TestClassFinished -= events_TestClassFinished;
-                _events.TestAssemblyStarting -= events_TestAssemblyStarting;
-                _events.TestAssemblyStarted -= events_TestAssemblyStarted;
-                _events.TestAssemblyFinished -= events_TestAssemblyFinished;
-                _events.TestNamespaceStarting -= events_TestNamespaceStarting;
-                _events.TestNamespaceStarted -= events_TestNamespaceStarted;
-                _events.TestNamespaceFinished -= events_TestNamespaceFinished;
-                _events.TestCaseStarting -= events_TestCaseStarting;
-                _events.TestCaseStarted -= events_TestCaseStarted;
-                _events.TestCaseFinished -= events_TestCaseFinished;
-                _events.TestRunnerFinished -= events_TestRunnerFinished;
-                _events.TestRunnerStarted -= events_TestRunnerStarted;
-                _events.TestRunnerStarting -= events_TestRunnerStarting;
+                _events.ClassStarting -= events_TestClassStarting;
+                _events.ClassStarted -= events_TestClassStarted;
+                _events.ClassFinished -= events_TestClassFinished;
+                _events.SubjectClassBindingStarting -= events_TestSubjectClassBindingStarting;
+                _events.SubjectClassBindingStarted -= events_TestSubjectClassBindingStarted;
+                _events.SubjectClassBindingFinished -= events_TestSubjectClassBindingFinished;
+                _events.AssemblyStarting -= events_TestAssemblyStarting;
+                _events.AssemblyStarted -= events_TestAssemblyStarted;
+                _events.AssemblyFinished -= events_TestAssemblyFinished;
+                _events.NamespaceStarting -= events_TestNamespaceStarting;
+                _events.NamespaceStarted -= events_TestNamespaceStarted;
+                _events.NamespaceFinished -= events_TestNamespaceFinished;
+                _events.CaseStarting -= events_TestCaseStarting;
+                _events.CaseStarted -= events_TestCaseStarted;
+                _events.CaseFinished -= events_TestCaseFinished;
+                _events.RunnerFinished -= events_TestRunnerFinished;
+                _events.RunnerStarted -= events_TestRunnerStarted;
+                _events.RunnerStarting -= events_TestRunnerStarting;
                 _events.Message -= events_Message;
-                _events.TestUnitStarted -= events_TestUnitStarted;
-                _events.TestUnitStarting -= events_TestUnitStarting;
-                _events.TestUnitFinished -= events_TestUnitFinished;
+                _events.UnitStarted -= events_TestUnitStarted;
+                _events.UnitStarting -= events_TestUnitStarting;
+                _events.UnitFinished -= events_TestUnitFinished;
+                _events.TheoryStarted -= events_TestTheoryStarted;
+                _events.TheoryStarting -= events_TestTheoryStarting;
+                _events.TheoryFinished -= events_TestTheoryFinished;
                 _events = null;
             }
             _serviceProvider = null;
@@ -106,75 +114,99 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             e.ToString();
         }
 
-        protected virtual void OnTestClassStarting(TestClassStartingEventArgs e) {
+        protected virtual void OnClassStarting(TestClassStartingEventArgs e) {
             DefaultMessage(e);
         }
 
-        protected virtual void OnTestClassStarted(TestClassStartedEventArgs e) {
+        protected virtual void OnClassStarted(TestClassStartedEventArgs e) {
             DefaultMessage(e);
         }
 
-        protected virtual void OnTestClassFinished(TestClassFinishedEventArgs e) {
+        protected virtual void OnClassFinished(TestClassFinishedEventArgs e) {
             DefaultMessage(e);
         }
 
-        protected virtual void OnTestAssemblyStarting(TestAssemblyStartingEventArgs e) {
+        protected virtual void OnSubjectClassBindingStarting(TestSubjectClassBindingStartingEventArgs e) {
             DefaultMessage(e);
         }
 
-        protected virtual void OnTestAssemblyStarted(TestAssemblyStartedEventArgs e) {
+        protected virtual void OnSubjectClassBindingStarted(TestSubjectClassBindingStartedEventArgs e) {
             DefaultMessage(e);
         }
 
-        protected virtual void OnTestAssemblyFinished(TestAssemblyFinishedEventArgs e) {
+        protected virtual void OnSubjectClassBindingFinished(TestSubjectClassBindingFinishedEventArgs e) {
             DefaultMessage(e);
         }
 
-        protected virtual void OnTestNamespaceStarting(TestNamespaceStartingEventArgs e) {
+        protected virtual void OnAssemblyStarting(TestAssemblyStartingEventArgs e) {
             DefaultMessage(e);
         }
 
-        protected virtual void OnTestNamespaceStarted(TestNamespaceStartedEventArgs e) {
+        protected virtual void OnAssemblyStarted(TestAssemblyStartedEventArgs e) {
             DefaultMessage(e);
         }
 
-        protected virtual void OnTestNamespaceFinished(TestNamespaceFinishedEventArgs e) {
+        protected virtual void OnAssemblyFinished(TestAssemblyFinishedEventArgs e) {
             DefaultMessage(e);
         }
 
-        protected virtual void OnTestCaseStarting(TestCaseStartingEventArgs e) {
+        protected virtual void OnNamespaceStarting(TestNamespaceStartingEventArgs e) {
             DefaultMessage(e);
         }
 
-        protected virtual void OnTestCaseStarted(TestCaseStartedEventArgs e) {
+        protected virtual void OnNamespaceStarted(TestNamespaceStartedEventArgs e) {
             DefaultMessage(e);
         }
 
-        protected virtual void OnTestCaseFinished(TestCaseFinishedEventArgs e) {
+        protected virtual void OnNamespaceFinished(TestNamespaceFinishedEventArgs e) {
             DefaultMessage(e);
         }
 
-        protected virtual void OnTestUnitStarting(TestUnitStartingEventArgs e) {
+        protected virtual void OnCaseStarting(TestCaseStartingEventArgs e) {
             DefaultMessage(e);
         }
 
-        protected virtual void OnTestUnitStarted(TestUnitStartedEventArgs e) {
+        protected virtual void OnCaseStarted(TestCaseStartedEventArgs e) {
             DefaultMessage(e);
         }
 
-        protected virtual void OnTestUnitFinished(TestUnitFinishedEventArgs e) {
+        protected virtual void OnCaseFinished(TestCaseFinishedEventArgs e) {
             DefaultMessage(e);
         }
 
-        protected virtual void OnTestRunnerFinished(TestRunnerFinishedEventArgs e) {
+        protected virtual void OnUnitStarting(TestUnitStartingEventArgs e) {
             DefaultMessage(e);
         }
 
-        protected virtual void OnTestRunnerStarted(TestRunnerStartedEventArgs e) {
+        protected virtual void OnUnitStarted(TestUnitStartedEventArgs e) {
             DefaultMessage(e);
         }
 
-        protected virtual void OnTestRunnerStarting(TestRunnerStartingEventArgs e) {
+        protected virtual void OnUnitFinished(TestUnitFinishedEventArgs e) {
+            DefaultMessage(e);
+        }
+
+        protected virtual void OnTheoryStarting(TestTheoryStartingEventArgs e) {
+            DefaultMessage(e);
+        }
+
+        protected virtual void OnTheoryStarted(TestTheoryStartedEventArgs e) {
+            DefaultMessage(e);
+        }
+
+        protected virtual void OnTheoryFinished(TestTheoryFinishedEventArgs e) {
+            DefaultMessage(e);
+        }
+
+        protected virtual void OnRunnerFinished(TestRunnerFinishedEventArgs e) {
+            DefaultMessage(e);
+        }
+
+        protected virtual void OnRunnerStarted(TestRunnerStartedEventArgs e) {
+            DefaultMessage(e);
+        }
+
+        protected virtual void OnRunnerStarting(TestRunnerStartingEventArgs e) {
             DefaultMessage(e);
         }
 
@@ -187,75 +219,99 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         private void events_TestRunnerFinished(object sender, TestRunnerFinishedEventArgs e) {
-            OnTestRunnerFinished(e);
+            OnRunnerFinished(e);
         }
 
         private void events_TestRunnerStarted(object sender, TestRunnerStartedEventArgs e) {
-            OnTestRunnerStarted(e);
+            OnRunnerStarted(e);
         }
 
         private void events_TestRunnerStarting(object sender, TestRunnerStartingEventArgs e) {
-            OnTestRunnerStarting(e);
+            OnRunnerStarting(e);
         }
 
         private void events_TestClassStarting(object sender, TestClassStartingEventArgs e) {
-            OnTestClassStarting(e);
+            OnClassStarting(e);
         }
 
         private void events_TestClassStarted(object sender, TestClassStartedEventArgs e) {
-            OnTestClassStarted(e);
+            OnClassStarted(e);
         }
 
         private void events_TestClassFinished(object sender, TestClassFinishedEventArgs e) {
-            OnTestClassFinished(e);
+            OnClassFinished(e);
+        }
+
+        private void events_TestSubjectClassBindingStarting(object sender, TestSubjectClassBindingStartingEventArgs e) {
+            OnSubjectClassBindingStarting(e);
+        }
+
+        private void events_TestSubjectClassBindingStarted(object sender, TestSubjectClassBindingStartedEventArgs e) {
+            OnSubjectClassBindingStarted(e);
+        }
+
+        private void events_TestSubjectClassBindingFinished(object sender, TestSubjectClassBindingFinishedEventArgs e) {
+            OnSubjectClassBindingFinished(e);
         }
 
         private void events_TestAssemblyStarting(object sender, TestAssemblyStartingEventArgs e) {
-            OnTestAssemblyStarting(e);
+            OnAssemblyStarting(e);
         }
 
         private void events_TestAssemblyStarted(object sender, TestAssemblyStartedEventArgs e) {
-            OnTestAssemblyStarted(e);
+            OnAssemblyStarted(e);
         }
 
         private void events_TestAssemblyFinished(object sender, TestAssemblyFinishedEventArgs e) {
-            OnTestAssemblyFinished(e);
+            OnAssemblyFinished(e);
         }
 
         private void events_TestNamespaceStarting(object sender, TestNamespaceStartingEventArgs e) {
-            OnTestNamespaceStarting(e);
+            OnNamespaceStarting(e);
         }
 
         private void events_TestNamespaceStarted(object sender, TestNamespaceStartedEventArgs e) {
-            OnTestNamespaceStarted(e);
+            OnNamespaceStarted(e);
         }
 
         private void events_TestNamespaceFinished(object sender, TestNamespaceFinishedEventArgs e) {
-            OnTestNamespaceFinished(e);
+            OnNamespaceFinished(e);
         }
 
         private void events_TestCaseStarting(object sender, TestCaseStartingEventArgs e) {
-            OnTestCaseStarting(e);
+            OnCaseStarting(e);
         }
 
         private void events_TestCaseStarted(object sender, TestCaseStartedEventArgs e) {
-            OnTestCaseStarted(e);
+            OnCaseStarted(e);
         }
 
         private void events_TestCaseFinished(object sender, TestCaseFinishedEventArgs e) {
-            OnTestCaseFinished(e);
+            OnCaseFinished(e);
         }
 
         private void events_TestUnitStarting(object sender, TestUnitStartingEventArgs e) {
-            OnTestUnitStarting(e);
+            OnUnitStarting(e);
         }
 
         private void events_TestUnitStarted(object sender, TestUnitStartedEventArgs e) {
-            OnTestUnitStarted(e);
+            OnUnitStarted(e);
         }
 
         private void events_TestUnitFinished(object sender, TestUnitFinishedEventArgs e) {
-            OnTestUnitFinished(e);
+            OnUnitFinished(e);
+        }
+
+        private void events_TestTheoryStarting(object sender, TestTheoryStartingEventArgs e) {
+            OnTheoryStarting(e);
+        }
+
+        private void events_TestTheoryStarted(object sender, TestTheoryStartedEventArgs e) {
+            OnTheoryStarted(e);
+        }
+
+        private void events_TestTheoryFinished(object sender, TestTheoryFinishedEventArgs e) {
+            OnTheoryFinished(e);
         }
     }
 }

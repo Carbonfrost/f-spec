@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017, 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,45 +16,37 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using System.Linq;
-using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public struct Expectation {
+    struct Expectation : IExpectation {
 
-        private readonly IExpectationCommand _cmd;
+        private readonly ExpectationCommand<Unit> _cmd;
 
-        public Expectation Not {
+        public IExpectation Not {
             get {
                 return new Expectation(_cmd.Negated());
             }
         }
 
-        internal Expectation(IExpectationCommand cmd) {
+        internal Expectation(ExpectationCommand<Unit> cmd) {
             _cmd = cmd;
         }
 
-        internal void Should(ITestMatcher matcher, string message = null, params object[] args) {
-            var failure = _cmd.Should(matcher);
-
-            if (failure != null) {
-                throw failure.UpdateTestSubject().UpdateMessage(message, args).ToException();
-            }
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete("This is an override of Object.Equals(). Call Assert.Equal() instead.", true)]
         public new bool Equals(object b) {
             throw new InvalidOperationException("Expectation.Equals should not be used");
         }
+
+        public void Like(ITestMatcher matcher, string message = null, object[] args = null) {
+            _cmd.Should(matcher, message, args);
+        }
     }
 
-    public struct Expectation<T> {
+    struct Expectation<T> : IExpectation<T> {
 
         private readonly ExpectationCommand<T> _cmd;
 
-        public Expectation<T> Not {
+        public IExpectation<T> Not {
             get {
                 return new Expectation<T>(_cmd.Negated());
             }
@@ -64,15 +56,11 @@ namespace Carbonfrost.Commons.Spec {
             _cmd = cmd;
         }
 
-        public Expectation<T> Approximately(T epsilon) {
-            return new Expectation<T>(ExpectationCommand.Comparer(EpsilonComparer.Create(epsilon), _cmd));
-        }
-
-        public Expectation<T> Approximately<TEpsilon>(TEpsilon epsilon) {
+        public IExpectation<T> Approximately<TEpsilon>(TEpsilon epsilon) {
             return new Expectation<T>(ExpectationCommand.Comparer(EpsilonComparer.Create<T, TEpsilon>(epsilon), _cmd));
         }
 
-        public Expectation<TBase> As<TBase>() {
+        public IExpectation<TBase> As<TBase>() {
             return new Expectation<TBase>(_cmd.As<TBase>());
         }
 
@@ -81,7 +69,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public void InstanceOf<TExpected>(string message, params object[] args) {
-            As<object>().Should(Matchers.BeInstanceOf(typeof(TExpected)), message, (object[]) args);
+            As<object>().Like(Matchers.BeInstanceOf(typeof(TExpected)), message, (object[]) args);
         }
 
         public void Items() {
@@ -90,7 +78,7 @@ namespace Carbonfrost.Commons.Spec {
 
         public void Items(string message, params object[] args) {
             _cmd.Implies(CommandCondition.NotOneButZeroOrMore);
-            As<IEnumerable>().Should(TestMatcher<object>.Anything, message, (object[]) args);
+            As<IEnumerable>().Like(TestMatcher<object>.Anything, message, (object[]) args);
         }
 
         public void Item() {
@@ -99,25 +87,23 @@ namespace Carbonfrost.Commons.Spec {
 
         public void Item(string message, params object[] args) {
             _cmd.Implies(CommandCondition.ExactlyOne);
-            As<IEnumerable>().Should(TestMatcher<object>.Anything, message, (object[]) args);
+            As<IEnumerable>().Like(TestMatcher<object>.Anything, message, (object[]) args);
         }
 
         internal Expectation Untyped() {
             return new Expectation(_cmd.Untyped());
         }
 
-        internal void Should(ITestMatcher<T> matcher, string message = null, params object[] args) {
-            var failure = _cmd.Should(matcher);
-
-            if (failure != null) {
-                throw failure.UpdateTestSubject().UpdateMessage(message, args).ToException();
-            }
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete("This is an override of Object.Equals(). Call Assert.Equal() instead.", true)]
         public new bool Equals(object b) {
             throw new InvalidOperationException("Expectation.Equals should not be used");
+        }
+
+        public void Like(ITestMatcher<T> matcher, string message = null, params object[] args) {
+            _cmd.Should(matcher, message, args);
+        }
+
+        public void Like(ITestMatcher matcher, string message = null, params object[] args) {
+            _cmd.Untyped().Should(matcher, message, args);
         }
     }
 }

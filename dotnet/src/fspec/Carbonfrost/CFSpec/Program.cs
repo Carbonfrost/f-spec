@@ -57,7 +57,7 @@ namespace Carbonfrost.CFSpec {
         }
 
         static int ExitWithMessage(ExitCode exitCode, string message) {
-            Console.WriteLine("spec: " + message);
+            Console.WriteLine("fspec: " + message);
             return (int) exitCode;
         }
 

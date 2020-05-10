@@ -57,11 +57,7 @@ namespace Carbonfrost.Commons.Spec {
                 }
             }
 
-            public bool Matches(T actual) {
-                return Matches(() => actual);
-            }
-
-            public bool Matches(Func<T> actualFactory) {
+            public bool Matches(ITestActualEvaluation<T> actualFactory) {
                 return _matchers.All(t => t.Matches(actualFactory));
             }
 
@@ -90,7 +86,7 @@ namespace Carbonfrost.Commons.Spec {
                 _matchers = (matchers ?? Empty<ITestMatcher>.Array).ToArray();
             }
 
-            public bool Matches(Action testCode) {
+            public bool Matches(ITestActualEvaluation testCode) {
                 return _matchers.All(t => t.Matches(testCode));
             }
 

@@ -1,5 +1,5 @@
 //
-// Copyright 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,15 +15,20 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    class SkippedInitFailure : TestCase {
+    class SkippedInitFailure : TestCaseInfo {
 
         private readonly Exception _err;
         private string _reason;
+
+        public override TestUnitType Type {
+            get {
+                return TestUnitType.Case;
+            }
+        }
 
         public SkippedInitFailure(MethodInfo mi, Exception err) : base(mi) {
             _err = err;
@@ -31,7 +36,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         protected override TestCaseResult RunTestCore(TestContext testContext) {
-            var result = new TestCaseResult(this);
+            var result = new TestCaseResult(this, TestStatus.Skipped);
             result.Reason = _reason;
             result.SetFailed(_err);
             return result;
@@ -49,10 +54,17 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public static TestCase DataProviderProblem(TestUnit item,
-                                                   string dataProvider,
-                                                   MethodInfo mi,
-                                                   Exception err) {
+        public static TestCaseInfo CreateTestUnitFactoryProblem(MethodInfo mi, Exception err) {
+            return new SkippedInitFailure(mi, err) {
+                _reason = string.Format("Problem creating test ({0}: {1})", err.GetType().Name, err.Message)
+            };
+        }
+
+        public static TestCaseInfo DataProviderProblem(TestUnit item,
+            string dataProvider,
+            MethodInfo mi,
+            Exception err
+        ) {
             string reason = string.Format("Problem with data provider {0}", dataProvider);
             return new SkippedInitFailure(mi, err) {
                 _reason = reason,

@@ -1,5 +1,5 @@
 //
-// Copyright 2017, 2018-2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2018-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,10 +15,8 @@
 //
 
 using System;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Carbonfrost.Commons.Spec.ExecutionModel;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
 namespace Carbonfrost.Commons.Spec {
@@ -41,20 +39,36 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class Extensions {
 
-        public static void Throw<TException>(this Expectation e) where TException : Exception{
+        public static void Throw<TException>(this IExpectation e) where TException : Exception{
+            Throw<TException>(e, null);
+        }
+
+        public static void Throw(this IExpectation e) {
             Throw(e, null);
         }
 
-        public static void Throw(this Expectation e) {
-            Throw(e, null);
+        public static void Throw<TException>(this IExpectation e, string message, params object[] args) where TException : Exception{
+            e.Like(Matchers.Throw<TException>(), message, (object[]) args);
         }
 
-        public static void Throw<TException>(this Expectation e, string message, params object[] args) where TException : Exception{
-            e.Should(Matchers.Throw<TException>(), message, (object[]) args);
+        public static void Throw(this IExpectation e, string message, params object[] args) {
+            e.Like(Matchers.Throw(), message, (object[]) args);
         }
 
-        public static void Throw(this Expectation e, string message, params object[] args) {
-            e.Should(Matchers.Throw(), message, (object[]) args);
+        public static void Exception<TException>(this IExceptionExpectation e) where TException : Exception{
+            Exception<TException>(e, null);
+        }
+
+        public static void Exception(this IExceptionExpectation e) {
+            Exception(e, null);
+        }
+
+        public static void Exception<TException>(this IExceptionExpectation e, string message, params object[] args) where TException : Exception{
+            e.Like(Matchers.Throw<TException>(), message, (object[]) args);
+        }
+
+        public static void Exception(this IExceptionExpectation e, string message, params object[] args) {
+            e.Like(Matchers.Throw(), message, (object[]) args);
         }
 
     }
@@ -244,59 +258,47 @@ namespace Carbonfrost.Commons.Spec {
 
     namespace TestMatchers {
 
-        public class ThrowsMatcher : ITestMatcher {
+        public class ThrowsMatcher : ITestMatcher, ITestMatcherActualException {
 
-            private readonly Flags _flags;
+            private readonly RecordExceptionFlags _flags;
 
             public Type Expected { get; private set; }
 
             [MatcherUserData(Hidden = true)]
             public ThrowsMatcher UnwindingTargetExceptions {
                 get {
-                    return new ThrowsMatcher(Expected, _flags | Flags.Unwind);
+                    return WithFlags(_flags | RecordExceptionFlags.UnwindTargetExceptions);
                 }
             }
 
-            internal ITestMatcher WithVerification() {
-                return new ThrowsMatcher(Expected, _flags | Flags.Verify);
+            public RecordExceptionFlags Flags {
+                get {
+                    return _flags;
+                }
             }
 
-            public ThrowsMatcher(Type expected = null) : this(expected, Flags.None) {}
+            public ThrowsMatcher(Type expected = null) : this(expected, RecordExceptionFlags.None) {}
 
-            private ThrowsMatcher(Type expected, Flags flags) {
+            private ThrowsMatcher(Type expected, RecordExceptionFlags flags) {
                 Expected = expected ?? typeof(Exception);
                 _flags = flags;
             }
 
-            public bool Matches(Action testCode) {
-                var ex = Record.Exception(testCode);
-                if (ex is TargetInvocationException && _flags.HasFlag(Flags.Unwind)) {
-                    ex = ex.InnerException;
+            public bool Matches(ITestActualEvaluation actual) {
+                if (actual == null) {
+                    throw new ArgumentNullException(nameof(actual));
                 }
-                if (ex is AssertException && _flags.HasFlag(Flags.Verify)) {
-                    throw SpecFailure.CannotAssertAssertExceptions();
-                }
-
-                ActualException = ex;
+                var ex = Record.ApplyFlags(actual.Exception, _flags);
                 return Expected.GetTypeInfo().IsInstanceOfType(ex);
             }
 
-            // HACK We make this available so that it can be reported.
-            // Really, this means that the ThrowsMatcher is no longer reusable
-            // because we carry this state.
-
-            internal Exception ActualException { get; private set; }
-
-            [Flags]
-            enum Flags {
-                None,
-                Unwind = 1,
-                Verify = 2,
+            public ThrowsMatcher WithFlags(RecordExceptionFlags flags) {
+                return new ThrowsMatcher(Expected, flags);
             }
         }
     }
 
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = false)]
     public sealed class ThrowsAttribute : Attribute, ITestMatcherFactory {
 
         private readonly Type _exceptionType;
@@ -314,11 +316,12 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         ITestMatcher ITestMatcherFactory.CreateMatcher(TestContext testContext) {
-            var t = Matchers.Throw(ExceptionType).UnwindingTargetExceptions;
+            var flags = RecordExceptionFlags.UnwindTargetExceptions;
+
             if (testContext.ShouldVerify) {
-                return t.WithVerification();
+                flags |= RecordExceptionFlags.StrictVerification;
             }
-            return t;
+            return  Matchers.Throw(ExceptionType).WithFlags(flags);
         }
     }
 }

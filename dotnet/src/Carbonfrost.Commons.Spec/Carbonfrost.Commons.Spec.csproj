@@ -1,16 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../../Build.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Carbonfrost.Commons.Spec</RootNamespace>
+    <PackageId>Carbonfrost.Commons.Spec</PackageId>
     <DefineConstants>SELF_TEST</DefineConstants>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <Copyright>Copyright 2010-2019 Carbonfrost Systems, Inc.</Copyright>
+    <Copyright>Copyright 2010-2020 Carbonfrost Systems, Inc.</Copyright>
     <Authors>Carbonfrost</Authors>
     <Description>
       A unit testing framework
     </Description>
     <PackageProjectUrl>https://github.com/Carbonfrost/f-spec</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Carbonfrost/f-spec</RepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 </Project>

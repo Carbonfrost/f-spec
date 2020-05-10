@@ -37,30 +37,30 @@ namespace Carbonfrost.Commons.Spec {
 
     }
 
-    static partial class Extensions {
+        static partial class Extensions {
 
-        public static void LessThanOrEqualTo<T>(this Expectation<T> e, T expected) {
-            LessThanOrEqualTo(e, expected, (string) null);
+        public static void LessThanOrEqualTo<T>(this IExpectation<T> e, T expected) {
+            Operators.LessThanOrEqualTo.Apply(e, expected, (string) null);
         }
 
-        public static void LessThanOrEqualTo<T>(this Expectation<T> e, T expected, IComparer<T> comparer) {
-            LessThanOrEqualTo(e, expected, comparer, null);
+        public static void LessThanOrEqualTo<T>(this IExpectation<T> e, T expected, IComparer<T> comparer) {
+            Operators.LessThanOrEqualTo.Apply(e, expected, comparer, null);
         }
 
-        public static void LessThanOrEqualTo<T>(this Expectation<T> e, T expected, Comparison<T> comparison) {
-            LessThanOrEqualTo(e, expected, comparison, null);
+        public static void LessThanOrEqualTo<T>(this IExpectation<T> e, T expected, Comparison<T> comparison) {
+            Operators.LessThanOrEqualTo.Apply(e, expected, comparison, null);
         }
 
-		public static void LessThanOrEqualTo<T>(this Expectation<T> e, T expected, string message, params object[] args) {
-            e.Should(Matchers.BeLessThanOrEqualTo<T>(expected), message, (object[]) args);
+        public static void LessThanOrEqualTo<T>(this IExpectation<T> e, T expected, string message, params object[] args) {
+            Operators.LessThanOrEqualTo.Apply(e, expected, message, (object[]) args);
         }
 
-        public static void LessThanOrEqualTo<T>(this Expectation<T> e, T expected, IComparer<T> comparer, string message, params object[] args) {
-            e.Should(Matchers.BeLessThanOrEqualTo<T>(expected, comparer), message, (object[]) args);
+        public static void LessThanOrEqualTo<T>(this IExpectation<T> e, T expected, IComparer<T> comparer, string message, params object[] args) {
+            Operators.LessThanOrEqualTo.Apply(e, expected, comparer, message, (object[]) args);
         }
 
-        public static void LessThanOrEqualTo<T>(this Expectation<T> e, T expected, Comparison<T> comparison, string message, params object[] args) {
-            e.Should(Matchers.BeLessThanOrEqualTo<T>(expected, comparison), message, (object[]) args);
+        public static void LessThanOrEqualTo<T>(this IExpectation<T> e, T expected, Comparison<T> comparison, string message, params object[] args) {
+            Operators.LessThanOrEqualTo.Apply(e, expected, comparison, message, (object[]) args);
         }
     }
 
@@ -184,6 +184,25 @@ namespace Carbonfrost.Commons.Spec {
             ITestMatcher<T> ITestMatcherWithComparer<T>.WithComparer(IComparer<T> comparer) {
                 return WithComparer(comparer);
             }
+        }
+
+        class LessThanOrEqualToOperator : ComparisonOperator {
+
+            protected override ITestMatcher<T> CreateMatcher<T>(T expected) {
+                return Matchers.BeLessThanOrEqualTo(expected);
+            }
+
+            protected override ITestMatcher<T> CreateMatcher<T>(T expected, IComparer<T> comparer) {
+                return Matchers.BeLessThanOrEqualTo(expected, comparer);
+            }
+
+            protected override ITestMatcher<T> CreateMatcher<T>(T expected, Comparison<T> comparison) {
+                return Matchers.BeLessThanOrEqualTo(expected, comparison);
+            }
+        }
+
+        static partial class Operators {
+            internal static readonly IComparisonOperator LessThanOrEqualTo = new LessThanOrEqualToOperator();
         }
     }
 }

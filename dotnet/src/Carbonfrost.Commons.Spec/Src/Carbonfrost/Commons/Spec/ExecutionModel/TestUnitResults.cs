@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,25 +14,48 @@
 // limitations under the License.
 //
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     public class TestUnitResults : TestUnitResult {
 
         private readonly TestUnitResultCollection _children;
-        private TestUnitCounts _countsCache;
         private readonly string _displayName;
+        private TestStatus _status;
+
+        public override TestStatus Status {
+            get {
+                if (ExceptionInfo != null) {
+                    return TestStatus.Failed;
+                }
+                return _status;
+            }
+        }
+
+        public bool StrictlyPassed {
+            get {
+                return _children.Counts.StrictlyPassed;
+            }
+        }
+
+        public override DateTime? StartedAt {
+            get {
+                return _children.StartedAt;
+            }
+        }
+
+        public override DateTime? FinishedAt {
+            get {
+                return _children.FinishedAt;
+            }
+        }
 
         private TestUnitCounts Counts {
             get {
-                if (_countsCache == null) {
-                    var all = new TestUnitCounts();
-                    ApplyCounts(all);
-                    _countsCache = all;
-                }
-
-                return _countsCache;
+                return _children.Counts;
             }
         }
 
@@ -93,7 +116,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public TestUnitResultCollection Children {
+        public override TestUnitResultCollection Children {
             get {
                 return _children;
             }
@@ -110,7 +133,30 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        internal override void SetFailed(Exception ex) {
+            // Problem occured with setup
+            if (ex is TargetInvocationException) {
+                ex = ex.InnerException;
+            }
+            ExceptionInfo = ExceptionInfo.FromException(ex);
+            Reason = "Problem occurred during setup";
+        }
+
+        internal override void Done(TestUnit unit) {
+            if (Children.Count == 0) {
+                _status = TestUnit.ConvertToStatus(unit).GetValueOrDefault(TestStatus.Passed);
+            } else {
+                _status = Children.Status;
+            }
+        }
+
         internal override void ApplyCounts(TestUnitCounts counts) {
+            // If no children, then count self
+            if (Children.Count == 0) {
+                counts.Apply(_status);
+                return;
+            }
+
             foreach (var c in Children) {
                 c.ApplyCounts(counts);
             }

@@ -17,13 +17,12 @@
 //
 
 using Carbonfrost.Commons.Spec;
-using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.SelfTest.Spec {
 
     public class TestContextTests : TestClass {
 
-        [Fact]
+        [XFact]
         public void RunTest_Action_should_add_child_context() {
             string testUnit = null;
 

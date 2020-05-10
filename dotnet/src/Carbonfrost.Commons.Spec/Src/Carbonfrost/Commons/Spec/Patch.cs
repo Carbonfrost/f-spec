@@ -15,6 +15,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Carbonfrost.Commons.Spec.MyersDiff;
 
@@ -34,6 +35,24 @@ namespace Carbonfrost.Commons.Spec {
         public int BLineCount {
             get {
                 return _b.Lines.Length;
+            }
+        }
+
+        public List<Edit> Edits {
+            get {
+                return _ma.GetEdits();
+            }
+        }
+
+        public StringLinesSequence A {
+            get {
+                return _a;
+            }
+        }
+
+        public StringLinesSequence B {
+            get {
+                return _b;
             }
         }
 
@@ -83,6 +102,20 @@ namespace Carbonfrost.Commons.Spec {
             foreach (var e in lines) {
                 sb.Append(prefix).AppendLine(e);
             }
+        }
+
+        internal static Patch StandardTextPatch(object actual, object expected) {
+            if (expected is string strExpected) {
+                var strActual = TextUtility.ConvertToString(actual);
+                return new Patch(strExpected, strActual);
+            }
+            if (expected is IEnumerable<string> strExpectedItems) {
+                return new Patch(
+                    string.Join("\n", strExpectedItems),
+                    string.Join("\n", ((System.Collections.IEnumerable) actual).Cast<object>())
+                );
+            }
+            return null;
         }
     }
 

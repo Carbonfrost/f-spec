@@ -1,7 +1,7 @@
 #if SELF_TEST
 
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ namespace Carbonfrost.SelfTest.Spec {
         [PropertyData("TestMatcherFactoryAttributeTypes")]
         public void AttributeUsage_should_have_correct_types(TypeInfo attrType) {
             var usage = (AttributeUsageAttribute) attrType.GetCustomAttribute(typeof(AttributeUsageAttribute));
-            Assert.Equal(AttributeTargets.Method | AttributeTargets.Property, usage.ValidOn);
+            Assert.Equal(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Property, usage.ValidOn);
         }
 
         [Theory]
@@ -74,8 +74,11 @@ namespace Carbonfrost.SelfTest.Spec {
             var methods = typeof(TestMatcherFactory).GetMethods().Where(m => m.Name == expected).ToArray();
             Assert.HasCount(2, methods, "Should have {0}() and {0}(string,object[])", expected);
 
+            // Look for the message and args method
             var parameters = methods.Select(t => t.GetParameters().Select(p => p.ParameterType).ToArray());
-            Expect(parameters).ToHave.Single<IEnumerable<Type>>().EndsWith(new[] { typeof(string), typeof(object[]) });
+            Expect(parameters).ToHave.Single<IEnumerable<Type>>().EndsWith(
+                new[] { typeof(string), typeof(object[]) }
+            );
         }
 
         [Theory]

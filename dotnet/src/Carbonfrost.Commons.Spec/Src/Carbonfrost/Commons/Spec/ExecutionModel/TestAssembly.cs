@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,20 +14,27 @@
 // limitations under the License.
 //
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    class TestAssembly : TestUnit {
+    public abstract class TestAssembly : TestUnit {
 
         private readonly Assembly _assembly;
         private readonly TestUnitCollection _children;
+        private readonly TestAssemblyOptions _options;
 
         public Assembly Assembly {
             get {
                 return _assembly;
+            }
+        }
+
+        public TestAssemblyOptions Options {
+            get {
+                return _options;
             }
         }
 
@@ -49,25 +56,38 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        private TestAssembly(Assembly assembly) {
-            _assembly = assembly;
-            _children = new TestUnitCollection(this);
+        internal override TestUnitMetadata Metadata {
+            get {
+                return new TestUnitMetadata(
+                    _assembly.GetCustomAttributes()
+                );
+            }
         }
 
-        public static TestUnit Create(Assembly assembly) {
-            if (assembly == null) {
-                throw new ArgumentNullException("assembly");
+        private protected TestAssembly(Assembly assembly) {
+            _assembly = assembly;
+            _children = new TestUnitCollection(this);
+            _options = TestAssemblyOptions.ForAssembly(assembly);
+        }
+
+        private class DefaultTestAssembly : TestAssembly {
+            public DefaultTestAssembly(Assembly assembly) : base(assembly) {
             }
-            return new TestAssembly(assembly);
+        }
+
+        public static TestAssembly Create(Assembly assembly) {
+            if (assembly == null) {
+                throw new ArgumentNullException(nameof(assembly));
+            }
+            return new DefaultTestAssembly(assembly);
         }
 
         protected override void Initialize(TestContext testContext) {
-            IEnumerable<Attribute> attrs = _assembly.GetCustomAttributes().Cast<Attribute>();
-            attrs.ApplyMetadata(testContext);
+            Metadata.Apply(testContext);
 
-            foreach (var nsGroup in _assembly.ExportedTypes.GroupBy(t => t.Namespace)) {
+            foreach (var nsGroup in GetTestTypes().GroupBy(t => t.Namespace)) {
                 var tests = nsGroup.Select(t => TestUnitFromType(t));
-                var unit = new TestNamespace(nsGroup.Key, tests);
+                var unit = TestNamespace.Create(nsGroup.Key, tests);
                 SpecLog.DiscoveredTests(unit.Children);
                 if (unit.Children.Count == 0) {
                     // if the ns has no tests, we don't even report it exists
@@ -76,27 +96,51 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
                 Children.Add(unit);
             }
+
+            Metadata.ApplyDescendants(testContext, Descendants);
         }
 
         internal ReflectedTestClass TestUnitFromType(Type type) {
             if (type == null) {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
-            var tt = type.GetTypeInfo();
-            if (tt.IsAbstract || tt.IsValueType || tt.IsNested || !tt.IsVisible) {
+            if (!IsTestClassByAccess(type)) {
                 return null;
             }
-
             if (typeof(ITestUnitAdapter).IsAssignableFrom(type)) {
                 return new UserTestClassAdapter(type);
             }
-
-            if (type.GetRuntimeMethods().SelectMany(m => m.CustomAttributes).Any(
-                a => typeof(IReflectionTestUnitFactory).IsAssignableFrom(a.AttributeType))) {
+            if (IsTestClassByConvention(type)) {
                 return new ReflectedTestClass(type);
             }
 
             return null;
+        }
+
+        private IEnumerable<Type> GetTestTypes() {
+            if (Options.IncludeNonPublicTests) {
+                return _assembly.GetTypes();
+            }
+            return _assembly.ExportedTypes;
+        }
+
+        internal bool IsTestClassByAccess(Type type) {
+            var tt = type.GetTypeInfo();
+            if (!tt.IsClass || tt.IsAbstract || tt.IsValueType || tt.IsNested) {
+                return false;
+            }
+
+            if (!Options.IncludeNonPublicTests && !tt.IsVisible) {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool IsTestClassByConvention(Type type) {
+            return type.GetRuntimeMethods().SelectMany(m => m.CustomAttributes).Any(
+                a => typeof(IReflectionTestUnitFactory).IsAssignableFrom(a.AttributeType)
+            );
         }
     }
 }

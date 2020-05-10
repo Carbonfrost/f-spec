@@ -37,24 +37,6 @@ namespace Carbonfrost.SelfTest.Spec {
             "Equals", // from object.Equals
         };
 
-
-        [Fact]
-        public void SetEqual_nominal() {
-            Assert.SetEqual(new [] { 1, 2, 3}, new [] { 3, 2, 1 });
-        }
-
-        [Fact]
-        public void SetEqual_converse() {
-            var ex = Record.Exception(() => Assert.SetEqual(new [] { 1, 2 }, new [] { 3, 2, 1 }));
-            Assert.NotNull(ex);
-
-            ex = Record.Exception(() => Assert.SetEqual(new int[] { }, new [] { 3, 2, 1 }));
-            Assert.NotNull(ex);
-
-            ex = Record.Exception(() => Assert.SetEqual(new [] { 1, 2, 3, 5 }, new [] { 3, 2, 1 }));
-            Assert.NotNull(ex);
-        }
-
         [Theory]
         [InlineData(typeof(Asserter))]
         [InlineData(typeof(Assume))]

@@ -1,5 +1,5 @@
 //
-// Copyright 2017, 2018-2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2018-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,32 +42,32 @@ namespace Carbonfrost.Commons.Spec {
 
     static partial class Extensions {
 
-        public static void StartsWith<TSource>(this Expectation<IEnumerable<TSource>> e, params TSource[] expected) {
-            StartsWith<TSource>(e, expected, (string) null);
+        public static void StartsWith<T>(this IExpectation<IEnumerable<T>> e, params T[] expected) {
+            Operators.StartWith.Apply<T>(e, expected, (string) null);
         }
 
-        public static void StartsWith<TSource>(this Expectation<IEnumerable<TSource>> e, IEnumerable<TSource> expected, IEqualityComparer<TSource> comparer) {
-            StartsWith<TSource>(e, expected, comparer, null);
+        public static void StartsWith<T>(this IExpectation<IEnumerable<T>> e, IEnumerable<T> expected, IEqualityComparer<T> comparer) {
+            Operators.StartWith.Apply<T>(e, expected, comparer, null);
         }
 
-        public static void StartsWith<TSource>(this Expectation<IEnumerable<TSource>> e, IEnumerable<TSource> expected, Comparison<TSource> comparison) {
-            StartsWith<TSource>(e, expected, comparison, null);
+        public static void StartsWith<T>(this IExpectation<IEnumerable<T>> e, IEnumerable<T> expected, Comparison<T> comparison) {
+            Operators.StartWith.Apply<T>(e, expected, comparison, null);
         }
 
-        public static void StartsWith<TSource>(this Expectation<IEnumerable<TSource>> e, IEnumerable<TSource> expected) {
-            StartsWith<TSource>(e, expected, (string) null);
+        public static void StartsWith<T>(this IExpectation<IEnumerable<T>> e, IEnumerable<T> expected) {
+            Operators.StartWith.Apply<T>(e, expected, (string) null);
         }
 
-        public static void StartsWith<TSource>(this Expectation<IEnumerable<TSource>> e, IEnumerable<TSource> expected, IEqualityComparer<TSource> comparer, string message, params object[] args) {
-            e.Should(Matchers.StartWith(expected, comparer), message, (object[]) args);
+        public static void StartsWith<T>(this IExpectation<IEnumerable<T>> e, IEnumerable<T> expected, IEqualityComparer<T> comparer, string message, params object[] args) {
+            Operators.StartWith.Apply<T>(e, expected, message, (object[]) args);
         }
 
-        public static void StartsWith<TSource>(this Expectation<IEnumerable<TSource>> e, IEnumerable<TSource> expected, Comparison<TSource> comparison, string message, params object[] args) {
-            e.Should(Matchers.StartWith(expected, comparison), message, (object[]) args);
+        public static void StartsWith<T>(this IExpectation<IEnumerable<T>> e, IEnumerable<T> expected, Comparison<T> comparison, string message, params object[] args) {
+            Operators.StartWith.Apply<T>(e, expected, comparison, message, (object[]) args);
         }
 
-        public static void StartsWith<TSource>(this Expectation<IEnumerable<TSource>> e, IEnumerable<TSource> expected, string message, params object[] args) {
-            e.Should(Matchers.StartWith(expected), message, (object[]) args);
+        public static void StartsWith<T>(this IExpectation<IEnumerable<T>> e, IEnumerable<T> expected, string message, params object[] args) {
+            Operators.StartWith.Apply<T>(e, expected, message, (object[]) args);
         }
     }
 
@@ -227,10 +227,17 @@ namespace Carbonfrost.Commons.Spec {
 
     namespace TestMatchers {
 
-        public class StartWithMatcher<TSource> : TestMatcher<IEnumerable<TSource>> {
+        public class StartWithMatcher<TSource> : TestMatcher<IEnumerable<TSource>>, ITestMatcherWithEqualityComparerApiConventions<StartWithMatcher<TSource>, TSource> {
 
-            public IEnumerable<TSource> Expected { get; private set; }
-            public IEqualityComparer<TSource> Comparer { get; private set; }
+            public IEnumerable<TSource> Expected {
+                get;
+                private set;
+            }
+
+            public IEqualityComparer<TSource> Comparer {
+                get;
+                private set;
+            }
 
             public StartWithMatcher(IEnumerable<TSource> expected, IEqualityComparer<TSource> comparer = null) {
                 Expected = expected;
@@ -260,6 +267,25 @@ namespace Carbonfrost.Commons.Spec {
                 var e = Expected.ToList();
                 return actual.Take(e.Count).SequenceEqual(e, comparer);
             }
+        }
+
+        class StartWithOperator : SequenceComparisonOperator {
+
+            protected override ITestMatcher<IEnumerable<T>> CreateMatcher<T>(IEnumerable<T> expected) {
+                return Matchers.StartWith<T>(expected);
+            }
+
+            protected override ITestMatcher<IEnumerable<T>> CreateMatcher<T>(IEnumerable<T> expected, IEqualityComparer<T> comparer) {
+                return Matchers.StartWith<T>(expected, comparer);
+            }
+
+            protected override ITestMatcher<IEnumerable<T>> CreateMatcher<T>(IEnumerable<T> expected, Comparison<T> comparison) {
+                return Matchers.StartWith<T>(expected, comparison);
+            }
+        }
+
+        partial class Operators {
+            internal static readonly ISequenceComparisonOperator StartWith = new StartWithOperator();
         }
     }
 }

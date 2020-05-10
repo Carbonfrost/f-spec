@@ -31,20 +31,20 @@ namespace Carbonfrost.Commons.Spec {
 
     static partial class Extensions {
 
-        public static void AssignableFrom(this Expectation<Type> e, Type expected) {
+        public static void AssignableFrom(this IExpectation<Type> e, Type expected) {
             AssignableFrom(e, expected, null);
         }
 
-        public static void AssignableFrom(this Expectation<TypeInfo> e, Type expected) {
+        public static void AssignableFrom(this IExpectation<TypeInfo> e, Type expected) {
             AssignableFrom(e, expected, null);
         }
 
-        public static void AssignableFrom(this Expectation<Type> e, Type expected, string message, params object[] args) {
-            e.Should(Matchers.BeAssignableFrom(expected), message, (object[]) args);
+        public static void AssignableFrom(this IExpectation<Type> e, Type expected, string message, params object[] args) {
+            e.Like(Matchers.BeAssignableFrom(expected), message, (object[]) args);
         }
 
-        public static void AssignableFrom(this Expectation<TypeInfo> e, Type expected, string message, params object[] args) {
-            e.Should(Matchers.BeAssignableFrom(expected), message, (object[]) args);
+        public static void AssignableFrom(this IExpectation<TypeInfo> e, Type expected, string message, params object[] args) {
+            e.Like(Matchers.BeAssignableFrom(expected), message, (object[]) args);
         }
 
     }
@@ -124,11 +124,10 @@ namespace Carbonfrost.Commons.Spec {
                 return Expected.GetTypeInfo().IsAssignableFrom(actual);
             }
 
-            bool ITestMatcher<TypeInfo>.Matches(Func<TypeInfo> actualFactory) {
-                var actual = actualFactory();
+            bool ITestMatcher<TypeInfo>.Matches(ITestActualEvaluation<TypeInfo> actualFactory) {
+                var actual = actualFactory.Value;
                 var matches = Expected.GetTypeInfo().IsAssignableFrom(actual);
                 return matches;
-                // return Result(negated, actual.AsType(), matches);
             }
         }
     }

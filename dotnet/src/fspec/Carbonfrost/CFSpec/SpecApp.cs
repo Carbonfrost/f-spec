@@ -48,26 +48,27 @@ namespace Carbonfrost.CFSpec {
                 ContextLines = Options.ContextLines,
                 ShowPassExplicitly = Options.ShowPassExplicitly,
                 IsSelfTest = Options.SelfTest,
+                FailFast = Options.FailFast,
                 LoadAssemblyFromPath = System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath
             };
-            if (!Options.NoWhitespace) {
+            if (Options.ShowWhitespace) {
                 testRunnerOptions.AssertionMessageFormatMode |= AssertionMessageFormatModes.PrintWhitespace;
             }
             if (!Options.NoUnifiedDiff) {
                 testRunnerOptions.AssertionMessageFormatMode |= AssertionMessageFormatModes.UseUnifiedDiff;
             }
-            foreach (var s in Options.FocusPatterns) {
-                testRunnerOptions.FocusPatterns.Add(s);
-            }
+            testRunnerOptions.PlanFilter.CopyFrom(Options.PlanFilter);
             testRunnerOptions.IgnoreFocus = Options.NoFocus;
-            foreach (var s in Options.SkipPatterns) {
-                testRunnerOptions.SkipPatterns.Add(s);
-            }
-            foreach (var s in Options.FixturePaths) {
-                testRunnerOptions.FixturePaths.Add(s);
-            }
-            foreach (var s in Options.Assemblies) {
-                testRunnerOptions.LoaderPaths.Add(s);
+
+            testRunnerOptions.FixturePaths.AddAll(Options.FixturePaths);
+            testRunnerOptions.FixturePaths.AddAll(PathCollection.FromEnvironment("FSPEC_FIXTURE_PATH"));
+
+            testRunnerOptions.LoaderPaths.AddAll(Options.Assemblies);
+            testRunnerOptions.LoaderPaths.AddAll(Options.LoaderPaths);
+            testRunnerOptions.LoaderPaths.AddAll(PathCollection.FromEnvironment("FSPEC_LOADER_PATH"));
+
+            foreach (var s in Options.Packages) {
+                testRunnerOptions.PackageReferences.Add(s);
             }
             SpecLog.DidFinalizeOptions(Options.ToString());
 
@@ -79,14 +80,23 @@ namespace Carbonfrost.CFSpec {
 
             try {
                 var result = runner.RunTests();
-                return (int) result.FailureReason;
+                return ToExitCode(result.FailureReason);
+
             } catch (SpecException ex) {
                 return Fail(ex.Message);
             }
         }
 
+        private int ToExitCode(TestRunFailureReason reason) {
+            if (!Options.FailOnPending && reason == TestRunFailureReason.ContainsPendingElements) {
+                return 0;
+            }
+
+            return (int) reason;
+        }
+
         private int Fail(string message) {
-            Console.Error.WriteLine("spec: " + message);
+            Console.Error.WriteLine("fatal: " + message);
             return 1;
         }
     }

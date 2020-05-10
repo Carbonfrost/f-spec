@@ -21,12 +21,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
     static class TextUtility {
-
-        private static readonly Regex PLACEHOLDERS = new Regex(@"\{(?<placeholder>[^}]+)\}");
 
         public static string Truncate(string str) {
             if (str == null) {
@@ -60,6 +59,25 @@ namespace Carbonfrost.Commons.Spec {
             return duration.ToString();
         }
 
+        internal static string FormatLocation(object location) {
+            if (location is Uri url) {
+                if (url.IsAbsoluteUri) {
+                    if (url.Scheme == "data") {
+                        return string.Format(
+                            "<(data){0}>",
+                            TextUtility.Escape(TextUtility.Truncate(Uri.UnescapeDataString(url.PathAndQuery)))
+                        );
+                    }
+                    if (url.Scheme == "file") {
+                        return url.LocalPath;
+                    }
+                }
+                return url.ToString();
+            }
+
+            return location.ToString();
+        }
+
         public static string FormatArgs(params object[] data) {
             return FormatArgs((IEnumerable<object>) data);
         }
@@ -76,29 +94,6 @@ namespace Carbonfrost.Commons.Spec {
                 needComma = true;
             }
             return sb.ToString();
-        }
-
-        public static string Fill(string msg, IDictionary<string, string> data) {
-            // Fill any placeholders in the message
-            MatchEvaluator replThunk = m => {
-                string[] nameAndFormat = m.Groups["placeholder"].Value.Split(':');
-                string name = nameAndFormat[0];
-                string format = nameAndFormat.ElementAtOrDefault(1);
-                string value;
-
-                if (data.TryGetValue(name, out value)) {
-                    data.Remove(name);
-
-                    switch (format) {
-                        case "B": // For BoundsExclusive
-                            return bool.Parse(value) ? nameAndFormat[2] : "";
-                    }
-                    return value;
-                }
-                return "{" + name + "}";
-            };
-
-            return PLACEHOLDERS.Replace(msg, replThunk);
         }
 
         public static StringComparison ToComparison(StringComparer comparer) {
@@ -124,9 +119,15 @@ namespace Carbonfrost.Commons.Spec {
             return StringComparison.Ordinal;
         }
 
-        private static string ConvertToSimpleTypeName(Type type) {
+        internal static string ConvertToSimpleTypeName(Type type, bool qualified = false) {
+            string prefix = null;
+            if (qualified) {
+                prefix = type.DeclaringType != null
+                    ? ConvertToSimpleTypeName(type.DeclaringType, true) + "+"
+                    : type.Namespace + ".";
+            }
             if (!type.GetTypeInfo().IsGenericType) {
-                return type.Name;
+                return prefix + type.Name;
             }
 
             Type[] genericTypes = type.GetTypeInfo().GetGenericArguments();
@@ -143,7 +144,11 @@ namespace Carbonfrost.Commons.Spec {
 
             // F# doesn't use backticks for generic type names
             var withoutTicks = baseTypeName.Substring(0, backTickIdx);
-            return string.Format("{0}<{1}>", withoutTicks, String.Join(", ", simpleNames));
+            return string.Format("{0}{1}<{2}>", prefix, RemoveCompilerMangle(withoutTicks), String.Join(", ", simpleNames));
+        }
+
+        private static string RemoveCompilerMangle(string typeName) {
+            return Regex.Replace(typeName, @"(<.+?>)(d__\d+)", "$1");
         }
 
         internal static string ConvertToString(object value, int depth = 0) {
@@ -156,6 +161,9 @@ namespace Carbonfrost.Commons.Spec {
                     return "<empty>";
                 }
                 return stringValue;
+            }
+            if (value is Exception exceptionValue) {
+                return GetExceptionFiltered(exceptionValue);
             }
 
             IEnumerable enumerableValue = value as IEnumerable;
@@ -187,14 +195,20 @@ namespace Carbonfrost.Commons.Spec {
                                  string.Join(", ", valueStrings.ToArray()));
         }
 
+        internal static string GetExceptionFiltered(Exception exception) {
+            return ExceptionStackTraceFilter.Apply(exception).ToString();
+        }
+
         internal static string ShowWhitespace(string text) {
-            // TODO These aren't universal -- won't work with some Windows fonts
-            // bullet might work better in some fonts • U+2022
-            if (text == null) {
-                return null;
-            }
-            return text.Replace(" ", "⋅") //  U+22C5
-                .Replace("\t", "→"); // U+2192
+            return new WhitespaceVisibleString(text).ToString();
+        }
+
+        internal static string Escape(string text) {
+            return text
+                .Replace("\t", "\\t")
+                .Replace("\r\n", "\\r\\n")
+                .Replace("\r", "\\r")
+                .Replace("\n", "\\n");
         }
     }
 }

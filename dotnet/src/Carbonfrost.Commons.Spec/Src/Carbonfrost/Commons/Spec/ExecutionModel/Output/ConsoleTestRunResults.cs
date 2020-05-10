@@ -1,5 +1,5 @@
 //
-// Copyright 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2019-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
     class ConsoleTestRunResults : ConsoleOutputPart<TestRunResults> {
 
         protected override void RenderCore(TestRunResults results) {
-            if (results.FailedCount > 0 || results.PendingCount > 0) {
+            if (results.Failed) {
                 console.Red();
                 console.Write("FAILED");
             } else {
@@ -36,8 +36,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
             console.Green();
             console.WriteLine("{0,4} passed", results.PassedCount);
+            console.ResetColor();
 
-            if (results.FailedCount > 0) {
+            if (results.Failed) {
                 console.Red();
             }
             console.Write("{0,4} failed", results.FailedCount);
@@ -54,9 +55,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             }
 
             if (results.ContainsFocusedUnits) {
-                console.Write(" - ");
-                console.White();
-                console.Write("FOCUSED");
+                console.Magenta();
+                console.Write("   FOCUSED");
+                console.ResetColor();
             }
             console.WriteLine();
             console.PopIndent();

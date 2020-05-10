@@ -866,33 +866,37 @@ namespace NDesk.Options {
             option.Invoke (c);
         }
 
-        private const int OptionWidth = 29;
+        protected const int OptionWidth = 29;
 
         public void WriteOptionDescriptions (TextWriter o)
         {
             foreach (Option p in this) {
-                int written = 0;
-                if (!WriteOptionPrototype (o, p, ref written))
-                    continue;
-
-                if (written < OptionWidth)
-                    o.Write (new string (' ', OptionWidth - written));
-                else {
-                    o.WriteLine ();
-                    o.Write (new string (' ', OptionWidth));
-                }
-
-                List<string> lines = GetLines (localizer (GetDescription (p.Description)));
-                o.WriteLine (lines [0]);
-                string prefix = new string (' ', OptionWidth+2);
-                for (int i = 1; i < lines.Count; ++i) {
-                    o.Write (prefix);
-                    o.WriteLine (lines [i]);
-                }
+                WriteOptionDescription(o, p);
             }
         }
 
-        bool WriteOptionPrototype (TextWriter o, Option p, ref int written)
+        protected void WriteOptionDescription (TextWriter o, Option p) {
+            int written = 0;
+            if (!WriteOptionPrototype (o, p, ref written))
+                return;
+
+            if (written < OptionWidth)
+                o.Write (new string (' ', OptionWidth - written));
+            else {
+                o.WriteLine ();
+                o.Write (new string (' ', OptionWidth));
+            }
+
+            List<string> lines = GetLines (localizer (GetDescription (p.Description)));
+            o.WriteLine (lines [0]);
+            string prefix = new string (' ', OptionWidth+2);
+            for (int i = 1; i < lines.Count; ++i) {
+                o.Write (prefix);
+                o.WriteLine (lines [i]);
+            }
+        }
+
+        protected bool WriteOptionPrototype (TextWriter o, Option p, ref int written)
         {
             string[] names = p.Names;
 
@@ -935,7 +939,7 @@ namespace NDesk.Options {
             return true;
         }
 
-        static int GetNextOptionIndex (string[] names, int i)
+        protected static int GetNextOptionIndex (string[] names, int i)
         {
             while (i < names.Length && names [i] == "<>") {
                 ++i;
@@ -949,7 +953,7 @@ namespace NDesk.Options {
             o.Write (s);
         }
 
-        private static string GetArgumentName (int index, int maxIndex, string description)
+        protected static string GetArgumentName (int index, int maxIndex, string description)
         {
             if (description == null)
                 return maxIndex == 1 ? "VALUE" : "VALUE" + (index + 1);
@@ -973,7 +977,7 @@ namespace NDesk.Options {
             return maxIndex == 1 ? "VALUE" : "VALUE" + (index + 1);
         }
 
-        private static string GetDescription (string description)
+        protected private static string GetDescription (string description)
         {
             if (description == null)
                 return string.Empty;
@@ -1015,7 +1019,7 @@ namespace NDesk.Options {
             return sb.ToString ();
         }
 
-        private static List<string> GetLines (string description)
+        protected static List<string> GetLines (string description)
         {
             List<string> lines = new List<string> ();
             if (string.IsNullOrEmpty (description)) {

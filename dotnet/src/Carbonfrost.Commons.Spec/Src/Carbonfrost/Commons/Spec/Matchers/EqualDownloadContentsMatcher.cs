@@ -31,12 +31,12 @@ namespace Carbonfrost.Commons.Spec {
 
     static partial class Extensions {
 
-        public static void EqualToDownloadContents(this Expectation<string> e, Uri source) {
+        public static void EqualToDownloadContents(this IExpectation<string> e, Uri source) {
             EqualToDownloadContents(e, source, null);
         }
 
-        public static void EqualToDownloadContents(this Expectation<string> e, Uri source, string message, params object[] args) {
-            e.Should(Matchers.EqualDownloadContents(source), message, (object[]) args);
+        public static void EqualToDownloadContents(this IExpectation<string> e, Uri source, string message, params object[] args) {
+            e.Like(Matchers.EqualDownloadContents(source), message, (object[]) args);
         }
 
     }

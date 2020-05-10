@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 using Carbonfrost.Commons.Spec.Resources;
@@ -31,12 +32,12 @@ namespace Carbonfrost.Commons.Spec {
             TestFailure failure = FailureMessageCore(false, matcher, false);
             var strActual = TextUtility.ConvertToString(actual);
             failure.UserData["Actual"] = strActual;
-
-            if (matcher is EqualMatcher<string> strMatcher) {
-                string strExpected = strMatcher.Expected;
-                var patch = new Patch(strExpected, strActual);
-                if (patch.ALineCount > 1 || patch.BLineCount > 1) {
-                    failure.UserData.Diff = patch;
+            if (matcher is ITestMatcherActualDiff diff) {
+                var patch = diff.GetPatch(actual);
+                if (patch != null) {
+                    if (patch.ALineCount > 1 || patch.BLineCount > 1) {
+                        failure.UserData.Diff = patch;
+                    }
                 }
             }
             return failure;
@@ -47,7 +48,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         private static string ExpectedMessage(
-            bool negated, IDictionary<string, string> data, TypeInfo type, bool predicate) {
+            bool negated, UserDataCollection data, TypeInfo type, bool predicate) {
 
             if (type.Name == "InvariantMatcher") {
                 return "";
@@ -73,7 +74,9 @@ namespace Carbonfrost.Commons.Spec {
                 return MissingLocalization(msgCode);
             }
 
-            return TextUtility.Fill(msg, data);
+            var fill = FillableMessage.Fill(msg, data);
+            data.ExpectedConsumedInMessage = fill.Keys.Contains("Expected");
+            return fill.ToString();
         }
 
         static TestFailure FailureMessageCore(bool negated, object matcher, bool predicate) {

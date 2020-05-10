@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 //
 
 using System;
-using System.Linq;
 using Carbonfrost.Commons.Spec.ExecutionModel.Output;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
@@ -23,10 +22,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
     partial class DefaultTestRunner : TestRunner {
 
         private readonly TestRunnerOptions _opts;
+        private readonly BufferMessageEventCache _messageLogger;
         private Random _randomCache;
 
         public DefaultTestRunner(TestRunnerOptions opts) : base(opts) {
             _opts = Options.Normalize();
+            _messageLogger = new BufferMessageEventCache();
             Logger = new ConsoleLogger(opts);
         }
 
@@ -37,10 +38,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public ITestRunnerLogger Logger {
-            get; private set;
+            get;
+            private set;
         }
 
-        internal DefaultTestRunner.TestPlan CreatePlan(TestRun run) {
+        internal DefaultTestRunner.TestPlanBase CreatePlan(TestRun run) {
+            if (Options.FailFast) {
+                return new FailFastTestPlan(this, run, _opts);
+            }
+
             return new TestPlan(this, run, _opts);
         }
 
@@ -51,37 +57,25 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             var plan = CreatePlan(run);
             var testsWillRun = plan.WillRunTestCasesCount;
 
-            OnTestRunnerStarting(new TestRunnerStartingEventArgs(_opts, run, testsWillRun));
-            OnTestRunnerStarted(new TestRunnerStartedEventArgs(_opts, run, testsWillRun));
+            OnRunnerStarting(new TestRunnerStartingEventArgs(_opts, run, testsWillRun));
+            OnRunnerStarted(new TestRunnerStartedEventArgs(_opts, run, testsWillRun));
 
             var runResults = plan.RunTests();
             var e = new TestRunnerFinishedEventArgs(run, runResults, _opts);
-            OnTestRunnerFinished(e);
+            OnRunnerFinished(e);
             return runResults;
         }
 
         void SetupLogger() {
             SpecLog.DidSetupLogger(Logger);
+
+            // Message logger must handle events first
+            _messageLogger.Initialize(this, this);
             Logger.Initialize(this, this);
         }
 
         public TestContext NewTestContext(TestUnit unit) {
             return new TestContext(unit, this, RandomCache, unit.FindTestObject());
         }
-
-        static void InheritBiasToChildren(TestUnit unit) {
-            foreach (var child in unit.Children) {
-                child.Skipped |= unit.Skipped;
-                child.IsPending |= unit.IsPending;
-                child.IsExplicit |= unit.IsExplicit;
-                child.PassExplicitly |= unit.PassExplicitly;
-                if (unit.Reason != null) {
-                    child.Reason = unit.Reason;
-                }
-                InheritBiasToChildren(child);
-            }
-            unit.Seal();
-        }
-
     }
 }

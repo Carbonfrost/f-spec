@@ -81,6 +81,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        internal bool ExpectedConsumedInMessage {
+            get;
+            set;
+        }
+
         internal Patch Diff {
             get;
             set;
@@ -159,6 +164,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             if (key == "Subject") {
                 return this.GetValueOrDefault(key) == "<null>";
+            }
+
+            if (key == "Expected" && ExpectedConsumedInMessage) {
+                return true;
+            }
+            if (key[0] == '_') {
+                return true;
             }
 
             return false;

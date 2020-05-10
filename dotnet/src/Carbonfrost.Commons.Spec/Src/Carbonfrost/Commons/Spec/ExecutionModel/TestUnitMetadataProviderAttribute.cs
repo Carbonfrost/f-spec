@@ -25,6 +25,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             private set;
         }
 
+        internal Type DescendantMetadataProviderType {
+            get {
+                if (typeof(ITestUnitDescendantMetadataProvider).IsAssignableFrom(MetadataProviderType)) {
+                    return MetadataProviderType;
+                }
+                return null;
+            }
+        }
+
         public TestUnitMetadataProviderAttribute(Type type) {
             MetadataProviderType = type;
         }

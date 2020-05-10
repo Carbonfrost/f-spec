@@ -17,7 +17,6 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
@@ -52,6 +51,23 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
         [Fact]
         public void Assert_NotSetEqual_should_apply_to_collections() {
             Assert.NotSetEqual(new [] { 20, 30 }, new List<int> { 10, 20, 30 });
+        }
+
+        [Fact]
+        public void Assert_SetEqual_nominal() {
+            Assert.SetEqual(new [] { 1, 2, 3}, new [] { 3, 2, 1 });
+        }
+
+        [Fact]
+        public void Assert_SetEqual_converse() {
+            var ex = Record.Exception(() => Assert.SetEqual(new [] { 1, 2 }, new [] { 3, 2, 1 }));
+            Assert.NotNull(ex);
+
+            ex = Record.Exception(() => Assert.SetEqual(new int[] { }, new [] { 3, 2, 1 }));
+            Assert.NotNull(ex);
+
+            ex = Record.Exception(() => Assert.SetEqual(new [] { 1, 2, 3, 5 }, new [] { 3, 2, 1 }));
+            Assert.NotNull(ex);
         }
 
         [Fact]

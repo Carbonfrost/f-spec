@@ -30,12 +30,12 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class Extensions {
 
-        public static void Null<T>(this Expectation<T> e) where T : class {
+        public static void Null<T>(this IExpectation<T> e) where T : class {
             Null(e, null);
         }
 
-        public static void Null<T>(this Expectation<T> e, string message, params object[] args) where T : class {
-            e.As<object>().Should(Matchers.BeNull(), message, (object[]) args);
+        public static void Null<T>(this IExpectation<T> e, string message, params object[] args) where T : class {
+            e.As<object>().Like(Matchers.BeNull(), message, (object[]) args);
         }
 
     }

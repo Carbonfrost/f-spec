@@ -1,5 +1,5 @@
 //
-// Copyright 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Carbonfrost.Commons.Spec.Resources;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
@@ -29,7 +30,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public virtual object TestObject {
+        internal virtual object TestObject {
             get {
                 if (Parent == null) {
                     return null;
@@ -40,7 +41,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         protected TestTheory(MethodInfo testMethod) {
             if (testMethod == null) {
-                throw new ArgumentNullException("testMethod");
+                throw new ArgumentNullException(nameof(testMethod));
             }
             _method = testMethod;
         }
@@ -57,9 +58,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        internal override TestUnitMetadata Metadata {
+            get {
+                return new TestUnitMetadata(
+                    TestMethod.GetCustomAttributes(false).Cast<Attribute>()
+                );
+            }
+        }
+
         protected override void BeforeExecuting(TestContext testContext) {
             if (Children.Count == 0) {
                 testContext.Log.TheoryHasNoDataProviders();
+                testContext.VerifiableProblem(SR.TheoryHasNoDataProviders());
             }
             base.BeforeExecuting(testContext);
         }

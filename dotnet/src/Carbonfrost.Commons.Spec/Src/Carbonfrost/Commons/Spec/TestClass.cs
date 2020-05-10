@@ -1,11 +1,11 @@
 //
-// Copyright 2016, 2017, 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2018, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
@@ -46,24 +45,28 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        public ExpectationBuilder<IEnumerable> Expect() {
+        public IExpectationBuilder<IEnumerable> Expect() {
             return Assert.Expect();
         }
 
-        public ExpectationBuilder<T> Expect<T>(T value) {
+        public IExpectationBuilder<T> Expect<T>(T value) {
             return Assert.Expect(value);
         }
 
-        public ExpectationBuilder<IEnumerable<TValue>> Expect<TValue>(params TValue[] value) {
+        public IExpectationBuilder<TEnumerable, T> Expect<TEnumerable, T>(TEnumerable value) where TEnumerable : IEnumerable<T> {
+            return Assert.Expect<TEnumerable, T>(value);
+        }
+
+        public IExpectationBuilder<TValue[], TValue> Expect<TValue>(params TValue[] value) {
             return Assert.Expect((TValue[]) value);
         }
 
-        public ExpectationBuilder Expect(Action value) {
-            return new ExpectationBuilder(value, false, null);
+        public IExpectationBuilder Expect(Action value) {
+            return Assert.Expect(value);
         }
 
-        public ExpectationBuilder<T> Expect<T>(Func<T> func) {
-            return Given().Expect(func);
+        public IExpectationBuilder<T> Expect<T>(Func<T> func) {
+            return Assert.Expect<T>(func);
         }
 
         protected virtual void Initialize() {

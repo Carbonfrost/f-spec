@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
 //
 using System;
 using System.Diagnostics;
-using System.Linq;
-using Carbonfrost.Commons.Spec;
+
 using Carbonfrost.Commons.Spec.ExecutionModel;
 using Carbonfrost.Commons.Spec.Resources;
 
@@ -24,63 +23,19 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class ExpectationCommand {
 
-        class ConsistentlyCommand : IExpectationCommand {
+        internal class ConsistentlyCommand<T> : ExpectationCommand<T> {
 
-            private readonly Action _thunk;
+            private readonly ExpectationCommand<T> _inner;
             private readonly TimeSpan _duration;
-            private readonly bool _negated;
 
             public ConsistentlyCommand(TimeSpan duration,
-                                       Action thunk,
-                                       bool negated = false) {
+                                       ExpectationCommand<T> inner) {
                 _duration = duration;
-                _thunk = thunk;
-                _negated = negated;
+                _inner = inner;
             }
 
-            public TestFailure Should(ITestMatcher matcher) {
-                var s = Stopwatch.StartNew();
-                var durationMS = (int) _duration.TotalMilliseconds;
-
-                do {
-                    if (matcher.Matches(_thunk) == _negated) {
-                        var aFailure = TestMatcherLocalizer.FailurePredicate(matcher);
-                        return new TestFailure("spec.consistently") {
-                            Message = SR.ConsistentlyElapsedBefore(TextUtility.FormatDuration(_duration)),
-                            Children = { aFailure },
-                        };
-                    }
-
-                } while (s.ElapsedMilliseconds <= durationMS);
-
-                return null;
-            }
-
-            public IExpectationCommand Negated() {
-                return new ConsistentlyCommand(_duration, _thunk, !_negated);
-            }
-
-            public IExpectationCommand Eventually(TimeSpan delay) {
-                throw new NotImplementedException();
-            }
-
-            public IExpectationCommand Consistently(TimeSpan delay) {
-                throw new NotImplementedException();
-            }
-        }
-
-        class ConsistentlyCommand<T> : ExpectationCommand<T> {
-
-            private readonly Func<T> _thunk;
-            private readonly TimeSpan _duration;
-            private readonly bool _negated;
-
-            public ConsistentlyCommand(TimeSpan duration,
-                                       Func<T> thunk,
-                                       bool negated = false) {
-                _duration = duration;
-                _thunk = thunk;
-                _negated = negated;
+            public override ExpectationCommand<T> Given(string given) {
+                return new ConsistentlyCommand<T>(_duration, _inner.Given(given));
             }
 
             public override TestFailure Should(ITestMatcher<T> matcher) {
@@ -88,14 +43,15 @@ namespace Carbonfrost.Commons.Spec {
                 var durationMS = (int) _duration.TotalMilliseconds;
 
                 do {
-                    if (matcher.Matches(_thunk) == _negated) {
-                        var actual = _thunk();
-                        var aFailure = TestMatcherLocalizer.FailurePredicate(matcher);
+                    var aFailure = _inner.Should(matcher);
+                    if (aFailure != null) {
                         var result = new TestFailure("spec.consistently") {
                             Message = SR.ConsistentlyElapsedBefore(TextUtility.FormatDuration(_duration)),
-                            Children = { aFailure },
+                            Children = {
+                                TestMatcherLocalizer.FailurePredicate(matcher)
+                             },
                         };
-                        result.UserData["Actual"] = TextUtility.ConvertToString(actual);
+                        result.UserData["Actual"] = aFailure.UserData["Actual"];
                         return result;
                     }
 
@@ -104,13 +60,8 @@ namespace Carbonfrost.Commons.Spec {
                 return null;
             }
 
-            public override ExpectationCommand<TBase> As<TBase>() {
-                return new CastCommand<T, TBase>(this);
-            }
-
-
             public override ExpectationCommand<T> Negated() {
-                return new ConsistentlyCommand<T>(_duration, _thunk, !_negated);
+                return new ConsistentlyCommand<T>(_duration, _inner.Negated());
             }
         }
     }

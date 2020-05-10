@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,13 +15,14 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public struct ExpectationBuilder : IExpectationBuilder {
+    struct ExpectationBuilder : IExpectationBuilder {
 
-        private readonly IExpectationCommand _cmd;
+        private readonly ExpectationCommand<Unit> _cmd;
 
         internal static TimeSpan DefaultDelay {
             get {
@@ -29,145 +30,208 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        public TemporalExpectationBuilder Consistently {
+        public ITemporalExpectationBuilder Consistently {
             get {
                 return new TemporalExpectationBuilder(_cmd.Consistently(ExpectationBuilder.DefaultDelay));
             }
         }
 
-        public TemporalExpectationBuilder Eventually {
+        public ITemporalExpectationBuilder Eventually {
             get {
                 return new TemporalExpectationBuilder(_cmd.Eventually(ExpectationBuilder.DefaultDelay));
             }
         }
 
-        public Expectation Will {
+        public IExpectation Will {
             get {
                 return new Expectation(_cmd);
             }
         }
 
-        public SatisfactionExpectation ToSatisfy {
+        public IExceptionExpectation ToThrow {
+            get {
+                return new ExceptionExpectation(_cmd);
+            }
+        }
+
+        public ISatisfactionExpectation ToSatisfy {
             get {
                 return new SatisfactionExpectation(_cmd);
             }
         }
 
-        internal ExpectationBuilder(IExpectationCommand cmd) {
+        public IExpectationBuilder Not {
+            get {
+                return new ExpectationBuilder(_cmd.Negated());
+            }
+        }
+
+        internal ExpectationBuilder(ExpectationCommand<Unit> cmd) {
             _cmd = cmd;
         }
 
-        internal ExpectationBuilder(Action thunk, bool negated, string given) {
-            _cmd = ExpectationCommand.TestCode(thunk).NegateIfNeeded(negated).Given(given);
+        internal ExpectationBuilder(Action thunk, bool negated, string given, bool assumption) {
+            _cmd = ExpectationCommand.TestCode(thunk, negated, given, assumption);
         }
 
         public void To(ITestMatcher matcher, string message = null, params object[] args) {
-            ToExpectation().Should(matcher, message, args);
+            _cmd.Should(matcher, message, args);
         }
 
-        public void NotTo(ITestMatcher matcher, string message = null, params object[] args) {
-            ToExpectation().Should(Matchers.Not(matcher), message, args);
-        }
-
-        public void ToNot(ITestMatcher matcher, string message = null, params object[] args) {
-            ToExpectation().Should(Matchers.Not(matcher), message, args);
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete("This is an override of Object.Equals(). Call Assert.Equal() instead.", true)]
         public new bool Equals(object b) {
             throw new InvalidOperationException("ExpectationBuilder.Equals should not be used");
         }
-
-        private Expectation ToExpectation() {
-            return new Expectation(_cmd);
-        }
     }
 
-    public struct ExpectationBuilder<T> : IExpectationBuilder<T> {
+    struct ExpectationBuilder<T> : IExpectationBuilder<T> {
 
         private readonly ExpectationCommand<T> _cmd;
 
-        public ExpectationBuilder<T> Not {
+        public IExpectationBuilder<T> Not {
             get {
                 return new ExpectationBuilder<T>(_cmd.Negated());
             }
         }
 
-        public TemporalExpectationBuilder<T> Consistently {
+        public ITemporalExpectationBuilder<T> Consistently {
             get {
                 return new TemporalExpectationBuilder<T>(_cmd.Consistently(ExpectationBuilder.DefaultDelay));
             }
         }
 
-        public TemporalExpectationBuilder<T> Eventually {
+        public ITemporalExpectationBuilder<T> Eventually {
             get {
                 return new TemporalExpectationBuilder<T>(_cmd.Eventually(ExpectationBuilder.DefaultDelay));
             }
         }
 
-        public Expectation<T> ToBe {
+        public IExpectation<T> ToBe {
             get {
                 return new Expectation<T>(_cmd);
             }
         }
 
-        public EnumerableExpectation ToHave {
+        public IEnumerableExpectation ToHave {
             get {
                 return new EnumerableExpectation(_cmd.As<IEnumerable>());
             }
         }
 
-        public SatisfactionExpectation<T> ToSatisfy {
+        public ISatisfactionExpectation<T> ToSatisfy {
             get {
                 return new SatisfactionExpectation<T>(_cmd);
             }
         }
 
-        internal ExpectationBuilder(Func<T> thunk, bool negated, string given) {
-            _cmd = ExpectationCommand.Of(thunk).NegateIfNeeded(negated).Given(given);
+        internal ExpectationBuilder(Func<T> thunk, bool negated, string given, bool assumption) {
+            _cmd = ExpectationCommand.Of(thunk, negated, given, assumption);
         }
 
         internal ExpectationBuilder(ExpectationCommand<T> cmd) {
             _cmd = cmd;
         }
 
-        public ExpectationBuilder<TBase> As<TBase>() {
+        public IExpectationBuilder<TBase> As<TBase>() {
             return new ExpectationBuilder<TBase>(_cmd.As<TBase>());
         }
 
         public void To(ITestMatcher matcher, string message = null, params object[] args) {
-            ToExpectation(false).Untyped().Should(matcher, message, args);
+            _cmd.Untyped().Should(matcher, message, args);
         }
 
         public void To(ITestMatcher<T> matcher, string message = null, params object[] args) {
-            ToExpectation(false).Should(matcher, message, args);
+            _cmd.Should(matcher, message, args);
         }
 
-        public void NotTo(ITestMatcher matcher, string message = null, params object[] args) {
-            ToExpectation(true).Untyped().Should(matcher, message, args);
+        public void To(ITestMatcher<object> matcher, string message = null, params object[] args) {
+            _cmd.As<object>().Should(matcher, message, args);
         }
 
-        public void NotTo(ITestMatcher<T> matcher, string message = null, params object[] args) {
-            ToExpectation(true).Should(matcher, message, args);
-        }
-
-        public void ToNot(ITestMatcher matcher, string message = null, params object[] args) {
-            ToExpectation(true).Untyped().Should(matcher, message, args);
-        }
-
-        public void ToNot(ITestMatcher<T> matcher, string message = null, params object[] args) {
-            ToExpectation(true).Should(matcher, message, args);
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete("This is an override of Object.Equals(). Call Assert.Equal() instead.", true)]
         public new bool Equals(object b) {
             throw new InvalidOperationException("ExpectationBuilder.Equals should not be used");
         }
+    }
 
-        private Expectation<T> ToExpectation(bool negated) {
-            return new Expectation<T>(_cmd.NegateIfNeeded(negated));
+    struct ExpectationBuilder<TSelf, T> : IExpectationBuilder<TSelf, T>
+        where TSelf : IEnumerable<T>
+    {
+
+        private readonly ExpectationCommand<TSelf> _cmd;
+
+        IExpectationBuilder<TSelf> IExpectationBuilder<TSelf>.Not {
+            get {
+                return Not;
+            }
+        }
+
+        public IExpectationBuilder<TSelf, T> Not {
+            get {
+                return new ExpectationBuilder<TSelf, T>(_cmd.Negated());
+            }
+        }
+
+        public ITemporalExpectationBuilder<TSelf> Consistently {
+            get {
+                return new TemporalExpectationBuilder<TSelf>(_cmd.Consistently(ExpectationBuilder.DefaultDelay));
+            }
+        }
+
+        public ITemporalExpectationBuilder<TSelf> Eventually {
+            get {
+                return new TemporalExpectationBuilder<TSelf>(_cmd.Eventually(ExpectationBuilder.DefaultDelay));
+            }
+        }
+
+        public IExpectation<TSelf> ToBe {
+            get {
+                return new Expectation<TSelf>(_cmd);
+            }
+        }
+
+        IEnumerableExpectation IExpectationBuilder<TSelf>.ToHave {
+            get {
+                return new EnumerableExpectation(_cmd.As<IEnumerable>());
+            }
+        }
+
+        public IEnumerableExpectation<T> ToHave {
+            get {
+                return new EnumerableExpectation<T>(_cmd.As<IEnumerable>().Items<T>());
+            }
+        }
+
+        public ISatisfactionExpectation<TSelf> ToSatisfy {
+            get {
+                return new SatisfactionExpectation<TSelf>(_cmd);
+            }
+        }
+
+        internal ExpectationBuilder(Func<TSelf> thunk, bool negated, string given, bool assumption) {
+            _cmd = ExpectationCommand.Of(thunk, negated, given, assumption);
+        }
+
+        private ExpectationBuilder(ExpectationCommand<TSelf> cmd) {
+            _cmd = cmd;
+        }
+
+        public IExpectationBuilder<TBase> As<TBase>() {
+            return new ExpectationBuilder<TBase>(_cmd.As<TBase>());
+        }
+
+        public void To(ITestMatcher matcher, string message = null, params object[] args) {
+            _cmd.Untyped().Should(matcher, message, args);
+        }
+
+        public void To(ITestMatcher<TSelf> matcher, string message = null, params object[] args) {
+            _cmd.Should(matcher, message, args);
+        }
+
+        public void To(ITestMatcher<object> matcher, string message = null, params object[] args) {
+            _cmd.As<object>().Should(matcher, message, args);
+        }
+
+        public new bool Equals(object b) {
+            throw new InvalidOperationException("ExpectationBuilder.Equals should not be used");
         }
     }
 

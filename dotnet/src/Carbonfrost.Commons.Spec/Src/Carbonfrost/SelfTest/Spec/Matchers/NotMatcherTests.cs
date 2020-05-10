@@ -29,7 +29,7 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
             var subj = new NotMatcher<int>(
                 Matchers.Equal(20)
             );
-            var val = subj.Matches(() => 10);
+            var val = subj.Matches(TestActual.Value(10));
             Assert.True(val);
         }
 
@@ -38,7 +38,7 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
             var subj = new NotMatcher<int>(
                 Matchers.Equal(20)
             );
-            var val = subj.Matches(() => 20);
+            var val = subj.Matches(TestActual.Value(20));
             Assert.False(val);
         }
 

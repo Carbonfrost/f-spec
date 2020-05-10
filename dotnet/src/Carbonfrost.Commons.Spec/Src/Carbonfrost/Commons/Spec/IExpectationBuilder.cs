@@ -13,38 +13,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
+
+using System.Collections.Generic;
 
 namespace Carbonfrost.Commons.Spec {
 
-    interface IExpectationBuilderBase {
-        Expectation Will { get; }
-        SatisfactionExpectation ToSatisfy { get; }
-
-        void To(ITestMatcher matcher, string message = null, params object[] args);
-        void NotTo(ITestMatcher matcher, string message = null, params object[] args);
-        void ToNot(ITestMatcher matcher, string message = null, params object[] args);
+    public interface IExpectationBuilder : IExpectationBuilderAsserter {
+        IExpectationBuilder Not { get; }
+        IExpectation Will { get; }
+        IExceptionExpectation ToThrow { get; }
+        ISatisfactionExpectation ToSatisfy { get; }
+        ITemporalExpectationBuilder Consistently { get; }
+        ITemporalExpectationBuilder Eventually { get; }
     }
 
-    interface IExpectationBuilderBase<T> {
-        Expectation<T> ToBe { get; }
-        EnumerableExpectation ToHave { get; }
-        SatisfactionExpectation<T> ToSatisfy { get; }
+    public interface IExpectationBuilder<out T> : IExpectationBuilderAsserter<T> {
+        IExpectationBuilder<T> Not { get; }
+        ITemporalExpectationBuilder<T> Consistently { get; }
+        ITemporalExpectationBuilder<T> Eventually { get; }
+        IExpectation<T> ToBe { get; }
+        IEnumerableExpectation ToHave { get; }
+        ISatisfactionExpectation<T> ToSatisfy { get; }
 
-        void To(ITestMatcher<T> matcher, string message = null, params object[] args);
-        void NotTo(ITestMatcher<T> matcher, string message = null, params object[] args);
-        void ToNot(ITestMatcher<T> matcher, string message = null, params object[] args);
+        IExpectationBuilder<TBase> As<TBase>();
     }
 
-    interface IExpectationBuilder : IExpectationBuilderBase {
-        TemporalExpectationBuilder Consistently { get; }
-        TemporalExpectationBuilder Eventually { get; }
-    }
+    public interface IExpectationBuilder<out TEnumerable, out T> : IExpectationBuilder<TEnumerable>
+        where TEnumerable: IEnumerable<T> {
 
-    interface IExpectationBuilder<T> : IExpectationBuilderBase<T> {
-        ExpectationBuilder<T> Not { get; }
-        TemporalExpectationBuilder<T> Consistently { get; }
-        TemporalExpectationBuilder<T> Eventually { get; }
-        ExpectationBuilder<TBase> As<TBase>();
+        new IExpectationBuilder<TEnumerable, T> Not { get; }
+        new IEnumerableExpectation<T> ToHave { get; }
     }
 }

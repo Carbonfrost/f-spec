@@ -91,16 +91,16 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class Extensions {
 
-        // Not logical to have EnumerableExpectation<> because there is no type
+        // Not logical to have IEnumerableExpectation<> because there is no type
         // for TValue -- e.g it would have to be EnumerableExpectation<KeyValuePair<TKey, ?>>
 
         [IgnoreEnumerableExpectationAttribute]
-        public static void Key<TKey>(this EnumerableExpectation e, TKey key) {
+        public static void Key<TKey>(this IEnumerableExpectation e, TKey key) {
             Key(e, key, null);
         }
 
-        public static void Key<TKey>(this EnumerableExpectation e, TKey key, string message, params object[] args) {
-            e.As<IEnumerable>().Should(Matchers.HaveKey(key), message, (object[]) args);
+        public static void Key<TKey>(this IEnumerableExpectation e, TKey key, string message, params object[] args) {
+            e.As<IEnumerable>().Like(Matchers.HaveKey(key), message, (object[]) args);
         }
 
     }

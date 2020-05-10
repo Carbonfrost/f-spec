@@ -27,35 +27,39 @@ namespace Carbonfrost.Commons.Spec {
         static readonly IEqualityComparer DefaultInnerComparer
             = new AssertEqualityComparerAdapter<object>(new AssertEqualityComparer<object>());
 
-        static readonly Asserter Global = new Asserter();
+        static Asserter Global {
+            get {
+                return Asserter.Default;
+            }
+        }
 
         public static bool UseStrictMode {
             get;
             set;
         }
 
-        public static ExpectationBuilder<IEnumerable> Expect() {
-            return new ExpectationBuilder<IEnumerable>(() => Empty<object>.Array, false, null);
+        public static IExpectationBuilder<IEnumerable> Expect() {
+            return Global.Expect();
         }
 
-        public static ExpectationBuilder<T> Expect<T>(T value) {
-            return new ExpectationBuilder<T>(() => value, false, null);
+        public static IExpectationBuilder<T> Expect<T>(T value) {
+            return Global.Expect<T>(value);
         }
 
-        public static ExpectationBuilder<IEnumerable<TValue>> Expect<TValue>(params TValue[] value) {
-            return new ExpectationBuilder<IEnumerable<TValue>>(() => value, false, null);
+        public static IExpectationBuilder<TEnumerable, T> Expect<TEnumerable, T>(TEnumerable value) where TEnumerable : IEnumerable<T> {
+            return Global.Expect<TEnumerable, T>(value);
         }
 
-        public static ExpectationBuilder Expect(Action value) {
-            return new ExpectationBuilder(value, false, null);
+        public static IExpectationBuilder<TValue[], TValue> Expect<TValue>(params TValue[] values) {
+            return Global.Expect<TValue>(values);
         }
 
-        public static ExpectationBuilder<T> Expect<T>(Func<T> func) {
-            return Given().Expect(func);
+        public static IExpectationBuilder Expect(Action value) {
+            return Global.Expect(value);
         }
 
-        static IComparer<T> GetComparer<T>() where T : IComparable {
-            return new AssertComparer<T>();
+        public static IExpectationBuilder<T> Expect<T>(Func<T> func) {
+            return Global.Expect<T>(func);
         }
 
         internal static IEqualityComparer<T> GetEqualityComparer<T>(bool skipTypeCheck = false, IEqualityComparer innerComparer = null) {
