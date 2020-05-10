@@ -54,6 +54,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public static TestCaseInfo CreateTestUnitFactoryProblem(MethodInfo mi, Exception err) {
+            return new SkippedInitFailure(mi, err) {
+                _reason = string.Format("Problem creating test ({0}: {1})", err.GetType().Name, err.Message)
+            };
+        }
+
         public static TestCaseInfo DataProviderProblem(TestUnit item,
             string dataProvider,
             MethodInfo mi,

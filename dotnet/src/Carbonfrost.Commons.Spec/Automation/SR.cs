@@ -686,6 +686,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("MultiAccessorsTheoryParameterMismatch") );
     }
 
+  /// <summary>Method has more than one fact or theory attribute</summary>
+    internal static string MultipleTestUnitFactories(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("MultipleTestUnitFactories") );
+    }
+
   /// <summary>Make sure that AtLeast or min value is non-negative</summary>
     internal static string NegativeCardinality(
     

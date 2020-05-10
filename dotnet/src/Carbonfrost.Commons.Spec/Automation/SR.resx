@@ -325,6 +325,9 @@
   <data name="MultiAccessorsTheoryParameterMismatch" xml:space="preserve">
     <value>Invalid cross join: Theory method must have exactly as many parameters as members in the data source.</value>
   </data>
+  <data name="MultipleTestUnitFactories" xml:space="preserve">
+    <value>Method has more than one fact or theory attribute</value>
+  </data>
   <data name="NegativeCardinality" xml:space="preserve">
     <value>Make sure that AtLeast or min value is non-negative</value>
   </data>

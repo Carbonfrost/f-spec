@@ -195,5 +195,9 @@ namespace Carbonfrost.Commons.Spec {
                 line
             ));
         }
+
+        internal static Exception MultipleTestUnitFactories() {
+            return new SpecException(SR.MultipleTestUnitFactories());
+        }
     }
 }

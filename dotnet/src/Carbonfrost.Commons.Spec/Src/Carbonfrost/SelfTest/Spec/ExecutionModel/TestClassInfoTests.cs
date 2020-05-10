@@ -41,6 +41,22 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
             var tc = new FTestClassInfo(type);
             Assert.Equal(expected, tc.DisplayName);
         }
+
+        class PHasMethodWithMultipleAttributes {
+            [Fact, Theory]
+            public void F() {}
+        }
+
+        [Fact]
+        public void CreateTest_will_be_skipped_with_error_when_multiple_test_attributes_specified() {
+            var tc = new ReflectedTestClass(typeof(PHasMethodWithMultipleAttributes));
+            var testContext = new TestContext(null, new FakeRunner(), null, null);
+            tc.InitializeSafe(testContext);
+            var result = ((TestCaseInfo) tc.Children[0]).RunTest(testContext);
+
+            Assert.Equal("Problem creating test (SpecException: Method has more than one fact or theory attribute)", result.Reason);
+            Assert.True(result.Failed);
+        }
     }
 }
 #endif

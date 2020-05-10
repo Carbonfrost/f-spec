@@ -76,15 +76,23 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         internal static void AddTestMethods(Type testType, TestUnitCollection addTo) {
             foreach (var m in testType.GetRuntimeMethods()) {
-                var myCase = CreateTest(m);
-                if (myCase != null) {
-                    addTo.Add(myCase);
+                try {
+                    var myCase = CreateTest(m);
+                    if (myCase != null) {
+                        addTo.Add(myCase);
+                    }
+                } catch (Exception ex) {
+                    addTo.Add(SkippedInitFailure.CreateTestUnitFactoryProblem(m, ex));
                 }
             }
             foreach (var p in testType.GetRuntimeProperties()) {
-                var myCase = CreateTest(p);
-                if (myCase != null) {
-                    addTo.Add(myCase);
+                try {
+                    var myCase = CreateTest(p);
+                    if (myCase != null) {
+                        addTo.Add(myCase);
+                    }
+                } catch (Exception ex) {
+                    addTo.Add(SkippedInitFailure.CreateTestUnitFactoryProblem(p.GetMethod, ex));
                 }
             }
         }
@@ -112,7 +120,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 if (testCase == null) {
                     testCase = attr.CreateTestCase(method);
                 } else {
-                    throw new NotImplementedException();
+                    throw SpecFailure.MultipleTestUnitFactories();
                 }
             }
             return testCase;
