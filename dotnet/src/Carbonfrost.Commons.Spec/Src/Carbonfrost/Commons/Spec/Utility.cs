@@ -25,6 +25,7 @@ namespace Carbonfrost.Commons.Spec {
     static class Utility {
 
         static readonly RandomNumberGenerator rng = RandomNumberGenerator.Create();
+        static readonly Uri current = new Uri("file://" + Directory.GetCurrentDirectory() + "/");
 
         static readonly char[] PATH_UNSAFE_CHARS = {
             '\x0',
@@ -54,12 +55,20 @@ namespace Carbonfrost.Commons.Spec {
             if (Uri.TryCreate(result, UriKind.Absolute, out uri)) {
                 // Make it relative
                 if (makeRelative) {
-                    var current = new Uri("file://" + Directory.GetCurrentDirectory() + "/");
-                    return current.MakeRelativeUri(uri).ToString();
+                    //var current = new Uri("file://" + Directory.GetCurrentDirectory() + "/");
+                    return MakeRelativePath(uri); // current.MakeRelativeUri(uri).ToString();
                 }
                 return uri.LocalPath;
             }
             return result;
+        }
+
+        internal static string MakeRelativePath(string path) {
+            return MakeRelativePath(new Uri("file://" + path));
+        }
+
+        internal static string MakeRelativePath(Uri uri) {
+            return current.MakeRelativeUri(uri).ToString();
         }
     }
 }

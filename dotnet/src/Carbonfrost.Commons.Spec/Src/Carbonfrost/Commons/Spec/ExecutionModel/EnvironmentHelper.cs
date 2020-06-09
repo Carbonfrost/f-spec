@@ -26,6 +26,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public static PathCollection FixturePath {
+            get {
+                return PathCollection.FromEnvironment("FSPEC_FIXTURE_PATH");
+            }
+        }
+
+        public static PathCollection LoaderPath {
+            get {
+                return PathCollection.FromEnvironment("FSPEC_LOADER_PATH");
+            }
+        }
+
         public static bool Debug {
             get {
                 return Exists("DEBUG");

@@ -61,11 +61,11 @@ namespace Carbonfrost.CFSpec {
             testRunnerOptions.IgnoreFocus = Options.NoFocus;
 
             testRunnerOptions.FixturePaths.AddAll(Options.FixturePaths);
-            testRunnerOptions.FixturePaths.AddAll(PathCollection.FromEnvironment("FSPEC_FIXTURE_PATH"));
+            testRunnerOptions.FixturePaths.AddAll(EnvironmentHelper.FixturePath);
 
             testRunnerOptions.LoaderPaths.AddAll(Options.Assemblies);
             testRunnerOptions.LoaderPaths.AddAll(Options.LoaderPaths);
-            testRunnerOptions.LoaderPaths.AddAll(PathCollection.FromEnvironment("FSPEC_LOADER_PATH"));
+            testRunnerOptions.LoaderPaths.AddAll(EnvironmentHelper.LoaderPath);
 
             foreach (var s in Options.Packages) {
                 testRunnerOptions.PackageReferences.Add(s);

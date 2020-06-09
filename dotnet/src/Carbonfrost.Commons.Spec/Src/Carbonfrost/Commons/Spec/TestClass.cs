@@ -69,6 +69,14 @@ namespace Carbonfrost.Commons.Spec {
             return Assert.Expect<T>(func);
         }
 
+        public TestFixture Fixture(string path) {
+            return TestFixture.FromFile(path);
+        }
+
+        public TestFixtureData FixtureData(string path) {
+            return TestFixtureData.FromFile(path);
+        }
+
         protected virtual void Initialize() {
         }
 

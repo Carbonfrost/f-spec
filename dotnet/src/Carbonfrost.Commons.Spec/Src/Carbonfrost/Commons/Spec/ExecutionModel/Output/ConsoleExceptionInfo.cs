@@ -24,7 +24,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
     class ConsoleExceptionInfo : ConsoleOutputPart<ExceptionInfo> {
 
         static readonly Regex ERGO = new Regex(@"\Aat (?<module>.+) in (?<file>.+):line (?<line>\d+)\Z");
-        static readonly Uri current = new Uri("file://" + Directory.GetCurrentDirectory() + "/");
         static readonly string[] SPACES = Enumerable.Range(0, 10)
             .Select(m => "// " + new string(' ', m))
             .ToArray();
@@ -73,9 +72,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             console.Write(ws);
             console.Write($"at {module}");
             if (line.Length > 0) {
-                var file = current.MakeRelativeUri(
-                    new Uri("file://" + m.Groups["file"].Value)
-                );
+                var file = Utility.MakeRelativePath(m.Groups["file"].Value);
                 console.WriteLine(" in");
                 console.Write(ws);
                 console.Write($"   {file}:{line}");

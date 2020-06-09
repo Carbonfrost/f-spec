@@ -1,0 +1,3 @@
+# Simple fixture file with comments
+# and a single fixture
+hello: world
