@@ -1,11 +1,11 @@
 //
-// Copyright 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,16 +13,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+
 using System;
-using System.Linq;
 
 namespace Carbonfrost.Commons.Spec {
 
     public abstract class TestClass<TSubject> : TestClass {
 
+        private TSubject _subject;
+        private bool _didImplicitInit;
+
         public TSubject Subject {
-            get;
-            set; // TODO Technically, only activation should set this
+            get {
+                ImplicitSubjectInitialization();
+                return _subject;
+            }
+            set {
+                _subject = value;
+                _didImplicitInit = true;
+            }
         }
 
         protected TestClass() {
@@ -30,6 +39,17 @@ namespace Carbonfrost.Commons.Spec {
 
         protected TestClass(TSubject subject) {
             Subject = subject;
+        }
+
+        private void ImplicitSubjectInitialization() {
+            if (_didImplicitInit) {
+                return;
+            }
+            _didImplicitInit = true;
+            try {
+                _subject = (TSubject) Activator.CreateInstance(typeof(TSubject));
+            } catch {
+            }
         }
     }
 }
