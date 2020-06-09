@@ -141,6 +141,10 @@ namespace Carbonfrost.CFSpec {
 
         public List<string> Parse(string[] args) {
             var myArgs = new List<string>(args.Length);
+            foreach (FspecOptionsFile src in FspecOptionsFile.FindAll()) {
+                myArgs.AddRange(src.Values);
+            }
+
             foreach (var item in args) {
                 myArgs.Add(item);
             }
