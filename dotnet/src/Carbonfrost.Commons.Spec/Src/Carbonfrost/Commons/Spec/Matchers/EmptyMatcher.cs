@@ -107,7 +107,7 @@ namespace Carbonfrost.Commons.Spec {
 
             public override bool Matches(IEnumerable actual) {
                 if (actual == null) {
-                    throw new ArgumentNullException(nameof(actual));
+                    return false;
                 }
 
                 var enumerator = actual.GetEnumerator();

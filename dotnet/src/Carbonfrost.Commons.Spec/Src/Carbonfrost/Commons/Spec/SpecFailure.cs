@@ -97,6 +97,7 @@ namespace Carbonfrost.Commons.Spec {
 
         public static AssertException UnusableComparer(TestMatcherName name, object comparer, Exception e) {
             var failure = new TestFailure(name) {
+                Message = SR.UnusableComparer(),
                 UserData = {
                     { "Comparer", comparer }
                 }

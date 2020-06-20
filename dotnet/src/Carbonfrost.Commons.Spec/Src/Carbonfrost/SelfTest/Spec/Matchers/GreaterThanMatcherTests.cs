@@ -16,6 +16,7 @@
 // limitations under the License.
 //
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.TestMatchers;
@@ -53,7 +54,20 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
                 Expect(new object()).ToBe.GreaterThan("Bye");
 
             } catch (AssertException e) {
+                // e.TestFailure
                 Assert.StartsWith("Unable to compare", e.Message);
+                Assert.Pass();
+            }
+        }
+
+        [Fact]
+        [PassExplicitly]
+        public void Expect_ToBe_should_have_test_failure_comparer() {
+            try {
+                Expect("S").ToBe.GreaterThan("Bye", new FComparerThatThrows());
+
+            } catch (AssertException e) {
+                Assert.Equal("Unable to compare values using the specified comparer", e.TestFailure.Message);
                 Assert.Pass();
             }
         }
@@ -64,6 +78,11 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
             Expect(5.02).ToBe.Approximately(0.3).GreaterThan(4.7);
         }
 
+        private class FComparerThatThrows : IComparer<string> {
+            public int Compare(string x, string y) {
+                throw new InvalidCastException();
+            }
+        }
     }
 }
 #endif

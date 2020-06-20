@@ -87,7 +87,7 @@ namespace Carbonfrost.Commons.Spec {
             try {
                 return comparer.Compare(actual, expected);
 
-            } catch (ArgumentException e) {
+            } catch (Exception e) when (e is ArgumentException || e is InvalidCastException) {
                 var name = TestMatcherName.FromType(GetType());
                 throw SpecFailure.UnusableComparer(name, comparer, e);
             }

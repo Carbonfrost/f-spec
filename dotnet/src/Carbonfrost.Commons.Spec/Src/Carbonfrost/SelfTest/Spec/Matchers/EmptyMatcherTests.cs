@@ -39,6 +39,12 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
         }
 
         [Fact]
+        public void Matches_should_allow_null_and_detect_nominal() {
+            var subj = new EmptyMatcher();
+            Assert.False(subj.Matches((string) null));
+        }
+
+        [Fact]
         public void Matches_should_dispose_of_enumerator() {
             var subj = new EmptyMatcher();
             var item = new PHasDisposableEnumerator();

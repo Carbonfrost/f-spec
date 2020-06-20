@@ -212,6 +212,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             IsSelfTest = copyFrom.IsSelfTest;
             PackageReferences.AddAll(copyFrom.PackageReferences);
             PlanFilter.CopyFrom(copyFrom.PlanFilter);
+            TestTimeout = copyFrom.TestTimeout;
         }
 
         internal TestRunnerOptions Normalize() {
