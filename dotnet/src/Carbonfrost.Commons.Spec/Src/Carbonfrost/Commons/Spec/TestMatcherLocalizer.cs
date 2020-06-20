@@ -30,8 +30,8 @@ namespace Carbonfrost.Commons.Spec {
 
         public static TestFailure Failure(object matcher, object actual) {
             TestFailure failure = FailureMessageCore(false, matcher, false);
-            var strActual = TextUtility.ConvertToString(actual);
-            failure.UserData["Actual"] = strActual;
+            failure.UserData.Add("Actual", actual);
+
             if (matcher is ITestMatcherActualDiff diff) {
                 var patch = diff.GetPatch(actual);
                 if (patch != null) {

@@ -151,48 +151,8 @@ namespace Carbonfrost.Commons.Spec {
             return Regex.Replace(typeName, @"(<.+?>)(d__\d+)", "$1");
         }
 
-        internal static string ConvertToString(object value, int depth = 0) {
-            if (value == null) {
-                return "<null>";
-            }
-            string stringValue = value as string;
-            if (stringValue != null) {
-                if (stringValue.Length == 0) {
-                    return "<empty>";
-                }
-                return stringValue;
-            }
-            if (value is Exception exceptionValue) {
-                return GetExceptionFiltered(exceptionValue);
-            }
-
-            IEnumerable enumerableValue = value as IEnumerable;
-
-            if (enumerableValue == null) {
-                return value.ToString();
-            }
-
-            List<string> valueStrings = new List<string>();
-            foreach (object valueObject in enumerableValue) {
-                string displayName;
-                if (valueObject == null) {
-                    displayName = "<null>";
-                } else {
-                    string stringValueObject = valueObject as string;
-                    if (stringValueObject != null) {
-                        displayName = string.Format("\"{0}\"", stringValueObject);
-                    } else if (depth == 3) {
-                        displayName = valueObject.ToString();
-                    } else {
-                        displayName = ConvertToString(valueObject, depth + 1);
-                    }
-                }
-                valueStrings.Add(displayName);
-            }
-
-            return string.Format("{0} {{ {1} }}",
-                                 ConvertToSimpleTypeName(value.GetType()),
-                                 string.Join(", ", valueStrings.ToArray()));
+        private static string ConvertToString(object value) {
+            return DisplayActual.Create(value).Format(DisplayActualOptions.None);
         }
 
         internal static string GetExceptionFiltered(Exception exception) {

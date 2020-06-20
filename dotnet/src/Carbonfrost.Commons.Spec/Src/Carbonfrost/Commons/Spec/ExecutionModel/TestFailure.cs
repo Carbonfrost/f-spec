@@ -65,11 +65,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             UserData = new UserDataCollection();
         }
 
-        public override string ToString() {
-            return string.Format("<TestFailure ({0}), {1}, UserData={2}>",
-                                 _name, Message, TextUtility.ConvertToString(UserData));
-        }
-
         internal Exception ToException() {
             return new AssertException(Message, this, null);
         }
@@ -123,8 +118,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         internal TestFailure UpdateTestSubject() {
             var cur = TestContext.Current;
             if (cur != null) {
-                var subj = TextUtility.ConvertToString(cur.CurrentTest.FindTestSubject());
-                UserData[SR.LabelSubject()] = subj;
+                UserData.Add("Subject", cur.CurrentTest.FindTestSubject());
             }
             return this;
         }
