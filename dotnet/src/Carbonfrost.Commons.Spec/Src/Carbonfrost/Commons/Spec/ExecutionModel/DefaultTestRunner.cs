@@ -23,18 +23,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         private readonly TestRunnerOptions _opts;
         private readonly BufferMessageEventCache _messageLogger;
-        private Random _randomCache;
 
         public DefaultTestRunner(TestRunnerOptions opts) : base(opts) {
             _opts = Options.Normalize();
             _messageLogger = new BufferMessageEventCache();
             Logger = new ConsoleLogger(opts);
-        }
-
-        private Random RandomCache {
-            get {
-                return _randomCache ?? (_randomCache = new Random(_opts.RandomSeed));
-            }
         }
 
         public ITestRunnerLogger Logger {
@@ -72,10 +65,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             // Message logger must handle events first
             _messageLogger.Initialize(this, this);
             Logger.Initialize(this, this);
-        }
-
-        public TestContext NewTestContext(TestUnit unit) {
-            return new TestContext(unit, this, RandomCache, unit.FindTestObject());
         }
     }
 }

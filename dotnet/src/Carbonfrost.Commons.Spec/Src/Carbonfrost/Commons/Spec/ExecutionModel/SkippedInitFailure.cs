@@ -35,7 +35,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             _reason = string.Format("Problem setting up test ({0}: {1})", err.GetType().Name, err.Message);
         }
 
-        protected override TestCaseResult RunTestCore(TestContext testContext) {
+        protected override TestCaseResult RunTestCore(TestExecutionContext testContext) {
             var result = new TestCaseResult(this, TestStatus.Skipped);
             result.Reason = _reason;
             result.SetFailed(_err);
@@ -69,6 +69,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return new SkippedInitFailure(mi, err) {
                 _reason = reason,
             };
+        }
+
+        internal sealed override TestExecutionContext CreateExecutionContext(DefaultTestRunner runner) {
+            return TestContext.NewExecContext(this, runner, null);
         }
     }
 }

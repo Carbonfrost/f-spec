@@ -1,3 +1,5 @@
+#if SELF_TEST
+
 //
 // Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
@@ -13,14 +15,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+using System.Collections.Generic;
+using Carbonfrost.Commons.Spec;
 
-namespace Carbonfrost.Commons.Spec.ExecutionModel {
+namespace Carbonfrost.SelfTest.Spec {
 
-    // Provides a filter that runs before and after a test.  When applied
-    // to a test object class, these filter methods will be invoked alongside
-    // the calls to each test method
-    public interface ITestExecutionFilter {
-        void BeforeExecuting(TestExecutionContext testContext);
-        void AfterExecuting(TestExecutionContext testContext);
+    public class FieldDataAttributeTests {
+        public string State;
+
+        public readonly IEnumerable<string> FieldDataExample = new [] { "A", "B" };
+
+        [FieldData(nameof(FieldDataExample))]
+        public void Create_new_instance_on_FieldData_test_cases(string name) {
+            Assert.Empty(State);
+
+            // Detect shared state by setting something
+            State = name;
+        }
     }
 }
+#endif

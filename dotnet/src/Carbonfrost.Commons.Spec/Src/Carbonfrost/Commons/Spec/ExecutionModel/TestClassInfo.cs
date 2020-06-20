@@ -74,6 +74,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             _children = new TestUnitCollection(this);
         }
 
+        internal override TestClassInfo FindTestClass() {
+            return this;
+        }
+
         internal static void AddTestMethods(Type testType, TestUnitCollection addTo) {
             foreach (var m in testType.GetRuntimeMethods()) {
                 try {

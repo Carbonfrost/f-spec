@@ -13,8 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
-using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
@@ -25,10 +23,5 @@ namespace Carbonfrost.Commons.Spec {
         TestTemporaryDirectory CreateTempDirectory(string name);
         TestTemporaryFile CreateTempFile();
         TestTemporaryFile CreateTempFile(string name);
-
-        TestCaseResult RunTest(Action<TestContext> testFunc);
-        TestCaseResult RunTest(Action<TestContext> testFunc, TestOptions options);
-        TestCaseResult RunTest(Func<TestContext, object> testFunc);
-        TestCaseResult RunTest(Func<TestContext, object> testFunc, TestOptions options);
     }
 }

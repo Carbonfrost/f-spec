@@ -40,7 +40,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        void ITestCaseFilter.RunTest(TestContext testContext, Action<TestContext> next) {
+        void ITestCaseFilter.RunTest(TestExecutionContext testContext, Action<TestExecutionContext> next) {
             var filter = _provider.CreateFilter(testContext);
 
             filter.BeforeExecuting(testContext);

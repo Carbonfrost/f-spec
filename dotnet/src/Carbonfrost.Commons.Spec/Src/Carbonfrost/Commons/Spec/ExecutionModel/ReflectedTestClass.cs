@@ -20,7 +20,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     class ReflectedTestClass : TestClassInfo {
 
-        private object _instanceCache;
         private ITestSubjectProvider _subjectProviderCache;
 
         public override ITestSubjectProvider TestSubjectProvider {
@@ -44,7 +43,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     var binding = new DefaultTestClassSubjectBinding(testClassType, s);
                     Children.Add(binding);
                 }
-                _instanceCache = TestUnitAdapter.Empty;
 
             } else {
                 TestClassInfo.AddTestMethods(TestClass, Children);
@@ -53,20 +51,17 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             Metadata.ApplyDescendants(testContext, Descendants);
         }
 
-        internal override object FindTestObject() {
-            if (_instanceCache == null) {
-                try {
-                    _instanceCache = Activator.CreateInstance(TestClass);
-                } catch (TargetInvocationException ex) {
-                    _instanceCache = new TypeLoadFailure(TestClass, ex.InnerException);
-                } catch (Exception ex) {
-                    _instanceCache = new TypeLoadFailure(TestClass, ex);
-                }
+        internal override object CreateTestObject() {
+            try {
+                return Activator.CreateInstance(TestClass);
+            } catch (TargetInvocationException ex) {
+                return new TypeLoadFailure(TestClass, ex.InnerException);
+            } catch (Exception ex) {
+                return new TypeLoadFailure(TestClass, ex);
             }
-            return _instanceCache;
         }
 
-        protected override void BeforeExecuting(TestContext testContext) {
+        protected override void BeforeExecuting(TestExecutionContext testContext) {
             if (Children.Count > 0) {
                 return;
             }
@@ -88,7 +83,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return testClassType;
         }
 
-        class TypeLoadFailure : ITestCaseFilter, ITestUnitAdapter {
+        class TypeLoadFailure : ITestCaseFilter, ITestExecutionFilter {
             private readonly Type _type;
             private readonly Exception _ex;
 
@@ -97,23 +92,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 _ex = ex;
             }
 
-            public void RunTest(TestContext context, Action<TestContext> next) {
+            public void RunTest(TestExecutionContext context, Action<TestExecutionContext> next) {
                 throw SpecFailure.CouldNotLoadType(_type, _ex);
             }
 
-            public void Initialize(TestContext testContext) {
+            public void BeforeExecuting(TestExecutionContext testContext) {
             }
 
-            public void BeforeExecuting(TestContext testContext) {
-            }
-
-            public void AfterExecuting(TestContext testContext) {
-            }
-
-            public void BeforeExecutingDescendant(TestContext descendantTestContext) {
-            }
-
-            public void AfterExecutingDescendant(TestContext descendantTestContext) {
+            public void AfterExecuting(TestExecutionContext testContext) {
             }
 
         }

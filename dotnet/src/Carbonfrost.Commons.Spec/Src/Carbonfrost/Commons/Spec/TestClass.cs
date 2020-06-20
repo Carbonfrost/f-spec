@@ -22,10 +22,9 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public abstract partial class TestClass : ITestUnitAdapter, ITestContext {
+    public abstract partial class TestClass : ITestExecutionFilter, ITestExecutionContext {
 
-        private TestContext _selfContext;
-        private TestContext _descendantContext;
+        private TestExecutionContext _context;
 
         internal static bool HasSelfTests {
             get {
@@ -33,9 +32,9 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        public TestContext TestContext {
+        public TestExecutionContext TestContext {
             get {
-                return _descendantContext ?? _selfContext;
+                return _context;
             }
         }
 
@@ -76,12 +75,6 @@ namespace Carbonfrost.Commons.Spec {
         public TestFixtureData FixtureData(string path) {
             return TestFixtureData.FromFile(path);
         }
-
-        protected virtual void Initialize() {
-        }
-
-        protected virtual void BeforeExecuting() {}
-        protected virtual void AfterExecuting() {}
 
         protected virtual void BeforeTest() {
         }
@@ -199,56 +192,34 @@ namespace Carbonfrost.Commons.Spec {
             return TestContext.ReadAllLines(fileName, encoding);
         }
 
-        public TestCaseResult RunTest(Action<TestContext> testFunc) {
+        public TestCaseResult RunTest(Action<TestExecutionContext> testFunc) {
             return TestContext.RunTest(testFunc);
         }
 
-        public TestCaseResult RunTest(Action<TestContext> testFunc, TestOptions options) {
+        public TestCaseResult RunTest(Action<TestExecutionContext> testFunc, TestOptions options) {
             return TestContext.RunTest(testFunc, options);
         }
 
-        public TestCaseResult RunTest(Func<TestContext, object> testFunc) {
+        public TestCaseResult RunTest(Func<TestExecutionContext, object> testFunc) {
             return TestContext.RunTest(testFunc);
         }
 
-        public TestCaseResult RunTest(Func<TestContext, object> testFunc, TestOptions options) {
+        public TestCaseResult RunTest(Func<TestExecutionContext, object> testFunc, TestOptions options) {
             return TestContext.RunTest(testFunc, options);
         }
 
-        void ITestUnitAdapter.Initialize(TestContext testContext) {
-            try {
-                _selfContext = testContext;
-                Initialize();
-            } finally {
-                _selfContext = null;
-            }
-        }
-
-        void ITestExecutionFilter.BeforeExecuting(TestContext testContext) {
-            _selfContext = testContext;
-            BeforeExecuting();
-        }
-
-        void ITestExecutionFilter.AfterExecuting(TestContext testContext) {
-            try {
-                AfterExecuting();
-            } finally {
-                _selfContext = null;
-            }
-        }
-
-        void ITestUnitAdapter.BeforeExecutingDescendant(TestContext descendantContext) {
-            _descendantContext = descendantContext;
-            BeforeTest(descendantContext.CurrentTest);
+        void ITestExecutionFilter.BeforeExecuting(TestExecutionContext testContext) {
+            _context = testContext;
+            BeforeTest(testContext.CurrentTest);
             BeforeTest();
         }
 
-        void ITestUnitAdapter.AfterExecutingDescendant(TestContext descendantContext) {
+        void ITestExecutionFilter.AfterExecuting(TestExecutionContext testContext) {
             try {
-                AfterTest(descendantContext.CurrentTest);
+                AfterTest(testContext.CurrentTest);
                 AfterTest();
             } finally {
-                _descendantContext = null;
+                _context = null;
             }
         }
     }

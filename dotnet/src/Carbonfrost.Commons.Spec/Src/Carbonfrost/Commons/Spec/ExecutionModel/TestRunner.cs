@@ -20,6 +20,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     public abstract class TestRunner : ITestRunnerEvents, ITestRunnerEventSink, IServiceProvider {
 
+        private Random _randomCache;
+
         public event EventHandler<TestMessageEventArgs> Message;
         public event EventHandler<TestClassStartingEventArgs> ClassStarting;
         public event EventHandler<TestClassStartedEventArgs> ClassStarted;
@@ -62,6 +64,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     version += " - " + infoVersion;
                 }
                 return version;
+            }
+        }
+
+        internal Random RandomCache {
+            get {
+                return _randomCache ?? (_randomCache = new Random(Options.RandomSeed));
             }
         }
 

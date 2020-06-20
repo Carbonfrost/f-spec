@@ -18,7 +18,7 @@ using System;
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     interface ITestCaseFilter {
-        void RunTest(TestContext context, Action<TestContext> next);
+        void RunTest(TestExecutionContext context, Action<TestExecutionContext> next);
     }
 
 }

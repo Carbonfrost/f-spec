@@ -123,7 +123,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             Children.MakeReadOnly();
         }
 
-        public TestCaseResult RunTest(TestContext testContext) {
+        public TestCaseResult RunTest(TestExecutionContext testContext) {
             if (PredeterminedStatus == TestStatus.NotRun) {
                 var startedAt = DateTime.Now;
                 try {
@@ -146,7 +146,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return result;
         }
 
-        protected abstract TestCaseResult RunTestCore(TestContext testContext);
+        internal abstract TestExecutionContext CreateExecutionContext(DefaultTestRunner runner);
+
+        protected abstract TestCaseResult RunTestCore(TestExecutionContext testContext);
 
     }
 }

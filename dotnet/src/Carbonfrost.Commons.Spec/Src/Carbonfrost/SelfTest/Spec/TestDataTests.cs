@@ -21,6 +21,7 @@ using System.Linq;
 using System.Reflection;
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.ExecutionModel;
+using Carbonfrost.SelfTest.Spec.ExecutionModel;
 
 namespace Carbonfrost.SelfTest.Spec {
 
@@ -99,8 +100,8 @@ namespace Carbonfrost.SelfTest.Spec {
         [InlineData("P7")]
         public void Create_from_property_should_yield_singleton_return_type(string property) {
             var prop = Property(property);
-            var unit = new FakeTheory(fakeTestMethod);
-            Assert.Equal(1, TestData.Create(unit, MemberAccessors.Property(prop)).Count());
+            var ctxt = TestContext.NewExecContext(new FakeTheory(fakeTestMethod), new FakeRunner(), null);
+            Assert.Equal(1, TestData.Create(ctxt, MemberAccessors.Property(prop)).Count());
         }
 
         [Theory]
@@ -112,8 +113,8 @@ namespace Carbonfrost.SelfTest.Spec {
         [InlineData("P8")]
         public void Create_from_property_should_yield_items_from_lists(string property) {
             var prop = Property(property);
-            var unit = new FakeTheory(fakeTestMethod);
-            Assert.Equal(2, TestData.Create(unit, MemberAccessors.Property(prop)).Count());
+            var ctxt = TestContext.NewExecContext(new FakeTheory(fakeTestMethod), new FakeRunner(), null);
+            Assert.Equal(2, TestData.Create(ctxt, MemberAccessors.Property(prop)).Count());
         }
 
         [Fact]
@@ -125,7 +126,8 @@ namespace Carbonfrost.SelfTest.Spec {
                 new [] { "c", "d" },
             };
             var theory = new FakeTheory(fakeTestMethod2);
-            var guineaPig = TestData.Create(theory, new[] {
+            var ctxt = TestContext.NewExecContext(theory, new FakeRunner(), null);
+            var guineaPig = TestData.Create(ctxt, new[] {
                                                 MemberAccessors.Property(a), MemberAccessors.Property(b)
                                             });
 
@@ -250,23 +252,20 @@ namespace Carbonfrost.SelfTest.Spec {
 
         class FakeTheory : TestTheory {
 
-            private readonly object _testObject;
             public override TestUnitCollection Children {
                 get {
                     return TestUnitCollection.Empty;
                 }
             }
 
-            internal override object TestObject {
-                get {
-                    return _testObject;
-                }
-            }
-
             public FakeTheory(MethodInfo method) : base(method) {
-                _testObject = Activator.CreateInstance(method.DeclaringType);
+                SetParent(new FakeTestClassInfo());
             }
+        }
 
+        class FakeTestClassInfo : TestClassInfo {
+
+            public FakeTestClassInfo() : base(typeof(TestDataTests)) {}
         }
     }
 }

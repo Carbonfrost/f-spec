@@ -58,11 +58,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        internal virtual object FindTestObject() {
+        internal virtual object CreateTestObject() {
             if (Parent != null) {
-                return Parent.FindTestObject();
+                return Parent.CreateTestObject();
             }
-            return null;
+            throw new NotSupportedException();
+        }
+
+        internal TestContext CreateInitializationContext(DefaultTestRunner runner) {
+            return TestContext.NewInitContext(this, runner);
         }
 
         internal virtual object FindTestSubject() {
@@ -70,6 +74,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 return Parent.FindTestSubject();
             }
             return null;
+        }
+
+        internal virtual TestClassInfo FindTestClass() {
+            if (Parent == null) {
+                throw new ArgumentException(GetType().Name);
+            }
+            return Parent.FindTestClass();
         }
 
         internal void InitializeSafe(TestContext context) {
@@ -82,42 +93,28 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        internal void AfterExecutingSafe(TestContext context) {
+        internal void AfterExecutingSafe(TestExecutionContext context) {
             using (context.ApplyingContext()) {
                 AfterExecuting(context);
             }
         }
 
-        internal void BeforeExecutingSafe(TestContext context) {
+        internal void BeforeExecutingSafe(TestExecutionContext context) {
             using (context.ApplyingContext()) {
                 BeforeExecuting(context);
             }
         }
 
-        internal void BeforeExecutingDescendantSafe(TestContext descendantTestContext) {
-            BeforeExecutingDescendant(descendantTestContext);
-        }
-
-        internal void AfterExecutingDescendantSafe(TestContext descendantTestContext) {
-            AfterExecutingDescendant(descendantTestContext);
-        }
-
         protected virtual void Initialize(TestContext testContext) {
         }
 
-        protected virtual void AfterExecuting(TestContext testContext) {
+        protected virtual void AfterExecuting(TestExecutionContext testContext) {
         }
 
-        protected virtual void BeforeExecuting(TestContext testContext) {
+        protected virtual void BeforeExecuting(TestExecutionContext testContext) {
             // Flush the log at this time.  Any log messages that were received
             // during initialization can be written now
             testContext.Log.Flush();
-        }
-
-        protected virtual void BeforeExecutingDescendant(TestContext descendantTestContext) {
-        }
-
-        protected virtual void AfterExecutingDescendant(TestContext descendantTestContext) {
         }
 
         internal bool NotifyStarting(ITestRunnerEventSink events, out TestUnitStartingEventArgs e) {

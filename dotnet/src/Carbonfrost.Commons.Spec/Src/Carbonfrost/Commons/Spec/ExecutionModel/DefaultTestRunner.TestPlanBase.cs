@@ -64,7 +64,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 _runner = runner;
                 _root = new RootNode();
 
-                var testContext = new TestContext(testRun, _runner, _runner.RandomCache, null);
+                var testContext = TestContext.NewInitContext(testRun, _runner);
                 Push(_root, testContext, testRun);
 
                 _root.AppendEnd(null);

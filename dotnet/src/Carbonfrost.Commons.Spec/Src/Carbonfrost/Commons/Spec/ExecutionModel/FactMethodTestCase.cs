@@ -36,7 +36,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        protected override object CoreRunTest(TestContext context) {
+        protected override object CoreRunTest(TestExecutionContext context) {
             try {
                 return InvokeMethodHelper(context.TestObject, null);
             }

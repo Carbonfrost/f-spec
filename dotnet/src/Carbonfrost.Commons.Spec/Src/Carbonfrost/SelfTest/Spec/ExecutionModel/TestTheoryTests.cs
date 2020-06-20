@@ -30,7 +30,7 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
         public void Children_empty_implies_log_messages() {
             var tt = new ReflectedTheory(GetType().GetMethod("PNoDataAttributesTheory"));
             var runner = new FakeRunner();
-            var context = new TestContext(tt, runner, null, null);
+            var context = TestContext.NewExecContext(tt, runner, null);
             tt.BeforeExecutingSafe(context);
 
             var evt = runner.Logger.Events;
@@ -43,7 +43,7 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
             try {
                 var tt = new ReflectedTheory(GetType().GetMethod("PNoDataAttributesTheory"));
                 var runner = new FakeRunner();
-                var context = new TestContext(tt, runner, null, null);
+                var context = TestContext.NewExecContext(tt, runner, null);
                 tt.BeforeExecutingSafe(context);
 
                 Assert.True(tt.Failed);

@@ -208,14 +208,16 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        internal static IEnumerable<TestData> Create(TestUnit unit, IMemberAccessor accessor) {
-            var rt = (TestTheory) unit;
-            return Create(rt.TestMethod, rt.TestObject, accessor);
+        internal static IEnumerable<TestData> Create(TestContext ctxt, IMemberAccessor accessor) {
+            var rt = (TestTheory) ctxt.CurrentTest;
+            var testObject = ctxt.DummyTestObject;
+            return Create(rt.TestMethod, testObject, accessor);
         }
 
-        internal static IEnumerable<TestData> Create(TestUnit unit, IMemberAccessor[] accessors) {
-            var rt = (TestTheory) unit;
-            return Create(rt.TestMethod, rt.TestObject, accessors);
+        internal static IEnumerable<TestData> Create(TestContext ctxt, IMemberAccessor[] accessors) {
+            var rt = (TestTheory) ctxt.CurrentTest;
+            var testObject = ctxt.DummyTestObject;
+            return Create(rt.TestMethod, testObject, accessors);
         }
 
         private static IEnumerable<TestData> Create(MethodInfo testMethod, object testObject, IMemberAccessor accessor) {

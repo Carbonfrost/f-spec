@@ -13,14 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+using System;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
-namespace Carbonfrost.Commons.Spec.ExecutionModel {
+namespace Carbonfrost.Commons.Spec {
 
-    // Provides a filter that runs before and after a test.  When applied
-    // to a test object class, these filter methods will be invoked alongside
-    // the calls to each test method
-    public interface ITestExecutionFilter {
-        void BeforeExecuting(TestExecutionContext testContext);
-        void AfterExecuting(TestExecutionContext testContext);
+    interface ITestExecutionContext : ITestContext {
+        TestCaseResult RunTest(Action<TestExecutionContext> testFunc);
+        TestCaseResult RunTest(Action<TestExecutionContext> testFunc, TestOptions options);
+        TestCaseResult RunTest(Func<TestExecutionContext, object> testFunc);
+        TestCaseResult RunTest(Func<TestExecutionContext, object> testFunc, TestOptions options);
     }
 }

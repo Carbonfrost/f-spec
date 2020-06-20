@@ -58,8 +58,7 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             IEnumerable<TestData> ITestDataProvider.GetData(TestContext context) {
-                TestUnit unit = context.CurrentTest;
-                return TestData.Create(unit, _accessor);
+                return TestData.Create(context, _accessor);
             }
         }
 
@@ -72,8 +71,7 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             IEnumerable<TestData> ITestDataProvider.GetData(TestContext context) {
-                TestUnit unit = context.CurrentTest;
-                return TestData.Create(unit, _accessors);
+                return TestData.Create(context, _accessors);
             }
         }
     }
