@@ -16,24 +16,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public readonly partial struct TestData : ITestData, ITestUnitState, ITestUnitStateApiConventions<TestData> {
+    public readonly struct TestData<T> : ITestData<T>, ITestDataUntyped {
 
-        private readonly object[] _data;
+        private readonly T[] _data;
         private readonly TestDataState _state;
 
         public TestTagCollection Tags {
             get {
                 return _state.Tags;
-            }
-        }
-
-        internal TestUnitFlags Flags {
-            get {
-                return _state.Flags;
             }
         }
 
@@ -85,96 +78,84 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        internal TestData(TestDataState state, object[] data) {
+        internal TestData(TestDataState state, T[] data) {
             _state = state;
-            _data = data ?? Array.Empty<object>();
+            _data = data ?? Array.Empty<T>();
         }
 
-        public TestData(params object[] data)
+        public TestData(params T[] data)
             : this(TestDataState.Empty, data) {
         }
 
-        public static TestData Create(params object[] data) {
-            return new TestData(data);
-        }
-
-        public static TestData FCreate(params object[] data) {
-            return new TestData(TestDataState.F, data);
-        }
-
-        public static TestData XCreate(params object[] data) {
-            return new TestData(TestDataState.X, data);
-        }
-
-        public static TestData<T> Create<T>(params T[] data) {
+        public static TestData<T> Create(params T[] data) {
             return new TestData<T>(data);
         }
 
-        public static TestData<T> FCreate<T>(params T[] data) {
+        public static TestData<T> FCreate(params T[] data) {
             return new TestData<T>(TestDataState.F, data);
         }
 
-        public static TestData<T> XCreate<T>(params T[] data) {
+        public static TestData<T> XCreate(params T[] data) {
             return new TestData<T>(TestDataState.X, data);
         }
 
-        public TestData WithName(string name) {
+        public TestData<T> WithName(string name) {
             return Update(_state.WithName(name));
         }
 
-        public TestData WithReason(string reason) {
+        public TestData<T> WithReason(string reason) {
             return Update(_state.WithReason(reason));
         }
 
-        public TestData WithTags(IEnumerable<TestTag> tags) {
+        public TestData<T> WithTags(IEnumerable<TestTag> tags) {
             return Update(_state.WithTags(tags));
         }
 
-        public TestData Skip() {
+        public TestData<T> Skip() {
             return Update(_state.Skip());
         }
 
-        public TestData Skip(string reason) {
+        public TestData<T> Skip(string reason) {
             return Update(_state.Skip(reason));
         }
 
-        public TestData Fail() {
+        public TestData<T> Fail() {
             return Update(_state.Fail());
         }
 
-        public TestData Fail(string reason) {
+        public TestData<T> Fail(string reason) {
             return Update(_state.Fail(reason));
         }
 
-        public TestData Focus() {
+        public TestData<T> Focus() {
             return Update(_state.Focus());
         }
 
-        public TestData Focus(string reason) {
+        public TestData<T> Focus(string reason) {
             return Update(_state.Focus(reason));
         }
 
-        public TestData Pending() {
+        public TestData<T> Pending() {
             return Update(_state.Pending());
         }
 
-        public TestData Pending(string reason) {
+        public TestData<T> Pending(string reason) {
             return Update(_state.Pending(reason));
         }
 
-        public TestData Explicit() {
+        public TestData<T> Explicit() {
             return Update(_state.Explicit());
         }
 
-        public TestData Explicit(string reason) {
+        public TestData<T> Explicit(string reason) {
             return Update(_state.Explicit(reason));
         }
 
-        internal TestData Update(TestDataState state) {
-            return new TestData(state, _data);
+        private TestData<T> Update(TestDataState state) {
+            return new TestData<T>(state, _data);
         }
 
-        public object this[int index] {
+        public T this[int index] {
             get {
                 return _data[index];
             }
@@ -186,30 +167,20 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        public IEnumerator<object> GetEnumerator() {
-            return ((IEnumerable<object>) _data).GetEnumerator();
+        public IEnumerator<T> GetEnumerator() {
+            return ((IEnumerable<T>) _data).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
         }
 
-        internal IEnumerable<object> Evaluate(TestContext testContext) {
-            var method = ((TestCaseInfo) testContext.CurrentTest).TestMethod;
-            var pms = method.GetParameters();
-            int index = 0;
-
-            foreach (var o in _data) {
-                var convert = o as ITestDataConversion;
-
-                if (convert != null) {
-                    yield return convert.Convert(testContext, pms[index]);
-                } else {
-                    yield return o;
-                }
-                index++;
+        public TestData Untyped() {
+            var clone = new object[_data.Length];
+            for (int i = 0; i < _data.Length; i++) {
+                clone[i] = _data[i];
             }
+            return new TestData(_state, clone);
         }
-
     }
 }

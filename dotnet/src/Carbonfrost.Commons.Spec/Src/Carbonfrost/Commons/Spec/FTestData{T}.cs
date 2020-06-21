@@ -16,78 +16,78 @@
 
 namespace Carbonfrost.Commons.Spec {
 
-    public readonly struct FTestData : ITestDataHelper {
+    public readonly struct FTestData<T> : ITestDataHelper<T> {
 
-        private readonly TestData _self;
+        private readonly TestData<T> _self;
 
-        private TestData Copy {
+        private TestData<T> Copy {
             get {
                 return _self.Focus();
             }
         }
 
-        public FTestData(params object[] data) {
-            _self = new TestData(data);
+        public FTestData(params T[] data) {
+            _self = new TestData<T>(data);
         }
 
-        public static TestData Create(params object[] data) {
-            return TestData.FCreate((object[]) data);
+        public static TestData<T> Create(params T[] data) {
+            return TestData.FCreate(data);
         }
 
-        public TestData Explicit() {
+        public TestData<T> Explicit() {
             return Copy.Explicit();
         }
 
-        public TestData Explicit(string reason) {
+        public TestData<T> Explicit(string reason) {
             return Copy.Explicit(reason);
         }
 
-        public TestData Fail() {
+        public TestData<T> Fail() {
             return Copy.Fail(null);
         }
 
-        public TestData Fail(string reason) {
+        public TestData<T> Fail(string reason) {
             return Copy.Fail(reason);
         }
 
-        public TestData Focus() {
+        public TestData<T> Focus() {
             return Copy.Focus();
         }
 
-        public TestData Focus(string reason) {
+        public TestData<T> Focus(string reason) {
             return Copy.Focus(reason);
         }
 
-        public TestData Pending() {
+        public TestData<T> Pending() {
             return Copy.Pending();
         }
 
-        public TestData Pending(string reason) {
+        public TestData<T> Pending(string reason) {
             return Copy.Pending(reason);
         }
 
-        public TestData Skip() {
+        public TestData<T> Skip() {
             return Copy.Skip();
         }
 
-        public TestData Skip(string reason) {
+        public TestData<T> Skip(string reason) {
             return Copy.Skip(reason);
         }
 
-        public static TestData<T> Create<T>(params T[] values) {
-            return new TestData<T>(TestDataState.F, values);
-        }
-
-        public TestData WithName(string name) {
+        public TestData<T> WithName(string name) {
             return Copy.WithName(name);
         }
 
-        public TestData WithReason(string reason) {
+        public TestData<T> WithReason(string reason) {
             return Copy.WithReason(reason);
         }
 
-        public static implicit operator TestData(FTestData data) {
-            return data.Copy;
+        public TestData Untyped() {
+            return Copy.Untyped();
+        }
+
+        public static implicit operator TestData(FTestData<T> data) {
+            return data.Untyped();
         }
     }
 }

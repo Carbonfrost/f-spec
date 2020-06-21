@@ -43,8 +43,8 @@ namespace Carbonfrost.Commons.Spec {
 
         internal static IEnumerable<TestData> WithNames(this ITestDataApiAttributeConventions self, IEnumerable<TestData> data, TestTag[] tags) {
             return data.Select(d => d.Update(
-                self.Name, self.Reason, d.Flags | (self.Explicit ? TestUnitFlags.Explicit : TestUnitFlags.None)
-            ).WithTags(tags));
+                new TestDataState(self.Name, self.Reason, d.Flags | (self.Explicit ? TestUnitFlags.Explicit : TestUnitFlags.None), tags)
+            ));
         }
 
         // IgnoreCase versions are odd values
