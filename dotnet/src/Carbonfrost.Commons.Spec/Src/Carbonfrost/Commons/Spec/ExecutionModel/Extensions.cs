@@ -21,7 +21,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     public static partial class Extensions {
 
-        public static ITestFilterBuilder UseCulture(this ITestFilterBuilder builder, CultureInfo cultureInfo) {
+        public static TestFilterBuilder UseCulture(this TestFilterBuilder builder, CultureInfo cultureInfo) {
             if (builder == null) {
                 throw new ArgumentNullException(nameof(builder));
             }
