@@ -107,6 +107,22 @@ namespace Carbonfrost.SelfTest.Spec {
             Assert.NotNull(ex);
             Assert.Equal("helloworld", ex.Message);
         }
+
+        [Fact]
+        [PassExplicitly]
+        public void Given_Property_expectation_failure_should_generate_correct_message() {
+            Func<string, string> transform = s => s.ToUpper();
+
+            try {
+                Given("value").Expect(transform).Property(e => e.Length).ToBe.EqualTo(4);
+            } catch (AssertException ex) {
+                Expect(ex.TestFailure.UserData).ToHave.KeyWithValue("Given", "value");
+                Expect(ex.TestFailure.UserData).ToHave.KeyWithValue("Expected", "4");
+                Expect(ex.TestFailure.UserData).ToHave.KeyWithValue("Actual", "5");
+                Expect(ex.TestFailure.UserData).ToHave.KeyWithValue("Property", "Length");
+                Assert.Pass();
+            }
+        }
     }
 }
 #endif

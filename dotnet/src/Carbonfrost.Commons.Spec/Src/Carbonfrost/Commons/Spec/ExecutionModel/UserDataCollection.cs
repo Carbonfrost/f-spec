@@ -217,13 +217,21 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         private static bool IsActualKey(string key) {
-            return key == "Expected" || key == "Actual" || key == "Subject";
+            return Array.IndexOf(ActualOrder, key) >= 0;
         }
+
+        static readonly string[] ActualOrder = {
+            "Subject",
+            "Given",
+            "Property",
+            "Actual",
+            "Expected",
+        };
 
         class SortOrder : IComparer<string> {
 
             public int Compare(string x, string y) {
-                // Expected, Actual, then everything else alphabetically
+                // Subject, Given, then Expected, Actual, then everything else alphabetically
                 return string.Compare(CheckNames(x),
                                       CheckNames(y),
                                       StringComparison.OrdinalIgnoreCase);
@@ -231,7 +239,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             static string CheckNames(string x) {
                 if (IsActualKey(x)) {
-                    return " " + x;
+                    return " " + Array.IndexOf(ActualOrder, x);
                 }
                 return x;
             }

@@ -258,11 +258,14 @@ namespace Carbonfrost.Commons.Spec {
 
     namespace TestMatchers {
 
-        public class ThrowsMatcher : ITestMatcher, ITestMatcherActualException {
+        public class ThrowsMatcher : ITestMatcher {
 
             private readonly RecordExceptionFlags _flags;
 
-            public Type Expected { get; private set; }
+            public Type Expected {
+                get;
+                private set;
+            }
 
             [MatcherUserData(Hidden = true)]
             public ThrowsMatcher UnwindingTargetExceptions {

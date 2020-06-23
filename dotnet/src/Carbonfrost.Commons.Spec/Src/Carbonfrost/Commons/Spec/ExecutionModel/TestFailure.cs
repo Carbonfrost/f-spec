@@ -122,5 +122,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
             return this;
         }
+
+        internal TestFailure UpdateActual(object actual) {
+            UserData.Remove("Actual");
+            UserData.Add("Actual", actual);
+            return this;
+        }
     }
 }

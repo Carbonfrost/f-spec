@@ -316,6 +316,9 @@
   <data name="LabelPredicate" xml:space="preserve">
     <value>Predicate</value>
   </data>
+  <data name="LabelProperty" xml:space="preserve">
+    <value>Property</value>
+  </data>
   <data name="LabelSource" xml:space="preserve">
     <value>Source</value>
   </data>

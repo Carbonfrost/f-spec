@@ -665,6 +665,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("LabelPredicate") );
     }
 
+  /// <summary>Property</summary>
+    internal static string LabelProperty(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("LabelProperty") );
+    }
+
   /// <summary>Source</summary>
     internal static string LabelSource(
     

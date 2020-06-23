@@ -34,16 +34,26 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             public override TestFailure Should(ITestMatcher<Exception> matcher) {
-                return _inner.Should(new CaptureProvider(matcher));
+                var pp = new CaptureProvider(matcher);
+                var failure = _inner.Should(pp);
+                if (failure != null) {
+                    failure.UpdateActual(pp.Actual.Value);
+                }
+                return failure;
             }
 
             public override ExpectationCommand<Exception> Negated() {
                 return new CaptureExceptionCommand<T>(_inner.Negated());
             }
 
-            struct CaptureProvider : ITestMatcher<T>, ISupportTestMatcher {
+            class CaptureProvider : ITestMatcher<T>, ISupportTestMatcher {
 
                 private readonly ITestMatcher<Exception> _real;
+
+                public ITestActualEvaluation<Exception> Actual {
+                    get;
+                    set;
+                }
 
                 public CaptureProvider(ITestMatcher<Exception> real) {
                     _real = real;
@@ -53,7 +63,9 @@ namespace Carbonfrost.Commons.Spec {
                 }
 
                 public bool Matches(ITestActualEvaluation<T> actualFactory) {
-                    return _real.Matches(TestActual.Value(actualFactory.Exception));
+                    return _real.Matches(
+                        Actual = TestActual.Value(actualFactory.Exception)
+                    );
                 }
 
                 object ISupportTestMatcher.RealMatcher {

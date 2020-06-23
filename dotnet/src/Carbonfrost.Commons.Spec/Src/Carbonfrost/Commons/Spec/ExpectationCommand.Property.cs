@@ -25,28 +25,41 @@ namespace Carbonfrost.Commons.Spec {
 
             private readonly ExpectationCommand<T> _inner;
             private readonly Func<T, TProperty> _accessor;
+            private readonly string _name;
 
-            public PropertyCommand(ExpectationCommand<T> inner, Func<T, TProperty> accessor) {
+            public PropertyCommand(ExpectationCommand<T> inner, Func<T, TProperty> accessor, string name) {
                 _inner = inner;
                 _accessor = accessor;
+                _name = name;
             }
 
             public override ExpectationCommand<TProperty> Given(string given) {
-                return new PropertyCommand<T, TProperty>(_inner.Given(given), _accessor);
+                return new PropertyCommand<T, TProperty>(_inner.Given(given), _accessor, _name);
             }
 
             public override TestFailure Should(ITestMatcher<TProperty> matcher) {
-                return _inner.Should(new PropertyProvider(this, matcher));
+                var pp = new PropertyProvider(this, matcher);
+                var failure = _inner.Should(pp);
+                if (failure != null) {
+                    failure.UpdateActual(pp.Actual.Value);
+                    failure.UserData["Property"] = _name;
+                }
+                return failure;
             }
 
             public override ExpectationCommand<TProperty> Negated() {
-                return new PropertyCommand<T, TProperty>(_inner.Negated(), _accessor);
+                return new PropertyCommand<T, TProperty>(_inner.Negated(), _accessor, _name);
             }
 
-            struct PropertyProvider : ITestMatcher<T>, ISupportTestMatcher {
+            class PropertyProvider : ITestMatcher<T>, ISupportTestMatcher {
 
                 private readonly ITestMatcher<TProperty> _real;
                 private readonly PropertyCommand<T, TProperty> _parent;
+
+                public ITestActualEvaluation<TProperty> Actual {
+                    get;
+                    set;
+                }
 
                 public PropertyProvider(PropertyCommand<T, TProperty> parent, ITestMatcher<TProperty> real) {
                     _parent = parent;
@@ -59,7 +72,7 @@ namespace Carbonfrost.Commons.Spec {
                 public bool Matches(ITestActualEvaluation<T> actualFactory) {
                     var myParent = _parent;
                     return _real.Matches(
-                        TestActual.Of(() => myParent._accessor(actualFactory.Value))
+                        Actual = TestActual.Of(() => myParent._accessor(actualFactory.Value))
                     );
                 }
 

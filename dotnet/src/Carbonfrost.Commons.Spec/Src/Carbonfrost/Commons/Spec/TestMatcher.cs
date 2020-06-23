@@ -50,10 +50,11 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        struct DispatchWrapper : ITestMatcher<Unit>, INotMatcher {
-            private ITestMatcher _matcher;
+        struct DispatchWrapper : ITestMatcher<Unit>, ISupportTestMatcher {
+            private readonly ITestMatcher _matcher;
 
-            public object InnerMatcher {
+            [MatcherUserData(Hidden = true)]
+            public object RealMatcher {
                 get {
                     return _matcher;
                 }

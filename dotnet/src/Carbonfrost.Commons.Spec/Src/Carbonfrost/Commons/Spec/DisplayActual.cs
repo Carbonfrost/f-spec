@@ -33,6 +33,9 @@ namespace Carbonfrost.Commons.Spec {
             if (value is null) {
                 return Null;
             }
+            if (value is IDisplayActual da) {
+                return da;
+            }
 
             if (value is string stringValue) {
                 if (stringValue.Length == 0) {
@@ -40,9 +43,11 @@ namespace Carbonfrost.Commons.Spec {
                 }
                 return new StringDisplayActual(stringValue, depth > 0);
             }
-
+            if (value is Type typeValue) {
+                return new BasicDisplayActual(TextUtility.ConvertToSimpleTypeName(typeValue), typeof(Type));
+            }
             if (value is Exception exceptionValue) {
-                return new BasicDisplayActual(GetExceptionFiltered(exceptionValue), value.GetType());
+                return Exception(exceptionValue);
             }
             if (value is StringComparer) {
                 return new BasicDisplayActual(GetStringComparerText(value), value.GetType());
@@ -53,6 +58,13 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             return new BasicDisplayActual(value.ToString(), value.GetType());
+        }
+
+        internal static IDisplayActual Exception(Exception exception) {
+            if (exception == null) {
+                return new BasicDisplayActual("<no exception>", null);
+            }
+            return new BasicDisplayActual(GetExceptionFiltered(exception), exception.GetType());
         }
 
         public static bool OnlyTypeDifferences(IDisplayActual a, IDisplayActual b) {

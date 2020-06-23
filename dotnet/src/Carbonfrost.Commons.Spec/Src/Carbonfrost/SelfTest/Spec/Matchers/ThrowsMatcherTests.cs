@@ -110,6 +110,18 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
         }
 
         [Fact]
+        [PassExplicitly]
+        public void Assert_Throws_should_generate_correct_error_message() {
+            try {
+                Assert.Throws<ArgumentException>(() => {});
+            } catch (AssertException ex) {
+                Expect(ex.TestFailure.Message).ToBe.EqualTo("Expected to throw \"ArgumentException\"");
+                Expect(ex.TestFailure.UserData).ToHave.KeyWithValue("Actual", "<no exception>");
+                Assert.Pass();
+            }
+        }
+
+        [Fact]
         public void Assert_Throws_should_not_unwrap_TargetInvocationException_by_default() {
             Assert.Throws<TargetInvocationException>(
                 () => throw new TargetInvocationException(new Exception())
