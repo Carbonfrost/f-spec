@@ -36,9 +36,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             internal set;
         }
 
-        public bool IsFocused {
-            get;
-            internal set;
+        public virtual bool IsFocused {
+            get {
+                return false;
+            }
         }
 
         public virtual bool ContainsFocusedUnits {
@@ -110,9 +111,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public bool IsSlow {
-            get;
-            internal set;
+        public virtual bool IsSlow {
+            get {
+                return false;
+            }
         }
 
         public string Reason {
@@ -152,7 +154,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         internal virtual void SetFailed(Exception ex) {
         }
 
-        internal virtual void Done(TestUnit unit) {
+        internal virtual void Done(TestUnit unit, TestRunnerOptions opts) {
         }
     }
 }

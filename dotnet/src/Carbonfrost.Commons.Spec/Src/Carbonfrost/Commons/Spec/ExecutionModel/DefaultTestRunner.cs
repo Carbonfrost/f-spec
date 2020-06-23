@@ -21,11 +21,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     partial class DefaultTestRunner : TestRunner {
 
-        private readonly TestRunnerOptions _opts;
         private readonly BufferMessageEventCache _messageLogger;
 
-        public DefaultTestRunner(TestRunnerOptions opts) : base(opts) {
-            _opts = Options.Normalize();
+        public DefaultTestRunner(TestRunnerOptions opts) : base(opts.Normalize()) {
             _messageLogger = new BufferMessageEventCache();
             Logger = new ConsoleLogger(opts);
         }
@@ -37,10 +35,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         internal DefaultTestRunner.TestPlanBase CreatePlan(TestRun run) {
             if (Options.FailFast) {
-                return new FailFastTestPlan(this, run, _opts);
+                return new FailFastTestPlan(this, run, Options);
             }
 
-            return new TestPlan(this, run, _opts);
+            return new TestPlan(this, run, Options);
         }
 
         protected override TestRunResults RunTestsCore(TestRun run) {
@@ -50,11 +48,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             var plan = CreatePlan(run);
             var testsWillRun = plan.WillRunTestCasesCount;
 
-            OnRunnerStarting(new TestRunnerStartingEventArgs(_opts, run, testsWillRun));
-            OnRunnerStarted(new TestRunnerStartedEventArgs(_opts, run, testsWillRun));
+            OnRunnerStarting(new TestRunnerStartingEventArgs(Options, run, testsWillRun));
+            OnRunnerStarted(new TestRunnerStartedEventArgs(Options, run, testsWillRun));
 
             var runResults = plan.RunTests();
-            var e = new TestRunnerFinishedEventArgs(run, runResults, _opts);
+            var e = new TestRunnerFinishedEventArgs(run, runResults, Options);
             OnRunnerFinished(e);
             return runResults;
         }

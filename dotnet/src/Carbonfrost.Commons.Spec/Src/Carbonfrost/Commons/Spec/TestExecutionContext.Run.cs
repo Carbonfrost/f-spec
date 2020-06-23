@@ -58,7 +58,7 @@ namespace Carbonfrost.Commons.Spec {
             } else {
                 result.SetSuccess();
             }
-            result.Done(null);
+            result.Done(null, TestRunnerOptions);
             return result;
         }
 
