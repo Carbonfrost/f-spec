@@ -119,8 +119,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             private readonly TestRunResults _result;
 
-            public RootNode() : base(null, null) {
-                _result = new TestRunResults();
+            public RootNode(TestRunnerOptions opts) : base(null, null) {
+                _result = new TestRunResults {
+                    RunnerOptions = opts
+                };
             }
 
             internal override void Run(DefaultTestRunner runner) {
@@ -216,6 +218,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
                 result.IsFocused = Unit.IsFocused;
                 result.Done(Unit);
+                result.IsSlow = result.ExecutionTime >= runner.Options.SlowTestThreshold;
                 Unit.NotifyFinished(runner, result);
                 Safely.Dispose(context);
             }

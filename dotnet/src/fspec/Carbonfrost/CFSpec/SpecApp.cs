@@ -49,7 +49,8 @@ namespace Carbonfrost.CFSpec {
                 ShowPassExplicitly = Options.ShowPassExplicitly,
                 IsSelfTest = Options.SelfTest,
                 FailFast = Options.FailFast,
-                LoadAssemblyFromPath = System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath
+                LoadAssemblyFromPath = System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath,
+                SlowTestThreshold = Options.SlowTestThreshold,
             };
             if (Options.ShowWhitespace) {
                 testRunnerOptions.AssertionMessageFormatMode |= AssertionMessageFormatModes.PrintWhitespace;

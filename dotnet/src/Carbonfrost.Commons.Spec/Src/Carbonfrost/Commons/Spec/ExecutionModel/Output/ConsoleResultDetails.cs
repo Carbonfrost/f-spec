@@ -19,6 +19,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
     class ConsoleResultDetails : ConsoleOutputPart<TestUnitResult> {
 
         protected override void RenderCore(TestUnitResult result) {
+            if (result.IsSlow) {
+                console.Write("[");
+                console.Write(TextUtility.FormatDuration(result.ExecutionTime.Value));
+                console.Write("]  ");
+            }
             console.Write(result.DisplayName);
             if (result.IsFocused) {
                 console.Write(" (focused)");
@@ -29,7 +34,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             console.PushIndent();
 
             if (result.Failed) {
-                console.Write("Failure: ");
                 console.WriteLineIfNotEmpty(result.Reason);
             } else if (result.IsPending) {
                 console.Muted();

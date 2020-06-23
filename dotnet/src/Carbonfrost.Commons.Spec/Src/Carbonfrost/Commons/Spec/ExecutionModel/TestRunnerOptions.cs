@@ -27,6 +27,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         private Flags _flags;
         private TimeSpan? _testTimeout;
         private TimeSpan? _planTimeout;
+        private TimeSpan? _slowTestThreshold;
         private AssertionMessageFormatModes _assertionMessageFormatMode;
         private int _contextLines = -1;
         private readonly PathCollection _fixturePaths = new PathCollection();
@@ -62,6 +63,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             set {
                 WritePreamble();
                 _contextLines = value;
+            }
+        }
+
+        public TimeSpan? SlowTestThreshold {
+            get {
+                return _slowTestThreshold;
+            }
+            set {
+                WritePreamble();
+                _slowTestThreshold = value;
             }
         }
 
@@ -213,6 +224,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             PackageReferences.AddAll(copyFrom.PackageReferences);
             PlanFilter.CopyFrom(copyFrom.PlanFilter);
             TestTimeout = copyFrom.TestTimeout;
+            PlanTimeout = copyFrom.PlanTimeout;
+            SlowTestThreshold = copyFrom.SlowTestThreshold;
+            AssertionMessageFormatMode = copyFrom.AssertionMessageFormatMode;
         }
 
         internal TestRunnerOptions Normalize() {
@@ -222,6 +236,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
             if (result.ContextLines < 0) {
                 result.ContextLines = 3; // default
+            }
+            if (!result.SlowTestThreshold.HasValue) {
+                result.SlowTestThreshold = TimeSpan.FromMilliseconds(500);
             }
             result.MakeReadOnly();
             return result;

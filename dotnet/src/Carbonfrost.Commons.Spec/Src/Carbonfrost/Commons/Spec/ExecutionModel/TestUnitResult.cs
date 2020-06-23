@@ -110,6 +110,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public bool IsSlow {
+            get;
+            internal set;
+        }
+
         public string Reason {
             get;
             set;

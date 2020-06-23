@@ -54,6 +54,7 @@ namespace Carbonfrost.CFSpec {
         public bool FailOnPending;
         public TimeSpan? TestTimeout;
         public TimeSpan? PlanTimeout;
+        public TimeSpan? SlowTestThreshold;
 
         private readonly OptionSetExtension OptionSet;
 
@@ -92,6 +93,7 @@ namespace Carbonfrost.CFSpec {
 
                 { "timeout=",      SR.UTimeout(),          v => TestTimeout = SafeTimeSpanParse(v, SR.InvalidTimeSpan(), "--timeout") },
                 { "plan-timeout=", SR.UPlanTimeout(),      v => PlanTimeout = SafeTimeSpanParse(v, SR.InvalidTimeSpan(), "--plan-timeout") },
+                { "slow-test=",    SR.USlowTest(),         v => SlowTestThreshold = SafeTimeSpanParse(v, SR.InvalidTimeSpan(), "--slow-test") },
                 { "pause",         SR.UPause(),            v => DebugWait = true },
             };
 
@@ -102,7 +104,8 @@ namespace Carbonfrost.CFSpec {
                 "show-whitespace",
                 "no-whitespace",
                 "show-pass-explicit",
-                "show-tests"
+                "show-tests",
+                "slow-test="
             );
 
             OptionSet.Group(SR.UTestSelectionOptions(), sort: true,

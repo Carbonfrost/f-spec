@@ -294,6 +294,13 @@ namespace Carbonfrost.CFSpec.Resources {
         return string.Format(Culture, ResourceFinder("UShowWhitespace") );
     }
 
+  /// <summary>Threshold {{TIME}} span for whether a test is considered slow</summary>
+    internal static string USlowTest(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("USlowTest") );
+    }
+
   /// <summary>Run tests with the specified TAG.  (Optionally, ~TAG for tests without tag)</summary>
     internal static string UTag(
     

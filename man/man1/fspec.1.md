@@ -84,7 +84,10 @@ Each <assembly> to load is specified as an argument to the command.  Assemblies 
   Display names of tests and test cases even on success
 
 * `--show-whitespace`:
-   When comparing strings, special characters will be used when printing whitespace in assertion failure messages.
+  When comparing strings, special characters will be used when printing whitespace in assertion failure messages.
+
+* `--slow-test`=<time>:
+  Specify the amount of time before a test is considered a slow test.  The value for <time> is either in seconds or using the format described in the description for  `--timeout`.  The default is 500ms.
 
 * `-t, --tag`=<tag>:
   Run tests that have the specified <tag>.  Tags are either simple names or key-value pairs.  For example, `acceptance` is a valid tag, and so is `platform:nixos`.  You can _exclude_ tests that match the tag by using the prefix `~`.  For example, to exclude slow tests, you would specify `~slow`.  This flag can be specified multiple times.

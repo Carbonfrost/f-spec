@@ -157,6 +157,9 @@
   <data name="UShowWhitespace" xml:space="preserve">
     <value>Use special characters when printing whitespace in assertion failure messages</value>
   </data>
+  <data name="USlowTest" xml:space="preserve">
+    <value>Threshold {{TIME}} span for whether a test is considered slow</value>
+  </data>
   <data name="UTag" xml:space="preserve">
     <value>Run tests with the specified TAG.  (Optionally, ~TAG for tests without tag)</value>
   </data>

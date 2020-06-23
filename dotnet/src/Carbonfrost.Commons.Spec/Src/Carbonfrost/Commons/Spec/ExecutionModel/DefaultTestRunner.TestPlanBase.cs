@@ -62,7 +62,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             protected TestPlanBase(DefaultTestRunner runner, TestRun testRun, TestRunnerOptions normalized) {
                 _normalizedOpts = normalized;
                 _runner = runner;
-                _root = new RootNode();
+                _root = new RootNode(normalized);
 
                 var testContext = TestContext.NewInitContext(testRun, _runner);
                 Push(_root, testContext, testRun);
