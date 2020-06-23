@@ -97,6 +97,9 @@
   <data name="UFocus" xml:space="preserve">
     <value>Focus tests whose descriptions or names match the given {{PATTERN}}</value>
   </data>
+  <data name="UFullStackTraces" xml:space="preserve">
+    <value>Don't hide f-spec stack frames in exception stack traces</value>
+  </data>
   <data name="UHelp" xml:space="preserve">
     <value>Display this help screen</value>
   </data>

@@ -38,6 +38,9 @@ Each <assembly> to load is specified as an argument to the command.  Assemblies 
 * `-i, --fixture`=<path>:
   Add a path to the fixture search path.  If the path is a file, then the file can be loaded as a fixture.  If the path is a directory, then the directory is used as the prefix when searching for a fixture.  This option can be specified multiple times.
 
+* `--full-stack-traces`:
+  When specified, show full stack traces when errors occur.  By default, stack traces are filtered so that stack frames that are part of `fspec` itself are left out.  This hides the non-user stack frames and makes for more concise output.  This option is implied by `--self-test` because any errors that occur are likely to have occurred within these stack frames.  When set, the environment variable `DEBUG` also enables this option.
+
 * `-e, --include`=<string>:
   Run tests whose full name includes the specified <string>.  See [#SELECTING TESTS] for information about the syntax to use for <string>.
 
@@ -124,6 +127,9 @@ You can specify the environment variable `FSPEC_LOADER_PATH` as described in [#E
 If you need to add another loader path, you specify it with the `--loader-path` option.  This can be used to load an assembly directly or can be used to add a search directory from which assemblies can be loaded.  The loader path specified from the command line is searched before those set by an environment variable, and the implicit search of the containing directory of an assembly reference is performed last.
 
 ## ENVIRONMENT
+
+* `DEBUG`:
+   When set, provide debug trace output.
 
 * `FSPEC_FIXTURE_PATH`:
   Specifies the fixture path where fixtures can be loaded.  This environment variable uses the format that `PATH` does; that is, it is a colon-delimited list of paths on Unix-like platforms or a semicolon-delimited list on Windows.  The other way to set fixture paths is with the `--fixture-path` option, and when it is specified, fixture paths are first loaded from the command line arguments.

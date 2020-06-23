@@ -13,30 +13,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+
 using System;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    [Flags]
-    enum DisplayActualOptions {
-        None = 0,
-        ShowWhitespace = 1 << 1,
-        ShowType = 1 << 2,
-        ShowNoisyStackTrace = 1 << 4,
+    partial class DisplayActual {
+
+        class ExceptionDisplayActual : IDisplayActual {
+
+            public Exception Exception  {
+                get;
+            }
+
+            public ExceptionDisplayActual(Exception exception) {
+                Exception = exception;
+            }
+
+            public string Format(DisplayActualOptions options) {
+                if (Exception == null) {
+                    return "<no exception>";
+                }
+                var f = new ExceptionStackTraceFilter(Exception);
+                return f.ToString(options.ShowNoisyStackTrace());
+            }
+        }
     }
 
-    partial class Extensions {
-
-        internal static bool ShowType(this DisplayActualOptions opts) {
-            return (opts & DisplayActualOptions.ShowType) > 0;
-        }
-
-        internal static bool ShowWhitespace(this DisplayActualOptions opts) {
-            return (opts & DisplayActualOptions.ShowWhitespace) > 0;
-        }
-
-        internal static bool ShowNoisyStackTrace(this DisplayActualOptions opts) {
-            return (opts & DisplayActualOptions.ShowNoisyStackTrace) > 0;
-        }
-    }
 }

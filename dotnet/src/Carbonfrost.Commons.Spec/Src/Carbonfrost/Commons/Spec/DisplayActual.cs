@@ -25,10 +25,6 @@ namespace Carbonfrost.Commons.Spec {
         public static readonly IDisplayActual Null = new NullImpl();
         public static readonly IDisplayActual EmptyString = new StringDisplayActual("");
 
-        private static string GetExceptionFiltered(Exception exception) {
-            return ExceptionStackTraceFilter.Apply(exception).ToString();
-        }
-
         public static IDisplayActual Create(object value, int depth = 0) {
             if (value is null) {
                 return Null;
@@ -61,10 +57,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         internal static IDisplayActual Exception(Exception exception) {
-            if (exception == null) {
-                return new BasicDisplayActual("<no exception>", null);
-            }
-            return new BasicDisplayActual(GetExceptionFiltered(exception), exception.GetType());
+            return new ExceptionDisplayActual(exception);
         }
 
         public static bool OnlyTypeDifferences(IDisplayActual a, IDisplayActual b) {

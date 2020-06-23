@@ -200,20 +200,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return false;
         }
 
-        internal string FormatValue(string key, bool showWhitespace) {
+        internal string FormatValue(string key, AssertionMessageFormatModes format) {
             if (_actuals.TryGetValue(key, out IDisplayActual actual)) {
-                var options = showWhitespace ? DisplayActualOptions.ShowWhitespace : DisplayActualOptions.None;
+                var options = format.ToDisplayActualOptions();
                 if (ActualsOnlyTypeDifferences) {
                     options |= DisplayActualOptions.ShowType;
                 }
                 return actual.Format(options);
             }
 
-            string text = this[key];
-            if (showWhitespace) {
-                return TextUtility.ShowWhitespace(text);
-            }
-            return text;
+            return this[key];
         }
 
         private static bool IsActualKey(string key) {

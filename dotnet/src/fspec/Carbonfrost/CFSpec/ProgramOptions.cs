@@ -45,6 +45,7 @@ namespace Carbonfrost.CFSpec {
         public bool NoFocus;
         public bool NoSummary;
         public bool ShowWhitespace;
+        public bool ShowFullStackTraces = EnvironmentHelper.Debug;
         public bool NoUnifiedDiff;
         public bool ShowPassExplicitly;
         public int ContextLines = -1;
@@ -77,6 +78,7 @@ namespace Carbonfrost.CFSpec {
 
                 { "show-whitespace", SR.UShowWhitespace(), v => ShowWhitespace = true },
                 { "no-whitespace", SR.UNoWhitespace(),     v => ShowWhitespace = false },
+                { "full-stack-traces", SR.UFullStackTraces(), v => ShowFullStackTraces = true },
                 { "no-diff",       SR.UNoDiff(),           v => NoUnifiedDiff = true },
                 { "context-lines=",SR.UContextLines(),     v => ContextLines = SafeInt32Parse(v, SR.InvalidContextLines(), "--context-lines") },
                 { "no-summary",    SR.UNoSummary(),        v => NoSummary = true },
@@ -105,7 +107,8 @@ namespace Carbonfrost.CFSpec {
                 "no-whitespace",
                 "show-pass-explicit",
                 "show-tests",
-                "slow-test="
+                "slow-test=",
+                "full-stack-traces"
             );
 
             OptionSet.Group(SR.UTestSelectionOptions(), sort: true,
@@ -140,6 +143,7 @@ namespace Carbonfrost.CFSpec {
             }
 
             SelfTest = true;
+            ShowFullStackTraces = true;
         }
 
         public List<string> Parse(string[] args) {

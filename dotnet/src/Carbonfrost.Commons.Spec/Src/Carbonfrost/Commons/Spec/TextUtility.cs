@@ -155,10 +155,6 @@ namespace Carbonfrost.Commons.Spec {
             return DisplayActual.Create(value).Format(DisplayActualOptions.None);
         }
 
-        internal static string GetExceptionFiltered(Exception exception) {
-            return ExceptionStackTraceFilter.Apply(exception).ToString();
-        }
-
         internal static string ShowWhitespace(string text) {
             return new WhitespaceVisibleString(text).ToString();
         }

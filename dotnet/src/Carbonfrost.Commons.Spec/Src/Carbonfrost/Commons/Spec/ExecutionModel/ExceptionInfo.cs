@@ -14,8 +14,6 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
-using System.Text;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
@@ -27,6 +25,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public string StackTrace {
+            get;
+            private set;
+        }
+
+        public string FilteredStackTrace {
             get;
             private set;
         }
@@ -44,26 +47,22 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         private ExceptionInfo() {
         }
 
-        public ExceptionInfo(Type exceptionType, string message, string stackTrace, TestFailure testFailure) {
-            Message = message;
-            StackTrace = stackTrace;
-            ExceptionType = exceptionType;
-            TestFailure = testFailure;
-        }
-
-        public static ExceptionInfo FromException(Exception ex) {
-            var fmt = ExceptionStackTraceFilter.Apply(ex);
+        private ExceptionInfo(Exception ex) {
+            var fmt = new ExceptionStackTraceFilter(ex);
             TestFailure failure = null;
             if (ex is AssertException aex) {
                 failure = aex.TestFailure;
             }
 
-            return new ExceptionInfo {
-                StackTrace = fmt.StackTrace,
-                Message = fmt.Message,
-                ExceptionType = ex.GetType(),
-                TestFailure = failure,
-            };
+            StackTrace = fmt.StackTrace;
+            FilteredStackTrace = fmt.FilteredStackTrace;
+            Message = fmt.Message;
+            ExceptionType = ex.GetType();
+            TestFailure = failure;
+        }
+
+        public static ExceptionInfo FromException(Exception ex) {
+            return new ExceptionInfo(ex);
         }
     }
 }

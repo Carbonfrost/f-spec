@@ -23,7 +23,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
         const int bufferWidth = 6;
 
-        public bool ShowWhitespace {
+        public AssertionMessageFormatModes AssertionMessageFormat {
             get;
             set;
         }
@@ -40,7 +40,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                 if (data.IsHiddenFromTable(kvp.Key)) {
                     continue;
                 }
-                string format = data.FormatValue(kvp.Key, ShowWhitespace);
+                string format = data.FormatValue(kvp.Key, AssertionMessageFormat);
                 WriteLineItem(kvp.Key, format, maxLength);
             }
 

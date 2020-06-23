@@ -154,6 +154,13 @@ namespace Carbonfrost.CFSpec.Resources {
         return string.Format(Culture, ResourceFinder("UFocus") );
     }
 
+  /// <summary>Don't hide f-spec stack frames in exception stack traces</summary>
+    internal static string UFullStackTraces(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UFullStackTraces") );
+    }
+
   /// <summary>Display this help screen</summary>
     internal static string UHelp(
     

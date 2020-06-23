@@ -55,6 +55,9 @@ namespace Carbonfrost.CFSpec {
             if (Options.ShowWhitespace) {
                 testRunnerOptions.AssertionMessageFormatMode |= AssertionMessageFormatModes.PrintWhitespace;
             }
+            if (Options.ShowFullStackTraces) {
+                testRunnerOptions.AssertionMessageFormatMode |= AssertionMessageFormatModes.FullStackTraces;
+            }
             if (!Options.NoUnifiedDiff) {
                 testRunnerOptions.AssertionMessageFormatMode |= AssertionMessageFormatModes.UseUnifiedDiff;
             }

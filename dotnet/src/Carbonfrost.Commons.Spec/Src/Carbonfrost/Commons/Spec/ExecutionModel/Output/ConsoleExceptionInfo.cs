@@ -17,11 +17,15 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Linq;
-using System.IO;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
     class ConsoleExceptionInfo : ConsoleOutputPart<ExceptionInfo> {
+
+        public bool ShowNoisyStackFrames {
+            get;
+            set;
+        }
 
         static readonly Regex ERGO = new Regex(@"\Aat (?<module>.+) in (?<file>.+):line (?<line>\d+)\Z");
         static readonly string[] SPACES = Enumerable.Range(0, 10)
@@ -41,7 +45,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             console.WriteLine();
 
             console.Muted();
-            var traces = exceptionInfo.StackTrace.TrimEnd('\r', '\n').Split(
+            var st = ShowNoisyStackFrames ? exceptionInfo.StackTrace : exceptionInfo.FilteredStackTrace;
+            var traces = st.TrimEnd('\r', '\n').Split(
                 new[] { "\r\n", "\n" }, StringSplitOptions.None
             );
             foreach (var msg in traces) {
