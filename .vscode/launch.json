@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "publish",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/dotnet/src/fspec/bin/Debug/netcoreapp3.0/publish/fspec",
+            "program": "${workspaceFolder}/dotnet/src/fspec/bin/Debug/netcoreapp3.0/publish/fspec.dll",
             "args": [
               "--self-test"
             ],
