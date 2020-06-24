@@ -30,15 +30,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        internal virtual object TestObject {
-            get {
-                if (Parent == null) {
-                    return null;
-                }
-                return Parent.FindTestObject();
-            }
-        }
-
         protected TestTheory(MethodInfo testMethod) {
             if (testMethod == null) {
                 throw new ArgumentNullException(nameof(testMethod));
@@ -66,7 +57,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        protected override void BeforeExecuting(TestContext testContext) {
+        protected override void BeforeExecuting(TestExecutionContext testContext) {
             if (Children.Count == 0) {
                 testContext.Log.TheoryHasNoDataProviders();
                 testContext.VerifiableProblem(SR.TheoryHasNoDataProviders());

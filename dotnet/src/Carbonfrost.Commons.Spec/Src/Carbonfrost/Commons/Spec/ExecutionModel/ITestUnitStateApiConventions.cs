@@ -16,7 +16,7 @@
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    interface ITestUnitStateApiConventions<TSelf> : ITestUnitState {
+    interface ITestUnitStateApiConventions<TSelf> {
         TSelf Skip();
         TSelf Skip(string reason);
         TSelf Focus();

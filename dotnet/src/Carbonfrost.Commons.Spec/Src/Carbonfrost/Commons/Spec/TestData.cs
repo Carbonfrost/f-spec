@@ -1,5 +1,5 @@
 //
-// Copyright 2016-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,159 +16,162 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public readonly struct TestData : ITestData, ITestUnitStateApiConventions<TestData> {
+    public readonly partial struct TestData : ITestData, ITestUnitState, ITestUnitStateApiConventions<TestData> {
 
-        private readonly string _name;
-        private readonly string _reason;
         private readonly object[] _data;
-        private readonly TestTagCollection _tags;
-        private readonly TestUnitFlags _flags;
+        private readonly TestDataState _state;
 
         public TestTagCollection Tags {
             get {
-                return _tags;
+                return _state.Tags;
             }
         }
 
         internal TestUnitFlags Flags {
             get {
-                return _flags;
+                return _state.Flags;
             }
         }
 
         public string Name {
             get {
-                return _name;
+                return _state.Name;
             }
         }
 
         public string Reason {
             get {
-                return _reason;
+                return _state.Reason;
             }
         }
 
         public bool IsExplicit {
             get {
-                return _flags.HasFlag(TestUnitFlags.Explicit);
+                return _state.IsExplicit;
             }
         }
 
         public bool IsFocused {
             get {
-                return _flags.HasFlag(TestUnitFlags.Focus);
+                return _state.IsFocused;
             }
         }
 
         public bool IsPending {
             get {
-                return _flags.HasFlag(TestUnitFlags.Pending);
+                return _state.IsPending;
             }
         }
 
         public bool PassExplicitly {
             get {
-                return _flags.HasFlag(TestUnitFlags.PassExplicitly);
+                return _state.PassExplicitly;
             }
         }
 
         public bool Skipped {
             get {
-                return _flags.HasFlag(TestUnitFlags.Skip);
+                return _state.Skipped;
             }
         }
 
         public bool Failed {
             get {
-                return _flags.HasFlag(TestUnitFlags.Failed);
+                return _state.Failed;
             }
         }
 
-        private TestData(string name, string reason, TestUnitFlags flags, object[] data, IEnumerable<TestTag> tags) {
-            _name = name;
-            _reason = reason;
-            _flags = flags;
+        internal TestData(TestDataState state, object[] data) {
+            _state = state;
             _data = data ?? Array.Empty<object>();
-            _tags = TestTagCollection.Create(tags);
-            _tags.MakeReadOnly();
         }
 
         public TestData(params object[] data)
-            : this(null, null, TestUnitFlags.None, (object[]) data, null) {
+            : this(TestDataState.Empty, data) {
         }
 
         public static TestData Create(params object[] data) {
-            return new TestData((object[]) data);
+            return new TestData(data);
         }
 
         public static TestData FCreate(params object[] data) {
-            return new TestData(null, null, TestUnitFlags.Focus, (object[]) data, null);
+            return new TestData(TestDataState.F, data);
         }
 
         public static TestData XCreate(params object[] data) {
-            return new TestData(null, null, TestUnitFlags.Pending, (object[]) data, null);
+            return new TestData(TestDataState.X, data);
+        }
+
+        public static TestData<T> Create<T>(params T[] data) {
+            return new TestData<T>(data);
+        }
+
+        public static TestData<T> FCreate<T>(params T[] data) {
+            return new TestData<T>(TestDataState.F, data);
+        }
+
+        public static TestData<T> XCreate<T>(params T[] data) {
+            return new TestData<T>(TestDataState.X, data);
         }
 
         public TestData WithName(string name) {
-            return Update(name, Reason, _flags);
+            return Update(_state.WithName(name));
         }
 
         public TestData WithReason(string reason) {
-            return Update(Name, reason, _flags);
+            return Update(_state.WithReason(reason));
         }
 
         public TestData WithTags(IEnumerable<TestTag> tags) {
-            return new TestData(Name, Reason, _flags, (object[]) _data, tags);
+            return Update(_state.WithTags(tags));
         }
 
         public TestData Skip() {
-            return Skip(null);
+            return Update(_state.Skip());
         }
 
         public TestData Skip(string reason) {
-            return Update(Name, reason ?? Reason, _flags | TestUnitFlags.Skip);
+            return Update(_state.Skip(reason));
         }
 
         public TestData Fail() {
-            return Fail(null);
+            return Update(_state.Fail());
         }
 
         public TestData Fail(string reason) {
-            return Update(Name, reason ?? Reason, _flags | TestUnitFlags.Failed);
+            return Update(_state.Fail(reason));
         }
 
         public TestData Focus() {
-            return Update(Name, Reason, _flags | TestUnitFlags.Focus);
+            return Update(_state.Focus());
         }
 
         public TestData Focus(string reason) {
-            return Update(Name, reason, _flags | TestUnitFlags.Focus);
+            return Update(_state.Focus(reason));
         }
 
         public TestData Pending() {
-            return Update(Name, Reason, _flags | TestUnitFlags.Pending);
+            return Update(_state.Pending());
         }
 
         public TestData Pending(string reason) {
-            return Update(Name, reason, _flags | TestUnitFlags.Pending);
+            return Update(_state.Pending(reason));
         }
 
         public TestData Explicit() {
-            return Explicit(null);
+            return Update(_state.Explicit());
         }
 
         public TestData Explicit(string reason) {
-            return Update(Name, reason ?? Reason, _flags | TestUnitFlags.Explicit);
+            return Update(_state.Explicit(reason));
         }
 
-        internal TestData Update(string name, string reason, TestUnitFlags flags) {
-            return new TestData(name, reason, flags, (object[]) _data, _tags);
+        internal TestData Update(TestDataState state) {
+            return new TestData(state, _data);
         }
 
         public object this[int index] {
@@ -208,102 +211,5 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        internal static IEnumerable<TestData> Create(TestUnit unit, IMemberAccessor accessor) {
-            var rt = (TestTheory) unit;
-            return Create(rt.TestMethod, rt.TestObject, accessor);
-        }
-
-        internal static IEnumerable<TestData> Create(TestUnit unit, IMemberAccessor[] accessors) {
-            var rt = (TestTheory) unit;
-            return Create(rt.TestMethod, rt.TestObject, accessors);
-        }
-
-        private static IEnumerable<TestData> Create(MethodInfo testMethod, object testObject, IMemberAccessor accessor) {
-            Type returnType = accessor.ReturnType;
-            object myValue = accessor.GetValue(testObject);
-
-            // If the property returns IEnumerable<TestData>, then return it as is.
-            if (typeof(IEnumerable<TestData>).IsAssignableFrom(returnType)) {
-                return (IEnumerable<TestData>) myValue;
-            }
-
-            // If the property returns TestData, then return it as is.
-            if (returnType == typeof(TestData)) {
-                return new [] { (TestData) myValue };
-            }
-
-            // If the property returns IEnumerable<object[]>
-            if (typeof(IEnumerable<object[]>).IsAssignableFrom(returnType)) {
-                return ((IEnumerable<object[]>) myValue).Select(t => new TestData(t));
-            }
-
-            // Otherwise, we can detect the test method signature to determine which
-            // interface type is required
-            var types = testMethod.GetParameters().Select(p => p.ParameterType).ToArray();
-            if (types.Length == 0) {
-                throw new NotImplementedException();
-            }
-
-            if (types.Length == 1) {
-                // Could be IEnumerable<T> or just T
-                if (typeof(IEnumerable<>).MakeGenericType(types[0]).IsAssignableFrom(returnType)) {
-                    return ((IEnumerable) myValue).Cast<object>().Select(t => new TestData(t));
-                }
-
-                if (types[0] == returnType) {
-                    return new [] { new TestData(myValue) };
-                }
-            }
-            throw new NotImplementedException();
-        }
-
-        internal static IEnumerable<TestData> Create(MethodInfo testMethod, object testObject, IMemberAccessor[] accessors) {
-            if (accessors.Length == 1) {
-                return Create(testMethod, testObject, accessors[0]);
-            }
-
-            if (testMethod.GetParameters().Length != accessors.Length) {
-                throw SpecFailure.MultiAccessorsTheoryParameterMismatch();
-            }
-
-            // TODO It would be better to enforce IEnumerable instead of failing with cast
-
-            var elements = accessors
-                .Select(t => ((IEnumerable) t.GetValue(testObject)).Cast<object>().ToArray())
-                .ToList();
-
-            var actualData = Combinatorial(elements)
-                .Select(t => new TestData(t));
-            return actualData;
-        }
-
-        internal static IEnumerable<object[]> Combinatorial(IList<object[]> vars) {
-            int totalCombinations = vars.Aggregate(1, (a, v) => a * v.Length);
-            int paramCount = vars.Count;
-
-            var result = new List<object[]>(totalCombinations);
-            for (int i = 0; i < totalCombinations; i++) {
-                result.Add(new object[paramCount]);
-            }
-
-            // A tessellation generator
-            int tes = totalCombinations;
-            for (int key = 0; key < paramCount; key++) {
-                var values = vars[key];
-                tes = tes / values.Length; // Always divides evenly (due to totalCombinations)
-
-                for (int combo = 0; combo < totalCombinations; combo++) {
-                    result[combo][key] = values[(combo / tes) % values.Length];
-                }
-            }
-            return result;
-        }
-
-        internal TestData VerifiableProblem(bool shouldVerify, string reason) {
-            if (shouldVerify) {
-                return Fail(reason);
-            }
-            return Pending(reason);
-        }
     }
 }

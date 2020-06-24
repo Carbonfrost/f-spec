@@ -17,7 +17,7 @@ endif
 -homebrew-init: -check-command-brew
 	@    echo "$(_GREEN)Installing macOS dependencies...$(_RESET) (You may be prompted for a password)"
 	$(Q) $(OUTPUT_COLLAPSED) brew tap homebrew/bundle
-	$(Q) $(OUTPUT_COLLAPSED) brew bundle 
+	$(Q) $(OUTPUT_COLLAPSED) brew bundle
 
 -use/homebrew-bundle: -check-command-brew
 	$(Q) [ -f Brewfile ] || $(OUTPUT_COLLAPSED) brew bundle dump

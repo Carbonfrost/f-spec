@@ -142,7 +142,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             Reason = "Problem occurred during setup";
         }
 
-        internal override void Done(TestUnit unit) {
+        internal override void Done(TestUnit unit, TestRunnerOptions opts) {
             if (Children.Count == 0) {
                 _status = TestUnit.ConvertToStatus(unit).GetValueOrDefault(TestStatus.Passed);
             } else {

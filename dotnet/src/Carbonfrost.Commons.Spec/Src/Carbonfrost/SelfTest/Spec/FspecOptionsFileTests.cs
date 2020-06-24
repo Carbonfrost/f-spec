@@ -15,21 +15,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-
 using System.Linq;
-
 using Carbonfrost.Commons.Spec;
 
 namespace Carbonfrost.SelfTest.Spec {
 
-    public class TextUtilityTests : TestClass {
+    public class FspecOptionsFileTests {
 
         [Fact]
-        public void ConvertToString_linq_operator_should_reduce_noise() {
-            var cast = new object[] { 3, "string" }.OfType<string>();
+        public void ParseLine_should_parse_simple_tokens() {
             Assert.Equal(
-                "<OfTypeIterator><String> { \"string\" }",
-                TextUtility.ConvertToString(cast)
+                new [] { "simple", "tokens"},
+                FspecOptionsFile.ParseLine("simple tokens").ToArray()
+            );
+        }
+
+        [Fact]
+        public void ParseLine_should_parse_quoted_tokens() {
+            Assert.Equal(
+                new [] { "here", "are", "two words"},
+                FspecOptionsFile.ParseLine("here are \"two words\"").ToArray()
+            );
+        }
+
+        [Fact]
+        public void ParseLine_should_parse_quoted_tokens_across_lines() {
+            Assert.Equal(
+                new [] { "here", "are", "two \n\nwords"},
+                FspecOptionsFile.ParseLine("here are \"two \n\nwords\"").ToArray()
             );
         }
     }

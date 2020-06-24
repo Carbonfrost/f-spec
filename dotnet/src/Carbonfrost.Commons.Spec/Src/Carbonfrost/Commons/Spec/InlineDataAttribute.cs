@@ -82,8 +82,8 @@ namespace Carbonfrost.Commons.Spec {
 
         IEnumerable<TestData> ITestDataProvider.GetData(TestContext context) {
             yield return new TestData(_data).Update(
-                Name, Reason, Explicit ? TestUnitFlags.Explicit : TestUnitFlags.None
-            ).WithTags(_tags);
+                new TestDataState(Name, Reason, Explicit ? TestUnitFlags.Explicit : TestUnitFlags.None, _tags)
+            );
         }
 
     }

@@ -24,6 +24,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         private TestStatus _status;
         private DateTime? _finishedAt;
         private DateTime? _startedAt;
+        private Flags _flags;
 
         public override DateTime? StartedAt {
             get {
@@ -44,7 +45,20 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public string Output {
-            get; set;
+            get;
+            set;
+        }
+
+        public override bool IsFocused {
+            get {
+                return _flags.HasFlag(Flags.Focused);
+            }
+        }
+
+        public override bool IsSlow {
+            get {
+                return _flags.HasFlag(Flags.Slow);
+            }
         }
 
         internal TestCaseResult(TestCaseInfo testCase, TestStatus status = TestStatus.NotRun) {
@@ -93,20 +107,33 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        internal override void Done(TestUnit unit) {
+        internal override void Done(TestUnit unit, TestRunnerOptions opts) {
             _finishedAt = DateTime.Now;
             if (Status == TestStatus.NotRun) {
                 SetSuccess();
             }
+            if (unit != null && unit.IsFocused) {
+                _flags |= Flags.Focused;
+            }
+            if (ExecutionTime >= opts.SlowTestThreshold.Value) {
+                _flags |= Flags.Slow;
+            }
         }
 
-        internal void Done(DateTime startedAt) {
-            Done(null);
+        internal void Done(DateTime startedAt, TestRunnerOptions opts) {
             _startedAt = startedAt;
+            Done(null, opts);
         }
 
         internal void Starting() {
             _startedAt = DateTime.Now;
+        }
+
+        [Flags]
+        enum Flags {
+            None = 0,
+            Slow = 1,
+            Focused = 2,
         }
 
     }

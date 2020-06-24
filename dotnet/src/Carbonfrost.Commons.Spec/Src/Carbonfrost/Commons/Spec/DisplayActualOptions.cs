@@ -13,12 +13,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+using System;
 
 namespace Carbonfrost.Commons.Spec {
 
-    // Indicates that the actual value that is reported should be exception that
-    // was thrown instead of a return value.
-    interface ITestMatcherActualException {
+    [Flags]
+    enum DisplayActualOptions {
+        None = 0,
+        ShowWhitespace = 1 << 1,
+        ShowType = 1 << 2,
+        ShowNoisyStackTrace = 1 << 4,
     }
 
+    partial class Extensions {
+
+        internal static bool ShowType(this DisplayActualOptions opts) {
+            return (opts & DisplayActualOptions.ShowType) > 0;
+        }
+
+        internal static bool ShowWhitespace(this DisplayActualOptions opts) {
+            return (opts & DisplayActualOptions.ShowWhitespace) > 0;
+        }
+
+        internal static bool ShowNoisyStackTrace(this DisplayActualOptions opts) {
+            return (opts & DisplayActualOptions.ShowNoisyStackTrace) > 0;
+        }
+    }
 }

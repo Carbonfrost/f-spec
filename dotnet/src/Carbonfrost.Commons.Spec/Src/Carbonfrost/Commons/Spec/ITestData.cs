@@ -23,4 +23,31 @@ namespace Carbonfrost.Commons.Spec {
         TestData WithName(string name);
         TestData WithReason(string reason);
     }
+
+    interface ITestDataHelper : ITestUnitStateApiConventions<TestData> {
+        // string Name { get; }
+        // string Reason { get; }
+        TestData WithName(string name);
+        TestData WithReason(string reason);
+    }
+
+    interface ITestDataHelper<T> : ITestUnitStateApiConventions<TestData<T>>, ITestDataUntyped {
+        // string Name { get; }
+        // string Reason { get; }
+        TestData<T> WithName(string name);
+        TestData<T> WithReason(string reason);
+    }
+
+    interface ITestDataUntyped {
+        // This interface is split from ITestData<T> to make it simpler to cast
+        // when we don't want to deal with the generics
+        TestData Untyped();
+    }
+
+    interface ITestData<T> : IReadOnlyList<T>, ITestUnitStateApiConventions<TestData<T>>, ITestDataUntyped {
+        string Name { get; }
+        string Reason { get; }
+        TestData<T> WithName(string name);
+        TestData<T> WithReason(string reason);
+    }
 }

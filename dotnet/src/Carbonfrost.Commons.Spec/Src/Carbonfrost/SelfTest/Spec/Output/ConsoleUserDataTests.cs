@@ -40,6 +40,21 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel.Output {
             );
         }
 
+        [Fact]
+        public void Render_should_display_type_when_actuals_vary_only_by_type() {
+            var ud = new UserDataCollection {
+                { "Expected", "123" },
+                { "Actual", 123 },
+            };
+            Assert.Equal(
+                new [] {
+                    "        Actual: 123 (Int32)",
+                    "      Expected: 123 (string)",
+                },
+                Render(ud)
+            );
+        }
+
         private string[] Render(UserDataCollection ud) {
             var console = new TestConsole();
             var context = new RenderContext {

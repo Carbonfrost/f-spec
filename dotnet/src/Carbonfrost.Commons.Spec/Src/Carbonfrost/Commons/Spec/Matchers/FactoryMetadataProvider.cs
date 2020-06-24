@@ -36,7 +36,7 @@ namespace Carbonfrost.Commons.Spec.TestMatchers {
             Apply(testContext);
         }
 
-        void ITestCaseFilter.RunTest(TestContext testContext, Action<TestContext> next) {
+        void ITestCaseFilter.RunTest(TestExecutionContext testContext, Action<TestExecutionContext> next) {
             var matcher = _provider.CreateMatcher(testContext);
             Action actual = () => next(testContext);
             string message = TestMatcherFactory.GetMessage(_provider);
@@ -63,7 +63,7 @@ namespace Carbonfrost.Commons.Spec.TestMatchers {
             Apply(testContext);
         }
 
-        void ITestCaseFilter.RunTest(TestContext testContext, Action<TestContext> next) {
+        void ITestCaseFilter.RunTest(TestExecutionContext testContext, Action<TestExecutionContext> next) {
             next(testContext);
 
             Func<T> actualFactory = () => (T) testContext.TestReturnValue;

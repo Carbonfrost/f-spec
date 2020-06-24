@@ -16,8 +16,11 @@
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
+    // Provides a filter that runs before and after a test.  When applied
+    // to a test object class, these filter methods will be invoked alongside
+    // the calls to each test method
     public interface ITestExecutionFilter {
-        void BeforeExecuting(TestContext testContext);
-        void AfterExecuting(TestContext testContext);
+        void BeforeExecuting(TestExecutionContext testContext);
+        void AfterExecuting(TestExecutionContext testContext);
     }
 }

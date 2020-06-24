@@ -17,12 +17,13 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Carbonfrost.Commons.Spec;
 
 namespace Carbonfrost.SelfTest.Spec {
 
     public class MyTestClass : TestClass {
+
+        public int BeforeTestCallCount;
 
         public IEnumerable<object[]> P1 {
             get {
@@ -61,12 +62,6 @@ namespace Carbonfrost.SelfTest.Spec {
             }
         }
 
-        private static int _total;
-
-        public MyTestClass() {
-            _total++;
-        }
-
         [Fact]
         public void Parse_should_work() {
             int result;
@@ -102,15 +97,19 @@ namespace Carbonfrost.SelfTest.Spec {
         }
 
         [Fact]
-        public void Constructor_generates_only_one_instance() {
-            Assert.Equal(1, _total);
-        }
-
-        [Fact]
         public void TestContext_should_have_this_method_name() {
             var current = "TestContext_should_have_this_method_name";
             string expectedName = GetType().FullName + "." + current;
             Assert.Equal(expectedName, TestContext.CurrentTest.DisplayName);
+        }
+
+        protected override void BeforeTest() {
+            BeforeTestCallCount++;
+        }
+
+        [Fact]
+        public void BeforeTest_should_have_been_called() {
+            Assert.Equal(1, BeforeTestCallCount);
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public static ExpectationCommand<Unit> TestCode(Action action, bool negated, string given, bool assumption) {
-            return new SingletonCommand<Unit>(Unit.Thunk(action), negated, given, assumption);
+            return Of(Unit.Thunk(action), negated, given, assumption);
         }
 
         public static ExpectationCommand<Unit> TestCode(Action action) {
@@ -85,13 +85,15 @@ namespace Carbonfrost.Commons.Spec {
                 bool matches = matcher.Matches(actual);
 
                 if (!matches) {
-                    object reportedActual = actual.Value;
-                    if (matcher is ITestMatcherActualException) {
-                        reportedActual = actual.Exception;
-                    }
-                    return TestMatcherLocalizer.Failure(matcher, reportedActual)
+                    var result = TestMatcherLocalizer.Failure(matcher, actual.Value)
                         .UpdateGiven(_given)
                         .UpdateAssumption(_assumption);
+
+                    if (matcher is ITestMatcher<Unit> m) {
+                        result.UpdateActual(DisplayActual.Exception(actual.Exception));
+                    }
+                    return result;
+
                 }
                 return null;
             }

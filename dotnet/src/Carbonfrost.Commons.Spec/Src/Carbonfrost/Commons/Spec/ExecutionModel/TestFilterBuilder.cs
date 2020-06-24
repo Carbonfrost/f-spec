@@ -19,16 +19,12 @@ using System.Collections.Generic;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    public class TestFilterBuilder : ITestFilterBuilder {
+    public class TestFilterBuilder {
 
         private readonly List<TestFilter> _items = new List<TestFilter>();
 
         public TestFilter Build() {
             return TestFilter.Compose(_items);
-        }
-
-        void ITestFilterBuilder.Append(ITestExecutionFilter filter) {
-            Append(filter);
         }
 
         public TestFilterBuilder Append(ITestExecutionFilter filter) {

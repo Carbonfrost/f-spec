@@ -20,9 +20,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     static class EnvironmentHelper {
 
-        public static bool ShouldExcludeStackFrames {
+        public static PathCollection FixturePath {
             get {
-                return !Debug;
+                return PathCollection.FromEnvironment("FSPEC_FIXTURE_PATH");
+            }
+        }
+
+        public static PathCollection LoaderPath {
+            get {
+                return PathCollection.FromEnvironment("FSPEC_LOADER_PATH");
             }
         }
 

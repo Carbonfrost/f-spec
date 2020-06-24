@@ -17,7 +17,7 @@ namespace Carbonfrost.Commons.Spec {
 
 <# for (int i = 0; i <= MAX; i++) {
    string[] typeArgsList = Enumerable.Range(1, i).Select(t => "T" + t).ToArray();
-   string[] fields   = Enumerable.Range(1, i).Select(t => "_arg" + t).ToArray();
+   string[] fields   = Enumerable.Range(1, i).Select(t => "Arg" + t).ToArray();
    string[] parms    = Enumerable.Range(1, i).Select(t => "arg" + t).ToArray();
 
    if (i == 1) {
@@ -65,16 +65,22 @@ namespace Carbonfrost.Commons.Spec {
 
     }
 
-    public struct GivenExpectationBuilder<#= typeArgs #> {
+    public partial struct GivenExpectationBuilder<#= typeArgs #> {
 
-        private readonly bool _assumption;
+        public bool Assumption {
+            get;
+            private set;
+        }
 
 <# foreach (var m in typeArgsList.Zip(fields, (t, f) => (t + " " + f))) { #>
-        private readonly <#= m #>;
+        public <#= m #> {
+            get;
+            private set;
+        }
 <# } #>
 
         internal GivenExpectationBuilder(<#= args #><#= comma #>bool assumption) {
-          _assumption = assumption;
+          Assumption = assumption;
 <# foreach (var m in fields.Zip(parms, (t, f) => (t + " = " + f))) { #>
         <#= m #>;
 <# } #>
@@ -87,7 +93,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder<TResult>(() => func(<#= List(parms) #>),
                                                    false,
                                                    TextUtility.FormatArgs(<#= List(parms) #>),
-                                                   _assumption);
+                                                   Assumption);
         }
 
         public IExpectationBuilder Expect(Action<#= typeArgs #> func) {
@@ -97,7 +103,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder(() => func(<#= List(parms) #>),
                                           false,
                                           TextUtility.FormatArgs(<#= List(parms) #>),
-                                          _assumption);
+                                          Assumption);
         }
 
         public GivenRecord Record {

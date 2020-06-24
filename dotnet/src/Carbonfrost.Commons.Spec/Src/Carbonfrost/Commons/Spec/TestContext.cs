@@ -32,11 +32,8 @@ namespace Carbonfrost.Commons.Spec {
         private readonly TestLog _log;
         private TestTemporaryDirectory _defaultTemp;
         private readonly Random _random;
-        private readonly object _testObject;
         private readonly TestEnvironment _environment = new TestEnvironment();
 
-        private CancellationToken _cancellationToken;
-        private object _testResult;
         private static ThreadLocal<TestContext> _current = new ThreadLocal<TestContext>();
 
         public static TestContext Current {
@@ -65,12 +62,6 @@ namespace Carbonfrost.Commons.Spec {
         public TestTagCollection Tags {
             get {
                 return CurrentTest.Tags;
-            }
-        }
-
-        public CancellationToken CancellationToken {
-            get {
-                return _cancellationToken;
             }
         }
 
@@ -104,15 +95,12 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        public object TestObject {
-            get {
-                return _testObject;
-            }
-        }
+        // A dummy test object is required during initialization so we can
+        // invoke public instance properties and fields for test data providers
 
-        public object TestReturnValue {
+        internal object DummyTestObject {
             get {
-                return _testResult;
+                return Activator.CreateInstance(CurrentTest.FindTestClass().TestClass);
             }
         }
 
@@ -122,19 +110,24 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        internal TestContext(TestUnit self, TestRunner runner, Random random, object testObject) {
+        private protected TestContext(TestUnit self, TestRunner runner, Random random) {
             _self = self;
             _runner = runner;
             _log = new TestLog(runner);
             _random = random;
-            _testObject = testObject;
             _loader = new TestLoader(_runner.Options, this);
         }
 
+        internal static TestContext NewInitContext(TestUnit unit, TestRunner runner) {
+            return new TestContext(unit, runner, runner.RandomCache);
+        }
+
+        internal static TestExecutionContext NewExecContext(TestUnit unit, TestRunner runner, object testObject) {
+            return new TestExecutionContext(unit, runner, runner.RandomCache, testObject);
+        }
+
         internal TestContext WithSelf(TestUnit newSelf) {
-            return new TestContext(newSelf, _runner, Random, TestObject) {
-                _cancellationToken = _cancellationToken,
-            };
+            return new TestContext(newSelf, _runner, Random);
         }
 
         public TestTemporaryDirectory CreateTempDirectory(string name) {

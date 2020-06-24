@@ -123,7 +123,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             Children.MakeReadOnly();
         }
 
-        public TestCaseResult RunTest(TestContext testContext) {
+        public TestCaseResult RunTest(TestExecutionContext testContext) {
             if (PredeterminedStatus == TestStatus.NotRun) {
                 var startedAt = DateTime.Now;
                 try {
@@ -134,7 +134,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 } catch (Exception ex) {
                     var unhandled = new TestCaseResult(this);
                     unhandled.SetFailed(ex);
-                    unhandled.Done(startedAt);
+                    unhandled.Done(startedAt, testContext.TestRunnerOptions);
                     return unhandled;
                 }
             }
@@ -142,11 +142,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             var result = new TestCaseResult(this, PredeterminedStatus) {
                 Reason = Reason,
             };
-            result.Done(DateTime.Now);
+            result.Done(DateTime.Now, testContext.TestRunnerOptions);
             return result;
         }
 
-        protected abstract TestCaseResult RunTestCore(TestContext testContext);
+        internal abstract TestExecutionContext CreateExecutionContext(DefaultTestRunner runner);
+
+        protected abstract TestCaseResult RunTestCore(TestExecutionContext testContext);
 
     }
 }

@@ -62,7 +62,7 @@ namespace Carbonfrost.SelfTest.Spec {
             var fake = new ReflectedTheory(
                 GetType().GetMethod("FakeTheory", BindingFlags.NonPublic | BindingFlags.Instance
             ));
-            var context = new TestContext(fake, new FakeRunner(), null, null);
+            var context = TestContext.NewInitContext(fake, new FakeRunner());
             var fd = func();
             return ((ITestDataProvider) fd).GetData(context).ToArray();
         }

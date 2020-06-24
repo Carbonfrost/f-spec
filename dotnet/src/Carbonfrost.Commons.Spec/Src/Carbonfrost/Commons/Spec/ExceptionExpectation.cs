@@ -25,7 +25,7 @@ namespace Carbonfrost.Commons.Spec {
         public IExpectation<string> Message {
             get {
                 return new Expectation<string>(
-                    _cmd.CaptureException().Property(ex => ex.Message)
+                    _cmd.CaptureException().Property(ex => ex.Message, "Message")
                 );
             }
         }
@@ -39,7 +39,7 @@ namespace Carbonfrost.Commons.Spec {
         public IExpectation<Exception> InnerException {
             get {
                 return new Expectation<Exception>(
-                    _cmd.CaptureException().Property(ex => ex.InnerException)
+                    _cmd.CaptureException().Property(ex => ex.InnerException, "InnerException")
                 );
             }
         }

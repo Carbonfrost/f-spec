@@ -23,7 +23,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
         const int bufferWidth = 6;
 
-        public bool ShowWhitespace { get; set; }
+        public AssertionMessageFormatModes AssertionMessageFormat {
+            get;
+            set;
+        }
 
         protected override void RenderCore(UserDataCollection data) {
             if (data.Keys.Count <= 0) {
@@ -37,7 +40,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                 if (data.IsHiddenFromTable(kvp.Key)) {
                     continue;
                 }
-                WriteLineItem(kvp.Key, ShowWS(kvp.Value), maxLength);
+                string format = data.FormatValue(kvp.Key, AssertionMessageFormat);
+                WriteLineItem(kvp.Key, format, maxLength);
             }
 
             if (data.Diff != null) {
@@ -50,13 +54,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             caption = Caption(caption);
             Write(string.Format("{0," + (bufferWidth + length) + "}: ", caption));
             WriteLine(data);
-        }
-
-        private string ShowWS(string text) {
-            if (ShowWhitespace) {
-                return TextUtility.ShowWhitespace(text);
-            }
-            return text;
         }
 
         internal static string Caption(string caption) {

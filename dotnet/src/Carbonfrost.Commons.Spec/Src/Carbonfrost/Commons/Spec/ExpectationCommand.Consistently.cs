@@ -51,7 +51,7 @@ namespace Carbonfrost.Commons.Spec {
                                 TestMatcherLocalizer.FailurePredicate(matcher)
                              },
                         };
-                        result.UserData["Actual"] = aFailure.UserData["Actual"];
+                        result.UserData.CopyActuals(aFailure.UserData);
                         return result;
                     }
 

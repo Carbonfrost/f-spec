@@ -50,7 +50,7 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
         }
 
         private static IEnumerable<TestUnit> TestUnits(params string[] names) {
-            var testContext = new TestContext(null, new FakeRunner(), null, null);
+            var testContext = TestContext.NewInitContext(null, new FakeRunner());
             foreach (var name in names) {
                 var type = typeof(TestPlanFilterTests).GetNestedType(name, BindingFlags.NonPublic);
                 yield return new ReflectedTestClass(type);

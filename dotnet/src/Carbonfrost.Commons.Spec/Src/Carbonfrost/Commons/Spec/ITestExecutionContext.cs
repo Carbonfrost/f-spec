@@ -13,10 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+using System;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
-namespace Carbonfrost.Commons.Spec.ExecutionModel {
+namespace Carbonfrost.Commons.Spec {
 
-    public interface ITestFilterBuilder {
-        void Append(ITestExecutionFilter filter);
+    interface ITestExecutionContext : ITestContext {
+        TestCaseResult RunTest(Action<TestExecutionContext> testFunc);
+        TestCaseResult RunTest(Action<TestExecutionContext> testFunc, TestOptions options);
+        TestCaseResult RunTest(Func<TestExecutionContext, object> testFunc);
+        TestCaseResult RunTest(Func<TestExecutionContext, object> testFunc, TestOptions options);
     }
 }

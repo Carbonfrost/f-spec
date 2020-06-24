@@ -26,10 +26,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public static readonly TestFilter Null = new NullImpl();
 
-        public virtual void BeforeExecuting(TestContext testContext) {
+        public virtual void BeforeExecuting(TestExecutionContext testContext) {
         }
 
-        public virtual void AfterExecuting(TestContext testContext) {
+        public virtual void AfterExecuting(TestExecutionContext testContext) {
         }
 
         public static TestFilter UsingCulture(CultureInfo cultureInfo) {
@@ -72,11 +72,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 _filter = filter;
             }
 
-            public override void BeforeExecuting(TestContext testContext) {
+            public override void BeforeExecuting(TestExecutionContext testContext) {
                 _filter.BeforeExecuting(testContext);
             }
 
-            public override void AfterExecuting(TestContext testContext) {
+            public override void AfterExecuting(TestExecutionContext testContext) {
                 _filter.AfterExecuting(testContext);
             }
         }
@@ -88,13 +88,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 _all = all;
             }
 
-            public override void BeforeExecuting(TestContext testContext) {
+            public override void BeforeExecuting(TestExecutionContext testContext) {
                 foreach (var f in _all) {
                     f.BeforeExecuting(testContext);
                 }
             }
 
-            public override void AfterExecuting(TestContext testContext) {
+            public override void AfterExecuting(TestExecutionContext testContext) {
                 foreach (var f in _all) {
                     f.AfterExecuting(testContext);
                 }

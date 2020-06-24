@@ -22,7 +22,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
     class DefaultTestClassSubjectBinding : TestSubjectClassBinding {
 
         private readonly object _testSubject;
-        private readonly object _testObject;
 
         public override object TestSubject {
             get {
@@ -44,8 +43,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
 
             _testSubject = testSubject;
-            _testObject = Activator.CreateInstance(testClassType);
-            _testObject.SetProperty("Subject", testSubject);
         }
 
         public override string DisplayName {
@@ -54,12 +51,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        internal override object FindTestObject() {
-            return _testObject;
-        }
-
         internal override object FindTestSubject() {
             return _testSubject;
+        }
+
+        internal override object CreateTestObject() {
+            var result = Activator.CreateInstance(TestClass);
+            result.SetProperty("Subject", _testSubject);
+            return result;
         }
 
         protected override void Initialize(TestContext testContext) {

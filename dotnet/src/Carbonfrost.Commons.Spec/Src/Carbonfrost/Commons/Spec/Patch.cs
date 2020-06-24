@@ -106,7 +106,7 @@ namespace Carbonfrost.Commons.Spec {
 
         internal static Patch StandardTextPatch(object actual, object expected) {
             if (expected is string strExpected) {
-                var strActual = TextUtility.ConvertToString(actual);
+                var strActual = Convert.ToString(actual);
                 return new Patch(strExpected, strActual);
             }
             if (expected is IEnumerable<string> strExpectedItems) {

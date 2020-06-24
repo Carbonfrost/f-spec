@@ -82,7 +82,7 @@ namespace Carbonfrost.Commons.Spec {
         class DefaultImpl : TestSubjectProvider {
 
             protected override IEnumerable<Type> GetTestSubjectTypes(TestContext context) {
-                var pred = GetTestSubjectTypePredicate(context.CurrentTest.FindTestObject().GetType());
+                var pred = GetTestSubjectTypePredicate(context.CurrentTest.FindTestClass().TestClass);
                 Func<Type, bool> canActivateType = t => !(t.GetTypeInfo().IsInterface || t.GetTypeInfo().IsAbstract);
                 return Activation.AllTypes().Where(pred).Where(canActivateType);
             }

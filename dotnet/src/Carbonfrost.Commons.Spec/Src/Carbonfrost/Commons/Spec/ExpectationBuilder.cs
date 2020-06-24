@@ -17,6 +17,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec {
 
@@ -135,6 +137,11 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder<TBase>(_cmd.As<TBase>());
         }
 
+        public IExpectationBuilder<TProperty> Property<TProperty>(Expression<Func<T, TProperty>> property) {
+            var name = ((MemberExpression) property.Body).Member.Name;
+            return new ExpectationBuilder<TProperty>(_cmd.Property(property.Compile(), name));
+        }
+
         public void To(ITestMatcher matcher, string message = null, params object[] args) {
             _cmd.Untyped().Should(matcher, message, args);
         }
@@ -216,6 +223,11 @@ namespace Carbonfrost.Commons.Spec {
 
         public IExpectationBuilder<TBase> As<TBase>() {
             return new ExpectationBuilder<TBase>(_cmd.As<TBase>());
+        }
+
+        public IExpectationBuilder<TProperty> Property<TProperty>(Expression<Func<TSelf, TProperty>> property) {
+            var name = ((MemberExpression) property.Body).Member.Name;
+            return new ExpectationBuilder<TProperty>(_cmd.Property(property.Compile(), name));
         }
 
         public void To(ITestMatcher matcher, string message = null, params object[] args) {

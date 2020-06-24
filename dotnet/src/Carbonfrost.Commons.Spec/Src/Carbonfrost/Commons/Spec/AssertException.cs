@@ -47,15 +47,6 @@ namespace Carbonfrost.Commons.Spec {
             UserMessage = info.GetString("UserMessage");
         }
 
-        public override string StackTrace {
-            get {
-                return ExceptionStackTraceFilter.FilterStackTrace(
-                    EnvironmentHelper.ShouldExcludeStackFrames,
-                    base.StackTrace
-                );
-            }
-        }
-
         public TestFailure TestFailure {
             get;
             private set;

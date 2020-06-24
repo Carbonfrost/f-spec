@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+using System;
 using System.Linq;
 using System.Reflection;
 
@@ -21,7 +22,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     abstract class ReflectedTestCase : TestCaseInfo {
 
-        protected override TestCaseResult RunTestCore(TestContext testContext) {
+        protected override TestCaseResult RunTestCore(TestExecutionContext testContext) {
             var opts = new TestOptions {
                 PassExplicitly = PassExplicitly,
                 Timeout = Timeout,
@@ -48,7 +49,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             // Subclasses should use this to eval the test data
         }
 
-        protected abstract object CoreRunTest(TestContext context);
+        protected abstract object CoreRunTest(TestExecutionContext context);
 
         public string TypeName {
             get {
@@ -61,6 +62,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         private protected object InvokeMethodHelper(object testObject, object[] args) {
             return SyncContextImpl.Run(TestMethod, testObject, args);
+        }
+
+        internal sealed override TestExecutionContext CreateExecutionContext(DefaultTestRunner runner) {
+            return TestContext.NewExecContext(this, runner, CreateTestObject());
         }
     }
 }

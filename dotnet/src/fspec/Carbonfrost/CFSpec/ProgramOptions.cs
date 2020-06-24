@@ -18,46 +18,85 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
-
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 using NDesk.Options;
 using Carbonfrost.CFSpec.Resources;
 using Carbonfrost.Commons.Spec.ExecutionModel.Output;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace Carbonfrost.CFSpec {
 
     class ProgramOptions {
 
         private readonly IConsoleWrapper _console = ConsoleWrapper.Default;
-        public readonly List<string> Assemblies = new List<string>();
-        public readonly List<PackageReference> Packages = new List<PackageReference>();
-        public readonly List<string> FixturePaths = new List<string>();
-        public readonly List<string> LoaderPaths = new List<string>();
-        public readonly TestPlanFilter PlanFilter = new TestPlanFilter();
 
-        public int RandomSeed;
+        private TestPlanFilter PlanFilter {
+            get {
+                return Options.PlanFilter;
+            }
+        }
+
         public bool DebugWait;
-        public bool DontRandomizeSpecs;
         public bool Quit;
-        public bool ShowTestNames;
-        public bool NoFocus;
-        public bool NoSummary;
-        public bool ShowWhitespace;
-        public bool NoUnifiedDiff;
-        public bool ShowPassExplicitly;
-        public int ContextLines = -1;
-        public bool SelfTest;
+
+        private bool ShowWhitespace {
+            set {
+                if (value) {
+                    Options.AssertionMessageFormatMode |= AssertionMessageFormatModes.PrintWhitespace;
+                } else {
+                    Options.AssertionMessageFormatMode &= ~AssertionMessageFormatModes.PrintWhitespace;
+                }
+            }
+        }
+
+        private bool ShowFullStackTraces {
+            set {
+                if (value) {
+                    Options.AssertionMessageFormatMode |= AssertionMessageFormatModes.FullStackTraces;
+                } else {
+                    Options.AssertionMessageFormatMode &= ~AssertionMessageFormatModes.FullStackTraces;
+                }
+            }
+        }
+
+        private bool ShowUnifiedDiff {
+            set {
+                if (value) {
+                    Options.AssertionMessageFormatMode |= AssertionMessageFormatModes.UseUnifiedDiff;
+                } else {
+                    Options.AssertionMessageFormatMode &= ~AssertionMessageFormatModes.UseUnifiedDiff;
+                }
+            }
+        }
+
         public TestVerificationMode Verify;
-        public bool FailFast;
         public bool FailOnPending;
-        public TimeSpan? TestTimeout;
-        public TimeSpan? PlanTimeout;
+
+        public TestRunnerOptions Options = new TestRunnerOptions();
+
+        private PathCollection FixturePaths {
+            get {
+                return Options.FixturePaths;
+            }
+        }
+
+        public PathCollection LoaderPaths {
+            get {
+                return Options.LoaderPaths;
+            }
+        }
+
+        private IList<PackageReference> Packages {
+            get {
+                return Options.PackageReferences;
+            }
+        }
 
         private readonly OptionSetExtension OptionSet;
 
-        public ProgramOptions() {
+        private ProgramOptions() {
             OptionSet = new OptionSetExtension {
                 { "help",          SR.UHelp(),             v => ShowHelp() },
                 { "version",       SR.UVersion(),          v => ShowVersion() },
@@ -69,29 +108,31 @@ namespace Carbonfrost.CFSpec {
                 { "exclude=",         SR.UExclude(),        v => PlanFilter.Excludes.AddNew(v) },
                 { "exclude-pattern=", SR.UExcludePattern(), v => PlanFilter.Excludes.AddRegex(SafeRegexParse(v, "--exclude-pattern")) },
                 { "F|focus=",         SR.UFocus(),          v => PlanFilter.FocusPatterns.AddNew(v) },
-                { "no-focus",         SR.UNoFocus(),        v => NoFocus = true },
+                { "no-focus",         SR.UNoFocus(),        v => Options.IgnoreFocus = true },
                 { "t|tag=",           SR.UTag(),            v => PlanFilter.Tags.AddNew(v) },
                 { "e|include=",          SR.UInclude(),         v => PlanFilter.Includes.AddNew(v) },
                 { "E|include-pattern=",  SR.UIncludePattern(),  v => PlanFilter.Includes.AddRegex(SafeRegexParse(v, "--include-pattern")) },
 
                 { "show-whitespace", SR.UShowWhitespace(), v => ShowWhitespace = true },
                 { "no-whitespace", SR.UNoWhitespace(),     v => ShowWhitespace = false },
-                { "no-diff",       SR.UNoDiff(),           v => NoUnifiedDiff = true },
-                { "context-lines=",SR.UContextLines(),     v => ContextLines = SafeInt32Parse(v, SR.InvalidContextLines(), "--context-lines") },
-                { "no-summary",    SR.UNoSummary(),        v => NoSummary = true },
+                { "full-stack-traces", SR.UFullStackTraces(), v => ShowFullStackTraces = true },
+                { "no-diff",       SR.UNoDiff(),           v => ShowUnifiedDiff = false },
+                { "context-lines=",SR.UContextLines(),     v => Options.ContextLines = SafeInt32Parse(v, SR.InvalidContextLines(), "--context-lines") },
+                { "no-summary",    SR.UNoSummary(),        v => Options.SuppressSummary = true },
                 { "self-test",     SR.USelfTest(),         v => WillSelfTest() },
-                { "show-tests",    SR.UShowTestNames(),    v => ShowTestNames = true },
-                { "fail-fast",     SR.UFailFast(),         v => FailFast = true },
+                { "show-tests",    SR.UShowTestNames(),    v => Options.ShowTestNames = true },
+                { "fail-fast",     SR.UFailFast(),         v => Options.FailFast = true },
                 { "fail-pending",  SR.UFailOnPending(),    v => FailOnPending = true },
 
-                { "show-pass-explicit", SR.UShowPassExplicit(), v => ShowPassExplicitly = true },
+                { "show-pass-explicit", SR.UShowPassExplicit(), v => Options.ShowPassExplicitly = true },
                 { "verify=",            SR.UVerify(),           v => Verify = SafeEnumParse<TestVerificationMode>(v, SR.InvalidVerify(), "--verify") },
 
-                { "no-random",     SR.UNoRandomizeSpecs(), v => DontRandomizeSpecs = true },
-                { "random-seed=",  SR.URandom(),           v => RandomSeed = SafeInt32Parse(v, SR.InvalidRandomSeed(), "--random-seed") },
+                { "no-random",     SR.UNoRandomizeSpecs(), v => Options.RandomizeSpecs = false },
+                { "random-seed=",  SR.URandom(),           v => Options.RandomSeed = SafeInt32Parse(v, SR.InvalidRandomSeed(), "--random-seed") },
 
-                { "timeout=",      SR.UTimeout(),          v => TestTimeout = SafeTimeSpanParse(v, SR.InvalidTimeSpan(), "--timeout") },
-                { "plan-timeout=", SR.UPlanTimeout(),      v => PlanTimeout = SafeTimeSpanParse(v, SR.InvalidTimeSpan(), "--plan-timeout") },
+                { "timeout=",      SR.UTimeout(),          v => Options.TestTimeout = SafeTimeSpanParse(v, SR.InvalidTimeSpan(), "--timeout") },
+                { "plan-timeout=", SR.UPlanTimeout(),      v => Options.PlanTimeout = SafeTimeSpanParse(v, SR.InvalidTimeSpan(), "--plan-timeout") },
+                { "slow-test=",    SR.USlowTest(),         v => Options.SlowTestThreshold = SafeTimeSpanParse(v, SR.InvalidTimeSpan(), "--slow-test") },
                 { "pause",         SR.UPause(),            v => DebugWait = true },
             };
 
@@ -102,7 +143,9 @@ namespace Carbonfrost.CFSpec {
                 "show-whitespace",
                 "no-whitespace",
                 "show-pass-explicit",
-                "show-tests"
+                "show-tests",
+                "slow-test=",
+                "full-stack-traces"
             );
 
             OptionSet.Group(SR.UTestSelectionOptions(), sort: true,
@@ -128,6 +171,11 @@ namespace Carbonfrost.CFSpec {
                 "p|package=",
                 "loader-path="
             );
+
+            ShowUnifiedDiff = true;
+            ShowFullStackTraces = EnvironmentHelper.Debug;
+            FixturePaths.AddAll(EnvironmentHelper.FixturePath);
+            LoaderPaths.AddAll(EnvironmentHelper.LoaderPath);
         }
 
         private void WillSelfTest() {
@@ -136,15 +184,68 @@ namespace Carbonfrost.CFSpec {
                 Quit = true;
             }
 
-            SelfTest = true;
+            Options.IsSelfTest = true;
+            ShowFullStackTraces = true;
         }
 
-        public List<string> Parse(string[] args) {
+        public static ProgramOptions Parse(string[] args) {
+            var options = new ProgramOptions();
+            List<string> unknown = options.ParseInternal(args);
+
+            IEnumerable<string> assemblies;
+            string unrecognized;
+
+            if (!CheckForPositionalArgs(unknown, out assemblies, out unrecognized)) {
+                throw new NDesk.Options.OptionException("unrecognized option: " + unrecognized, unrecognized);
+            }
+            options.LoaderPaths.AddAll(assemblies);
+            return options;
+        }
+
+        private List<string> ParseInternal(string[] args) {
             var myArgs = new List<string>(args.Length);
+            foreach (FspecOptionsFile src in FspecOptionsFile.FindAll()) {
+                myArgs.AddRange(src.Values);
+            }
+
             foreach (var item in args) {
                 myArgs.Add(item);
             }
             return OptionSet.Parse(myArgs);
+        }
+
+        static bool CheckForPositionalArgs(IList<string> unknowns,
+            out IEnumerable<string> assemblies,
+            out string unrecognized
+        ) {
+
+            unrecognized = null;
+            assemblies = Enumerable.Empty<string>();
+
+            if (unknowns.Count == 0) {
+                return true;
+            }
+
+            // Determine if there is an unknown option --example
+            if (!VerifyNotOptions(unknowns, out unrecognized)) {
+                return false;
+            }
+
+            assemblies = unknowns;
+            return true;
+        }
+
+        static bool VerifyNotOptions(IList<string> unknowns, out string unrecognized) {
+            unrecognized = null;
+
+            foreach (string s in unknowns) {
+                if (s.StartsWith("-", StringComparison.Ordinal)) {
+                    unrecognized = s;
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public void Usage() {

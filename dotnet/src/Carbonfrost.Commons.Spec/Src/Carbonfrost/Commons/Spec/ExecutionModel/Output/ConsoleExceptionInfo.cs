@@ -17,14 +17,17 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Linq;
-using System.IO;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
     class ConsoleExceptionInfo : ConsoleOutputPart<ExceptionInfo> {
 
+        public bool ShowNoisyStackFrames {
+            get;
+            set;
+        }
+
         static readonly Regex ERGO = new Regex(@"\Aat (?<module>.+) in (?<file>.+):line (?<line>\d+)\Z");
-        static readonly Uri current = new Uri("file://" + Directory.GetCurrentDirectory() + "/");
         static readonly string[] SPACES = Enumerable.Range(0, 10)
             .Select(m => "// " + new string(' ', m))
             .ToArray();
@@ -42,7 +45,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             console.WriteLine();
 
             console.Muted();
-            var traces = exceptionInfo.StackTrace.TrimEnd('\r', '\n').Split(
+            var st = ShowNoisyStackFrames ? exceptionInfo.StackTrace : exceptionInfo.FilteredStackTrace;
+            var traces = st.TrimEnd('\r', '\n').Split(
                 new[] { "\r\n", "\n" }, StringSplitOptions.None
             );
             foreach (var msg in traces) {
@@ -73,9 +77,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             console.Write(ws);
             console.Write($"at {module}");
             if (line.Length > 0) {
-                var file = current.MakeRelativeUri(
-                    new Uri("file://" + m.Groups["file"].Value)
-                );
+                var file = Utility.MakeRelativePath(m.Groups["file"].Value);
                 console.WriteLine(" in");
                 console.Write(ws);
                 console.Write($"   {file}:{line}");

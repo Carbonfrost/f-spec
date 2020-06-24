@@ -23,6 +23,8 @@ namespace Carbonfrost.SelfTest.Spec {
 
     public class InlineDataAttributeTests {
 
+        public string State;
+
         [Explicit("This test is designed to fail.  Assertions happen on the output")]
         [Theory]
         [InlineData("wrong", "number", "of", "arguments")]
@@ -43,6 +45,16 @@ namespace Carbonfrost.SelfTest.Spec {
         public void Reason_propagates_to_test_data() {
             var inline = new InlineDataAttribute("a") { Reason = "r" };
             Assert.Equal("r", ((ITestDataProvider) inline).GetData(null).First().Reason);
+        }
+
+        [Theory]
+        [InlineData("1")]
+        [InlineData("2")]
+        public void Create_new_instance_on_test_cases(string name) {
+            Assert.Null(State);
+
+            // Detect shared state by setting something
+            State = name;
         }
     }
 }

@@ -51,11 +51,13 @@ namespace Carbonfrost.SelfTest.Spec {
         [Fact]
         [Explicit("This test is designed to fail.  Assertions happen on the output")]
         [Timeout(10)]
+        [Tag("integration")]
         public async void Async_should_handle_timeouts() {
             CancellationToken token = TestContext.CancellationToken;
             await Task.Delay(1000, token)
                 .ContinueWith(t => {
                                   Console.WriteLine("Shouldn't be printed!  Tasks should have been canceled.");
+                                  Assert.Fail();
                               }, token);
         }
     }

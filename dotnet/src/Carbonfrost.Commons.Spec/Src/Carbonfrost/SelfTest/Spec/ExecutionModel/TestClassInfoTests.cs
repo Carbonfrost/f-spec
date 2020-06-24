@@ -50,7 +50,7 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
         [Fact]
         public void CreateTest_will_be_skipped_with_error_when_multiple_test_attributes_specified() {
             var tc = new ReflectedTestClass(typeof(PHasMethodWithMultipleAttributes));
-            var testContext = new TestContext(null, new FakeRunner(), null, null);
+            var testContext = TestContext.NewExecContext(null, new FakeRunner(), null);
             tc.InitializeSafe(testContext);
             var result = ((TestCaseInfo) tc.Children[0]).RunTest(testContext);
 

@@ -52,9 +52,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public TestRunnerOptions RunnerOptions {
+            get;
+            set;
+        }
+
         public TestRunProblems Problems {
             get {
-                return _problems ?? (_problems = new TestRunProblems(Descendants));
+                return _problems ?? (_problems = new TestRunProblems(Descendants, RunnerOptions));
             }
         }
 

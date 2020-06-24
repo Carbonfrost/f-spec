@@ -101,7 +101,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             internal override void Run(DefaultTestRunner runner) {
                 var myCase = (TestCaseInfo) Unit;
-                using (var context = runner.NewTestContext(Unit)) {
+                using (var context = myCase.CreateExecutionContext(runner)) {
                     _result = myCase.RunTest(context);
                 }
                 Parent.FindResult().ContainerOrSelf.Children.Add(_result);
@@ -110,7 +110,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             internal override void Abort(DefaultTestRunner runner) {
                 var myCase = (TestCaseInfo) Unit;
                 var result = new TestCaseResult(myCase, TestStatus.Skipped);
-                result.Done(DateTime.Now);
+                result.Done(DateTime.Now, runner.Options);
                 Parent.FindResult().ContainerOrSelf.Children.Add(result);
             }
         }
@@ -119,8 +119,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             private readonly TestRunResults _result;
 
-            public RootNode() : base(null, null) {
-                _result = new TestRunResults();
+            public RootNode(TestRunnerOptions opts) : base(null, null) {
+                _result = new TestRunResults {
+                    RunnerOptions = opts
+                };
             }
 
             internal override void Run(DefaultTestRunner runner) {
@@ -151,13 +153,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
                 if (shouldRun) {
                     Unit.NotifyStarted(runner);
-                    _context = runner.NewTestContext(Unit);
-
-                    foreach (var anc in Unit.Ancestors()) {
-                        anc.BeforeExecutingDescendantSafe(_context);
-                    }
-
-                    Unit.BeforeExecutingSafe(_context);
+                    _context = Unit.CreateInitializationContext(runner);
                 } else {
                     Unit.ForcePredeterminedStatus(TestUnitFlags.Skip, e.Reason);
                 }
@@ -209,26 +205,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             internal override void Run(DefaultTestRunner runner) {
                 if (Unit == null) {
-                    FindResult().Done(Unit);
+                    FindResult().Done(Unit, runner.Options);
                     return;
                 }
 
                 var result = FindResult();
                 var context = FindTestContext();
 
-                if (Unit.SetUpError == null) {
-                    foreach (var anc in Unit.Ancestors()) {
-                        anc.AfterExecutingDescendantSafe(context);
-                    }
-
-                    Unit.AfterExecutingSafe(context);
-
-                } else {
+                if (Unit.SetUpError != null) {
                     result.SetFailed(Unit.SetUpError);
                     result.Reason = "Problem setting up the test";
                 }
-                result.IsFocused = Unit.IsFocused;
-                result.Done(Unit);
+                result.Done(Unit, runner.Options);
                 Unit.NotifyFinished(runner, result);
                 Safely.Dispose(context);
             }
@@ -238,7 +226,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 var context = FindTestContext();
 
                 if (result != null) {
-                    result.Done(Unit);
+                    result.Done(Unit, runner.Options);
                 }
                 Safely.Dispose(context);
             }

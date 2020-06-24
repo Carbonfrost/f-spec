@@ -154,6 +154,13 @@ namespace Carbonfrost.CFSpec.Resources {
         return string.Format(Culture, ResourceFinder("UFocus") );
     }
 
+  /// <summary>Don't hide f-spec stack frames in exception stack traces</summary>
+    internal static string UFullStackTraces(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UFullStackTraces") );
+    }
+
   /// <summary>Display this help screen</summary>
     internal static string UHelp(
     
@@ -292,6 +299,13 @@ namespace Carbonfrost.CFSpec.Resources {
     
     ) {
         return string.Format(Culture, ResourceFinder("UShowWhitespace") );
+    }
+
+  /// <summary>Threshold {{TIME}} span for whether a test is considered slow</summary>
+    internal static string USlowTest(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("USlowTest") );
     }
 
   /// <summary>Run tests with the specified TAG.  (Optionally, ~TAG for tests without tag)</summary>

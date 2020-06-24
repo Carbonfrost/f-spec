@@ -52,7 +52,7 @@ namespace Carbonfrost.Commons.Spec {
                     Message = SR.EventuallyTimedOutAfter(TextUtility.FormatDuration(_duration)),
                     Children = { TestMatcherLocalizer.FailurePredicate(matcher) },
                 };
-                result.UserData["Actual"] = aFailure.UserData["Actual"];
+                result.UserData.CopyActuals(aFailure.UserData);
                 return result;
             }
 

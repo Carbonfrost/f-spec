@@ -23,6 +23,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         private readonly List<TestUnitResult> _pending = new List<TestUnitResult>();
         private readonly List<TestUnitResult> _failures = new List<TestUnitResult>();
+        private readonly List<TestUnitResult> _slow = new List<TestUnitResult>();
 
         public int Count {
             get {
@@ -42,7 +43,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        internal TestRunProblems(IEnumerable<TestUnitResult> descendants) {
+        public IReadOnlyList<TestUnitResult> Slow {
+            get {
+                return _slow;
+            }
+        }
+
+        internal TestRunProblems(IEnumerable<TestUnitResult> descendants, TestRunnerOptions opts) {
             foreach (var item in descendants) {
                 if (item is TestUnitResults) {
                     // Because statuses rollup into the composite result (e.g. if composite contains
@@ -57,6 +64,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     _pending.Add(item);
                 } else if (item.Failed) {
                     _failures.Add(item);
+                } else if (item.IsSlow) {
+                    _slow.Add(item);
                 }
             }
         }

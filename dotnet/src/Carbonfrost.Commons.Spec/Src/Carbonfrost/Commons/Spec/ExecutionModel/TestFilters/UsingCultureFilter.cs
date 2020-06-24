@@ -28,12 +28,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.TestFilters {
             Culture = culture;
         }
 
-        public override void BeforeExecuting(TestContext testContext) {
+        public override void BeforeExecuting(TestExecutionContext testContext) {
             _resetCulture = Thread.CurrentThread.CurrentCulture;
             Thread.CurrentThread.CurrentCulture = Culture;
         }
 
-        public override void AfterExecuting(TestContext testContext) {
+        public override void AfterExecuting(TestExecutionContext testContext) {
             Thread.CurrentThread.CurrentCulture = _resetCulture;
         }
     }

@@ -48,6 +48,7 @@ namespace Carbonfrost.SelfTest.Spec {
             DoesNotApplyToTestMatcherExtensions(methods);
             DoesNotApplyToExpectationBuilderAsserterExtensions(methods);
             DoesNotApplyToCardinals(methods);
+            DoesNotApplyToExpectationBuilder(methods);
             var result = methods.Any(IsMessageFormatMethod);
             if (!result) {
                 Assert.Fail("Method group should have at least one method that can format a message M(..., message:, args:)");
@@ -89,6 +90,13 @@ namespace Carbonfrost.SelfTest.Spec {
 
         private void DoesNotApplyToExpectationBuilderAsserterExtensions(IGrouping<string, MethodInfo> methods) {
             if (methods.First().GetParameters()[0].ParameterType == typeof(IExpectationBuilderAsserter)) {
+                Assert.Pass("Doesn't apply to this method group: " + methods.Key);
+            }
+        }
+
+        private void DoesNotApplyToExpectationBuilder(IGrouping<string, MethodInfo> methods) {
+            var pt = methods.First().GetParameters()[0].ParameterType;
+            if (pt.IsGenericType && pt.GetGenericTypeDefinition() == typeof(GivenExpectationBuilder<>)) {
                 Assert.Pass("Doesn't apply to this method group: " + methods.Key);
             }
         }

@@ -45,13 +45,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                 new ConsoleTestRunResults()
             );
             forExceptionInfo = ConsoleOutputPart.Compose(
-                new ConsoleExceptionInfo()
+                new ConsoleExceptionInfo {
+                    ShowNoisyStackFrames = opts.AssertionMessageFormatMode.HasFlag(
+                        AssertionMessageFormatModes.FullStackTraces
+                    ),
+                }
             );
             forUserData = ConsoleOutputPart.Compose(
                 new ConsoleUserData {
-                    ShowWhitespace = opts.AssertionMessageFormatMode.HasFlag(
-                        AssertionMessageFormatModes.PrintWhitespace
-                    ),
+                    AssertionMessageFormat = opts.AssertionMessageFormatMode
                 }
             );
             forMessage = ConsoleOutputPart.Compose(

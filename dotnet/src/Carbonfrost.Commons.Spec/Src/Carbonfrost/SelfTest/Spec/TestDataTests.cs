@@ -21,6 +21,7 @@ using System.Linq;
 using System.Reflection;
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.ExecutionModel;
+using Carbonfrost.SelfTest.Spec.ExecutionModel;
 
 namespace Carbonfrost.SelfTest.Spec {
 
@@ -79,6 +80,37 @@ namespace Carbonfrost.SelfTest.Spec {
             }
         }
 
+        public TestData<string> PTypedTestData {
+            get {
+                return TestData<string>.Create("420");
+            }
+        }
+
+        public IEnumerable<TestData<string>> PTypedTestDataEnumerable {
+            get {
+                yield return TestData<string>.Create("420");
+                yield return TestData.Create<string>("421");
+            }
+        }
+
+        public ICollection<TestData<string>> PTypedTestDataCollection {
+            get {
+                return new [] {
+                    TestData<string>.Create("420"),
+                    TestData.Create<string>("421"),
+                };
+            }
+        }
+
+        public TestData<string>[] PTypedTestDataArray {
+            get {
+                return new [] {
+                    TestData<string>.Create("420"),
+                    TestData.Create<string>("421"),
+                };
+            }
+        }
+
         public IEnumerable<string> A {
             get {
                 return new [] { "a", "b", };
@@ -97,10 +129,13 @@ namespace Carbonfrost.SelfTest.Spec {
         [Theory]
         [InlineData("P6")]
         [InlineData("P7")]
+        [InlineData(nameof(PTypedTestData))]
         public void Create_from_property_should_yield_singleton_return_type(string property) {
             var prop = Property(property);
-            var unit = new FakeTheory(fakeTestMethod);
-            Assert.Equal(1, TestData.Create(unit, MemberAccessors.Property(prop)).Count());
+            var ctxt = TestContext.NewExecContext(new FakeTheory(fakeTestMethod), new FakeRunner(), null);
+            var actual = TestData.Create(ctxt, MemberAccessors.Property(prop));
+            Assert.Equal(1, actual.Count());
+            Assert.Equal("420", actual.First()[0]);
         }
 
         [Theory]
@@ -110,10 +145,13 @@ namespace Carbonfrost.SelfTest.Spec {
         [InlineData("P4")]
         [InlineData("P5")]
         [InlineData("P8")]
+        [InlineData(nameof(PTypedTestDataEnumerable))]
+        [InlineData(nameof(PTypedTestDataCollection))]
+        [InlineData(nameof(PTypedTestDataArray))]
         public void Create_from_property_should_yield_items_from_lists(string property) {
             var prop = Property(property);
-            var unit = new FakeTheory(fakeTestMethod);
-            Assert.Equal(2, TestData.Create(unit, MemberAccessors.Property(prop)).Count());
+            var ctxt = TestContext.NewExecContext(new FakeTheory(fakeTestMethod), new FakeRunner(), null);
+            Assert.Equal(2, TestData.Create(ctxt, MemberAccessors.Property(prop)).Count());
         }
 
         [Fact]
@@ -125,7 +163,8 @@ namespace Carbonfrost.SelfTest.Spec {
                 new [] { "c", "d" },
             };
             var theory = new FakeTheory(fakeTestMethod2);
-            var guineaPig = TestData.Create(theory, new[] {
+            var ctxt = TestContext.NewExecContext(theory, new FakeRunner(), null);
+            var guineaPig = TestData.Create(ctxt, new[] {
                                                 MemberAccessors.Property(a), MemberAccessors.Property(b)
                                             });
 
@@ -205,16 +244,6 @@ namespace Carbonfrost.SelfTest.Spec {
         }
 
         [Fact]
-        public void FTestData_Constructor_should_create_focused_test_data() {
-            Assert.True(new FTestData("arg").IsFocused);
-        }
-
-        [Fact]
-        public void FTestData_Constructor_empty_should_create_focused_test_data() {
-            Assert.True(new FTestData().IsFocused);
-        }
-
-        [Fact]
         public void FTestData_conversion_should_create_focused_test_data() {
             Assert.True(((TestData) new FTestData("arg")).IsFocused);
         }
@@ -222,16 +251,6 @@ namespace Carbonfrost.SelfTest.Spec {
         [Fact]
         public void FTestData_conversion_empty_should_create_focused_test_data() {
             Assert.True(((TestData) new FTestData()).IsFocused);
-        }
-
-        [Fact]
-        public void XTestData_Constructor_should_create_focused_test_data() {
-            Assert.True(new XTestData("arg").IsPending);
-        }
-
-        [Fact]
-        public void XTestData_Constructor_empty_should_create_focused_test_data() {
-            Assert.True(new XTestData().IsPending);
         }
 
         [Fact]
@@ -244,29 +263,48 @@ namespace Carbonfrost.SelfTest.Spec {
             Assert.True(((TestData) new XTestData()).IsPending);
         }
 
+        [Fact]
+        public void TestData_use_cases() {
+            // Simply set up a value
+            var simple = new object[] {
+                new TestData("hello"),
+                TestData.Create("hello")
+            };
+
+            // Prepend X or F to change pending/focus
+            var pending = new object[] {
+                new XTestData("hello"),
+                XTestData.Create("hello"),
+                TestData.XCreate("hello")
+            };
+
+            var focus = new object[] {
+                new FTestData("hello"),
+                FTestData.Create("hello"),
+                TestData.FCreate("hello")
+            };
+        }
+
         static PropertyInfo Property(string property) {
             return typeof(TestDataTests).GetProperty(property, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
         }
 
         class FakeTheory : TestTheory {
 
-            private readonly object _testObject;
             public override TestUnitCollection Children {
                 get {
                     return TestUnitCollection.Empty;
                 }
             }
 
-            internal override object TestObject {
-                get {
-                    return _testObject;
-                }
-            }
-
             public FakeTheory(MethodInfo method) : base(method) {
-                _testObject = Activator.CreateInstance(method.DeclaringType);
+                SetParent(new FakeTestClassInfo());
             }
+        }
 
+        class FakeTestClassInfo : TestClassInfo {
+
+            public FakeTestClassInfo() : base(typeof(TestDataTests)) {}
         }
     }
 }

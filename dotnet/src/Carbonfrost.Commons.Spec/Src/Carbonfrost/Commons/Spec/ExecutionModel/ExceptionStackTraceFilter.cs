@@ -21,8 +21,6 @@ using System.Text;
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     class ExceptionStackTraceFilter {
-        private readonly Exception _exception;
-        private readonly bool _filterStackTrace;
 
         public string Message {
             get;
@@ -32,29 +30,25 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             get;
         }
 
-        public ExceptionStackTraceFilter(Exception exception, bool filterStackTrace) {
-            _exception = exception;
-            _filterStackTrace = filterStackTrace;
-
-            var sb = new StringBuilder();
-            FormatStackTrace(sb, exception);
-
-            Message = FormatExceptionMessage(exception);
-            StackTrace = sb.ToString();
+        public string FilteredStackTrace {
+            get;
         }
 
-        public static ExceptionStackTraceFilter Apply(Exception ex) {
-            return new ExceptionStackTraceFilter(
-                ex,
-                EnvironmentHelper.ShouldExcludeStackFrames
-            );
+        public ExceptionStackTraceFilter(Exception exception) {
+            Message = FormatExceptionMessage(exception);
+            StackTrace = FormatStackTrace(exception, false);
+            FilteredStackTrace = FormatStackTrace(exception, true);
         }
 
         public override string ToString() {
-            return string.Join("\n", Message, StackTrace);
+            return ToString(false);
         }
 
-        private string FormatExceptionMessage(Exception ex) {
+        public string ToString(bool full) {
+            return string.Join("\n", Message, full ? StackTrace : FilteredStackTrace );
+        }
+
+        private static string FormatExceptionMessage(Exception ex) {
             string message = ex.Message;
             string className = ex.GetType().FullName;
 
@@ -68,26 +62,28 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return className + ": " + message;
         }
 
-        private void FormatStackTrace(StringBuilder sb, Exception ex) {
+        private static string FormatStackTrace(Exception ex, bool filter) {
+            var sb = new StringBuilder();
+            FormatStackTrace(sb, ex, filter);
+            return sb.ToString();
+        }
+
+        private static void FormatStackTrace(StringBuilder sb, Exception ex, bool filter) {
             ex = ExceptionDispatchInfo.Capture(ex).SourceException ?? ex;
             if (ex.InnerException != null) {
                 sb.Append(" ---> ");
                 sb.AppendLine(FormatExceptionMessage(ex.InnerException));
-                FormatStackTrace(sb, ex.InnerException);
+                FormatStackTrace(sb, ex.InnerException, filter);
                 sb.AppendLine();
                 sb.AppendLine("   --- End of inner exception stack trace ---");
             }
-            string stackTrace = FilterStackTrace(ex.StackTrace);
+            string stackTrace = FilterStackTrace(filter, ex.StackTrace);
             if (stackTrace != null) {
                 sb.Append(stackTrace);
             }
         }
 
-        private string FilterStackTrace(string stackTrace) {
-            return FilterStackTrace(_filterStackTrace, stackTrace);
-        }
-
-        internal static string FilterStackTrace(bool enabled, string stackTrace) {
+        private static string FilterStackTrace(bool enabled, string stackTrace) {
             if (!enabled) {
                 return stackTrace;
             }

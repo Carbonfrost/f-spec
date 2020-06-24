@@ -72,7 +72,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             _args = _data.Evaluate(testContext).ToArray();
         }
 
-        protected override object CoreRunTest(TestContext context) {
+        protected override object CoreRunTest(TestExecutionContext context) {
             try {
                 return InvokeMethodHelper(context.TestObject, TestMethodArguments.ToArray());
             }

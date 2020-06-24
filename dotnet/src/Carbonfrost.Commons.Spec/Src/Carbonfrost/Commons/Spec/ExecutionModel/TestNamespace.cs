@@ -79,6 +79,5 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 return TestUnitType.Namespace;
             }
         }
-
     }
 }

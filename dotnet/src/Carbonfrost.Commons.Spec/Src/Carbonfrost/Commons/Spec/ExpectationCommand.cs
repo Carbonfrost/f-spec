@@ -90,8 +90,8 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationCommand.ConsistentlyCommand<T>(duration, this);
         }
 
-        public ExpectationCommand<TResult> Property<TResult>(Func<T, TResult> accessor) {
-            return new ExpectationCommand.PropertyCommand<T, TResult>(this, accessor);
+        public ExpectationCommand<TResult> Property<TResult>(Func<T, TResult> accessor, string name) {
+            return new ExpectationCommand.PropertyCommand<T, TResult>(this, accessor, name);
         }
 
         public ExpectationCommand<Exception> CaptureException() {

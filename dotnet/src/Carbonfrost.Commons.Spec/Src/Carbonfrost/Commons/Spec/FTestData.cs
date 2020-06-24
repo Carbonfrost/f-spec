@@ -14,74 +14,11 @@
 // limitations under the License.
 //
 
-using System.Collections;
-using System.Collections.Generic;
-
 namespace Carbonfrost.Commons.Spec {
 
-    public readonly struct FTestData : ITestData {
+    public readonly struct FTestData : ITestDataHelper {
 
         private readonly TestData _self;
-
-        public object this[int index] {
-            get {
-                return _self[index];
-            }
-        }
-
-        public string Name {
-            get {
-                return _self.Name;
-            }
-        }
-
-        public string Reason {
-            get {
-                return _self.Reason;
-            }
-        }
-
-        public int Count {
-            get {
-                return _self.Count;
-            }
-        }
-
-        public bool IsExplicit {
-            get {
-                return _self.IsExplicit;
-            }
-        }
-
-        public bool IsFocused {
-            get {
-                return true;
-            }
-        }
-
-        public bool IsPending {
-            get {
-                return _self.IsPending;
-            }
-        }
-
-        public bool PassExplicitly {
-            get {
-                return _self.PassExplicitly;
-            }
-        }
-
-        public bool Skipped {
-            get {
-                return _self.Skipped;
-            }
-        }
-
-        public bool Failed {
-            get {
-                return _self.Failed;
-            }
-        }
 
         private TestData Copy {
             get {
@@ -121,10 +58,6 @@ namespace Carbonfrost.Commons.Spec {
             return Copy.Focus(reason);
         }
 
-        public IEnumerator<object> GetEnumerator() {
-            return _self.GetEnumerator();
-        }
-
         public TestData Pending() {
             return Copy.Pending();
         }
@@ -141,16 +74,16 @@ namespace Carbonfrost.Commons.Spec {
             return Copy.Skip(reason);
         }
 
+        public static TestData<T> Create<T>(params T[] values) {
+            return new TestData<T>(TestDataState.F, values);
+        }
+
         public TestData WithName(string name) {
             return Copy.WithName(name);
         }
 
         public TestData WithReason(string reason) {
             return Copy.WithReason(reason);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() {
-            return GetEnumerator();
         }
 
         public static implicit operator TestData(FTestData data) {

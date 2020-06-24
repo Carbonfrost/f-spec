@@ -20,26 +20,26 @@ using System.Linq;
 using System;
 
 using Carbonfrost.Commons.Spec.TestMatchers;
-using Carbonfrost.Commons.Spec.Resources;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     public class UserDataCollection : IDictionary<string, string> {
 
-        private readonly IDictionary<string, string> Dictionary;
+        private readonly IDictionary<string, string> _dictionary;
+        private readonly IDictionary<string, IDisplayActual> _actuals;
 
         public string this[string key] {
             get {
-                return Dictionary.GetValueOrDefault(key);
+                return _dictionary.GetValueOrDefault(key);
             }
             set {
-                Dictionary[key] = value;
+                _dictionary[key] = value;
             }
         }
 
         public int Count {
             get {
-                return Dictionary.Count;
+                return _dictionary.Count;
             }
         }
 
@@ -49,35 +49,52 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        private bool ActualsOnlyTypeDifferences {
+            get {
+                return _actuals.TryGetValue("Actual", out IDisplayActual ac)
+                    && _actuals.TryGetValue("Expected", out IDisplayActual ex)
+                    && DisplayActual.OnlyTypeDifferences(ex, ac);
+            }
+        }
+
         public void Clear() {
-            Dictionary.Clear();
+            _dictionary.Clear();
+            _actuals.Clear();
         }
 
         public bool Remove(string item) {
-            return Dictionary.Remove(item);
+            _actuals.Remove(item);
+            return _dictionary.Remove(item);
         }
 
         public bool Contains(string item) {
-            return Dictionary.ContainsKey(item);
+            return _dictionary.ContainsKey(item);
         }
 
         public void CopyTo(string[] array, int arrayIndex) {
-            Dictionary.Values.CopyTo(array, arrayIndex);
+            _dictionary.Values.CopyTo(array, arrayIndex);
         }
 
         IEnumerator System.Collections.IEnumerable.GetEnumerator() {
             return GetEnumerator();
         }
 
+        internal void CopyActuals(UserDataCollection from) {
+            foreach (var key in new [] { "Actual" }) {
+                _dictionary[key] = from._dictionary[key];
+                _actuals[key] = from._actuals[key];
+            }
+        }
+
         public ICollection<string> Keys {
             get {
-                return Dictionary.Keys;
+                return _dictionary.Keys;
             }
         }
 
         public ICollection<string> Values {
             get {
-                return Dictionary.Values;
+                return _dictionary.Values;
             }
         }
 
@@ -92,27 +109,40 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public bool ContainsKey(string key) {
-            return Dictionary.ContainsKey(key);
+            return _dictionary.ContainsKey(key);
         }
 
         public void Add(string key, string value) {
-            Dictionary.Add(key, value);
+            CoreAdd(key, value);
+        }
+
+        public void Add(string key, object value) {
+            CoreAdd(key, value);
+        }
+
+        private void CoreAdd(string key, object value) {
+            var actual = DisplayActual.Create(value);
+            _dictionary.Add(key, actual.Format(DisplayActualOptions.None));
+
+            if (IsActualKey(key)) {
+                _actuals.Add(key, actual);
+            }
         }
 
         public bool TryGetValue(string key, out string value) {
-            return Dictionary.TryGetValue(key, out value);
+            return _dictionary.TryGetValue(key, out value);
         }
 
         void ICollection<KeyValuePair<string, string>>.Add(KeyValuePair<string, string> item) {
-            Dictionary.Add(item);
+            Add(item.Key, item.Value);
         }
 
         bool ICollection<KeyValuePair<string, string>>.Contains(KeyValuePair<string, string> item) {
-            return Dictionary.Contains(item);
+            return _dictionary.Contains(item);
         }
 
         void ICollection<KeyValuePair<string, string>>.CopyTo(KeyValuePair<string, string>[] array, int arrayIndex) {
-            Dictionary.CopyTo(array, arrayIndex);
+            _dictionary.CopyTo(array, arrayIndex);
         }
 
         bool ICollection<KeyValuePair<string, string>>.Remove(KeyValuePair<string, string> item) {
@@ -120,7 +150,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator() {
-            return Dictionary.GetEnumerator();
+            return _dictionary.GetEnumerator();
         }
 
         internal UserDataCollection(object matcher) : this() {
@@ -128,7 +158,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public UserDataCollection() {
-            Dictionary = new SortedDictionary<string, string>(new SortOrder());
+            _dictionary = new SortedDictionary<string, string>(new SortOrder());
+            _actuals = new Dictionary<string, IDisplayActual>();
         }
 
         private void ExtractUserData(object matcher) {
@@ -138,7 +169,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             foreach (var pi in props) {
                 var name = pi.Name;
-                string value = null;
                 object val = pi.GetValue(matcher);
 
                 var attr = (MatcherUserDataAttribute) pi.GetCustomAttribute(typeof(MatcherUserDataAttribute));
@@ -147,13 +177,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                         continue;
                     }
                 }
-
-                if (val is StringComparer) {
-                    value = GetStringComparerText(val);
-                } else {
-                    value = TextUtility.ConvertToString(val);
-                }
-                Dictionary[name] = value;
+                Add(name, val);
             }
         }
 
@@ -176,42 +200,42 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return false;
         }
 
-        static string GetStringComparerText(object comparison) {
-            if (comparison == null) {
-                return "<null>";
+        internal string FormatValue(string key, AssertionMessageFormatModes format) {
+            if (_actuals.TryGetValue(key, out IDisplayActual actual)) {
+                var options = format.ToDisplayActualOptions();
+                if (ActualsOnlyTypeDifferences) {
+                    options |= DisplayActualOptions.ShowType;
+                }
+                return actual.Format(options);
             }
 
-            var str = comparison.ToString();
-
-            if (comparison == StringComparer.OrdinalIgnoreCase) {
-                str = "ordinal (ignore case)";
-
-            } else if (comparison == StringComparer.Ordinal) {
-                str = "ordinal";
-            }
-
-            else if (comparison == StringComparer.InvariantCulture) {
-                str = "invariant culture";
-            }
-            else if (comparison == StringComparer.InvariantCultureIgnoreCase) {
-                str = "invariant culture (ignore case)";
-            }
-
-            return str;
+            return this[key];
         }
+
+        private static bool IsActualKey(string key) {
+            return Array.IndexOf(ActualOrder, key) >= 0;
+        }
+
+        static readonly string[] ActualOrder = {
+            "Subject",
+            "Given",
+            "Property",
+            "Actual",
+            "Expected",
+        };
 
         class SortOrder : IComparer<string> {
 
             public int Compare(string x, string y) {
-                // Expected, Actual, then everything else alphabetically
+                // Subject, Given, then Expected, Actual, then everything else alphabetically
                 return string.Compare(CheckNames(x),
                                       CheckNames(y),
                                       StringComparison.OrdinalIgnoreCase);
             }
 
             static string CheckNames(string x) {
-                if (string.Equals(x, SR.LabelActual()) || string.Equals(x, SR.LabelExpected())) {
-                    return " " + x;
+                if (IsActualKey(x)) {
+                    return " " + Array.IndexOf(ActualOrder, x);
                 }
                 return x;
             }
