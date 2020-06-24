@@ -23,7 +23,11 @@ namespace Carbonfrost.CFSpec {
 
     class SpecApp {
 
-        public ProgramOptions Options;
+        private readonly ProgramOptions _options;
+
+        public SpecApp(ProgramOptions options) {
+            _options = options;
+        }
 
         public int Run() {
             try {
@@ -38,45 +42,12 @@ namespace Carbonfrost.CFSpec {
         }
 
         private int RunCore() {
-            var testRunnerOptions = new TestRunnerOptions {
-                RandomSeed = Options.RandomSeed,
-                RandomizeSpecs = !Options.DontRandomizeSpecs,
-                PlanTimeout = Options.PlanTimeout,
-                TestTimeout = Options.TestTimeout,
-                SuppressSummary = Options.NoSummary,
-                ShowTestNames = Options.ShowTestNames,
-                ContextLines = Options.ContextLines,
-                ShowPassExplicitly = Options.ShowPassExplicitly,
-                IsSelfTest = Options.SelfTest,
-                FailFast = Options.FailFast,
-                LoadAssemblyFromPath = System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath,
-                SlowTestThreshold = Options.SlowTestThreshold,
-            };
-            if (Options.ShowWhitespace) {
-                testRunnerOptions.AssertionMessageFormatMode |= AssertionMessageFormatModes.PrintWhitespace;
-            }
-            if (Options.ShowFullStackTraces) {
-                testRunnerOptions.AssertionMessageFormatMode |= AssertionMessageFormatModes.FullStackTraces;
-            }
-            if (!Options.NoUnifiedDiff) {
-                testRunnerOptions.AssertionMessageFormatMode |= AssertionMessageFormatModes.UseUnifiedDiff;
-            }
-            testRunnerOptions.PlanFilter.CopyFrom(Options.PlanFilter);
-            testRunnerOptions.IgnoreFocus = Options.NoFocus;
+            var testRunnerOptions = _options.Options;
+            testRunnerOptions.LoadAssemblyFromPath = System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath;
 
-            testRunnerOptions.FixturePaths.AddAll(Options.FixturePaths);
-            testRunnerOptions.FixturePaths.AddAll(EnvironmentHelper.FixturePath);
+            SpecLog.DidFinalizeOptions(_options.ToString());
 
-            testRunnerOptions.LoaderPaths.AddAll(Options.Assemblies);
-            testRunnerOptions.LoaderPaths.AddAll(Options.LoaderPaths);
-            testRunnerOptions.LoaderPaths.AddAll(EnvironmentHelper.LoaderPath);
-
-            foreach (var s in Options.Packages) {
-                testRunnerOptions.PackageReferences.Add(s);
-            }
-            SpecLog.DidFinalizeOptions(Options.ToString());
-
-            Assert.UseStrictMode = TestVerificationMode.Strict == Options.Verify;
+            Assert.UseStrictMode = TestVerificationMode.Strict == _options.Verify;
 
             TestRunner runner = TestRunner.Create(testRunnerOptions);
 
@@ -92,7 +63,7 @@ namespace Carbonfrost.CFSpec {
         }
 
         private int ToExitCode(TestRunFailureReason reason) {
-            if (!Options.FailOnPending && reason == TestRunFailureReason.ContainsPendingElements) {
+            if (!_options.FailOnPending && reason == TestRunFailureReason.ContainsPendingElements) {
                 return 0;
             }
 
