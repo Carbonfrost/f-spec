@@ -14,11 +14,42 @@
 // limitations under the License.
 //
 using System;
+using System.ComponentModel;
 using System.Reflection;
+using System.Linq.Expressions;
 
 namespace Carbonfrost.Commons.Spec {
 
     public static class Record {
+
+        public static TestEventListener<TEventArgs> Events<TEventArgs>(object instance, string eventName) where TEventArgs: EventArgs {
+            if (instance is null) {
+                throw new ArgumentNullException(nameof(instance));
+            }
+
+            return Events<TEventArgs>(instance, instance.GetType().GetEvent(eventName));
+        }
+
+        public static TestEventListener<TEventArgs> Events<TEventArgs>(object instance, EventInfo eventInfo) where TEventArgs: EventArgs {
+            if (instance is null) {
+                throw new ArgumentNullException(nameof(instance));
+            }
+            if (eventInfo is null) {
+                throw new ArgumentNullException(nameof(eventInfo));
+            }
+            var result = new TestEventListener<TEventArgs>();
+            eventInfo.AddEventHandler(instance, result.GetHandler(eventInfo.EventHandlerType));
+            return result;
+        }
+
+        public static TestEventListener<PropertyChangedEventArgs> PropertyChangedEvents(INotifyPropertyChanged instance) {
+            if (instance is null) {
+                throw new ArgumentNullException(nameof(instance));
+            }
+            var result = new TestEventListener<PropertyChangedEventArgs>();
+            instance.PropertyChanged += result.GetHandler<PropertyChangedEventHandler>();
+            return result;
+        }
 
         public static TestCodeDispatchInfo DispatchInfo(Action action) {
             return DispatchInfo(action, RecordExceptionFlags.None);
