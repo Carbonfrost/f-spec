@@ -48,6 +48,15 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        RetargetDelegates ITestDataApiAttributeConventions.RetargetDelegates {
+            get {
+                return RetargetDelegates.Unspecified;
+            }
+            set {
+                throw new NotSupportedException();
+            }
+        }
+
         public string Name {
             get {
                 return _inner.Name;

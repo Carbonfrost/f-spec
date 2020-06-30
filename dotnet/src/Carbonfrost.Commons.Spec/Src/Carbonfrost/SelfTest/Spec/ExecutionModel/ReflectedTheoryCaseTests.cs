@@ -15,13 +15,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-
+using System;
+using System.Collections.Generic;
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
 
     public class ReflectedTheoryCaseTests {
+
+        public IEnumerable<Func<ReflectedTheoryCaseTests>> DelegateTestCaseData {
+            get {
+                return new Func<ReflectedTheoryCaseTests> [] {
+                    () => this,
+                };
+            }
+        }
 
         [Fact]
         public void Constructor_should_copy_test_data_flags() {
@@ -32,6 +41,25 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
             Assert.Equal("Reasons", c.Reason);
             Assert.True(c.IsFocused);
         }
+
+        [Theory]
+        [PropertyData(nameof(DelegateTestCaseData))]
+        public void CoreRunTest_with_action_will_rebind_delegate_target(Func<ReflectedTheoryCaseTests> func) {
+            Assert.Same(this, func());
+        }
+
+        [Theory(RetargetDelegates = RetargetDelegates.Enabled)]
+        [PropertyData(nameof(DelegateTestCaseData))]
+        public void CoreRunTest_with_action_will_rebind_delegate_target_via_theory(Func<ReflectedTheoryCaseTests> func) {
+            Assert.Same(this, func());
+        }
+
+        [Theory]
+        [PropertyData(nameof(DelegateTestCaseData), RetargetDelegates = RetargetDelegates.Disabled)]
+        public void CoreRunTest_can_opt_out_of_rebind_delegate_target(Func<ReflectedTheoryCaseTests> func) {
+            Assert.NotSame(this, func());
+        }
     }
+
 }
 #endif

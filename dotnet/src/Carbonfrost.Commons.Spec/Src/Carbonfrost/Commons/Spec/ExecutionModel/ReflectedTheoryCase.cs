@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -74,10 +75,44 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         protected override object CoreRunTest(TestExecutionContext context) {
             try {
-                return InvokeMethodHelper(context.TestObject, TestMethodArguments.ToArray());
+                var args = TestMethodArguments.Select(a => RebindDelegates(context.TestObject, a)).ToArray();
+
+                return InvokeMethodHelper(context.TestObject, args);
             }
             catch (TargetParameterCountException) {
                 throw SpecFailure.WrongNumberOfTheoryArguments(TypeName, MethodName, _index);
+            }
+        }
+
+        private object RebindDelegates(object instance, object input) {
+            if (input is Delegate action && ShouldRetarget(instance.GetType(), action)) {
+                return Delegate.CreateDelegate(
+                    action.GetType(), instance, action.Method, false
+                );
+            }
+            return input;
+        }
+
+        private bool ShouldRetarget(Type instanceType, Delegate action) {
+            return action.Target != null
+                && instanceType.IsInstanceOfType(action.Target)
+                && (RetargetAttribute.IsRetargeted(action.GetType()) || DemandRetargetDelegates());
+        }
+
+        private bool DemandRetargetDelegates() {
+            switch (RetargetDelegates) {
+                case RetargetDelegates.Enabled:
+                    return true;
+
+                case RetargetDelegates.Disabled:
+                    return false;
+
+                case RetargetDelegates.Unspecified:
+                default:
+                    if (Assert.UseStrictMode) {
+                        throw SpecFailure.PossibleDelegateRetargeting();
+                    }
+                    return true;
             }
         }
     }

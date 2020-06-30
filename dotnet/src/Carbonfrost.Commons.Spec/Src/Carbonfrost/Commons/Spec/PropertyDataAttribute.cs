@@ -50,6 +50,11 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        public RetargetDelegates RetargetDelegates {
+            get;
+            set;
+        }
+
         public string Name {
             get;
             set;
@@ -101,6 +106,10 @@ namespace Carbonfrost.Commons.Spec {
                 all.Add(MemberAccessors.Property(prop));
             }
             return this.WithNames(TestDataProvider.FromMemberAccessors(all).GetData(context), _tags.TestTags);
+        }
+
+        void ITestCaseMetadataFilter.Apply(TestCaseInfo testCase) {
+            testCase.RetargetDelegates = RetargetDelegates;
         }
     }
 }

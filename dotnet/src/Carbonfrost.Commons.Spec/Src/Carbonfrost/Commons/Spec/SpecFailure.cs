@@ -139,6 +139,10 @@ namespace Carbonfrost.Commons.Spec {
             return new AssertVerificationException(SR.CannotAssertAssertExceptions());
         }
 
+        public static AssertVerificationException PossibleDelegateRetargeting() {
+            return new AssertVerificationException(SR.PossibleDelegateRetargeting());
+        }
+
         public static Exception Sealed() {
             return new InvalidOperationException(SR.Sealed());
         }

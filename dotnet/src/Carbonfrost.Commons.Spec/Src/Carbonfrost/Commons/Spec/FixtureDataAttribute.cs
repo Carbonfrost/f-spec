@@ -38,6 +38,15 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        RetargetDelegates ITestDataApiAttributeConventions.RetargetDelegates {
+            get {
+                return RetargetDelegates.Unspecified;
+            }
+            set {
+                throw new NotSupportedException();
+            }
+        }
+
         public string Name {
             get;
             set;
@@ -83,6 +92,9 @@ namespace Carbonfrost.Commons.Spec {
                 u => CoreLoadFixture(Url, url => context.DownloadFixture(url), rt, null),
                 f => CoreLoadFixture(f.FileName, fn => context.LoadFixture(fn), rt, f.Data)
             ).SelectMany(t => t);
+        }
+
+        void ITestCaseMetadataFilter.Apply(TestCaseInfo testCase) {
         }
 
         IEnumerable<TestData> CoreLoadFixture<TLocation>(

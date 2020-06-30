@@ -37,6 +37,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public RetargetDelegates RetargetDelegates {
+            get;
+            internal set;
+        }
+
         public abstract int Position { get; }
 
         public sealed override TestUnitCollection Children {

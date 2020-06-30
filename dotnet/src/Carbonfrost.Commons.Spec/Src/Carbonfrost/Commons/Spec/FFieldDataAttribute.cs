@@ -48,6 +48,15 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        public RetargetDelegates RetargetDelegates {
+            get {
+                return _inner.RetargetDelegates;
+            }
+            set {
+                _inner.RetargetDelegates = value;
+            }
+        }
+
         public string Name {
             get {
                 return _inner.Name;
@@ -101,6 +110,7 @@ namespace Carbonfrost.Commons.Spec {
 
         void ITestCaseMetadataFilter.Apply(TestCaseInfo testCase) {
             testCase.IsFocused = true;
+            testCase.RetargetDelegates = RetargetDelegates;
         }
     }
 }

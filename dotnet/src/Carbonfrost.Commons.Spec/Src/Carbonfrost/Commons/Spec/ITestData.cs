@@ -25,15 +25,11 @@ namespace Carbonfrost.Commons.Spec {
     }
 
     interface ITestDataHelper : ITestUnitStateApiConventions<TestData> {
-        // string Name { get; }
-        // string Reason { get; }
         TestData WithName(string name);
         TestData WithReason(string reason);
     }
 
     interface ITestDataHelper<T> : ITestUnitStateApiConventions<TestData<T>>, ITestDataUntyped {
-        // string Name { get; }
-        // string Reason { get; }
         TestData<T> WithName(string name);
         TestData<T> WithReason(string reason);
     }
