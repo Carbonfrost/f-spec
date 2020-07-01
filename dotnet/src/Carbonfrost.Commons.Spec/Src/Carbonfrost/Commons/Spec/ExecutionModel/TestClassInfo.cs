@@ -105,8 +105,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             if (property == null) {
                 throw new ArgumentNullException(nameof(property));
             }
-            var attrs = (property.GetCustomAttributes() ?? Empty<Attribute>.Array)
-                .Concat(property.GetMethod.GetCustomAttributes() ?? Empty<Attribute>.Array);
+            var attrs = (property.GetCustomAttributes() ?? Array.Empty<Attribute>())
+                .Concat(property.GetMethod.GetCustomAttributes() ?? Array.Empty<Attribute>());
             return CreateCore(property.GetMethod, attrs);
         }
 

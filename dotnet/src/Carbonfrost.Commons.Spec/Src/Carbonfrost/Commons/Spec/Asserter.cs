@@ -32,7 +32,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public IExpectationBuilder<IEnumerable> Expect() {
-            return new ExpectationBuilder<IEnumerable>(() => Empty<object>.Array, false, null, _assumption);
+            return new ExpectationBuilder<IEnumerable>(() => Array.Empty<object>(), false, null, _assumption);
         }
 
         public IExpectationBuilder<T> Expect<T>(T value) {

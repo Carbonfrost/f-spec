@@ -47,7 +47,7 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             public SatisfyAllMatcher(params ITestMatcher<T>[] matchers) {
-                _matchers = matchers ?? Empty<ITestMatcher<T>>.Array;
+                _matchers = matchers ?? Array.Empty<ITestMatcher<T>>();
             }
 
             public bool Matches(ITestActualEvaluation<T> actualFactory) {
@@ -78,7 +78,7 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             public SatisfyAllMatcher(params ITestMatcher[] matchers) {
-                _matchers = matchers ?? Empty<ITestMatcher>.Array;
+                _matchers = matchers ?? Array.Empty<ITestMatcher>();
             }
 
             public bool Matches(ITestActualEvaluation testCode) {

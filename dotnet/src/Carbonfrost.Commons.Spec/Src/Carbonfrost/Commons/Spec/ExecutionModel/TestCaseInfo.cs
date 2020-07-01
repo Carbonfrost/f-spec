@@ -103,7 +103,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public virtual IReadOnlyList<object> TestMethodArguments {
             get {
-                return Empty<object>.Array;
+                return Array.Empty<object>();
             }
         }
 

@@ -50,7 +50,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public override IReadOnlyList<object> TestMethodArguments {
             get {
-                return Empty<object>.Array;
+                return Array.Empty<object>();
             }
         }
 
