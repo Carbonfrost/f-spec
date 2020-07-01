@@ -21,7 +21,7 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 namespace Carbonfrost.Commons.Spec {
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public sealed class PropertyDataAttribute : Attribute, ITestDataApiAttributeConventions {
+    public sealed class PropertyDataAttribute : Attribute, ITestDataApiAttributeConventions, IReflectionTestCaseFactory {
 
         private readonly string[] _properties;
         private readonly TestTagCache _tags = new TestTagCache();
@@ -91,7 +91,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         IEnumerable<TestData> ITestDataProvider.GetData(TestContext context) {
-            TestUnit unit = context.CurrentTest;
+            TestUnit unit = context.TestUnit;
             var declaringType = ((TestTheory) unit).TestMethod.DeclaringType;
             var all = new List<IMemberAccessor>();
             foreach (var p in _properties) {
@@ -108,8 +108,10 @@ namespace Carbonfrost.Commons.Spec {
             return this.WithNames(TestDataProvider.FromMemberAccessors(all).GetData(context), _tags.TestTags);
         }
 
-        void ITestCaseMetadataFilter.Apply(TestCaseInfo testCase) {
-            testCase.RetargetDelegates = RetargetDelegates;
+        TestCaseInfo IReflectionTestCaseFactory.CreateTestCase(MethodInfo method, int index, TestData row) {
+            return new ReflectedTheoryCase(method, index, row) {
+                RetargetDelegates = RetargetDelegates,
+            };
         }
     }
 }

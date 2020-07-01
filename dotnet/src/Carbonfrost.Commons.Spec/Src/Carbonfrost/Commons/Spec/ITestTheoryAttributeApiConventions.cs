@@ -32,7 +32,7 @@ namespace Carbonfrost.Commons.Spec {
     partial class Extensions {
 
         internal static void ApplyRetargetDelegates(this ITestTheoryAttributeApiConventions self, TestContext testContext) {
-            if (testContext.CurrentTest is TestCaseInfo tci && tci.RetargetDelegates == RetargetDelegates.Unspecified) {
+            if (testContext.TestUnit is TestCaseInfo tci && tci.RetargetDelegates == RetargetDelegates.Unspecified) {
                 tci.RetargetDelegates = self.RetargetDelegates;
             }
         }

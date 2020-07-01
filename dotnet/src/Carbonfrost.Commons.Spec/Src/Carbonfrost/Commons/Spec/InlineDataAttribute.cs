@@ -94,8 +94,5 @@ namespace Carbonfrost.Commons.Spec {
                 new TestDataState(Name, Reason, Explicit ? TestUnitFlags.Explicit : TestUnitFlags.None, _tags)
             );
         }
-
-        void ITestCaseMetadataFilter.Apply(TestCaseInfo testCase) {
-        }
     }
 }

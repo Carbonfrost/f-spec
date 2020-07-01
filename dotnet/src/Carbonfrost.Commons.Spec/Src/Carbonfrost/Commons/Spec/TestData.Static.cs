@@ -25,13 +25,13 @@ namespace Carbonfrost.Commons.Spec {
     partial struct TestData {
 
         internal static IEnumerable<TestData> Create(TestContext ctxt, IMemberAccessor accessor) {
-            var rt = (TestTheory) ctxt.CurrentTest;
+            var rt = (TestTheory) ctxt.TestUnit;
             var testObject = ctxt.DummyTestObject;
             return Create(rt.TestMethod, testObject, accessor);
         }
 
         internal static IEnumerable<TestData> Create(TestContext ctxt, IMemberAccessor[] accessors) {
-            var rt = (TestTheory) ctxt.CurrentTest;
+            var rt = (TestTheory) ctxt.TestUnit;
             var testObject = ctxt.DummyTestObject;
             return Create(rt.TestMethod, testObject, accessors);
         }

@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         void ITestUnitMetadataProvider.Apply(TestContext testContext) {
-            testContext.CurrentTest.Skipped = true;
-            testContext.CurrentTest.Reason = Reason;
+            testContext.TestUnit.Skipped = true;
+            testContext.TestUnit.Reason = Reason;
         }
     }
 }

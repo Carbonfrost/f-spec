@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,10 +14,11 @@
 // limitations under the License.
 //
 using Carbonfrost.Commons.Spec.ExecutionModel;
+using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec {
 
-    interface ITestCaseMetadataFilter {
-        void Apply(TestCaseInfo testCase);
+    interface IReflectionTestCaseFactory {
+        TestCaseInfo CreateTestCase(MethodInfo method, int index, TestData row);
     }
 }

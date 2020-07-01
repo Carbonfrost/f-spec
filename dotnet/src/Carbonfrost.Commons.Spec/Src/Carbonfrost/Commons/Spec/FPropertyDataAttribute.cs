@@ -15,13 +15,13 @@
 //
 using System;
 using System.Collections.Generic;
-
+using System.Reflection;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public sealed class FPropertyDataAttribute : Attribute, ITestDataApiAttributeConventions, ITestCaseMetadataFilter {
+    public sealed class FPropertyDataAttribute : Attribute, ITestDataApiAttributeConventions, IReflectionTestCaseFactory {
 
         private readonly PropertyDataAttribute _inner;
 
@@ -109,9 +109,11 @@ namespace Carbonfrost.Commons.Spec {
             return ((ITestDataProvider) _inner).GetData(context);
         }
 
-        void ITestCaseMetadataFilter.Apply(TestCaseInfo testCase) {
-            testCase.IsFocused = true;
-            testCase.RetargetDelegates = RetargetDelegates;
+        TestCaseInfo IReflectionTestCaseFactory.CreateTestCase(MethodInfo method, int index, TestData row) {
+            return new ReflectedTheoryCase(method, index, row) {
+                IsFocused = true,
+                RetargetDelegates = RetargetDelegates,
+            };
         }
     }
 }

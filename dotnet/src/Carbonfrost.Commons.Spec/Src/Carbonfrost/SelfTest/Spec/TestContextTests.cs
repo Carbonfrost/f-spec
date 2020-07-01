@@ -27,7 +27,7 @@ namespace Carbonfrost.SelfTest.Spec {
             string testUnit = null;
 
             RunTest(tc => {
-                testUnit = tc.CurrentTest.DisplayName;
+                testUnit = tc.TestUnit.DisplayName;
             });
 
             Assert.NotNull(testUnit);

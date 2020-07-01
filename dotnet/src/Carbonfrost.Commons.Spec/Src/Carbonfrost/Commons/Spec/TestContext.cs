@@ -55,13 +55,13 @@ namespace Carbonfrost.Commons.Spec {
 
         public TestDataProviderCollection TestDataProviders {
             get {
-                return CurrentTest.TestDataProviders;
+                return TestUnit.TestDataProviders;
             }
         }
 
         public TestTagCollection Tags {
             get {
-                return CurrentTest.Tags;
+                return TestUnit.Tags;
             }
         }
 
@@ -89,7 +89,7 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        public TestUnit CurrentTest {
+        public TestUnit TestUnit {
             get {
                 return _self;
             }
@@ -100,7 +100,7 @@ namespace Carbonfrost.Commons.Spec {
 
         internal object DummyTestObject {
             get {
-                return Activator.CreateInstance(CurrentTest.FindTestClass().TestClass);
+                return Activator.CreateInstance(TestUnit.FindTestClass().TestClass);
             }
         }
 

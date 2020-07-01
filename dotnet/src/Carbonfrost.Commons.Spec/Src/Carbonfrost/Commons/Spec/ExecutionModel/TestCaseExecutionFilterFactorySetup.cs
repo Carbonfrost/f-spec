@@ -27,11 +27,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public void Apply(TestContext testContext) {
-            ApplyCore(testContext.CurrentTest);
+            ApplyCore(testContext.TestUnit);
         }
 
         public void ApplyDescendant(TestContext testContext) {
-            ApplyCore(testContext.CurrentTest);
+            ApplyCore(testContext.TestUnit);
         }
 
         private void ApplyCore(TestUnit unit) {

@@ -100,7 +100,7 @@ namespace Carbonfrost.SelfTest.Spec {
         public void TestContext_should_have_this_method_name() {
             var current = "TestContext_should_have_this_method_name";
             string expectedName = GetType().FullName + "." + current;
-            Assert.Equal(expectedName, TestContext.CurrentTest.DisplayName);
+            Assert.Equal(expectedName, TestContext.TestUnit.DisplayName);
         }
 
         protected override void BeforeTest() {

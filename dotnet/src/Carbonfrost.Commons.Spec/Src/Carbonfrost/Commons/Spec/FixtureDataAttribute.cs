@@ -85,16 +85,13 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         IEnumerable<TestData> ITestDataProvider.GetData(TestContext context) {
-            TestUnit unit = context.CurrentTest;
+            TestUnit unit = context.TestUnit;
             var rt = (TestTheory) unit;
             return _input.ReadInputs(
                 context,
                 u => CoreLoadFixture(Url, url => context.DownloadFixture(url), rt, null),
                 f => CoreLoadFixture(f.FileName, fn => context.LoadFixture(fn), rt, f.Data)
             ).SelectMany(t => t);
-        }
-
-        void ITestCaseMetadataFilter.Apply(TestCaseInfo testCase) {
         }
 
         IEnumerable<TestData> CoreLoadFixture<TLocation>(

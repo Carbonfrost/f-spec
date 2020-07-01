@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,10 +15,8 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Carbonfrost.Commons.Spec.ExecutionModel;
-using Carbonfrost.Commons.Spec;
 
 namespace Carbonfrost.Commons.Spec {
 
@@ -39,14 +37,17 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        public string Name { get; set; }
+        public string Name {
+            get;
+            set;
+        }
 
         public TestFileDataAttribute(string pathPattern) {
             _input = new TestFileInput(pathPattern);
         }
 
         IEnumerable<TestData> ITestDataProvider.GetData(TestContext context) {
-            TestUnit unit = context.CurrentTest;
+            TestUnit unit = context.TestUnit;
             var rt = (TestTheory) unit;
             var pms = rt.TestMethod.GetParameters();
             if (pms.Length != 0) {

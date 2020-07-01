@@ -18,11 +18,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 using Carbonfrost.Commons.Spec;
+using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec {
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public sealed class XTestFileDataAttribute : Attribute, ITestDataProvider, ITestCaseMetadataFilter {
+    public sealed class XTestFileDataAttribute : Attribute, ITestDataProvider, IReflectionTestCaseFactory {
 
         private readonly TestFileDataAttribute _inner;
 
@@ -64,9 +65,11 @@ namespace Carbonfrost.Commons.Spec {
             return ((ITestDataProvider)_inner).GetData(context);
         }
 
-        void ITestCaseMetadataFilter.Apply(TestCaseInfo testCase) {
-            testCase.IsPending = true;
-            testCase.Reason = Reason;
+        TestCaseInfo IReflectionTestCaseFactory.CreateTestCase(MethodInfo method, int index, TestData row) {
+            return new ReflectedTheoryCase(method, index, row) {
+                IsPending = true,
+                Reason = Reason,
+            };
         }
     }
 }

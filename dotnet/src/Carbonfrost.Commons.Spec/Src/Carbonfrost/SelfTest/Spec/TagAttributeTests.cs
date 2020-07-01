@@ -24,20 +24,20 @@ namespace Carbonfrost.SelfTest.Spec {
 
         [Fact]
         [Tag("d")]
-        public void CurrentTest_should_have_tags() {
-            Assert.Contains("d", TestContext.CurrentTest.Tags);
+        public void TestUnit_should_have_tags() {
+            Assert.Contains("d", TestContext.TestUnit.Tags);
         }
 
         [Fact]
         [Tag("name:value")]
-        public void CurrentTest_should_have_qualified_tags() {
-            Assert.Contains("name:value", TestContext.CurrentTest.Tags);
+        public void TestUnit_should_have_qualified_tags() {
+            Assert.Contains("name:value", TestContext.TestUnit.Tags);
         }
 
         [Fact]
         [Tag("name:value")]
-        public void CurrentTest_should_have_qualified_tags_by_name() {
-            Assert.Contains("name", TestContext.CurrentTest.Tags);
+        public void TestUnit_should_have_qualified_tags_by_name() {
+            Assert.Contains("name", TestContext.TestUnit.Tags);
         }
     }
 }

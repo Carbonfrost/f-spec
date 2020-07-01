@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ namespace Carbonfrost.Commons.Spec {
     public sealed class PassExplicitlyAttribute : Attribute, ITestUnitMetadataProvider {
 
         void ITestUnitMetadataProvider.Apply(TestContext testContext) {
-            testContext.CurrentTest.PassExplicitly = true;
+            testContext.TestUnit.PassExplicitly = true;
         }
     }
 }

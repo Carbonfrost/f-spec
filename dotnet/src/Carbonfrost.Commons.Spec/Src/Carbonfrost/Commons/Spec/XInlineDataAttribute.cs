@@ -15,12 +15,13 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public sealed class XInlineDataAttribute : Attribute, ITestDataApiAttributeConventions, ITestCaseMetadataFilter {
+    public sealed class XInlineDataAttribute : Attribute, ITestDataApiAttributeConventions, IReflectionTestCaseFactory {
 
         private readonly InlineDataAttribute _inner;
 
@@ -104,9 +105,11 @@ namespace Carbonfrost.Commons.Spec {
             return ((ITestDataProvider) _inner).GetData(context);
         }
 
-        void ITestCaseMetadataFilter.Apply(TestCaseInfo testCase) {
-            testCase.IsPending = true;
-            testCase.Reason = Reason;
+        TestCaseInfo IReflectionTestCaseFactory.CreateTestCase(MethodInfo method, int index, TestData row) {
+            return new ReflectedTheoryCase(method, index, row) {
+                IsPending = true,
+                Reason = Reason,
+            };
         }
     }
 }

@@ -195,7 +195,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         internal IEnumerable<object> Evaluate(TestContext testContext) {
-            var method = ((TestCaseInfo) testContext.CurrentTest).TestMethod;
+            var method = ((TestCaseInfo) testContext.TestUnit).TestMethod;
             var pms = method.GetParameters();
             int index = 0;
 

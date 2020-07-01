@@ -43,6 +43,12 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        public TestUnit CurrentTest {
+            get {
+                return TestUnit;
+            }
+        }
+
         internal TestExecutionContext(TestUnit self, TestRunner runner, Random random, object testObject) : base(self, runner, random) {
             _testObject = testObject;
         }

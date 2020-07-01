@@ -210,13 +210,13 @@ namespace Carbonfrost.Commons.Spec {
 
         void ITestExecutionFilter.BeforeExecuting(TestExecutionContext testContext) {
             _context = testContext;
-            BeforeTest(testContext.CurrentTest);
+            BeforeTest(testContext.TestUnit);
             BeforeTest();
         }
 
         void ITestExecutionFilter.AfterExecuting(TestExecutionContext testContext) {
             try {
-                AfterTest(testContext.CurrentTest);
+                AfterTest(testContext.TestUnit);
                 AfterTest();
             } finally {
                 _context = null;

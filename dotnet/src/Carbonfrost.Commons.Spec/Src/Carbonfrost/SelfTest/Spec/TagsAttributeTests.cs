@@ -25,10 +25,10 @@ namespace Carbonfrost.SelfTest.Spec {
 
         [Fact]
         [Tags("a", "b", "c")]
-        public void CurrentTest_should_have_tags() {
-            Assert.Contains("a", TestContext.CurrentTest.Tags);
-            Assert.Contains("b", TestContext.CurrentTest.Tags);
-            Assert.Contains("c", TestContext.CurrentTest.Tags);
+        public void TestUnit_should_have_tags() {
+            Assert.Contains("a", TestContext.TestUnit.Tags);
+            Assert.Contains("b", TestContext.TestUnit.Tags);
+            Assert.Contains("c", TestContext.TestUnit.Tags);
         }
     }
 }

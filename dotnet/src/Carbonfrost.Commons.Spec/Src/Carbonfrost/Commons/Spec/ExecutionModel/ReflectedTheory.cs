@@ -52,7 +52,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             int index = 0;
             foreach (var attr in TestDataProviders) {
-                var apply = attr as ITestCaseMetadataFilter;
+                var factory = attr as IReflectionTestCaseFactory ?? ReflectionTestCaseFactory.Default;
 
                 IEnumerable<TestData> data = null;
                 try {
@@ -66,12 +66,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
                 var allData = data.ToList();
                 foreach (var row in allData) {
-                    var caseUnit = new ReflectedTheoryCase(TestMethod, index, row);
+                    var caseUnit = factory.CreateTestCase(TestMethod, index, row);
                     Children.Add(caseUnit);
-
-                    if (apply != null) {
-                        apply.Apply(caseUnit);
-                    }
                     index++;
                 }
             }

@@ -21,7 +21,10 @@ namespace Carbonfrost.Commons.Spec {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Class | AttributeTargets.Assembly, AllowMultiple = false)]
     public sealed class PendingAttribute : Attribute, ITestUnitMetadataProvider {
 
-        public string Reason { get; set; }
+        public string Reason {
+            get;
+            set;
+        }
 
         public PendingAttribute() {}
         public PendingAttribute(string reason) {
@@ -29,9 +32,9 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         void ITestUnitMetadataProvider.Apply(TestContext testContext) {
-            testContext.CurrentTest.IsPending = true;
+            testContext.TestUnit.IsPending = true;
 
-            testContext.CurrentTest.Reason = string.IsNullOrEmpty(Reason)
+            testContext.TestUnit.Reason = string.IsNullOrEmpty(Reason)
                 ? "Disabled with [Pending] attribute"
                 : Reason;
         }
