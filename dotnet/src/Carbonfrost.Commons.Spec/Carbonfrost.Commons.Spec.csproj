@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Carbonfrost.Commons.Spec</RootNamespace>
     <PackageId>Carbonfrost.Commons.Spec</PackageId>
-    <DefineConstants>SELF_TEST</DefineConstants>
+    <DefineConstants>SELF_TEST;$(DefineConstants)</DefineConstants>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Copyright>Copyright 2010-2020 Carbonfrost Systems, Inc.</Copyright>
     <Authors>Carbonfrost</Authors>

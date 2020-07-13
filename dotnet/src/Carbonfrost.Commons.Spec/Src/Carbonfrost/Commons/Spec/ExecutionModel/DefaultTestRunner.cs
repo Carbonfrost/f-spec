@@ -15,9 +15,11 @@
 //
 
 using System;
+using System.Diagnostics;
 using Carbonfrost.Commons.Spec.ExecutionModel.Output;
 
-namespace Carbonfrost.Commons.Spec.ExecutionModel {
+namespace Carbonfrost.Commons.Spec.ExecutionModel
+{
 
     partial class DefaultTestRunner : TestRunner {
 
@@ -43,6 +45,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         protected override TestRunResults RunTestsCore(TestRun run) {
             SetupLogger();
+            SetupTraceListener();
             DateTime started = DateTime.Now;
 
             var plan = CreatePlan(run);
@@ -57,7 +60,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return runResults;
         }
 
-        void SetupLogger() {
+        private void SetupTraceListener() {
+            // Remove the default trace listener because it will display assertion
+            // UI prompts or will cause the process to exit
+            Trace.Listeners.Clear();
+            Trace.Listeners.Add(new TraceListenerImpl());
+        }
+
+        private void SetupLogger() {
             SpecLog.DidSetupLogger(Logger);
 
             // Message logger must handle events first
