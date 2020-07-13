@@ -1,0 +1,261 @@
+<#@ template language="C#" #>
+<#@ assembly name="System.Linq" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".g.cs" #>
+
+//
+// File was automatically generated at <#= DateTime.Now #>
+//
+
+using System;
+using System.Collections.Generic;
+
+<#
+    const int MAX = 7;
+#>
+namespace Carbonfrost.Commons.Spec {
+
+<# for (int i = 0; i <= MAX; i++) {
+   string[] typeArgsList = Enumerable.Range(1, i).Select(t => "T" + t).ToArray();
+   string[] fields   = Enumerable.Range(1, i).Select(t => "Arg" + t).ToArray();
+   string[] parms    = Enumerable.Range(1, i).Select(t => "arg" + t).ToArray();
+
+   if (i == 1) {
+       typeArgsList = new [] { "T" };
+   }
+
+   string args = List(typeArgsList.Zip(parms, (t, f) => (t + " " + f))); // T1 arg1, T2 arg2...
+   string typeArgs = "<" + List(typeArgsList) + ">";
+   string typeArgsResult = "<" + List(typeArgsList.Concat(new [] { "TResult" })) + ">";
+   string comma = (i == 0) ? "" : ", ";
+
+   if (typeArgs == "<>") {
+       typeArgs = "";
+   }
+
+   string action = $"Action{typeArgs}";
+   string func = $"Func{typeArgsResult}";
+   string argsHOTuple = $"ValueTuple{typeArgs}";
+   string argsHOItems = List(
+      Enumerable.Range(1, i).Select(t => "t.Item" + t).ToArray()
+   );
+   if (typeArgsList.Length == 1) {
+       argsHOTuple = typeArgsList[0];
+       argsHOItems = "t";
+   } else if (typeArgsList.Length == 0) {
+       argsHOTuple = "Unit";
+   }
+#>
+
+    public partial class TestActionDispatcher {
+        public static TestActionDispatcher<#= typeArgs #> Create<#= typeArgs #>(<#= action #> action) {
+            return new TestActionDispatcher<#= typeArgs #>(action);
+        }
+    }
+
+    public partial class TestActionDispatcher<#= typeArgs #> {
+
+        private readonly HOTestFuncDispatcherState<<#= argsHOTuple #>, Unit> _inner;
+
+        public TestActionDispatcher(<#= action #> action) {
+            if (action == null) {
+                action = (<#= args #>) => {};
+            }
+            _inner = new HOTestFuncDispatcherState<<#= argsHOTuple #>, Unit>(CallAdapter(action));
+        }
+
+        public int CallCount {
+            get {
+                return _inner.CallCount;
+            }
+        }
+
+        public Exception LastException {
+            get {
+                return _inner.LastException;
+            }
+        }
+
+        public TestCodeDispatchInfo LastDispatchInfo {
+            get {
+                return _inner.LastDispatchInfo;
+            }
+        }
+
+        public bool Called {
+            get {
+                return _inner.Called;
+            }
+        }
+
+        public void After(<#= action #> action) {
+            _inner.After(ActionAdapter(action));
+        }
+
+        public void Before(<#= action #> action) {
+            _inner.Before(ActionAdapter(action));
+        }
+
+        public void Invoke(<#= args #>) {
+<# if (parms.Count() == 0) { #>
+            _inner.Invoke(Unit.Value);
+<# } else { #>
+            _inner.Invoke((<#= List(parms) #>));
+<# } #>
+        }
+
+        private Func<<#= argsHOTuple #>, Unit> CallAdapter(<#= action #> action) {
+            return t => {
+                action(<#= argsHOItems #>);
+                return Unit.Value;
+            };
+        }
+
+        private Action<<#= argsHOTuple #>> ActionAdapter(<#= action #> action) {
+            return t => action(<#= argsHOItems #>);
+        }
+
+        public TestCodeDispatchInfo DispatchInfoForCall(int index) {
+            return _inner.DispatchInfoForCall(index);
+        }
+
+        public Exception ExceptionForCall(int index) {
+            return _inner.ExceptionForCall(index);
+        }
+
+        public void Reset() {
+            _inner.Reset();
+        }
+
+<# if (typeArgsList.Length > 0) { #>
+
+        public <#= argsHOTuple #> LastArgs {
+            get {
+                return _inner.LastArgs;
+            }
+        }
+
+        public <#= argsHOTuple #> ArgsForCall(int index) {
+            return _inner.ArgsForCall(index);
+        }
+
+<# } #>
+
+    }
+
+
+    public partial class TestFuncDispatcher {
+        public static TestFuncDispatcher<#= typeArgsResult #> Create<#= typeArgsResult #>(<#= func #> func) {
+            return new TestFuncDispatcher<#= typeArgsResult #>(func);
+        }
+    }
+
+
+    public partial class TestFuncDispatcher<#= typeArgsResult #> {
+
+        private readonly HOTestFuncDispatcherState<<#= argsHOTuple #>, TResult> _inner;
+
+        public TestFuncDispatcher(<#= func #> func) {
+            if (func == null) {
+                func = (<#= args #>) => default;
+            }
+            _inner = new HOTestFuncDispatcherState<<#= argsHOTuple #>, TResult>(CallAdapter(func));
+        }
+
+        public int CallCount {
+            get {
+                return _inner.CallCount;
+            }
+        }
+
+        public Exception LastException {
+            get {
+                return _inner.LastException;
+            }
+        }
+
+        public TResult LastResult {
+            get {
+                return _inner.LastResult;
+            }
+        }
+
+        public TestCodeDispatchInfo LastDispatchInfo {
+            get {
+                return _inner.LastDispatchInfo;
+            }
+        }
+
+        public bool Called {
+            get {
+                return _inner.Called;
+            }
+        }
+
+        public void After(<#= action #> action) {
+            _inner.After(ActionAdapter(action));
+        }
+
+        public void Before(<#= action #> action) {
+            _inner.Before(ActionAdapter(action));
+        }
+
+        public TResult Invoke(<#= args #>) {
+<# if (parms.Count() == 0) { #>
+            return _inner.Invoke(Unit.Value);
+<# } else { #>
+            return _inner.Invoke((<#= List(parms) #>));
+<# } #>
+        }
+
+        private Func<<#= argsHOTuple #>, TResult> CallAdapter(<#= func #> func) {
+            return t => func(<#= argsHOItems #>);
+        }
+
+        private Action<<#= argsHOTuple #>> ActionAdapter(<#= action #> action) {
+            return t => action(<#= argsHOItems #>);
+        }
+
+        public TestCodeDispatchInfo DispatchInfoForCall(int index) {
+            return _inner.DispatchInfoForCall(index);
+        }
+
+        public Exception ExceptionForCall(int index) {
+            return _inner.ExceptionForCall(index);
+        }
+
+        public void Reset() {
+            _inner.Reset();
+        }
+
+        public TResult ResultForCall(int index) {
+            return _inner.ResultForCall(index);
+        }
+
+<# if (typeArgsList.Length > 0) { #>
+
+        public <#= argsHOTuple #> LastArgs {
+            get {
+                return _inner.LastArgs;
+            }
+        }
+
+        public <#= argsHOTuple #> ArgsForCall(int index) {
+            return _inner.ArgsForCall(index);
+        }
+
+<# } #>
+
+    }
+
+
+
+<# } #>
+
+}
+<#+
+    static string List(IEnumerable<string> items) {
+        return string.Join(", ", items);
+    }
+#>

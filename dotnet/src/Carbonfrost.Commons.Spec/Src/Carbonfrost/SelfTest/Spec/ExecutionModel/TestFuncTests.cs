@@ -24,14 +24,20 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
 
     public class TestFuncTests {
 
-        public static IEnumerable<Type> AttributeTypes {
+        public static IEnumerable<Type> TestFuncTypes {
             get {
-                return typeof(TestFuncTests).Assembly.GetTypes().Where(t => t.Namespace == "Carbonfrost.Commons.Spec" && t.Name.StartsWith("TestFunc"));
+                return typeof(TestFuncTests).Assembly.GetTypes().Where(t => t.Namespace == "Carbonfrost.Commons.Spec" && t.Name.StartsWith("TestFunc`")
+                    && t.BaseType == typeof(MulticastDelegate));
             }
         }
 
+        [Fact]
+        public void TestFunc_type_should_define_several_versions() {
+            Assert.HasCount(9, TestFuncTypes);
+        }
+
         [Theory]
-        [PropertyData(nameof(AttributeTypes))]
+        [PropertyData(nameof(TestFuncTypes))]
         public void TestFunc_type_should_define_RetargetAttribute(Type type) {
             Assert.True(type.IsDefined(typeof(RetargetAttribute), false));
         }
@@ -39,8 +45,8 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
         [Fact]
         public void TestFunc_and_TestAction_have_same_count() {
             Assert.Equal(
-                TestActionTests.AttributeTypes.Count(),
-                TestFuncTests.AttributeTypes.Count()
+                TestActionTests.TestActionTypes.Count(),
+                TestFuncTests.TestFuncTypes.Count()
             );
         }
     }

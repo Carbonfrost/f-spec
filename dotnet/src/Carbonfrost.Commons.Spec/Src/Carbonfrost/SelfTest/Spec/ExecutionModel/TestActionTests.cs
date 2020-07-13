@@ -24,14 +24,20 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
 
     public class TestActionTests {
 
-        public static IEnumerable<Type> AttributeTypes {
+        public static IEnumerable<Type> TestActionTypes {
             get {
-                return typeof(TestActionTests).Assembly.GetTypes().Where(t => t.Namespace == "Carbonfrost.Commons.Spec" && t.Name.StartsWith("TestAction"));
+                return typeof(TestActionTests).Assembly.GetTypes().Where(t => t.Namespace == "Carbonfrost.Commons.Spec" && t.Name.StartsWith("TestAction")
+                    && t.BaseType == typeof(MulticastDelegate));
             }
         }
 
+        [Fact]
+        public void TestAction_type_should_define_several_versions() {
+            Assert.HasCount(9, TestActionTypes);
+        }
+
         [Theory]
-        [PropertyData(nameof(AttributeTypes))]
+        [PropertyData(nameof(TestActionTypes))]
         public void TestAction_type_should_define_RetargetAttribute(Type type) {
             Assert.True(type.IsDefined(typeof(RetargetAttribute), false));
         }
