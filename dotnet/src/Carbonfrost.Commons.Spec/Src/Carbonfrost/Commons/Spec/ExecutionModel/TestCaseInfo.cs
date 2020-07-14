@@ -113,9 +113,27 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public override string DisplayName {
+        public sealed override string DisplayName {
             get {
-                return string.Concat(Parent.DisplayName, ".", TestMethod.Name);
+                return TestName.DisplayName;
+            }
+        }
+
+        public virtual TestName TestName {
+            get {
+                return TestName.Create(this);
+            }
+        }
+
+        public virtual TestData TestData {
+            get {
+                return TestData.Empty;
+            }
+        }
+
+        public virtual string DataProviderName {
+            get {
+                return null;
             }
         }
 

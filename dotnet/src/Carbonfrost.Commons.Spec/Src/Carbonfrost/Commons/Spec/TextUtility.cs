@@ -151,7 +151,7 @@ namespace Carbonfrost.Commons.Spec {
             return Regex.Replace(typeName, @"(<.+?>)(d__\d+)", "$1");
         }
 
-        private static string ConvertToString(object value) {
+        internal static string ConvertToString(object value) {
             return DisplayActual.Create(value).Format(DisplayActualOptions.None);
         }
 

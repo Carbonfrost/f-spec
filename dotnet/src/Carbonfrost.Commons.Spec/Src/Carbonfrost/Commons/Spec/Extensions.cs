@@ -42,8 +42,8 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         internal static IEnumerable<TestData> WithNames(this ITestDataApiAttributeConventions self, IEnumerable<TestData> data, TestTag[] tags) {
-            return data.Select(d => d.Update(
-                new TestDataState(self.Name, self.Reason, d.Flags | (self.Explicit ? TestUnitFlags.Explicit : TestUnitFlags.None), tags)
+            return data.Select((d, index) => d.Update(
+                new TestDataState($"{self.Name}[{index}]", self.Reason, d.Flags | (self.Explicit ? TestUnitFlags.Explicit : TestUnitFlags.None), tags)
             ));
         }
 

@@ -27,6 +27,7 @@ namespace Carbonfrost.Commons.Spec {
         private bool _passExplicitly;
         private bool _seal;
         private TimeSpan? _timeout;
+        private string _reason;
         private readonly MakeReadOnlyList<ITestCaseFilter> _filters = new MakeReadOnlyList<ITestCaseFilter>();
         private string _displayName;
 
@@ -57,6 +58,16 @@ namespace Carbonfrost.Commons.Spec {
             set {
                 WritePreamble();
                 _timeout = value;
+            }
+        }
+
+        public string Reason {
+            get {
+                return _reason;
+            }
+            set {
+                WritePreamble();
+                _reason = value;
             }
         }
 

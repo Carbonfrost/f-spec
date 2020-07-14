@@ -107,7 +107,7 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
                 return s;
             };
 
-            return plan.WillRunTestCases.Select(t => removePrefix(t.DisplayName)).ToArray();
+            return plan.WillRunTestCases.Select(t => removePrefix(t.TestName.Method)).ToArray();
         }
     }
 }

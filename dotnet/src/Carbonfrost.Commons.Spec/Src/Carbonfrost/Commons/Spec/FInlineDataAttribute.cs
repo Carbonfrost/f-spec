@@ -105,8 +105,8 @@ namespace Carbonfrost.Commons.Spec {
             return ((ITestDataProvider) _inner).GetData(context);
         }
 
-        TestCaseInfo IReflectionTestCaseFactory.CreateTestCase(MethodInfo method, int index, TestData row) {
-            return new ReflectedTheoryCase(method, index, row) {
+        TestCaseInfo IReflectionTestCaseFactory.CreateTestCase(MethodInfo method, TestDataInfo row) {
+            return new ReflectedTheoryCase(method, row) {
                 IsFocused = true,
             };
         }

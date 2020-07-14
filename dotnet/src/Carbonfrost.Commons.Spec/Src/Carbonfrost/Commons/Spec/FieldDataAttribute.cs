@@ -24,6 +24,7 @@ namespace Carbonfrost.Commons.Spec {
     public sealed class FieldDataAttribute : Attribute, ITestDataApiAttributeConventions, IReflectionTestCaseFactory {
 
         private readonly string[] _fields;
+        private string _name;
         private readonly TestTagCache _tags = new TestTagCache();
 
         public string[] Tags {
@@ -56,8 +57,12 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public string Name {
-            get;
-            set;
+            get {
+                return _name ?? string.Join(" × ", Fields);
+            }
+            set {
+                _name = value;
+            }
         }
 
         public string Reason {
@@ -104,8 +109,8 @@ namespace Carbonfrost.Commons.Spec {
             return this.WithNames(TestDataProvider.FromMemberAccessors(all).GetData(context), _tags.TestTags);
         }
 
-        TestCaseInfo IReflectionTestCaseFactory.CreateTestCase(MethodInfo method, int index, TestData row) {
-            return new ReflectedTheoryCase(method, index, row) {
+        TestCaseInfo IReflectionTestCaseFactory.CreateTestCase(MethodInfo method, TestDataInfo row) {
+            return new ReflectedTheoryCase(method, row) {
                 RetargetDelegates = RetargetDelegates,
             };
         }

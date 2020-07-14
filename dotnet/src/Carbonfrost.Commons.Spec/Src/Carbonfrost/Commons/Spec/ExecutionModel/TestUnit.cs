@@ -211,8 +211,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public abstract string DisplayName { get; }
-        public abstract TestUnitType Type { get; }
+        public abstract string DisplayName {
+            get;
+        }
+
+        public abstract TestUnitType Type {
+            get;
+        }
 
         public IEnumerable<TestUnit> DescendantsAndSelf {
             get {

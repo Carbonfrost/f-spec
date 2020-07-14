@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
@@ -27,31 +26,25 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         private readonly TestData _data;
         private readonly int _index;
         private object[] _args;
-        private readonly string _name;
+        private readonly string _dataProviderName;
 
-        public ReflectedTheoryCase(MethodInfo method, int index, TestData data) : base(method) {
-            _data = data;
-            _index = index;
-            _name = string.IsNullOrEmpty(data.Name) ? ("#" + _index) : (" @ " + data.Name);
-            Reason = data.Reason;
-            CopyFlags(data.Flags);
+        public ReflectedTheoryCase(MethodInfo method, TestDataInfo info) : base(method) {
+            _data = info.TestData;
+            _index = info.Index;
+            _dataProviderName = info.ProviderName;
+            Reason = _data.Reason;
+            CopyFlags(_data.Flags);
+        }
+
+        public override TestData TestData {
+            get {
+                return _data;
+            }
         }
 
         public override TestUnitType Type {
             get {
                 return TestUnitType.Case;
-            }
-        }
-
-        public override string DisplayName {
-            get {
-                var sb = new StringBuilder();
-                sb.Append(base.DisplayName);
-                sb.Append(_name);
-                sb.Append(" (");
-                sb.Append(TextUtility.FormatArgs(_data));
-                sb.Append(")");
-                return sb.ToString();
             }
         }
 
@@ -64,6 +57,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         public override int Position {
             get {
                 return _index;
+            }
+        }
+
+        public override string DataProviderName {
+            get {
+                return _dataProviderName;
             }
         }
 

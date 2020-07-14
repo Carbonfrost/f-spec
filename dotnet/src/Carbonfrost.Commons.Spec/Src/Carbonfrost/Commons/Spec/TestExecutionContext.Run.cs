@@ -46,7 +46,7 @@ namespace Carbonfrost.Commons.Spec {
                 options = new TestOptions();
             }
 
-            var result = new TestCaseResult(options.DisplayName);
+            var result = new TestCaseResult(options, (TestCaseInfo) CurrentTest);
 
             result.Starting();
             options.Filters.Add(new RunCommand(testFunc, options));

@@ -36,7 +36,7 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
         public void Constructor_should_copy_test_data_flags() {
             var method = GetType().GetMethod("Constructor_should_copy_test_data_flags");
             var data = new FTestData().WithReason("Reasons");
-            var c = new ReflectedTheoryCase(method, 0, data);
+            var c = new ReflectedTheoryCase(method, new TestDataInfo(data, null, 0));
 
             Assert.Equal("Reasons", c.Reason);
             Assert.True(c.IsFocused);

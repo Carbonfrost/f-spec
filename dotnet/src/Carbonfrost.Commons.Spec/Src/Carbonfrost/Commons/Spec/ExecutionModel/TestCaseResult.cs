@@ -21,6 +21,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
     public class TestCaseResult : TestUnitResult {
 
         private readonly string _displayName;
+        private readonly TestName _testName;
         private TestStatus _status;
         private DateTime? _finishedAt;
         private DateTime? _startedAt;
@@ -64,16 +65,26 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         internal TestCaseResult(TestCaseInfo testCase, TestStatus status = TestStatus.NotRun) {
             _status = status;
             _displayName = testCase.DisplayName;
+            _testName = testCase.TestName;
             Reason = testCase.Reason;
         }
 
-        internal TestCaseResult(string displayName) {
-            _displayName = displayName;
+        internal TestCaseResult(TestOptions opts, TestCaseInfo context) {
+            _status = TestStatus.NotRun;
+            _displayName = opts.DisplayName;
+            _testName = context.TestName.InstanceNamed(opts.DisplayName);
+            Reason = opts.Reason;
         }
 
         public override string DisplayName {
             get {
                 return _displayName;
+            }
+        }
+
+        public TestName TestName {
+            get {
+                return _testName;
             }
         }
 

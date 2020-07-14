@@ -53,6 +53,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             int index = 0;
             foreach (var attr in TestDataProviders) {
                 var factory = attr as IReflectionTestCaseFactory ?? ReflectionTestCaseFactory.Default;
+                string providerName = null;
+                if (attr is ITestDataApiAttributeConventions conv) {
+                    providerName = conv.Name;
+                }
 
                 IEnumerable<TestData> data = null;
                 try {
@@ -66,7 +70,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
                 var allData = data.ToList();
                 foreach (var row in allData) {
-                    var caseUnit = factory.CreateTestCase(TestMethod, index, row);
+                    var caseUnit = factory.CreateTestCase(TestMethod, new TestDataInfo(row, providerName, index));
                     Children.Add(caseUnit);
                     index++;
                 }

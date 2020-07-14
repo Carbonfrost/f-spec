@@ -24,7 +24,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                 console.Write(TextUtility.FormatDuration(result.ExecutionTime.Value));
                 console.Write("]  ");
             }
-            console.Write(result.DisplayName);
+            if (result is TestCaseResult c) {
+                parts.forName.Render(context, c.TestName);
+            } else {
+                console.WriteLine(result.DisplayName);
+            }
             if (result.IsFocused) {
                 console.Write(" (focused)");
             }
