@@ -54,5 +54,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public override string Name {
+            get {
+                return DisplayName;
+            }
+        }
+
     }
 }

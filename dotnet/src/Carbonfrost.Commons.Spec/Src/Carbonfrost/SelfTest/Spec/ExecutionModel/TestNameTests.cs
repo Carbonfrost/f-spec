@@ -34,6 +34,12 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
                 }
             }
 
+            public override string Name {
+                get {
+                    return "RunTest";
+                }
+            }
+
             public override TestUnitType Type {
                 get {
                     return TestUnitType.Theory;

@@ -63,6 +63,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public override string Name {
+            get {
+                return TextUtility.ConvertToSimpleTypeName(TestClass, qualified: false);
+            }
+        }
+
         private protected TestClassInfo(Type type) {
             if (type == null) {
                 throw new ArgumentNullException(nameof(type));

@@ -30,6 +30,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public override string Name {
+            get {
+                return TestMethod.Name;
+            }
+        }
+
         public SkippedInitFailure(MethodInfo mi, Exception err) : base(mi) {
             _err = err;
             _reason = string.Format("Problem setting up test ({0}: {1})", err.GetType().Name, err.Message);

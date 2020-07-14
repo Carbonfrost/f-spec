@@ -66,6 +66,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public override string Name {
+            get {
+                return TestData.Name;
+            }
+        }
+
         protected override void InitializeOverride(TestContext testContext) {
             // If items in the test data have to be evaluated before they can be
             // used, do it now

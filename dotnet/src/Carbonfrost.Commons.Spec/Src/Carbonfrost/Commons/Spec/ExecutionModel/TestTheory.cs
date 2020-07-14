@@ -45,7 +45,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public override string DisplayName {
             get {
-                return Parent.DisplayName + "." + TestMethod.Name;
+                return string.Concat(Parent.DisplayName, ".", TestMethod.Name);
+            }
+        }
+
+        public override string Name {
+            get {
+                return TestMethod.Name;
             }
         }
 

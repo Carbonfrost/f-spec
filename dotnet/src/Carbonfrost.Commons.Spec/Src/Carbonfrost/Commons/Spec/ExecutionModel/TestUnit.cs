@@ -215,6 +215,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             get;
         }
 
+        public abstract string Name {
+            get;
+        }
+
         public abstract TestUnitType Type {
             get;
         }

@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
@@ -51,19 +51,36 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
         protected override void OnCaseFinished(TestCaseFinishedEventArgs e) {
             _parts.onTestCaseFinished.Render(RenderContext, e.Result);
+            EndTestVerbose();
         }
 
         protected override void OnTheoryStarted(TestTheoryStartedEventArgs e) {
-            if ((_flags & DisplayFlags.ShowCaseStart) > 0) {
-                console.Gray();
-                console.WriteLine();
-                console.Write("  " + e.TestTheory.TestMethod + ": ");
-                console.ResetColor();
-            }
+            ShowTestVerbose(e.TestTheory);
+        }
+
+        protected override void OnAssemblyStarted(TestAssemblyStartedEventArgs e) {
+            ShowTestVerbose(e.TestAssembly);
+        }
+
+        protected override void OnNamespaceStarted(TestNamespaceStartedEventArgs e) {
+            ShowTestVerbose(e.TestNamespace);
+        }
+
+        protected override void OnClassStarted(TestClassStartedEventArgs e) {
+            ShowTestVerbose(e.TestClass);
+        }
+
+        protected override void OnCaseStarted(TestCaseStartedEventArgs e) {
+            ShowTestVerbose(e.TestCase);
+        }
+
+        protected override void OnClassFinished(TestClassFinishedEventArgs e) {
+            EndTestVerbose();
         }
 
         protected override void OnTheoryFinished(TestTheoryFinishedEventArgs e) {
             _parts.onTestTheoryFinished.Render(RenderContext, e.Results);
+            EndTestVerbose();
         }
 
         protected override void OnRunnerStarting(TestRunnerStartingEventArgs e) {
@@ -102,6 +119,31 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             console.ResetColor();
 
             _parts.onTestRunFinished.Render(RenderContext, e.Results);
+        }
+
+        private void ShowTestVerbose(TestUnit unit) {
+            if ((_flags & DisplayFlags.ShowCaseStart) > 0) {
+                console.PushIndent();
+
+                if (unit is TestCaseInfo tci) {
+                    console.Write($"{unit.Name} ");
+                    var args = string.Join(
+                        ",",
+                        tci.TestName.Arguments.Select(s => TextUtility.Truncate(s))
+                    );
+                    console.Write($"{args}: ");
+                } else {
+                    console.Write($"{unit.Name}");
+                    console.WriteLine();
+                }
+            }
+        }
+
+        private void EndTestVerbose() {
+            if ((_flags & DisplayFlags.ShowCaseStart) > 0) {
+                console.WriteLine();
+                console.PopIndent();
+            }
         }
 
         static string PrettyCodeBase(Assembly assembly, bool makeRelative = false) {
