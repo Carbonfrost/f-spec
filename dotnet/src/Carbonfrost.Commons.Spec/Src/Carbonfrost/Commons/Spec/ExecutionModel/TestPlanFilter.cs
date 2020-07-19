@@ -48,13 +48,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public TestPlanFilterPatternCollection Includes {
             get {
-                return _focusPatterns;
+                return _includes;
             }
         }
 
         public TestPlanFilterPatternCollection Excludes {
             get {
-                return _focusPatterns;
+                return _excludes;
             }
         }
 
