@@ -22,6 +22,8 @@ namespace Carbonfrost.Commons.Spec {
 
     public readonly partial struct TestData : ITestData, ITestUnitState, ITestUnitStateApiConventions<TestData> {
 
+        public static readonly TestData Empty = default(TestData);
+
         private readonly object[] _data;
         private readonly TestDataState _state;
 

@@ -154,6 +154,40 @@ namespace Carbonfrost.SelfTest.Spec {
             Assert.Equal(2, TestData.Create(ctxt, MemberAccessors.Property(prop)).Count());
         }
 
+        public IEnumerable<(string, int)> PValueTuples {
+            get {
+                return new [] {
+                    ("a", 0),
+                    ("b", 1),
+                };
+            }
+        }
+
+        public IEnumerable<Tuple<string, int>> PTuples {
+            get {
+                return new [] {
+                    Tuple.Create("a", 0),
+                    Tuple.Create("b", 1),
+                };
+            }
+        }
+
+        public void PTupleMethodTheory(string arg1, int arg2) {}
+
+        [Theory]
+        [InlineData(nameof(PValueTuples))]
+        [InlineData(nameof(PTuples))]
+        public void Create_from_Tuple_type(string property) {
+            var prop = Property(property);
+
+            var theory = new FakeTheory(GetType().GetMethod("PTupleMethodTheory"));
+
+            var ctxt = TestContext.NewExecContext(theory, new FakeRunner(), null);
+            var data = TestData.Create(ctxt, MemberAccessors.Property(prop));
+            Assert.Equal(2, data.Count());
+            Assert.Equal(new object[] { "a", 0 }, TestData.Create(ctxt, MemberAccessors.Property(prop)).First());
+        }
+
         [Fact]
         public void Create_from_property_cross_join_should_yield_items_from_lists() {
             var a = Property("A");
