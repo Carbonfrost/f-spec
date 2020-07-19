@@ -18,6 +18,11 @@ using System.Reflection;
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     interface IReflectionTestUnitFactory {
+        string Reason {
+            get;
+            set;
+        }
+
         TestUnit CreateTestCase(MethodInfo method);
     }
 }

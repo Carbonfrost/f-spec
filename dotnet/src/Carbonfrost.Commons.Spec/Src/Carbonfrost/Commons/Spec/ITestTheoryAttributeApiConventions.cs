@@ -22,11 +22,6 @@ namespace Carbonfrost.Commons.Spec {
             get;
             set;
         }
-
-        string Reason {
-            get;
-            set;
-        }
     }
 
     partial class Extensions {

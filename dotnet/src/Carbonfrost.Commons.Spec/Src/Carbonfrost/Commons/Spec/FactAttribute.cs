@@ -22,6 +22,11 @@ namespace Carbonfrost.Commons.Spec {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = false)]
     public sealed class FactAttribute : Attribute, IReflectionTestUnitFactory {
 
+        public string Reason {
+            get;
+            set;
+        }
+
         TestUnit IReflectionTestUnitFactory.CreateTestCase(MethodInfo method) {
             return new FactMethodTestCase(method);
         }
