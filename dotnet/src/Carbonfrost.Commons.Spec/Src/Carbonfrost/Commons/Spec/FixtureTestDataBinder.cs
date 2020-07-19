@@ -1,5 +1,5 @@
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec {
 
-    abstract class TestDataBinder {
+    abstract class FixtureTestDataBinder {
 
         public abstract object[] Bind(IDictionary<string, string> items);
 
-        public static TestDataBinder Create(MethodInfo method, ICollection<string> keys) {
+        public static FixtureTestDataBinder Create(MethodInfo method, ICollection<string> keys) {
             var parms = method.GetParameters();
 
             if (parms.Length == 0) {
@@ -48,7 +48,7 @@ namespace Carbonfrost.Commons.Spec {
             return new MapToObjectBinder(parms[0].ParameterType);
         }
 
-        class MapToParameterNamesBinder : TestDataBinder {
+        class MapToParameterNamesBinder : FixtureTestDataBinder {
 
             private readonly ParameterInfo[] _parameters;
 
@@ -71,7 +71,7 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        class MapToObjectBinder : TestDataBinder {
+        class MapToObjectBinder : FixtureTestDataBinder {
 
             private readonly Type _type;
 

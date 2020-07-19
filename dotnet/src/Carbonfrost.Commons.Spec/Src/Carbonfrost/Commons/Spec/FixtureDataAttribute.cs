@@ -139,7 +139,7 @@ namespace Carbonfrost.Commons.Spec {
             // TODO Assume that the fixture has homogeneous records -- if it doesn't,
             // then we end up with the wrong TestDataBinder
             var keySet = items[0].Values.Keys;
-            var binder = TestDataBinder.Create(rt.TestMethod, keySet);
+            var binder = FixtureTestDataBinder.Create(rt.TestMethod, keySet);
             var results = new List<TestData>(items.Count);
             foreach (var t in items) {
                 results.Add(
