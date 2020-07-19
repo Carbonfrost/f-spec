@@ -1,11 +1,11 @@
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,11 +21,13 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public abstract class TestDataProvider : ITestDataProvider {
+    public abstract partial class TestDataProvider : ITestDataProvider {
+
+        public static readonly ITestDataProvider Null = new NullImpl();
 
         public static ITestDataProvider FromFieldInfo(FieldInfo field) {
             if (field == null) {
-                throw new ArgumentNullException("field");
+                throw new ArgumentNullException(nameof(field));
             }
             var accessor = MemberAccessors.Field(field);
             return FromMemberAccessor(accessor);
@@ -33,10 +35,18 @@ namespace Carbonfrost.Commons.Spec {
 
         public static ITestDataProvider FromPropertyInfo(PropertyInfo property) {
             if (property == null) {
-                throw new ArgumentNullException("property");
+                throw new ArgumentNullException(nameof(property));
             }
             var accessor = MemberAccessors.Property(property);
             return FromMemberAccessor(accessor);
+        }
+
+        public static ITestDataProvider Compose(params ITestDataProvider[] items) {
+            return Compose((IEnumerable<ITestDataProvider>) items);
+        }
+
+        public static ITestDataProvider Compose(IEnumerable<ITestDataProvider> items) {
+            return Utility.OptimalComposite(items, e => new CompositeTestDataProvider(e), Null);
         }
 
         internal static ITestDataProvider FromMemberAccessors(IEnumerable<IMemberAccessor> a) {
@@ -72,6 +82,12 @@ namespace Carbonfrost.Commons.Spec {
 
             IEnumerable<TestData> ITestDataProvider.GetData(TestContext context) {
                 return TestData.Create(context, _accessors);
+            }
+        }
+
+        public class NullImpl : ITestDataProvider {
+            public IEnumerable<TestData> GetData(TestContext context) {
+                return Array.Empty<TestData>();
             }
         }
     }

@@ -22,16 +22,26 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     abstract class ReflectedTestCase : TestCaseInfo {
 
-        protected override TestCaseResult RunTestCore(TestExecutionContext testContext) {
-            var opts = new TestOptions {
-                PassExplicitly = PassExplicitly,
-                Timeout = Timeout,
-                DisplayName = DisplayName,
-            };
-            opts.Filters.AddAll(Attributes.OfType<ITestCaseFilter>());
-            opts.Filters.AddAll(Filters);
+        protected sealed override TestCaseResult RunTestCore(TestExecutionContext testContext) {
+            var options = NewTestOptions();
+            var result = new TestCaseResult((TestCaseInfo) this);
+            result.Starting();
 
-            return testContext.RunTest(CoreRunTest, opts);
+            Func<TestExecutionContext, object> testFunc = CoreRunTest;
+
+            var winder = new TestCaseCommandWinder(options.Filters.Concat(new [] {
+                new RunCommand(testFunc, options)
+            }));
+
+            winder.RunAll(testContext);
+
+            if (options.PassExplicitly) {
+                result.SetFailed(SpecFailure.ExplicitPassNotSet());
+            } else {
+                result.SetSuccess();
+            }
+            result.Done(null, testContext.TestRunnerOptions);
+            return result;
         }
 
         protected sealed override void Initialize(TestContext testContext) {
@@ -64,8 +74,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return SyncContextImpl.Run(TestMethod, testObject, args);
         }
 
-        internal sealed override TestExecutionContext CreateExecutionContext(DefaultTestRunner runner) {
-            return TestContext.NewExecContext(this, runner, CreateTestObject());
+        private TestOptions NewTestOptions() {
+            var options = new TestOptions {
+                PassExplicitly = PassExplicitly,
+                Timeout = Timeout,
+                Name = Name,
+            };
+            options.Filters.AddAll(Attributes.OfType<ITestCaseFilter>());
+            options.Filters.AddAll(Filters);
+            return options;
         }
     }
 }

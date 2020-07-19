@@ -20,7 +20,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         public static readonly ITestExecutionFilter Null = new NullImpl();
 
         class NullImpl : ITestExecutionFilter {
-            public void BeforeExecuting(TestExecutionContext testContext) {}
+            public void BeforeExecuting(TestContext testContext) {}
             public void AfterExecuting(TestExecutionContext testContext) {}
         }
     }

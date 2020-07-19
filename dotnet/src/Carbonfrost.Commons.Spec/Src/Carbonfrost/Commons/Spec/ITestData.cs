@@ -17,14 +17,15 @@ using System.Collections.Generic;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
-    interface ITestData : IReadOnlyList<object>, ITestUnitStateApiConventions<TestData> {
+
+    interface ITestData : IReadOnlyList<object>, ITestUnitStateApiConventions<TestData>, ITestDataProvider {
         string Name { get; }
         string Reason { get; }
         TestData WithName(string name);
         TestData WithReason(string reason);
     }
 
-    interface ITestDataHelper : ITestUnitStateApiConventions<TestData> {
+    interface ITestDataHelper : ITestUnitStateApiConventions<TestData>, ITestDataProvider {
         TestData WithName(string name);
         TestData WithReason(string reason);
     }
@@ -34,7 +35,7 @@ namespace Carbonfrost.Commons.Spec {
         TestData<T> WithReason(string reason);
     }
 
-    interface ITestDataUntyped {
+    interface ITestDataUntyped : ITestDataProvider {
         // This interface is split from ITestData<T> to make it simpler to cast
         // when we don't want to deal with the generics
         TestData Untyped();

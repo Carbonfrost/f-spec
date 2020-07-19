@@ -13,29 +13,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
-using System.Linq;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
-namespace Carbonfrost.Commons.Spec.ExecutionModel {
+namespace Carbonfrost.Commons.Spec {
 
-    public class TestTheoryFinishedEventArgs : EventArgs {
+    class DefaultTestContext : TestContextWrapper {
 
-        private TestUnitFinishedEventArgs _inner;
+        private readonly TestUnit _unit;
 
-        public TestTheory TestTheory {
+        public override TestUnit TestUnit {
             get {
-                return (TestTheory) _inner.TestUnit;
+                return _unit;
             }
         }
 
-        public TestUnitResult Results {
-            get {
-                return (TestUnitResult) _inner.Result;
-            }
-        }
-
-        internal TestTheoryFinishedEventArgs(TestUnitFinishedEventArgs inner) {
-            _inner = inner;
+        public DefaultTestContext(TestContext parent, TestUnit unit) : base(parent) {
+            _unit = unit;
         }
     }
 }

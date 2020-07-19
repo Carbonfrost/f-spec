@@ -25,6 +25,7 @@ namespace Carbonfrost.Commons.Spec {
     public abstract partial class TestClass : ITestExecutionFilter, ITestExecutionContext {
 
         private TestExecutionContext _context;
+        private char _runTestIndex = 'A';
 
         internal static bool HasSelfTests {
             get {
@@ -41,6 +42,13 @@ namespace Carbonfrost.Commons.Spec {
         public TestLog Log {
             get {
                 return TestContext.Log;
+            }
+        }
+
+        private string DefaultTestName {
+            get {
+                var c = _runTestIndex++;
+                return $"dynamic {c}";
             }
         }
 
@@ -193,23 +201,71 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public TestCaseResult RunTest(Action<TestExecutionContext> testFunc) {
-            return TestContext.RunTest(testFunc);
+            return TestContext.RunTest(DefaultTestName, testFunc);
         }
 
         public TestCaseResult RunTest(Action<TestExecutionContext> testFunc, TestOptions options) {
-            return TestContext.RunTest(testFunc, options);
+            return TestContext.RunTest(DefaultTestName, testFunc, options);
         }
 
         public TestCaseResult RunTest(Func<TestExecutionContext, object> testFunc) {
-            return TestContext.RunTest(testFunc);
+            return TestContext.RunTest(DefaultTestName, testFunc);
         }
 
         public TestCaseResult RunTest(Func<TestExecutionContext, object> testFunc, TestOptions options) {
-            return TestContext.RunTest(testFunc, options);
+            return TestContext.RunTest(DefaultTestName, testFunc, options);
         }
 
-        void ITestExecutionFilter.BeforeExecuting(TestExecutionContext testContext) {
-            _context = testContext;
+        public TestCaseResult RunTest(string name, Action<TestExecutionContext> testFunc) {
+            return TestContext.RunTest(name, testFunc);
+        }
+
+        public TestCaseResult RunTest(string name, Action<TestExecutionContext> testFunc, TestOptions options) {
+            return TestContext.RunTest(name, testFunc, options);
+        }
+
+        public TestCaseResult RunTest(string name, Func<TestExecutionContext, object> testFunc) {
+            return TestContext.RunTest(name, testFunc);
+        }
+
+        public TestCaseResult RunTest(string name, Func<TestExecutionContext, object> testFunc, TestOptions options) {
+            return TestContext.RunTest(name, testFunc, options);
+        }
+
+        public TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc) {
+            return TestContext.RunTests(name, testDataProvider, testFunc);
+        }
+
+        public TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc, TestOptions options) {
+            return TestContext.RunTests(name, testDataProvider, testFunc, options);
+        }
+
+        public TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc) {
+            return TestContext.RunTests(name, testDataProvider, testFunc);
+        }
+
+        public TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc, TestOptions options) {
+            return TestContext.RunTests(name, testDataProvider, testFunc, options);
+        }
+
+        public TestUnitResults RunTests(ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc) {
+            return TestContext.RunTests(DefaultTestName, testDataProvider, testFunc);
+        }
+
+        public TestUnitResults RunTests(ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc, TestOptions options) {
+            return TestContext.RunTests(DefaultTestName, testDataProvider, testFunc, options);
+        }
+
+        public TestUnitResults RunTests(ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc) {
+            return TestContext.RunTests(DefaultTestName, testDataProvider, testFunc);
+        }
+
+        public TestUnitResults RunTests(ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc, TestOptions options) {
+            return TestContext.RunTests(DefaultTestName, testDataProvider, testFunc, options);
+        }
+
+        void ITestExecutionFilter.BeforeExecuting(TestContext testContext) {
+            _context = testContext as TestExecutionContext;
             BeforeTest(testContext.TestUnit);
             BeforeTest();
         }

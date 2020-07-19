@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,6 +56,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         internal void Flush() {
+            if (_buffer == null) {
+                return;
+            }
             foreach (var e in _buffer) {
                 _evt.NotifyMessage(e);
             }

@@ -23,16 +23,9 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public partial class TestContext : DisposableObject, ITestContext, ITestUnitApiConventions {
+    public abstract partial class TestContext : DisposableObject, ITestContext, ITestUnitApiConventions {
 
-        private readonly TestUnit _self;
-        private readonly TestRunner _runner;
-        private readonly TestLoader _loader;
         private readonly List<object> _disposables = new List<object>();
-        private readonly TestLog _log;
-        private TestTemporaryDirectory _defaultTemp;
-        private readonly Random _random;
-        private readonly TestEnvironment _environment = new TestEnvironment();
 
         private static ThreadLocal<TestContext> _current = new ThreadLocal<TestContext>();
 
@@ -42,10 +35,12 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        public TestEnvironment Environment {
-            get {
-                return _environment;
-            }
+        public abstract TestEnvironment Environment {
+            get;
+        }
+
+        internal abstract TestLoader Loader {
+            get;
         }
 
         internal IDisposable ApplyingContext() {
@@ -55,44 +50,40 @@ namespace Carbonfrost.Commons.Spec {
 
         public TestDataProviderCollection TestDataProviders {
             get {
+                if (TestUnit == null) {
+                    return TestDataProviderCollection.Empty;
+                }
                 return TestUnit.TestDataProviders;
             }
         }
 
         public TestTagCollection Tags {
             get {
+                if (TestUnit == null) {
+                    return TestTagCollection.Empty;
+                }
                 return TestUnit.Tags;
             }
         }
 
-        public TestLog Log {
-            get {
-                return _log;
-            }
+        public abstract TestLog Log {
+            get;
         }
 
-        public ITestRunnerEvents TestRunnerEvents {
-            get {
-                return _runner;
-            }
+        public abstract ITestRunnerEvents TestRunnerEvents {
+            get;
         }
 
-        public TestRunnerOptions TestRunnerOptions {
-            get {
-                return _runner.Options;
-            }
+        public abstract TestRunnerOptions TestRunnerOptions {
+            get;
         }
 
-        public Random Random {
-            get {
-                return _random;
-            }
+        public abstract Random Random {
+            get;
         }
 
-        public TestUnit TestUnit {
-            get {
-                return _self;
-            }
+        public abstract TestUnit TestUnit {
+            get;
         }
 
         // A dummy test object is required during initialization so we can
@@ -110,80 +101,63 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        private protected TestContext(TestUnit self, TestRunner runner, Random random) {
-            _self = self;
-            _runner = runner;
-            _log = new TestLog(runner);
-            _random = random;
-            _loader = new TestLoader(_runner.Options, this);
-        }
-
-        internal static TestContext NewInitContext(TestUnit unit, TestRunner runner) {
-            return new TestContext(unit, runner, runner.RandomCache);
-        }
-
-        internal static TestExecutionContext NewExecContext(TestUnit unit, TestRunner runner, object testObject) {
-            return new TestExecutionContext(unit, runner, runner.RandomCache, testObject);
+        protected TestContext() {
         }
 
         internal TestContext WithSelf(TestUnit newSelf) {
-            return new TestContext(newSelf, _runner, Random);
+            return new DefaultTestContext(this, newSelf);
         }
 
-        public TestTemporaryDirectory CreateTempDirectory(string name) {
-            return RegisterDisposable(new TestTemporaryDirectory(_runner.SessionId, name));
-        }
+        public abstract TestTemporaryDirectory CreateTempDirectory(string name);
 
         public TestTemporaryDirectory CreateTempDirectory() {
-            return RegisterDisposable(new TestTemporaryDirectory(_runner.SessionId, null));
+            return CreateTempDirectory(null);
         }
 
-        public TestTemporaryFile CreateTempFile(string name) {
-            return DefaultTempDirectory().CreateFile(name);
-        }
+        public abstract TestTemporaryFile CreateTempFile(string name);
 
         public TestTemporaryFile CreateTempFile() {
-            return DefaultTempDirectory().CreateFile();
+            return CreateTempFile(null);
         }
 
         public TestFixture LoadFixture(string fileName) {
-            return _loader.LoadFixture(fileName);
+            return Loader.LoadFixture(fileName);
         }
 
         public TestFixture DownloadFixture(Uri url) {
-            return _loader.DownloadFixture(url);
+            return Loader.DownloadFixture(url);
         }
 
         public TestFixtureData LoadFixtureData(string fileName) {
-            return _loader.LoadFixtureData(fileName);
+            return Loader.LoadFixtureData(fileName);
         }
 
         public TestFixtureData DownloadFixtureData(Uri url) {
-            return _loader.DownloadFixtureData(url);
+            return Loader.DownloadFixtureData(url);
         }
 
         public Stream OpenRead(string fileName) {
-            return _loader.Open(fileName).OpenRead();
+            return Loader.Open(fileName).OpenRead();
         }
 
         public Stream Download(Uri url) {
-            return _loader.Download(url);
+            return Loader.Download(url);
         }
 
         public StreamReader OpenText(string fileName) {
-            return _loader.Open(fileName).OpenText();
+            return Loader.Open(fileName).OpenText();
         }
 
         public TextReader DownloadText(Uri url) {
-            return _loader.DownloadText(url);
+            return Loader.DownloadText(url);
         }
 
         public TestFile DownloadFile(Uri url) {
-            return _loader.DownloadFile(url);
+            return Loader.DownloadFile(url);
         }
 
         public TestFile LoadFile(string fileName) {
-            return _loader.LoadFile(fileName);
+            return Loader.LoadFile(fileName);
         }
 
         public TestFile OpenFile(string fileName) {
@@ -191,39 +165,39 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public string GetFullPath(string fileName) {
-            return _loader.GetFixtureFullPath(fileName);
+            return Loader.GetFixtureFullPath(fileName);
         }
 
         public byte[] ReadAllBytes(string fileName) {
-            return _loader.Open(fileName).ReadAllBytes();
+            return Loader.Open(fileName).ReadAllBytes();
         }
 
         public StreamReader OpenText(string fileName, Encoding encoding) {
-            return _loader.Open(fileName).OpenText(encoding);
+            return Loader.Open(fileName).OpenText(encoding);
         }
 
         public IEnumerable<string> ReadLines(string fileName) {
-            return _loader.Open(fileName).ReadLines();
+            return Loader.Open(fileName).ReadLines();
         }
 
         public IEnumerable<string> ReadLines(string fileName, Encoding encoding) {
-            return _loader.Open(fileName).ReadLines(encoding);
+            return Loader.Open(fileName).ReadLines(encoding);
         }
 
         public string ReadAllText(string fileName) {
-            return _loader.Open(fileName).ReadAllText();
+            return Loader.Open(fileName).ReadAllText();
         }
 
         public string ReadAllText(string fileName, Encoding encoding) {
-            return _loader.Open(fileName).ReadAllText(encoding);
+            return Loader.Open(fileName).ReadAllText(encoding);
         }
 
         public string[] ReadAllLines(string fileName) {
-            return _loader.Open(fileName).ReadAllLines();
+            return Loader.Open(fileName).ReadAllLines();
         }
 
         public string[] ReadAllLines(string fileName, Encoding encoding) {
-            return _loader.Open(fileName).ReadAllLines(encoding);
+            return Loader.Open(fileName).ReadAllLines(encoding);
         }
 
         public TestProcess CreateProcess(string command, string arguments) {
@@ -241,13 +215,6 @@ namespace Carbonfrost.Commons.Spec {
             if (manualDispose) {
                 Safely.Dispose(_disposables);
             }
-        }
-
-        private TestTemporaryDirectory DefaultTempDirectory() {
-            if (_defaultTemp == null) {
-                _defaultTemp = CreateTempDirectory();
-            }
-            return _defaultTemp;
         }
 
         internal T RegisterDisposable<T>(T item) {

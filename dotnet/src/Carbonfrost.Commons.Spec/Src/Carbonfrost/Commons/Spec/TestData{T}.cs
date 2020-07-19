@@ -19,7 +19,7 @@ using System.Collections.Generic;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public readonly struct TestData<T> : ITestData<T>, ITestDataUntyped {
+    public readonly struct TestData<T> : ITestData<T>, ITestDataUntyped, ITestDataProvider {
 
         private readonly T[] _data;
         private readonly TestDataState _state;
@@ -173,6 +173,12 @@ namespace Carbonfrost.Commons.Spec {
 
         IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
+        }
+
+        IEnumerable<TestData> ITestDataProvider.GetData(TestContext context) {
+            return new [] {
+                Untyped()
+            };
         }
 
         public TestData Untyped() {

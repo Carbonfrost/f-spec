@@ -1,5 +1,5 @@
 #if SELF_TEST
-
+//
 //
 // Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
@@ -15,24 +15,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-
 using Carbonfrost.Commons.Spec;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.SelfTest.Spec {
 
-    public class TestContextTests : TestClass {
+    static class SelfTestUtility {
 
-        [XFact]
-        public void RunTest_Action_should_add_child_context() {
-            string testUnit = null;
-
-            RunTest(tc => {
-                testUnit = tc.TestUnit.DisplayName;
-            });
-
-            Assert.NotNull(testUnit);
-            Assert.Equal("RunTest_Action_should_add_child_context2", testUnit);
+        internal static TestContext NewTestContext(TestUnit unit, TestRunner runner) {
+            var root = new RootTestContext(unit, runner);
+            return new DefaultTestContext(root, unit);
         }
+
     }
 }
+
 #endif

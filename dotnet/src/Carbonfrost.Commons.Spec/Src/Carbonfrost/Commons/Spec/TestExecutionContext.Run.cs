@@ -14,8 +14,6 @@
 // limitations under the License.
 //
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
@@ -23,48 +21,100 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class TestExecutionContext {
 
+        internal TestCaseResult RunCurrentTest() {
+            var result = (TestCaseResult) ((TestCaseInfo) TestUnit).RunTest(this);
+            return result;
+        }
+
         public TestCaseResult RunTest(Action<TestExecutionContext> testFunc) {
             return RunTest(testFunc, null);
         }
 
         public TestCaseResult RunTest(Action<TestExecutionContext> testFunc, TestOptions options) {
-            return RunTest(tc => {
-                testFunc(tc);
-                return null;
-            }, options);
+            return RunTest(WrapFunc(testFunc), options);
         }
 
         public TestCaseResult RunTest(Func<TestExecutionContext, object> testFunc) {
             return RunTest(testFunc, null);
         }
 
+        public TestCaseResult RunTest(string name, Action<TestExecutionContext> testFunc) {
+            return RunTest(testFunc, TestOptions.Named(name));
+        }
+
+        public TestCaseResult RunTest(string name, Action<TestExecutionContext> testFunc, TestOptions options) {
+            return RunTest(testFunc, options.SafeWithName(name));
+        }
+
+        public TestCaseResult RunTest(string name, Func<TestExecutionContext, object> testFunc) {
+            return RunTest(testFunc, TestOptions.Named(name));
+        }
+
+        public TestCaseResult RunTest(string name, Func<TestExecutionContext, object> testFunc, TestOptions options) {
+            return RunTest(testFunc, options.SafeWithName(name));
+        }
+
         public TestCaseResult RunTest(Func<TestExecutionContext, object> testFunc, TestOptions options) {
             if (testFunc == null) {
                 throw new ArgumentNullException(nameof(testFunc));
             }
-            if (options == null) {
-                options = new TestOptions();
-            }
 
-            var result = new TestCaseResult(options, (TestCaseInfo) CurrentTest);
-
-            result.Starting();
-            options.Filters.Add(new RunCommand(testFunc, options));
-            var winder = new TestCaseCommandWinder(options.Filters);
-            winder.RunAll(this);
-
-            if (options.PassExplicitly) {
-                result.SetFailed(SpecFailure.ExplicitPassNotSet());
-            } else {
-                result.SetSuccess();
-            }
-            result.Done(null, TestRunnerOptions);
-            return result;
+            var test = new BespokeFact(testFunc, CurrentTest.TestName, options.Name);
+            return CreateChildContext(test).RunCurrentTest();
         }
 
-        private void RunTestWithTimeout(Func<TestExecutionContext, object> testFunc, TimeSpan timeout) {
+        public TestUnitResults RunTests(ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc) {
+            return RunTests(testDataProvider, testFunc, null);
+        }
+
+        public TestUnitResults RunTests(ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc, TestOptions options) {
+            return RunTests(testDataProvider, WrapFunc(testFunc), options);
+        }
+
+        public TestUnitResults RunTests(ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc) {
+            return RunTests(testDataProvider, testFunc, null);
+        }
+
+        public TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc) {
+            return RunTests(testDataProvider, testFunc, TestOptions.Named(name));
+        }
+
+        public TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc, TestOptions options) {
+            return RunTests(testDataProvider, testFunc, options.SafeWithName(name));
+        }
+
+        public TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc) {
+            return RunTests(testDataProvider, testFunc, TestOptions.Named(name));
+        }
+
+        public TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc, TestOptions options) {
+            return RunTests(testDataProvider, testFunc, options.SafeWithName(name));
+        }
+
+        public TestUnitResults RunTests(ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc, TestOptions options) {
+            if (testDataProvider is null) {
+                throw new ArgumentNullException(nameof(testDataProvider));
+            }
+
+            var theoryName = CurrentTest.TestName.WithNameSuffix(options.Name);
+            var bs = new BespokeTheory(testDataProvider, theoryName, testFunc);
+            bs.InitializeSafe(this);
+            foreach (var c in bs.Children) {
+                c.InitializeSafe(WithSelf(c));
+            }
+
+            var results = new TestUnitResults(bs.DisplayName);
+            foreach (var c in bs.Children) {
+                var myCase = (TestCaseInfo) c;
+                var myResult = CreateChildContext(myCase).RunCurrentTest();
+                results.Children.Add(myResult);
+            }
+            return results;
+        }
+
+        internal void RunTestWithTimeout(Func<TestExecutionContext, object> testFunc, TimeSpan timeout) {
             if (timeout <= TimeSpan.Zero) {
-                _testResult = testFunc(this);
+                _testReturnValue = testFunc(this);
                 return;
             }
 
@@ -75,7 +125,7 @@ namespace Carbonfrost.Commons.Spec {
 
             ParameterizedThreadStart thunk = syncObject => {
                 try {
-                    _testResult = testFunc(this);
+                    _testReturnValue = testFunc(this);
                 } catch (Exception ex) {
                     error = ex;
                 }
@@ -106,70 +156,17 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        class RunCommand : ITestCaseFilter {
-
-            private readonly Func<TestExecutionContext, object> _testFunc;
-            private readonly TestOptions _opts;
-
-            public RunCommand(Func<TestExecutionContext, object> coreRunTest, TestOptions opts) {
-                _testFunc = coreRunTest;
-                _opts = opts;
-            }
-
-            void ITestCaseFilter.RunTest(TestExecutionContext context, Action<TestExecutionContext> next) {
-                var adapt = (context.TestObject as ITestExecutionFilter) ?? TestExecutionFilter.Null;
-                adapt.BeforeExecuting(context);
-
-                // If the test object implements this ITestCaseFilter interface, then
-                // this is a _substitute_ for the default execution logic.  THe main
-                // use of this is to handle load exceptions when instantiating types.
-                var filter = context.TestObject as ITestCaseFilter;
-                if (filter != null) {
-                    filter.RunTest(context, next);
-                    adapt.AfterExecuting(context);
-                    return;
-                }
-
-                try {
-                    var effectiveTimeout = _opts.Timeout.GetValueOrDefault(
-                        context.TestRunnerOptions.TestTimeout.GetValueOrDefault());
-                    context.RunTestWithTimeout(_testFunc, effectiveTimeout);
-
-                    next(context);
-                } finally {
-                    adapt.AfterExecuting(context);
-                }
-            }
+        private static Func<TestExecutionContext, object> WrapFunc(Action<TestExecutionContext> testFunc) {
+            return tc => {
+                testFunc(tc);
+                return null;
+            };
         }
 
-        class TestCaseCommandWinder {
-
-            private readonly ITestCaseFilter[] _commands;
-
-            // Corresponding wrapper for each command that invokes the command and
-            // provides access to the next delegate
-            private readonly Action<TestExecutionContext>[] _actionWrappers;
-
-            public TestCaseCommandWinder(IList<ITestCaseFilter> commands) {
-                _commands = commands.ToArray();
-                _actionWrappers = _commands.Select((c, i) => ActionWrapper(i)).ToArray();
-            }
-
-            private Action<TestExecutionContext> ActionWrapper(int index) {
-                return tc => {
-                    _commands[index].RunTest(
-                        tc,
-                        _actionWrappers.ElementAtOrDefault(index + 1) ?? EmptyAction
-                    );
-                };
-            }
-
-            private static void EmptyAction(TestExecutionContext context) {
-            }
-
-            public void RunAll(TestExecutionContext context) {
-                _actionWrappers[0].Invoke(context);
-            }
+        private TestExecutionContext CreateChildContext(TestCaseInfo test) {
+            var result = new TestExecutionContext(this, test, TestObject);
+            return result;
         }
+
     }
 }

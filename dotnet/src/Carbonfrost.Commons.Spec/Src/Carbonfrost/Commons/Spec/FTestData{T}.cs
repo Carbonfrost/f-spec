@@ -14,6 +14,8 @@
 // limitations under the License.
 //
 
+using System.Collections.Generic;
+
 namespace Carbonfrost.Commons.Spec {
 
     public readonly struct FTestData<T> : ITestDataHelper<T> {
@@ -84,6 +86,12 @@ namespace Carbonfrost.Commons.Spec {
 
         public TestData Untyped() {
             return Copy.Untyped();
+        }
+
+        IEnumerable<TestData> ITestDataProvider.GetData(TestContext context) {
+            return new [] {
+                Untyped()
+            };
         }
 
         public static implicit operator TestData(FTestData<T> data) {

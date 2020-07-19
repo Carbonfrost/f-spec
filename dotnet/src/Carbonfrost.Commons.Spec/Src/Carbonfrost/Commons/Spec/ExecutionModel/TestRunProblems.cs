@@ -27,7 +27,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public int Count {
             get {
-                return Failures.Count + Pending.Count;
+                return Failures.Count + Pending.Count + Slow.Count;
             }
         }
 
@@ -51,7 +51,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         internal TestRunProblems(IEnumerable<TestUnitResult> descendants, TestRunnerOptions opts) {
             foreach (var item in descendants) {
-                if (item is TestUnitResults) {
+                if (item.Children.Count > 0) {
                     // Because statuses rollup into the composite result (e.g. if composite contains
                     // only failed tests, then it rolls up as failed),
                     // only report composite results as a problem if there is a setup error.

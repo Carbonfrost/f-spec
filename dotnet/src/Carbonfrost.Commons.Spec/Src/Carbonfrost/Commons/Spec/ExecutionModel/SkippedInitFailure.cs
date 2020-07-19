@@ -77,8 +77,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             };
         }
 
-        internal sealed override TestExecutionContext CreateExecutionContext(DefaultTestRunner runner) {
-            return TestContext.NewExecContext(this, runner, null);
+        internal override object CreateTestObject() {
+            return null;
         }
     }
 }

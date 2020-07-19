@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,18 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System.Linq;
+using System;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    class ReflectedTheory : TestTheory {
+    class BespokeTheory : TestTheory, IReflectionTestCaseFactory {
 
-        private TestDataProviderCollection _testDataProvidersCache;
+        private readonly TestDataProviderCollection _testDataProviders;
         private readonly TestUnitCollection _children;
+        private readonly Func<TestExecutionContext, object> _func;
+        private readonly TestName _baseTestName;
 
-        public ReflectedTheory(MethodInfo method) : base(method) {
+        public BespokeTheory(ITestDataProvider provider, TestName baseName, Func<TestExecutionContext, object> func) : base(func.Method) {
             _children = new TestUnitCollection(this);
+            _func = func;
+            _testDataProviders = TestDataProviderCollection.Create(provider);
+            _baseTestName = baseName;
         }
 
         public sealed override TestUnitCollection Children {
@@ -35,14 +40,17 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public override TestDataProviderCollection TestDataProviders {
             get {
-                return _testDataProvidersCache ??
-                    (_testDataProvidersCache = CreateTestDataProviders());
+                return _testDataProviders;
             }
         }
 
-        private TestDataProviderCollection CreateTestDataProviders() {
-            var attrs = TestMethod.GetCustomAttributes(false);
-            return TestDataProviderCollection.Create(attrs.OfType<ITestDataProvider>().ToArray());
+        internal override IReflectionTestCaseFactory GetTestCaseFactory(ITestDataProvider provider) {
+            return this;
+        }
+
+        public TestCaseInfo CreateTestCase(MethodInfo method, TestDataInfo row) {
+            // Use _func; it should be the same as the method passed in
+            return new BespokeTheoryCase(_func, _baseTestName, row);
         }
     }
 }

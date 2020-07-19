@@ -146,30 +146,31 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             Children.MakeReadOnly();
         }
 
-        public TestCaseResult RunTest(TestExecutionContext testContext) {
+        internal TestUnitResult RunTest(TestExecutionContext testContext) {
             if (PredeterminedStatus == TestStatus.NotRun) {
-                var startedAt = DateTime.Now;
+                TestCaseResult result = new TestCaseResult(this);
+                result.Starting();
                 try {
                     using (testContext.ApplyingContext()) {
-                        return RunTestCore(testContext);
+                        result = RunTestCore(testContext);
                     }
 
                 } catch (Exception ex) {
-                    var unhandled = new TestCaseResult(this);
-                    unhandled.SetFailed(ex);
-                    unhandled.Done(startedAt, testContext.TestRunnerOptions);
-                    return unhandled;
+                    result.SetFailed(ex);
+                    result.Done(null, testContext.TestRunnerOptions);
                 }
+                return result;
             }
-
-            var result = new TestCaseResult(this, PredeterminedStatus) {
-                Reason = Reason,
-            };
-            result.Done(DateTime.Now, testContext.TestRunnerOptions);
-            return result;
+            return PredeterminedResult(testContext);
         }
 
-        internal abstract TestExecutionContext CreateExecutionContext(DefaultTestRunner runner);
+        private TestCaseResult PredeterminedResult(TestExecutionContext testContext) {
+            var result = new TestCaseResult(this, PredeterminedStatus);
+            result.Starting();
+            result.Reason = Reason;
+            result.Done(this, testContext.TestRunnerOptions);
+            return result;
+        }
 
         protected abstract TestCaseResult RunTestCore(TestExecutionContext testContext);
 

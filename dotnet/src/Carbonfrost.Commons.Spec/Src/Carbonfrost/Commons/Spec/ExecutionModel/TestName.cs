@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
@@ -60,16 +61,39 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     Class,
                     Method,
                 };
-
-                return string.Concat(
+                var caseParts = new [] {
                     string.Join(
                         ".",
                         parts.Where(p => !string.IsNullOrEmpty(p))
                     ),
-                    Position >= 0 ? (" #" + Position) : null,
+                    DataName,
+                    Position >= 0 ? ("#" + Position) : null,
                     Arguments.Count > 0 ? "(" + string.Join(",", Arguments) + ")" : null
+                };
+
+                return string.Join(
+                    " ",
+                    caseParts.Where(p => !string.IsNullOrEmpty(p))
                 );
             }
+        }
+
+        internal TestName WithName(string name) {
+            return new TestName(
+                Assembly, Namespace, Class, SubjectClassBinding, Method, Position, name, Arguments
+            );
+        }
+
+        internal TestName WithIndex(int position) {
+            return new TestName(
+                Assembly, Namespace, Class, SubjectClassBinding, Method, position, DataName, Arguments
+            );
+        }
+
+        internal TestName WithArguments(IEnumerable<string> args) {
+            return new TestName(
+                Assembly, Namespace, Class, SubjectClassBinding, Method, Position, DataName, args
+            );
         }
 
         public TestName(
@@ -97,9 +121,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             string ns = null;
             string clazz = null;
             string binding = null;
-            IEnumerable<string> arguments = caze.TestMethodArguments.Select(
-                TextUtility.ConvertToString
-            );
+            IEnumerable<string> arguments = Array.Empty<string>();
+
+            if (caze.TestMethodArguments != null) {
+                arguments = caze.TestMethodArguments.Select(
+                    TextUtility.ConvertToString
+                );
+            }
 
             foreach (var a in caze.Ancestors()) {
                 switch (a) {
@@ -122,9 +150,28 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             );
         }
 
+        internal static TestName Create(MethodInfo method, int position, string dataName) {
+            return new TestName(
+                method.DeclaringType.Assembly.FullName,
+                method.DeclaringType.Namespace,
+                method.DeclaringType.Name,
+                null, // subjectClassBinding,
+                method.Name,
+                position,
+                dataName,
+                Array.Empty<string>()
+            );
+        }
+
         internal TestName InstanceNamed(string name) {
             return new TestName(
-                Assembly, Namespace, Class, SubjectClassBinding, Method, -1, name, null
+                Assembly, Namespace, Class, SubjectClassBinding, Method, -1, name, Arguments
+            );
+        }
+
+        internal TestName WithNameSuffix(string name) {
+            return new TestName(
+                Assembly, Namespace, Class, SubjectClassBinding, Method + " " + name, -1, DataName, Arguments
             );
         }
 
@@ -134,13 +181,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public string ToString(string format) {
             if (string.IsNullOrEmpty(format)) {
-                return Method;
+                return ToString();
             }
             if (format.Length == 1) {
                 switch (char.ToLowerInvariant(format[0])) {
-                    case 'g':
-                    case 'r':
+                    case 'm':
                         return Method;
+                    case 'd':
+                    case 'g':
+                        return DisplayName;
                 }
             }
             throw new FormatException();
@@ -149,6 +198,5 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         string IFormattable.ToString(string format, IFormatProvider formatProvider) {
             return ToString(format);
         }
-
     }
 }

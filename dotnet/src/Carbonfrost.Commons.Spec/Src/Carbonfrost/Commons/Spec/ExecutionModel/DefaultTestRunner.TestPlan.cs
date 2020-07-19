@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             public override TestRunResults RunTests() {
                 foreach (var item in PlanOrder) {
-                    item.Run(Runner);
+                    item.Run(Runner, RootInitContext);
                 }
                 return (TestRunResults) Root.FindResult();
             }
@@ -49,12 +49,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 ;
                 while (e.MoveNext()) {
                     var item = e.Current;
-                    item.Run(Runner);
+                    item.Run(Runner, RootInitContext);
 
                     if (item.FindResult().Failed) {
                         // Ensure clean up by processing descendants
                         foreach (var d in item.Descendants) {
-                            d.Run(Runner);
+                            d.Run(Runner, RootInitContext);
                         }
                         break;
                     }

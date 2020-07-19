@@ -1,7 +1,7 @@
 #if SELF_TEST
 
 //
-// Copyright 2016, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -132,7 +132,7 @@ namespace Carbonfrost.SelfTest.Spec {
         [InlineData(nameof(PTypedTestData))]
         public void Create_from_property_should_yield_singleton_return_type(string property) {
             var prop = Property(property);
-            var ctxt = TestContext.NewExecContext(new FakeTheory(fakeTestMethod), new FakeRunner(), null);
+            var ctxt = SelfTestUtility.NewTestContext(new FakeTheory(fakeTestMethod), new FakeRunner());
             var actual = TestData.Create(ctxt, MemberAccessors.Property(prop));
             Assert.Equal(1, actual.Count());
             Assert.Equal("420", actual.First()[0]);
@@ -150,7 +150,7 @@ namespace Carbonfrost.SelfTest.Spec {
         [InlineData(nameof(PTypedTestDataArray))]
         public void Create_from_property_should_yield_items_from_lists(string property) {
             var prop = Property(property);
-            var ctxt = TestContext.NewExecContext(new FakeTheory(fakeTestMethod), new FakeRunner(), null);
+            var ctxt = SelfTestUtility.NewTestContext(new FakeTheory(fakeTestMethod), new FakeRunner());
             Assert.Equal(2, TestData.Create(ctxt, MemberAccessors.Property(prop)).Count());
         }
 
@@ -182,7 +182,7 @@ namespace Carbonfrost.SelfTest.Spec {
 
             var theory = new FakeTheory(GetType().GetMethod("PTupleMethodTheory"));
 
-            var ctxt = TestContext.NewExecContext(theory, new FakeRunner(), null);
+            var ctxt = SelfTestUtility.NewTestContext(theory, new FakeRunner());
             var data = TestData.Create(ctxt, MemberAccessors.Property(prop));
             Assert.Equal(2, data.Count());
             Assert.Equal(new object[] { "a", 0 }, TestData.Create(ctxt, MemberAccessors.Property(prop)).First());
@@ -197,7 +197,7 @@ namespace Carbonfrost.SelfTest.Spec {
                 new [] { "c", "d" },
             };
             var theory = new FakeTheory(fakeTestMethod2);
-            var ctxt = TestContext.NewExecContext(theory, new FakeRunner(), null);
+            var ctxt = SelfTestUtility.NewTestContext(theory, new FakeRunner());
             var guineaPig = TestData.Create(ctxt, new[] {
                                                 MemberAccessors.Property(a), MemberAccessors.Property(b)
                                             });

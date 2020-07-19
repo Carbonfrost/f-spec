@@ -25,7 +25,7 @@ namespace Carbonfrost.Commons.Spec {
 
         private readonly IList<ITestDataProvider> _items;
 
-        public TestDataProviderCollection(IList<ITestDataProvider> items) {
+        private TestDataProviderCollection(IList<ITestDataProvider> items) {
             if (items == null) {
                 throw new ArgumentNullException(nameof(items));
             }
@@ -37,6 +37,13 @@ namespace Carbonfrost.Commons.Spec {
                 return Empty;
             }
             return new TestDataProviderCollection(items);
+        }
+
+        internal static TestDataProviderCollection Create(ITestDataProvider item) {
+            if (item == null) {
+                return Empty;
+            }
+            return new TestDataProviderCollection(new [] { item });
         }
 
         public ITestDataProvider this[int index] {

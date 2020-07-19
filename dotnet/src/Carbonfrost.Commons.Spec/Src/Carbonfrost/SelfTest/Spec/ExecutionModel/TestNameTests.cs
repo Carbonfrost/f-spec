@@ -26,7 +26,9 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
 
         class FTestCaseInfo : TestCaseInfo {
 
-            static readonly MethodInfo TEST_METHOD = typeof(FTestCaseInfo).GetMethod("RunTest");
+            static readonly MethodInfo TEST_METHOD = typeof(FTestCaseInfo).GetMethod(
+                nameof(MyTestMethod)
+            );
 
             public override int Position {
                 get {
@@ -54,15 +56,14 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
 
             }
 
-            internal override TestExecutionContext CreateExecutionContext(DefaultTestRunner runner) {
-                throw new NotImplementedException();
+            public void MyTestMethod() {
             }
         }
 
         public IEnumerable<TestUnitDisplayNameData> TestUnitDisplayNames {
             get {
                 return new TestUnitDisplayNameData[] {
-                    Data(new FTestCaseInfo(), "RunTest #3"),
+                    Data(new FTestCaseInfo(), "MyTestMethod #3"),
                 };
             }
         }

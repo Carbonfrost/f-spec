@@ -18,8 +18,7 @@ using System;
 using System.Diagnostics;
 using Carbonfrost.Commons.Spec.ExecutionModel.Output;
 
-namespace Carbonfrost.Commons.Spec.ExecutionModel
-{
+namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     partial class DefaultTestRunner : TestRunner {
 
@@ -32,7 +31,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel
 
         public ITestRunnerLogger Logger {
             get;
-            private set;
         }
 
         internal DefaultTestRunner.TestPlanBase CreatePlan(TestRun run) {

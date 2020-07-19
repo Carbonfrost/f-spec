@@ -71,6 +71,22 @@ namespace Carbonfrost.Commons.Spec {
 
         delegate bool TryConvertTestDataDelegate(Type returnType, object myValue, out IEnumerable<TestData> results);
 
+        public static TestDataCollection<T> Table<T>(params TestData<T>[] items) {
+            return new TestDataCollection<T>(items);
+        }
+
+        public static TestDataCollection<T> Table<T>(IEnumerable<TestData<T>> items) {
+            return new TestDataCollection<T>(items);
+        }
+
+        public static TestDataCollection Table(params TestData[] items) {
+            return new TestDataCollection(items);
+        }
+
+        public static TestDataCollection Table(IEnumerable<TestData> items) {
+            return new TestDataCollection(items);
+        }
+
         internal static IEnumerable<TestData> Create(TestContext ctxt, IMemberAccessor accessor) {
             var rt = (TestTheory) ctxt.TestUnit;
             var testObject = ctxt.DummyTestObject;

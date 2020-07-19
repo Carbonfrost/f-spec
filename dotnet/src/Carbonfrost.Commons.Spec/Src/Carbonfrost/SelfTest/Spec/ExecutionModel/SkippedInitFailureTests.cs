@@ -1,3 +1,5 @@
+#if SELF_TEST
+
 //
 // Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
@@ -13,29 +15,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+
+using Carbonfrost.Commons.Spec;
+using Carbonfrost.Commons.Spec.ExecutionModel;
+
 using System;
-using System.Linq;
 
-namespace Carbonfrost.Commons.Spec.ExecutionModel {
+namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
 
-    public class TestTheoryFinishedEventArgs : EventArgs {
+    public class SkippedInitFailureTests {
 
-        private TestUnitFinishedEventArgs _inner;
-
-        public TestTheory TestTheory {
-            get {
-                return (TestTheory) _inner.TestUnit;
-            }
-        }
-
-        public TestUnitResult Results {
-            get {
-                return (TestUnitResult) _inner.Result;
-            }
-        }
-
-        internal TestTheoryFinishedEventArgs(TestUnitFinishedEventArgs inner) {
-            _inner = inner;
+        [Fact]
+        public void CreateTestObject_returns_null() {
+            var si = new SkippedInitFailure(GetType().GetMethod(nameof(CreateTestObject_returns_null)), new Exception());
+            Assert.Null(si.CreateTestObject());
         }
     }
 }
+#endif

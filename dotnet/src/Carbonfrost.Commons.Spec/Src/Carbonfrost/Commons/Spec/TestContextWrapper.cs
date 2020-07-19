@@ -13,20 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using Carbonfrost.Commons.Spec.ExecutionModel;
 using System;
-using System.Threading;
+
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public partial class TestExecutionContext : TestContext, ITestExecutionContext {
+    abstract class TestContextWrapper : TestContext {
 
-        private readonly object _testObject;
-        private object _testReturnValue;
-        private CancellationToken _cancellationToken;
-        private TestCaseInfo _testUnit;
-
-        private TestContext BaseContext {
+        public TestContext BaseContext {
             get;
         }
 
@@ -68,47 +63,15 @@ namespace Carbonfrost.Commons.Spec {
 
         public override TestUnit TestUnit {
             get {
-                return _testUnit;
+                return BaseContext.TestUnit;
             }
         }
 
-        public CancellationToken CancellationToken {
-            get {
-                return _cancellationToken;
+        protected TestContextWrapper(TestContext baseContext) {
+            if (baseContext == null) {
+                throw new ArgumentNullException(nameof(baseContext));
             }
-        }
-
-        public object TestObject {
-            get {
-                return _testObject;
-            }
-        }
-
-        public object TestReturnValue {
-            get {
-                return _testReturnValue;
-            }
-        }
-
-        public TestCaseInfo CurrentTest {
-            get {
-                return (TestCaseInfo) TestUnit;
-            }
-        }
-
-        public TestData TestData {
-            get {
-                if (TestUnit is TestCaseInfo tci) {
-                    return tci.TestData;
-                }
-                return TestData.Empty;
-            }
-        }
-
-        internal TestExecutionContext(TestContext parent, TestCaseInfo self, object testObject) {
-            BaseContext = parent;
-            _testUnit = self;
-            _testObject = testObject;
+            BaseContext = baseContext;
         }
 
         public override TestTemporaryDirectory CreateTempDirectory(string name) {

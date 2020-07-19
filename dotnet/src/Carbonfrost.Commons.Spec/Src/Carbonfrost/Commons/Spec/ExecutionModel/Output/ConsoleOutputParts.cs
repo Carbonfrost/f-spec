@@ -19,7 +19,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
     class ConsoleOutputParts {
 
         public readonly ConsoleOutputPart<TestCaseResult> onTestCaseFinished;
-        public readonly ConsoleOutputPart<TestUnitResults> onTestTheoryFinished;
+        public readonly ConsoleOutputPart<TestUnitResult> onTestTheoryFinished;
         public readonly ConsoleOutputPart<TestRunResults> onTestRunFinished;
         public readonly ConsoleOutputPart<ExceptionInfo> forExceptionInfo;
         public readonly ConsoleOutputPart<UserDataCollection> forUserData;

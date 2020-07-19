@@ -26,7 +26,7 @@ namespace Carbonfrost.Commons.Spec {
         private readonly Dictionary<string, HashSet<string>> _tags = new Dictionary<string, HashSet<string>>(
             StringComparer.OrdinalIgnoreCase
         );
-        private static readonly TestTagCollection Empty = new TestTagCollection(true);
+        internal static readonly TestTagCollection Empty = new TestTagCollection(true);
 
         public int Count {
             get {
