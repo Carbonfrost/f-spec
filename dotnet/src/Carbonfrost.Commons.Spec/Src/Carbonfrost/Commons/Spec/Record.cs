@@ -79,13 +79,20 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         internal static Exception ApplyFlags(Exception ex, RecordExceptionFlags flags) {
-            if (ex is TargetInvocationException && flags.HasFlag(RecordExceptionFlags.UnwindTargetExceptions)) {
-                ex = ex.InnerException;
+            if (flags.HasFlag(RecordExceptionFlags.UnwindTargetExceptions)) {
+                ex = UnwindTargetException(ex);
             }
             if (ex is AssertException && flags.HasFlag(RecordExceptionFlags.StrictVerification)) {
                 throw SpecFailure.CannotAssertAssertExceptions();
             }
 
+            return ex;
+        }
+
+        internal static Exception UnwindTargetException(Exception ex) {
+            if (ex is TargetInvocationException) {
+                return ex.InnerException;
+            }
             return ex;
         }
     }

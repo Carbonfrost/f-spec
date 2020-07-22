@@ -15,6 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+using System;
 using System.Linq;
 using Carbonfrost.Commons.Spec;
 
@@ -53,6 +54,58 @@ namespace Carbonfrost.SelfTest.Spec {
             var a = DisplayActual.Create(123);
             var b = DisplayActual.Create("123");
             Assert.True(DisplayActual.OnlyTypeDifferences(a, b));
+        }
+
+        [Theory]
+        [InlineData(typeof(PHasNoToStringOverride), false)]
+        [InlineData(typeof(PHasToStringOverride), true)]
+        public void HasToStringOverride_is_expected_value(Type type, bool expected) {
+            Assert.Equal(expected, DisplayActual.HasToStringOverride(type));
+        }
+
+        [Fact]
+        public void Create_should_generate_default_no_string_override() {
+            Assert.Equal(
+                "{ F = \"Field has value\", A = \"1\", B = \"2\", C = <InvalidCastException>, D = ... }",
+                DisplayActual.Create(new PHasNoToStringOverride()).Format(DisplayActualOptions.None)
+            );
+        }
+
+        class PHasToStringOverride {
+            public override string ToString() {
+                return "ToString method";
+            }
+        }
+
+        class PHasNoToStringOverride {
+            public string A {
+                get;
+                set;
+            }
+
+            public string B {
+                get;
+                set;
+            }
+
+            public string C {
+                get {
+                    throw new InvalidCastException();
+                }
+            }
+
+            public object D { // Self-reference which should be elided
+                get {
+                    return this;
+                }
+            }
+
+            public string F = "Field has value";
+
+            public PHasNoToStringOverride() {
+                A = "1";
+                B = "2";
+            }
         }
     }
 }
