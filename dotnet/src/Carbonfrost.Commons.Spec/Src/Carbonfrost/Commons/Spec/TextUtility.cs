@@ -49,16 +49,6 @@ namespace Carbonfrost.Commons.Spec {
             return string.Join(", ", myList) + rest;
         }
 
-        internal static string FormatDuration(TimeSpan duration) {
-            if (duration.TotalMilliseconds < 600) {
-                return string.Format("{0:0.#} ms", duration.TotalMilliseconds);
-            }
-            if (duration.TotalSeconds < 120) {
-                return string.Format("{0:0.000} seconds", duration.TotalSeconds);
-            }
-            return duration.ToString();
-        }
-
         internal static string FormatLocation(object location) {
             if (location is Uri url) {
                 if (url.IsAbsoluteUri) {

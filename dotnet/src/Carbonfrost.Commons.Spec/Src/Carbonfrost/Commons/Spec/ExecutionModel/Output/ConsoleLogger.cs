@@ -152,7 +152,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
         static string FormatDuration(TimeSpan? duration) {
             if (duration.HasValue) {
-                return TextUtility.FormatDuration(duration.Value);
+                return ((Time) duration.Value).ToString("n");
             }
             return "";
         }

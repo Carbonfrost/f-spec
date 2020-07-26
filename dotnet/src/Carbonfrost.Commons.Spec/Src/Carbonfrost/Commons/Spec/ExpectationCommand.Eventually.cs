@@ -49,7 +49,7 @@ namespace Carbonfrost.Commons.Spec {
                 }
 
                 var result = new TestFailure("spec.eventually") {
-                    Message = SR.EventuallyTimedOutAfter(TextUtility.FormatDuration(_duration)),
+                    Message = SR.EventuallyTimedOutAfter(((Time) _duration).ToString("n")),
                     Children = { TestMatcherLocalizer.FailurePredicate(matcher) },
                 };
                 result.UserData.CopyActuals(aFailure.UserData);

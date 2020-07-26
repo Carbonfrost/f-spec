@@ -41,8 +41,10 @@ namespace Carbonfrost.SelfTest.Spec {
         [InlineData("2h", 2 * 60 * 60)]
         [InlineData("2d", 2 * 86400)]
         [InlineData("2ms", 2.0 / 1000)]
+        [InlineData("2us", 2.0 / 1000 / 1000)]
+        [InlineData("2μs", 2.0 / 1000 / 1000, Name = "unicode")]
         [InlineData("2d 12h 15m 3.5s", 2 * 86400 + 12 * 3600 + 15 * 60 + 3.5, Name = "Composite")]
-        public void TryParse_should_handle_unit_converions(string text, double seconds) {
+        public void TryParse_should_handle_unit_conversions(string text, double seconds) {
             Assert.True(Time.TryParse(text, out Time actual));
             Assert.Equal(TimeSpan.FromSeconds(seconds), actual.Value);
         }
@@ -64,6 +66,49 @@ namespace Carbonfrost.SelfTest.Spec {
 
             Assert.True(Time.TryParse("Infinite", out actual));
             Assert.Equal(TimeSpan.MaxValue, actual.Value);
+        }
+
+        [Theory]
+        [InlineData("0 hr 0 min 2 sec", 2)]
+        [InlineData("0 hr 2 min 0 sec", 2 * 60)]
+        [InlineData("1 hr 0 min 0 sec", 1 * 60 * 60)]
+        [InlineData("2 hr 0 min 0 sec", 2 * 60 * 60)]
+        [InlineData("2 d 0 hr 0 min 0 sec", 2 * 86400)]
+        [InlineData("0 hr 0 min 0.002 sec", 2.0 / 1000)]
+        [InlineData("2 d 12 hr 15 min 3.5 sec", 2 * 86400 + 12 * 3600 + 15 * 60 + 3.5, Name = "Composite")]
+        public void ToString_format_general_should_use_unit_syntax(string expected, double seconds) {
+            var time = (Time) TimeSpan.FromSeconds(seconds);
+            Assert.Equal(expected, time.ToString("G"));
+        }
+
+        [Theory]
+        [InlineData("2 hr 0 min 0 sec", "g")]
+        [InlineData("2 hours", "n")]
+        [InlineData("02:00:00", "s")]
+        public void ToString_format_should_use_correct_syntax(string expected, string format) {
+            var time = (Time) TimeSpan.FromHours(2);
+            Assert.Equal(expected, time.ToString(format));
+        }
+
+        [Theory]
+        [InlineData("2 hours 1 min", "2h 1min 25s 30ms")]
+        [InlineData("520 μs", "520μs")]
+        [InlineData("0.6 ms", "0.6ms", Name = "threshold for ms")]
+        [InlineData("500 ms", "500ms")]
+        [InlineData("0.60 sec", "600ms", Name = "threshold for seconds")]
+        [InlineData("20.3 sec", "20.25sec")]
+        [InlineData("2 min", "2min", Name = "threshold for minutes")]
+        [InlineData("2 hours 2 min", "2hr 2min")]
+        [InlineData("2 days 2 hours", "2day 2hr 2min")]
+        [InlineData("2 days", "2day 2min", Name = "truncate minutes")]
+        [InlineData("3 days", "2day 23hr 35min", Name = "rounded days")]
+        [InlineData("1 day", "0 days 23 hr 59 min 30 sec", Name = "rounded days 2")]
+        [InlineData("2 days 3 hours", "2day 2hr 35min", Name = "rounded hours")]
+        [InlineData("3 hours", "2hr 59min 35sec", Name = "rounded hours 2")]
+        [InlineData("2 days", "2day 2min", Name = "rounded minutes")]
+        public void ToString_format_natural_should_truncate_to_readable(string expected, string exact) {
+            var time = Time.Parse(exact);
+            Assert.Equal(expected, time.ToString("N"));
         }
     }
 }
