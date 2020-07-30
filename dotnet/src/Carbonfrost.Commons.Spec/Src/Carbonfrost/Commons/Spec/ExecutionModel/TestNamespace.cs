@@ -74,6 +74,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public override string Name {
+            get {
+                return Namespace;
+            }
+        }
+
         public override TestUnitType Type {
             get {
                 return TestUnitType.Namespace;

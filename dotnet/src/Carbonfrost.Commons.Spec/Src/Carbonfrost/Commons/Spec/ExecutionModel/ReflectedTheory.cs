@@ -13,8 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -46,38 +44,5 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             var attrs = TestMethod.GetCustomAttributes(false);
             return TestDataProviderCollection.Create(attrs.OfType<ITestDataProvider>().ToArray());
         }
-
-        protected override void Initialize(TestContext testContext) {
-            Metadata.Apply(testContext);
-
-            int index = 0;
-            foreach (var attr in TestDataProviders) {
-                var apply = attr as ITestCaseMetadataFilter;
-
-                IEnumerable<TestData> data = null;
-                try {
-                    data = attr.GetData(testContext);
-                } catch (Exception ex) {
-                    Children.Add(SkippedInitFailure.DataProviderProblem(this, attr.ToString(), TestMethod, ex));
-                }
-
-                if (data == null) {
-                    continue;
-                }
-                var allData = data.ToList();
-                foreach (var row in allData) {
-                    var caseUnit = new ReflectedTheoryCase(TestMethod, index, row);
-                    Children.Add(caseUnit);
-
-                    if (apply != null) {
-                        apply.Apply(caseUnit);
-                    }
-                    index++;
-                }
-            }
-
-            Metadata.ApplyDescendants(testContext, Descendants);
-        }
-
     }
 }

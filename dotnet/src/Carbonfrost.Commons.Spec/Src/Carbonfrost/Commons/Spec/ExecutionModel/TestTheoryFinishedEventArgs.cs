@@ -28,9 +28,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public TestUnitResults Results {
+        public TestUnitResult Results {
             get {
-                return (TestUnitResults) _inner.Result;
+                return (TestUnitResult) _inner.Result;
             }
         }
 

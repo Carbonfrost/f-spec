@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -118,7 +118,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         internal TestFailure UpdateTestSubject() {
             var cur = TestContext.Current;
             if (cur != null) {
-                UserData.Add("Subject", cur.CurrentTest.FindTestSubject());
+                UserData.Add("Subject", cur.TestUnit.FindTestSubject());
             }
             return this;
         }

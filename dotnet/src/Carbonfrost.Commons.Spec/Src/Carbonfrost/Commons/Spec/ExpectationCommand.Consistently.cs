@@ -46,7 +46,7 @@ namespace Carbonfrost.Commons.Spec {
                     var aFailure = _inner.Should(matcher);
                     if (aFailure != null) {
                         var result = new TestFailure("spec.consistently") {
-                            Message = SR.ConsistentlyElapsedBefore(TextUtility.FormatDuration(_duration)),
+                            Message = SR.ConsistentlyElapsedBefore(((Time) _duration).ToString("n")),
                             Children = {
                                 TestMatcherLocalizer.FailurePredicate(matcher)
                              },

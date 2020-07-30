@@ -20,10 +20,27 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 namespace Carbonfrost.Commons.Spec {
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public sealed class FTheoryAttribute : Attribute, IReflectionTestUnitFactory {
+    public sealed class FTheoryAttribute : Attribute, ITestTheoryAttributeApiConventions {
+
+        public RetargetDelegates RetargetDelegates {
+            get;
+            set;
+        }
+
+        public string Reason {
+            get;
+            set;
+        }
+
+        void ITestUnitMetadataProvider.Apply(TestContext testContext) {
+            this.ApplyRetargetDelegates(testContext);
+        }
 
         TestUnit IReflectionTestUnitFactory.CreateTestCase(MethodInfo method) {
-            return new ReflectedTheory(method) { IsFocused = true };
+            return new ReflectedTheory(method) {
+                IsFocused = true,
+                Reason = Reason
+            };
         }
     }
 }

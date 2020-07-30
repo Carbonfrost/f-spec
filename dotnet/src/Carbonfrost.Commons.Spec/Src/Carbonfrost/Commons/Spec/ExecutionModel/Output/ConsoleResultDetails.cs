@@ -21,10 +21,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
         protected override void RenderCore(TestUnitResult result) {
             if (result.IsSlow) {
                 console.Write("[");
-                console.Write(TextUtility.FormatDuration(result.ExecutionTime.Value));
+                console.Write(((Time) result.ExecutionTime.Value).ToString("n"));
                 console.Write("]  ");
             }
-            console.Write(result.DisplayName);
+            if (result is TestCaseResult c) {
+                parts.forName.Render(context, c.TestName);
+            } else {
+                console.WriteLine(result.DisplayName);
+            }
             if (result.IsFocused) {
                 console.Write(" (focused)");
             }

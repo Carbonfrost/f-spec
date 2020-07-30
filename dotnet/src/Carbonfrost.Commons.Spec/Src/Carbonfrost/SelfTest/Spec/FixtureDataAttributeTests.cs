@@ -23,7 +23,8 @@ using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 using Carbonfrost.SelfTest.Spec.ExecutionModel;
 
-namespace Carbonfrost.SelfTest.Spec {
+namespace Carbonfrost.SelfTest.Spec
+{
 
     public class FixtureDataAttributeTests {
 
@@ -62,7 +63,7 @@ namespace Carbonfrost.SelfTest.Spec {
             var fake = new ReflectedTheory(
                 GetType().GetMethod("FakeTheory", BindingFlags.NonPublic | BindingFlags.Instance
             ));
-            var context = TestContext.NewInitContext(fake, new FakeRunner());
+            var context = SelfTestUtility.NewTestContext(fake, new FakeRunner());
             var fd = func();
             return ((ITestDataProvider) fd).GetData(context).ToArray();
         }

@@ -1,5 +1,5 @@
 //
-// Copyright 2017, 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-
 
 namespace Carbonfrost.Commons.Spec {
 
@@ -82,7 +81,7 @@ namespace Carbonfrost.Commons.Spec {
         class DefaultImpl : TestSubjectProvider {
 
             protected override IEnumerable<Type> GetTestSubjectTypes(TestContext context) {
-                var pred = GetTestSubjectTypePredicate(context.CurrentTest.FindTestClass().TestClass);
+                var pred = GetTestSubjectTypePredicate(context.TestUnit.FindTestClass().TestClass);
                 Func<Type, bool> canActivateType = t => !(t.GetTypeInfo().IsInterface || t.GetTypeInfo().IsAbstract);
                 return Activation.AllTypes().Where(pred).Where(canActivateType);
             }

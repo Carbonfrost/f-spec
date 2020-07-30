@@ -16,7 +16,7 @@
 
 using System;
 using System.Collections;
-using Carbonfrost.Commons.Spec.ExecutionModel;
+using System.Runtime.Serialization;
 
 namespace Carbonfrost.Commons.Spec {
 
@@ -24,15 +24,12 @@ namespace Carbonfrost.Commons.Spec {
 
         public static readonly IDisplayActual Null = new NullImpl();
         public static readonly IDisplayActual EmptyString = new StringDisplayActual("");
+        public static readonly IDisplayActual Ellipsis = new EllipsisImpl();
 
-        public static IDisplayActual Create(object value, int depth = 0) {
+        public static IDisplayActual Create(object value, int depth = 0, ObjectIDGenerator graph = null) {
             if (value is null) {
                 return Null;
             }
-            if (value is IDisplayActual da) {
-                return da;
-            }
-
             if (value is string stringValue) {
                 if (stringValue.Length == 0) {
                     return EmptyString;
@@ -49,11 +46,31 @@ namespace Carbonfrost.Commons.Spec {
                 return new BasicDisplayActual(GetStringComparerText(value), value.GetType());
             }
 
-            if (depth < 3 && value is IEnumerable enumerableValue) {
+            if (depth > 3) {
+                return Ellipsis;
+            }
+
+            if (graph == null) {
+                graph = new ObjectIDGenerator();
+            }
+            graph.GetId(value, out bool first);
+            if (!first) {
+                return Ellipsis;
+            }
+
+            if (value is IDisplayActual da) {
+                return da;
+            }
+
+            if (value is IEnumerable enumerableValue) {
                 return new EnumerableDisplayActual(enumerableValue, depth + 1);
             }
 
-            return new BasicDisplayActual(value.ToString(), value.GetType());
+            if (HasToStringOverride(value.GetType())) {
+                return new BasicDisplayActual(value.ToString(), value.GetType());
+            }
+
+            return new DefaultDisplayActual(value, depth, graph);
         }
 
         internal static IDisplayActual Exception(Exception exception) {
@@ -66,6 +83,14 @@ namespace Carbonfrost.Commons.Spec {
             }
             return a.Format(DisplayActualOptions.None)
                 == b.Format(DisplayActualOptions.None);
+        }
+
+        internal static bool HasToStringOverride(Type type) {
+            var method = type.GetMethod("ToString", Type.EmptyTypes);
+            if (method.DeclaringType == typeof(object)) {
+                return false;
+            }
+            return true;
         }
 
         static string GetStringComparerText(object comparison) {
@@ -96,6 +121,13 @@ namespace Carbonfrost.Commons.Spec {
 
             public string Format(DisplayActualOptions options) {
                 return "<null>";
+            }
+        }
+
+        class EllipsisImpl : IDisplayActual {
+
+            public string Format(DisplayActualOptions options) {
+                return "...";
             }
         }
     }

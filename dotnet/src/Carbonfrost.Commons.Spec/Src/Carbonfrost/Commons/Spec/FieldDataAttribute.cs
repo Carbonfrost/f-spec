@@ -21,9 +21,10 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 namespace Carbonfrost.Commons.Spec {
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public sealed class FieldDataAttribute : Attribute, ITestDataApiAttributeConventions {
+    public sealed class FieldDataAttribute : Attribute, ITestDataApiAttributeConventions, IReflectionTestCaseFactory {
 
         private readonly string[] _fields;
+        private string _name;
         private readonly TestTagCache _tags = new TestTagCache();
 
         public string[] Tags {
@@ -50,9 +51,18 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        public string Name {
+        public RetargetDelegates RetargetDelegates {
             get;
             set;
+        }
+
+        public string Name {
+            get {
+                return _name ?? string.Join(" × ", Fields);
+            }
+            set {
+                _name = value;
+            }
         }
 
         public string Reason {
@@ -86,7 +96,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         IEnumerable<TestData> ITestDataProvider.GetData(TestContext context) {
-            TestUnit unit = context.CurrentTest;
+            TestUnit unit = context.TestUnit;
             var declaringType = ((TestTheory) unit).TestMethod.DeclaringType;
             var all = new List<IMemberAccessor>();
             foreach (var f in _fields) {
@@ -97,6 +107,12 @@ namespace Carbonfrost.Commons.Spec {
                 all.Add(MemberAccessors.Field(fld));
             }
             return this.WithNames(TestDataProvider.FromMemberAccessors(all).GetData(context), _tags.TestTags);
+        }
+
+        TestCaseInfo IReflectionTestCaseFactory.CreateTestCase(MethodInfo method, TestDataInfo row) {
+            return new ReflectedTheoryCase(method, row) {
+                RetargetDelegates = RetargetDelegates,
+            };
         }
     }
 }

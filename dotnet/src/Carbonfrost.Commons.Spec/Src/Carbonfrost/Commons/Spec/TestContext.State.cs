@@ -25,7 +25,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public void Skip(string reason) {
-            CurrentTest.ForcePredeterminedStatus(TestUnitFlags.Skip, reason);
+            TestUnit.ForcePredeterminedStatus(TestUnitFlags.Skip, reason);
         }
 
         public void Pending() {
@@ -33,7 +33,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public void Pending(string reason) {
-            CurrentTest.ForcePredeterminedStatus(TestUnitFlags.Pending, reason);
+            TestUnit.ForcePredeterminedStatus(TestUnitFlags.Pending, reason);
         }
 
         public void Fail() {
@@ -41,7 +41,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public void Fail(string reason) {
-            CurrentTest.ForcePredeterminedStatus(TestUnitFlags.Failed, reason);
+            TestUnit.ForcePredeterminedStatus(TestUnitFlags.Failed, reason);
         }
 
         internal void VerifiableProblem(string reason) {

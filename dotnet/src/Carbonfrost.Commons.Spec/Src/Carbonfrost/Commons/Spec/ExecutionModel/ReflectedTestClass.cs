@@ -61,7 +61,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        protected override void BeforeExecuting(TestExecutionContext testContext) {
+        protected override void BeforeExecuting(TestContext testContext) {
             if (Children.Count > 0) {
                 return;
             }
@@ -96,7 +96,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 throw SpecFailure.CouldNotLoadType(_type, _ex);
             }
 
-            public void BeforeExecuting(TestExecutionContext testContext) {
+            public void BeforeExecuting(TestContext testContext) {
             }
 
             public void AfterExecuting(TestExecutionContext testContext) {

@@ -51,7 +51,7 @@ namespace Carbonfrost.Commons.Spec {
 
             public OrMatcher(IEnumerable<ITestMatcher<T>> matchers) {
                 if (matchers == null) {
-                    _matchers = Empty<ITestMatcher<T>>.Array;
+                    _matchers = Array.Empty<ITestMatcher<T>>();
                 } else {
                     _matchers = matchers.ToArray();
                 }
@@ -79,11 +79,11 @@ namespace Carbonfrost.Commons.Spec {
             private readonly ITestMatcher[] _matchers;
 
             public OrMatcher(params ITestMatcher[] matchers) {
-                _matchers = (matchers ?? Empty<ITestMatcher>.Array).ToArray();
+                _matchers = (matchers ?? Array.Empty<ITestMatcher>()).ToArray();
             }
 
             public OrMatcher(IEnumerable<ITestMatcher> matchers) {
-                _matchers = (matchers ?? Empty<ITestMatcher>.Array).ToArray();
+                _matchers = (matchers ?? Array.Empty<ITestMatcher>()).ToArray();
             }
 
             public bool Matches(ITestActualEvaluation testCode) {

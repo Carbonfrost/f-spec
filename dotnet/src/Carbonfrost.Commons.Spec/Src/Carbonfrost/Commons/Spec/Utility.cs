@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -38,6 +39,24 @@ namespace Carbonfrost.Commons.Spec {
         static readonly string PathSafeChars = string.Format(
             @"[{0}]+",
             string.Concat(PATH_UNSAFE_CHARS.Select(s => Regex.Escape(s.ToString()))));
+
+        public static T OptimalComposite<T>(IEnumerable<T> items, Func<T[], T> compositeFactory, T nullInstance)
+            where T : class
+        {
+            if (items == null) {
+                return nullInstance;
+            }
+
+            items = items.Where(t => t != null && !object.ReferenceEquals(t, nullInstance));
+            if (!items.Any()) {
+                return nullInstance;
+            }
+            if (items.Skip(1).Any()) { // 2 or more
+                return compositeFactory(items.ToArray());
+            }
+
+            return items.First();
+        }
 
         internal static string RandomName() {
             byte[] data = new byte[6];

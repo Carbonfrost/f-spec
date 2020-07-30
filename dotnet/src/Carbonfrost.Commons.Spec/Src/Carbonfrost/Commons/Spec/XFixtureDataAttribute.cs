@@ -16,12 +16,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public sealed class XFixtureDataAttribute : Attribute, ITestDataApiAttributeConventions, ITestCaseMetadataFilter {
+    public sealed class XFixtureDataAttribute : Attribute, ITestDataApiAttributeConventions, IReflectionTestCaseFactory {
 
         private readonly FixtureDataAttribute _inner;
 
@@ -52,6 +53,15 @@ namespace Carbonfrost.Commons.Spec {
         public Uri Url {
             get {
                 return _inner.Url;
+            }
+        }
+
+        RetargetDelegates ITestDataApiAttributeConventions.RetargetDelegates {
+            get {
+                return RetargetDelegates.Unspecified;
+            }
+            set {
+                throw new NotSupportedException();
             }
         }
 
@@ -90,9 +100,11 @@ namespace Carbonfrost.Commons.Spec {
             return ((ITestDataProvider) _inner).GetData(context);
         }
 
-        void ITestCaseMetadataFilter.Apply(TestCaseInfo testCase) {
-            testCase.IsPending = true;
-            testCase.Reason = Reason;
+        TestCaseInfo IReflectionTestCaseFactory.CreateTestCase(MethodInfo method, TestDataInfo row) {
+            return new ReflectedTheoryCase(method, row) {
+                IsPending = true,
+                Reason = Reason,
+            };
         }
     }
 }

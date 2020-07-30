@@ -34,9 +34,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public TestUnitResults Result {
+        public TestUnitResult Result {
             get {
-                return (TestUnitResults) _inner.Result;
+                return (TestUnitResult) _inner.Result;
             }
         }
 

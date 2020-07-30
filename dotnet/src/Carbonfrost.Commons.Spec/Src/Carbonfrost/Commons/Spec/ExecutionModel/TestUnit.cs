@@ -65,10 +65,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             throw new NotSupportedException();
         }
 
-        internal TestContext CreateInitializationContext(DefaultTestRunner runner) {
-            return TestContext.NewInitContext(this, runner);
-        }
-
         internal virtual object FindTestSubject() {
             if (Parent != null) {
                 return Parent.FindTestSubject();
@@ -99,7 +95,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        internal void BeforeExecutingSafe(TestExecutionContext context) {
+        internal void BeforeExecutingSafe(TestContext context) {
             using (context.ApplyingContext()) {
                 BeforeExecuting(context);
             }
@@ -111,7 +107,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         protected virtual void AfterExecuting(TestExecutionContext testContext) {
         }
 
-        protected virtual void BeforeExecuting(TestExecutionContext testContext) {
+        protected virtual void BeforeExecuting(TestContext testContext) {
             // Flush the log at this time.  Any log messages that were received
             // during initialization can be written now
             testContext.Log.Flush();
@@ -211,8 +207,17 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public abstract string DisplayName { get; }
-        public abstract TestUnitType Type { get; }
+        public abstract string DisplayName {
+            get;
+        }
+
+        public abstract string Name {
+            get;
+        }
+
+        public abstract TestUnitType Type {
+            get;
+        }
 
         public IEnumerable<TestUnit> DescendantsAndSelf {
             get {

@@ -21,13 +21,13 @@ namespace Carbonfrost.Commons.Spec {
     public class TestDataProviderCollection : IReadOnlyList<ITestDataProvider> {
 
         internal static readonly TestDataProviderCollection Empty
-            = new TestDataProviderCollection(Empty<ITestDataProvider>.Array);
+            = new TestDataProviderCollection(Array.Empty<ITestDataProvider>());
 
         private readonly IList<ITestDataProvider> _items;
 
-        public TestDataProviderCollection(IList<ITestDataProvider> items) {
+        private TestDataProviderCollection(IList<ITestDataProvider> items) {
             if (items == null) {
-                throw new ArgumentNullException("items");
+                throw new ArgumentNullException(nameof(items));
             }
             _items = items;
         }
@@ -37,6 +37,13 @@ namespace Carbonfrost.Commons.Spec {
                 return Empty;
             }
             return new TestDataProviderCollection(items);
+        }
+
+        internal static TestDataProviderCollection Create(ITestDataProvider item) {
+            if (item == null) {
+                return Empty;
+            }
+            return new TestDataProviderCollection(new [] { item });
         }
 
         public ITestDataProvider this[int index] {

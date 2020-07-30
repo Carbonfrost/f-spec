@@ -568,6 +568,9 @@
   <data name="Pending" xml:space="preserve">
     <value>Pending</value>
   </data>
+  <data name="PossibleDelegateRetargeting" xml:space="preserve">
+    <value>Delegate test data may need retargeting to work as expected, and you must explicitly opt-in using the proper attribute metadata or test types.</value>
+  </data>
   <data name="PredicateAssignableFrom" xml:space="preserve">
     <value>be assignable from {Expected}</value>
   </data>

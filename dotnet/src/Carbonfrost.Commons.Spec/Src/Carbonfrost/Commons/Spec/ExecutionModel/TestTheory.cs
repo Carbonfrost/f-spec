@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Carbonfrost.Commons.Spec.Resources;
@@ -45,7 +46,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public override string DisplayName {
             get {
-                return Parent.DisplayName + "." + TestMethod.Name;
+                if (Parent == null) {
+                    return TestMethod.Name;
+                }
+                return string.Concat(Parent.DisplayName, ".", TestMethod.Name);
+            }
+        }
+
+        public override string Name {
+            get {
+                return TestMethod.Name;
             }
         }
 
@@ -57,12 +67,48 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        protected override void BeforeExecuting(TestExecutionContext testContext) {
+        protected override void BeforeExecuting(TestContext testContext) {
             if (Children.Count == 0) {
                 testContext.Log.TheoryHasNoDataProviders();
                 testContext.VerifiableProblem(SR.TheoryHasNoDataProviders());
             }
             base.BeforeExecuting(testContext);
+        }
+
+        internal virtual IReflectionTestCaseFactory GetTestCaseFactory(ITestDataProvider provider) {
+            return provider as IReflectionTestCaseFactory ?? ReflectionTestCaseFactory.Default;
+        }
+
+        protected override void Initialize(TestContext testContext) {
+            Metadata.Apply(testContext);
+
+            int index = 0;
+            foreach (var attr in TestDataProviders) {
+                var factory = GetTestCaseFactory(attr);
+                string providerName = null;
+                if (attr is ITestDataApiAttributeConventions conv) {
+                    providerName = conv.Name;
+                }
+
+                IEnumerable<TestData> data = null;
+                try {
+                    data = attr.GetData(testContext);
+                } catch (Exception ex) {
+                    Children.Add(SkippedInitFailure.DataProviderProblem(this, attr.ToString(), TestMethod, ex));
+                }
+
+                if (data == null) {
+                    continue;
+                }
+                var allData = data.ToList();
+                foreach (var row in allData) {
+                    var caseUnit = factory.CreateTestCase(TestMethod, new TestDataInfo(row, providerName, index));
+                    Children.Add(caseUnit);
+                    index++;
+                }
+            }
+
+            Metadata.ApplyDescendants(testContext, Descendants);
         }
     }
 }

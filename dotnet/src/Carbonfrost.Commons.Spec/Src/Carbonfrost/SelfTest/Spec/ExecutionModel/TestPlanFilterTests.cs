@@ -50,7 +50,7 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
         }
 
         private static IEnumerable<TestUnit> TestUnits(params string[] names) {
-            var testContext = TestContext.NewInitContext(null, new FakeRunner());
+            var testContext = SelfTestUtility.NewTestContext(null, new FakeRunner());
             foreach (var name in names) {
                 var type = typeof(TestPlanFilterTests).GetNestedType(name, BindingFlags.NonPublic);
                 yield return new ReflectedTestClass(type);
@@ -77,6 +77,19 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
             Assert.DoesNotContain("TestC1", names);
         }
 
+        [Fact]
+        public void Includes_will_include_matching_tests() {
+            var names = WillRun(pf => pf.Includes.AddNew("TestD"));
+            Assert.Equal(new [] { "TestD1", "TestD2" }, names);
+        }
+
+        [Fact]
+        public void Excludes_will_excludes_matching_tests() {
+            var names = WillRun(pf => pf.Excludes.AddNew("TestB"));
+            Assert.DoesNotContain("TestB1", names);
+            Assert.DoesNotContain("TestB2", names);
+        }
+
         static string[] WillRun(Action<TestPlanFilter> planner) {
             var testRun = new TestRun();
             var opts = new TestRunnerOptions();
@@ -94,7 +107,7 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
                 return s;
             };
 
-            return plan.WillRunTestCases.Select(t => removePrefix(t.DisplayName)).ToArray();
+            return plan.WillRunTestCases.Select(t => removePrefix(t.TestName.Method)).ToArray();
         }
     }
 }

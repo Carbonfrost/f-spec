@@ -1,7 +1,7 @@
 #if SELF_TEST
 
 //
-// Copyright 2016, 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ using Carbonfrost.Commons.Spec;
 
 namespace Carbonfrost.SelfTest.Spec {
 
-    public class TestDataBinderTests {
+    public class FixtureTestDataBinderTests {
 
         public void FakeFixtureMethod(FixtureObject fob) {
         }
@@ -38,8 +38,8 @@ namespace Carbonfrost.SelfTest.Spec {
                 { "a", "" },
                 { "b", "false" },
             };
-            var method = typeof(TestDataBinderTests).GetMethod("FakeFixtureMethod");
-            var binder = TestDataBinder.Create(method, dict.Keys);
+            var method = typeof(FixtureTestDataBinderTests).GetMethod("FakeFixtureMethod");
+            var binder = FixtureTestDataBinder.Create(method, dict.Keys);
             var fob = new FixtureObject { A = "", B = "false" };
             Assert.Equal(new object[] { fob }, binder.Bind(dict));
         }
@@ -50,8 +50,8 @@ namespace Carbonfrost.SelfTest.Spec {
                 { "a", "" },
                 { "b", "false" },
             };
-            var method = typeof(TestDataBinderTests).GetMethod("FakeFixtureMethod2");
-            var binder = TestDataBinder.Create(method, dict.Keys);
+            var method = typeof(FixtureTestDataBinderTests).GetMethod("FakeFixtureMethod2");
+            var binder = FixtureTestDataBinder.Create(method, dict.Keys);
             Assert.Equal(new object[] { "", "false" }, binder.Bind(dict));
         }
 
@@ -60,9 +60,32 @@ namespace Carbonfrost.SelfTest.Spec {
             var dict = new Dictionary<string, string> {
                 { "a", "" },
             };
-            var method = typeof(TestDataBinderTests).GetMethod("FakeFixtureMethod3");
-            var binder = TestDataBinder.Create(method, dict.Keys);
+            var method = typeof(FixtureTestDataBinderTests).GetMethod("FakeFixtureMethod3");
+            var binder = FixtureTestDataBinder.Create(method, dict.Keys);
             Assert.Equal(new object[] { "" }, binder.Bind(dict));
+        }
+
+        public void FakeFixtureMethodEnum(PHasEnumProperty fob) {
+        }
+
+        [Fact]
+        public void Create_should_bind_enum_property_value() {
+            var dict = new Dictionary<string, string> {
+                { "c", "Greetings" },
+            };
+            var method = typeof(FixtureTestDataBinderTests).GetMethod(nameof(FakeFixtureMethodEnum));
+            var binder = FixtureTestDataBinder.Create(method, dict.Keys);
+            var actual = binder.Bind(dict);
+            Assert.Equal(((PHasEnumProperty) actual[0]).C, PGreetingEnum.Greetings);
+        }
+
+        public class PHasEnumProperty {
+            public PGreetingEnum C { get; set; }
+        }
+
+        public enum PGreetingEnum {
+            Hello,
+            Greetings
         }
 
         public class FixtureObject {

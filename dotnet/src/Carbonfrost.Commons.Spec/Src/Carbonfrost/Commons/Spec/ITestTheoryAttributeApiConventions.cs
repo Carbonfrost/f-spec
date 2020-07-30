@@ -1,5 +1,3 @@
-#if SELF_TEST
-
 //
 // Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
@@ -15,24 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
-using Carbonfrost.Commons.Spec;
+namespace Carbonfrost.Commons.Spec {
 
-namespace Carbonfrost.SelfTest.Spec {
+    interface ITestTheoryAttributeApiConventions : IReflectionTestUnitFactory, ITestUnitMetadataProvider {
+        RetargetDelegates RetargetDelegates {
+            get;
+            set;
+        }
+    }
 
-    public class TestContextTests : TestClass {
+    partial class Extensions {
 
-        [XFact]
-        public void RunTest_Action_should_add_child_context() {
-            string testUnit = null;
-
-            RunTest(tc => {
-                testUnit = tc.CurrentTest.DisplayName;
-            });
-
-            Assert.NotNull(testUnit);
-            Assert.Equal("RunTest_Action_should_add_child_context2", testUnit);
+        internal static void ApplyRetargetDelegates(this ITestTheoryAttributeApiConventions self, TestContext testContext) {
+            if (testContext.TestUnit is TestCaseInfo tci && tci.RetargetDelegates == RetargetDelegates.Unspecified) {
+                tci.RetargetDelegates = self.RetargetDelegates;
+            }
         }
     }
 }
-#endif

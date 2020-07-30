@@ -45,7 +45,7 @@ namespace Carbonfrost.SelfTest.Spec {
                 Assert.Null("");
 
             } catch (AssertException ex) {
-                Assert.ContainsKeyWithValue("Subject", Subject.ToString(), ex.TestFailure.UserData);
+                Assert.ContainsKey("Subject", ex.TestFailure.UserData);
                 Assert.Pass();
             }
         }

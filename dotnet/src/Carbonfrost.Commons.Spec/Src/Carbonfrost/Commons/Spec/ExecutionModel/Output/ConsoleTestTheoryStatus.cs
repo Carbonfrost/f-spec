@@ -16,9 +16,9 @@
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
-    class ConsoleTestTheoryStatus : ConsoleOutputPart<TestUnitResults> {
+    class ConsoleTestTheoryStatus : ConsoleOutputPart<TestUnitResult> {
 
-        protected override void RenderCore(TestUnitResults result) {
+        protected override void RenderCore(TestUnitResult result) {
             // We only provide output when the theory is empty
             if (result.Children.Count != 0) {
                 return;

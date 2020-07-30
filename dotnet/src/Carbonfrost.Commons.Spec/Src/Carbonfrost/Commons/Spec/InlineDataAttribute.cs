@@ -64,6 +64,15 @@ namespace Carbonfrost.Commons.Spec {
             set;
         }
 
+        RetargetDelegates ITestDataApiAttributeConventions.RetargetDelegates {
+            get {
+                return RetargetDelegates.Unspecified;
+            }
+            set {
+                throw new NotSupportedException();
+            }
+        }
+
         public InlineDataAttribute(params object[] data) {
             _data = data;
         }
@@ -85,6 +94,5 @@ namespace Carbonfrost.Commons.Spec {
                 new TestDataState(Name, Reason, Explicit ? TestUnitFlags.Explicit : TestUnitFlags.None, _tags)
             );
         }
-
     }
 }

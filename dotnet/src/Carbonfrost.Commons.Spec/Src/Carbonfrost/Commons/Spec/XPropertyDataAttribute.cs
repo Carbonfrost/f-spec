@@ -15,12 +15,13 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public sealed class XPropertyDataAttribute : Attribute, ITestDataApiAttributeConventions, ITestCaseMetadataFilter {
+    public sealed class XPropertyDataAttribute : Attribute, ITestDataApiAttributeConventions, IReflectionTestCaseFactory {
 
         private readonly PropertyDataAttribute _inner;
 
@@ -45,6 +46,15 @@ namespace Carbonfrost.Commons.Spec {
         public IReadOnlyList<string> Properties {
             get {
                 return _inner.Properties;
+            }
+        }
+
+        public RetargetDelegates RetargetDelegates {
+            get {
+                return _inner.RetargetDelegates;
+            }
+            set {
+                _inner.RetargetDelegates = value;
             }
         }
 
@@ -99,9 +109,12 @@ namespace Carbonfrost.Commons.Spec {
             return ((ITestDataProvider) _inner).GetData(context);
         }
 
-        void ITestCaseMetadataFilter.Apply(TestCaseInfo testCase) {
-            testCase.IsPending = true;
-            testCase.Reason = Reason;
+        TestCaseInfo IReflectionTestCaseFactory.CreateTestCase(MethodInfo method, TestDataInfo row) {
+            return new ReflectedTheoryCase(method, row) {
+                IsPending = true,
+                Reason = Reason,
+                RetargetDelegates = RetargetDelegates,
+            };
         }
     }
 }

@@ -27,13 +27,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             Adapt(testContext).AfterExecuting(testContext);
         }
 
-        protected override void BeforeExecuting(TestExecutionContext testContext) {
+        protected override void BeforeExecuting(TestContext testContext) {
             Adapt(testContext).BeforeExecuting(testContext);
             base.BeforeExecuting(testContext);
         }
 
-        private static ITestExecutionFilter Adapt(TestExecutionContext testContext) {
-            return ((ITestExecutionFilter) testContext.TestObject);
+        private static ITestExecutionFilter Adapt(TestContext testContext) {
+            if (testContext is TestExecutionContext exec) {
+                return (ITestExecutionFilter) exec.TestObject;
+            }
+            return TestExecutionFilter.Null;
         }
     }
 }

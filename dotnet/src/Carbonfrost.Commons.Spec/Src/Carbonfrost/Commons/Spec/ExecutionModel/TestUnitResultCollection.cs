@@ -26,7 +26,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             IsReadOnly = true
         };
 
-        private readonly TestUnitResults _owner;
+        private readonly TestUnitResult _owner;
         private TestUnitCounts _countsCache;
 
         internal DateTime? StartedAt {
@@ -71,7 +71,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        internal TestUnitResultCollection(TestUnitResults owner) {
+        internal TestUnitResultCollection(TestUnitResult owner) {
             _owner = owner;
         }
 

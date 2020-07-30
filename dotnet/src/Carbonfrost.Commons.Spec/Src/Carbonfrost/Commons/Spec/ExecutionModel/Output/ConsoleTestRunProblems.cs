@@ -52,8 +52,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             if (problems.Slow.Any()) {
                 console.Yellow();
                 console.WriteLine(
-                    "Slow tests (>= {0}): ",
-                    TextUtility.FormatDuration(results.RunnerOptions.SlowTestThreshold.Value)
+                    "Slow tests (>= {0:n}): ",
+                    ((Time) results.RunnerOptions.SlowTestThreshold.Value)
                 );
                 console.ResetColor();
                 console.PushIndent();

@@ -39,7 +39,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public TestFileInput(string pathPattern) {
             if (pathPattern == null) {
-                throw new ArgumentNullException("pathPattern");
+                throw new ArgumentNullException(nameof(pathPattern));
             }
             PathPattern = pathPattern.Trim();
 
@@ -59,7 +59,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public IEnumerable<GlobTemplateMatch> FindMatchingPaths(TestContext context) {
             if (Pattern == null) {
-                return Empty<GlobTemplateMatch>.Array;
+                return Array.Empty<GlobTemplateMatch>();
             }
 
             var searchDirectories = new List<string>();

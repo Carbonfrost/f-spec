@@ -30,6 +30,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public override string Name {
+            get {
+                return TestMethod.Name;
+            }
+        }
+
         public override TestUnitType Type {
             get {
                 return TestUnitType.Fact;

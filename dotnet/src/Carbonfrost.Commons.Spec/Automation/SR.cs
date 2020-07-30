@@ -1253,6 +1253,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("Pending") );
     }
 
+  /// <summary>Delegate test data may need retargeting to work as expected, and you must explicitly opt-in using the proper attribute metadata or test types.</summary>
+    internal static string PossibleDelegateRetargeting(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("PossibleDelegateRetargeting") );
+    }
+
   /// <summary>be assignable from {Expected}</summary>
     internal static string PredicateAssignableFrom(
     

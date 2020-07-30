@@ -39,7 +39,7 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
         public void TestUnitFromType_should_find_private_methods(Type type) {
             var asm = TestAssembly.Create(GetType().Assembly);
             var test = asm.TestUnitFromType(type);
-            var testContext = TestContext.NewInitContext(null, new FakeRunner());
+            var testContext = SelfTestUtility.NewTestContext(null, new FakeRunner());
             test.InitializeSafe(testContext);
             Assert.HasCount(
                 1,

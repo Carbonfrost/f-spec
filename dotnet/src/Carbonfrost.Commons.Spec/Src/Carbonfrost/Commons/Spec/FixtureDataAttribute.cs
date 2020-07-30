@@ -38,6 +38,15 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        RetargetDelegates ITestDataApiAttributeConventions.RetargetDelegates {
+            get {
+                return RetargetDelegates.Unspecified;
+            }
+            set {
+                throw new NotSupportedException();
+            }
+        }
+
         public string Name {
             get;
             set;
@@ -76,7 +85,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         IEnumerable<TestData> ITestDataProvider.GetData(TestContext context) {
-            TestUnit unit = context.CurrentTest;
+            TestUnit unit = context.TestUnit;
             var rt = (TestTheory) unit;
             return _input.ReadInputs(
                 context,
@@ -130,7 +139,7 @@ namespace Carbonfrost.Commons.Spec {
             // TODO Assume that the fixture has homogeneous records -- if it doesn't,
             // then we end up with the wrong TestDataBinder
             var keySet = items[0].Values.Keys;
-            var binder = TestDataBinder.Create(rt.TestMethod, keySet);
+            var binder = FixtureTestDataBinder.Create(rt.TestMethod, keySet);
             var results = new List<TestData>(items.Count);
             foreach (var t in items) {
                 results.Add(

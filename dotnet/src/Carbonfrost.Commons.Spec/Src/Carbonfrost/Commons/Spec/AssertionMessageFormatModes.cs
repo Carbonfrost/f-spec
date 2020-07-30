@@ -25,7 +25,7 @@ namespace Carbonfrost.Commons.Spec {
         FullStackTraces = 1 << 2,
     }
 
-    partial class Extensions{
+    partial class Extensions {
 
         internal static DisplayActualOptions ToDisplayActualOptions(this AssertionMessageFormatModes format) {
             var result = DisplayActualOptions.None;
@@ -34,7 +34,7 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             if (format.HasFlag(AssertionMessageFormatModes.FullStackTraces)) {
-                result |= DisplayActualOptions.ShowWhitespace;
+                result |= DisplayActualOptions.ShowNoisyStackTrace;
             }
             return result;
         }

@@ -1,5 +1,5 @@
 //
-// Copyright 2016-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,11 +20,17 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     public class TestCaseResult : TestUnitResult {
 
-        private readonly string _displayName;
+        private readonly TestName _testName;
         private TestStatus _status;
         private DateTime? _finishedAt;
         private DateTime? _startedAt;
         private Flags _flags;
+
+        public TestName TestName {
+            get {
+                return _testName;
+            }
+        }
 
         public override DateTime? StartedAt {
             get {
@@ -44,9 +50,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public string Output {
-            get;
-            set;
+        public override TestUnitResultCollection Children {
+            get {
+                return TestUnitResultCollection.Empty;
+            }
         }
 
         public override bool IsFocused {
@@ -63,18 +70,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         internal TestCaseResult(TestCaseInfo testCase, TestStatus status = TestStatus.NotRun) {
             _status = status;
-            _displayName = testCase.DisplayName;
             Reason = testCase.Reason;
-        }
-
-        internal TestCaseResult(string displayName) {
-            _displayName = displayName;
-        }
-
-        public override string DisplayName {
-            get {
-                return _displayName;
-            }
+            _testName = testCase.TestName;
         }
 
         internal override void ApplyCounts(TestUnitCounts counts) {
@@ -120,13 +117,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        internal void Done(DateTime startedAt, TestRunnerOptions opts) {
-            _startedAt = startedAt;
-            Done(null, opts);
-        }
-
         internal void Starting() {
             _startedAt = DateTime.Now;
+        }
+
+        public override string ToString() {
+            return $"{Status} {DisplayName}";
+        }
+
+        public sealed override string DisplayName {
+            get {
+                return _testName.DisplayName;
+            }
         }
 
         [Flags]
@@ -135,6 +137,5 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             Slow = 1,
             Focused = 2,
         }
-
     }
 }

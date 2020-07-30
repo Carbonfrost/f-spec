@@ -49,7 +49,7 @@ namespace Carbonfrost.Commons.Spec {
             }
             var result = ctor.Invoke(items);
             foreach (var kvp in args) {
-                SetProperty(result, kvp.Key, kvp.Value);
+                SetPropertyAllowTextConversion(result, kvp.Key, kvp.Value);
             }
             return result;
         }
@@ -66,9 +66,20 @@ namespace Carbonfrost.Commons.Spec {
             pi.SetValue(o, value);
         }
 
+        private static void SetPropertyAllowTextConversion(object o, string name, string value) {
+            var pi = o.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
+            if (pi == null) {
+                return;
+            }
+            pi.SetValue(o, FromText(pi.PropertyType, value));
+        }
+
         internal static object FromText(Type type, string value) {
             if (type == typeof(string)) {
                 return value;
+            }
+            if (type.IsEnum) {
+                return Enum.Parse(type, value, true);
             }
             var parseMethod = type.GetMethod("Parse", BindingFlags.Public | BindingFlags.Static);
             if (parseMethod == null) {

@@ -37,6 +37,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public RetargetDelegates RetargetDelegates {
+            get;
+            internal set;
+        }
+
         public abstract int Position { get; }
 
         public sealed override TestUnitCollection Children {
@@ -98,7 +103,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public virtual IReadOnlyList<object> TestMethodArguments {
             get {
-                return Empty<object>.Array;
+                return Array.Empty<object>();
             }
         }
 
@@ -108,9 +113,27 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public override string DisplayName {
+        public sealed override string DisplayName {
             get {
-                return string.Concat(Parent.DisplayName, ".", TestMethod.Name);
+                return TestName.DisplayName;
+            }
+        }
+
+        public virtual TestName TestName {
+            get {
+                return TestName.Create(this);
+            }
+        }
+
+        public virtual TestData TestData {
+            get {
+                return TestData.Empty;
+            }
+        }
+
+        public virtual string DataProviderName {
+            get {
+                return null;
             }
         }
 
@@ -123,30 +146,31 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             Children.MakeReadOnly();
         }
 
-        public TestCaseResult RunTest(TestExecutionContext testContext) {
+        internal TestUnitResult RunTest(TestExecutionContext testContext) {
             if (PredeterminedStatus == TestStatus.NotRun) {
-                var startedAt = DateTime.Now;
+                TestCaseResult result = new TestCaseResult(this);
+                result.Starting();
                 try {
                     using (testContext.ApplyingContext()) {
-                        return RunTestCore(testContext);
+                        result = RunTestCore(testContext);
                     }
 
                 } catch (Exception ex) {
-                    var unhandled = new TestCaseResult(this);
-                    unhandled.SetFailed(ex);
-                    unhandled.Done(startedAt, testContext.TestRunnerOptions);
-                    return unhandled;
+                    result.SetFailed(ex);
+                    result.Done(null, testContext.TestRunnerOptions);
                 }
+                return result;
             }
-
-            var result = new TestCaseResult(this, PredeterminedStatus) {
-                Reason = Reason,
-            };
-            result.Done(DateTime.Now, testContext.TestRunnerOptions);
-            return result;
+            return PredeterminedResult(testContext);
         }
 
-        internal abstract TestExecutionContext CreateExecutionContext(DefaultTestRunner runner);
+        private TestCaseResult PredeterminedResult(TestExecutionContext testContext) {
+            var result = new TestCaseResult(this, PredeterminedStatus);
+            result.Starting();
+            result.Reason = Reason;
+            result.Done(this, testContext.TestRunnerOptions);
+            return result;
+        }
 
         protected abstract TestCaseResult RunTestCore(TestExecutionContext testContext);
 

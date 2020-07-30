@@ -1,3 +1,4 @@
+
 //
 // Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
@@ -21,6 +22,11 @@ namespace Carbonfrost.Commons.Spec {
 
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = false)]
     public sealed class FactAttribute : Attribute, IReflectionTestUnitFactory {
+
+        public string Reason {
+            get;
+            set;
+        }
 
         TestUnit IReflectionTestUnitFactory.CreateTestCase(MethodInfo method) {
             return new FactMethodTestCase(method);

@@ -20,14 +20,16 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public readonly partial struct TestData : ITestData, ITestUnitState, ITestUnitStateApiConventions<TestData> {
+    public readonly partial struct TestData : ITestData, ITestUnitState, ITestUnitStateApiConventions<TestData>, ITestDataProvider {
+
+        public static readonly TestData Empty = default(TestData);
 
         private readonly object[] _data;
         private readonly TestDataState _state;
 
         public TestTagCollection Tags {
             get {
-                return _state.Tags;
+                return _state.Tags ?? TestTagCollection.Empty;
             }
         }
 
@@ -82,6 +84,12 @@ namespace Carbonfrost.Commons.Spec {
         public bool Failed {
             get {
                 return _state.Failed;
+            }
+        }
+
+        private object[] Data {
+            get {
+                return _data ?? Array.Empty<object>();
             }
         }
 
@@ -176,18 +184,18 @@ namespace Carbonfrost.Commons.Spec {
 
         public object this[int index] {
             get {
-                return _data[index];
+                return Data[index];
             }
         }
 
         public int Count {
             get {
-                return _data.Length;
+                return Data.Length;
             }
         }
 
         public IEnumerator<object> GetEnumerator() {
-            return ((IEnumerable<object>) _data).GetEnumerator();
+            return ((IEnumerable<object>) Data).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
@@ -195,7 +203,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         internal IEnumerable<object> Evaluate(TestContext testContext) {
-            var method = ((TestCaseInfo) testContext.CurrentTest).TestMethod;
+            var method = ((TestCaseInfo) testContext.TestUnit).TestMethod;
             var pms = method.GetParameters();
             int index = 0;
 
@@ -211,5 +219,8 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        IEnumerable<TestData> ITestDataProvider.GetData(TestContext context) {
+            return new [] { this };
+        }
     }
 }

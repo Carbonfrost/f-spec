@@ -28,6 +28,11 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
             _displayName = displayName;
         }
 
+        public override string Name {
+            get {
+                return _displayName;
+            }
+        }
 
         public override string DisplayName {
             get {

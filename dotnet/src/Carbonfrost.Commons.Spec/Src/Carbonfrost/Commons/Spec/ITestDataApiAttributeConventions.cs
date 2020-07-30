@@ -32,5 +32,10 @@ namespace Carbonfrost.Commons.Spec {
             get;
             set;
         }
+
+        RetargetDelegates RetargetDelegates {
+            get;
+            set;
+        }
     }
 }

@@ -22,8 +22,55 @@ namespace Carbonfrost.Commons.Spec {
     public partial class TestExecutionContext : TestContext, ITestExecutionContext {
 
         private readonly object _testObject;
-        private object _testResult;
+        private object _testReturnValue;
         private CancellationToken _cancellationToken;
+        private TestCaseInfo _testUnit;
+
+        private TestContext BaseContext {
+            get;
+        }
+
+        public override TestEnvironment Environment {
+            get {
+                return BaseContext.Environment;
+            }
+        }
+
+        internal override TestLoader Loader {
+            get {
+                return BaseContext.Loader;
+            }
+        }
+
+        public override TestLog Log {
+            get {
+                return BaseContext.Log;
+            }
+        }
+
+        public override ITestRunnerEvents TestRunnerEvents {
+            get {
+                return BaseContext.TestRunnerEvents;
+            }
+        }
+
+        public override TestRunnerOptions TestRunnerOptions {
+            get {
+                return BaseContext.TestRunnerOptions;
+            }
+        }
+
+        public override Random Random {
+            get {
+                return BaseContext.Random;
+            }
+        }
+
+        public override TestUnit TestUnit {
+            get {
+                return _testUnit;
+            }
+        }
 
         public CancellationToken CancellationToken {
             get {
@@ -39,13 +86,37 @@ namespace Carbonfrost.Commons.Spec {
 
         public object TestReturnValue {
             get {
-                return _testResult;
+                return _testReturnValue;
             }
         }
 
-        internal TestExecutionContext(TestUnit self, TestRunner runner, Random random, object testObject) : base(self, runner, random) {
+        public TestCaseInfo CurrentTest {
+            get {
+                return (TestCaseInfo) TestUnit;
+            }
+        }
+
+        public TestData TestData {
+            get {
+                if (TestUnit is TestCaseInfo tci) {
+                    return tci.TestData;
+                }
+                return TestData.Empty;
+            }
+        }
+
+        internal TestExecutionContext(TestContext parent, TestCaseInfo self, object testObject) {
+            BaseContext = parent;
+            _testUnit = self;
             _testObject = testObject;
         }
 
+        public override TestTemporaryDirectory CreateTempDirectory(string name) {
+            return BaseContext.CreateTempDirectory(name);
+        }
+
+        public override TestTemporaryFile CreateTempFile(string name) {
+            return BaseContext.CreateTempFile(name);
+        }
     }
 }

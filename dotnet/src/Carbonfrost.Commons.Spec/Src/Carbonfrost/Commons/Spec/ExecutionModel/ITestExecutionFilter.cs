@@ -20,7 +20,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
     // to a test object class, these filter methods will be invoked alongside
     // the calls to each test method
     public interface ITestExecutionFilter {
-        void BeforeExecuting(TestExecutionContext testContext);
+        void BeforeExecuting(TestContext testContext);
         void AfterExecuting(TestExecutionContext testContext);
     }
 }
