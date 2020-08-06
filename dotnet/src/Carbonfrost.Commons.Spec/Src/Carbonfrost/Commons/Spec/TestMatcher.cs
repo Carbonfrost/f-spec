@@ -15,6 +15,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using Carbonfrost.Commons.Spec.ExecutionModel;
 using Carbonfrost.Commons.Spec.TestMatchers;
@@ -22,6 +23,8 @@ using Carbonfrost.Commons.Spec.TestMatchers;
 namespace Carbonfrost.Commons.Spec {
 
     public abstract class TestMatcher {
+
+        static readonly MethodInfo AdapterMethod = typeof(TestMatcher).GetMethod("Adapter_", BindingFlags.NonPublic | BindingFlags.Static);
 
         public static readonly ITestMatcher Anything = new InvariantMatcher(true);
         public static readonly ITestMatcher Nothing = new InvariantMatcher(false);
@@ -37,7 +40,19 @@ namespace Carbonfrost.Commons.Spec {
             return matcher;
         }
 
-        class InvariantMatcher : ITestMatcher {
+        internal interface IInvariantTestMatcher {
+            bool Matches();
+        }
+
+        internal static object Adapter(Type fromType, Type toType, object instance) {
+            return AdapterMethod.MakeGenericMethod(fromType, toType).Invoke(null, new[] { instance });
+        }
+
+        internal static ITestMatcher<TTo> Adapter_<TFrom, TTo>(ITestMatcher<TFrom> instance) where TFrom : TTo {
+            return new AdapterImpl<TFrom, TTo>(instance);
+        }
+
+        class InvariantMatcher : ITestMatcher, IInvariantTestMatcher {
 
             private readonly bool _answer;
 
@@ -46,6 +61,10 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             public bool Matches(ITestActualEvaluation testCode) {
+                return _answer;
+            }
+
+            public bool Matches() {
                 return _answer;
             }
         }
@@ -66,6 +85,46 @@ namespace Carbonfrost.Commons.Spec {
 
             public bool Matches(ITestActualEvaluation<Unit> actualFactory) {
                 return _matcher.Matches(actualFactory);
+            }
+        }
+
+        struct AdapterImpl<TFrom, TTo> : ITestMatcher<TTo>, ISupportTestMatcher
+            where TFrom : TTo {
+            private readonly ITestMatcher<TFrom> _matcher;
+
+            [MatcherUserData(Hidden = true)]
+            public object RealMatcher {
+                get {
+                    return _matcher;
+                }
+            }
+
+            public AdapterImpl(ITestMatcher<TFrom> matcher) {
+                _matcher = matcher;
+            }
+
+            public bool Matches(ITestActualEvaluation<TTo> actualFactory) {
+                return _matcher.Matches(new WrapperEvaluation(actualFactory));
+            }
+
+            struct WrapperEvaluation : ITestActualEvaluation<TFrom> {
+                private readonly ITestActualEvaluation<TTo> _inner;
+
+                public WrapperEvaluation(ITestActualEvaluation<TTo> inner) {
+                    _inner = inner;
+                }
+
+                public TFrom Value {
+                    get {
+                        return (TFrom) _inner.Value;
+                    }
+                }
+
+                public Exception Exception {
+                    get {
+                        return _inner.Exception;
+                    }
+                }
             }
         }
     }
