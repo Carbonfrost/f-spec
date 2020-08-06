@@ -16,6 +16,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
@@ -196,6 +197,33 @@ namespace Carbonfrost.Commons.Spec {
 
         public IEnumerator<object> GetEnumerator() {
             return ((IEnumerable<object>) Data).GetEnumerator();
+        }
+
+        internal static string CombinedName(IEnumerable<string> names) {
+            if (names.Any(string.IsNullOrEmpty)) {
+                return "";
+            }
+            return string.Join(" × ", names);
+        }
+
+        public static TestData Combinations(IEnumerable<TestData> items) {
+            if (items == null) {
+                return TestData.Empty;
+            }
+            var vars = items.Select(t => t._data).ToList();
+            return new TestData(TestData.Combinatorial(vars).ToArray())
+                .WithName(TestData.CombinedName(items.Select(t => t.Name)));
+        }
+
+        public static TestData Combinations(params TestData[] items) {
+            if (items == null || items.Length == 0) {
+                return TestData.Empty;
+            }
+            return Combinations((IEnumerable<TestData>) items);
+        }
+
+        public static TestData operator *(TestData left, TestData right) {
+            return Combinations(left, right);
         }
 
         IEnumerator IEnumerable.GetEnumerator() {

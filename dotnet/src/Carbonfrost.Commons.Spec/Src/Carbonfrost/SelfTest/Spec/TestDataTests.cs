@@ -216,6 +216,38 @@ namespace Carbonfrost.SelfTest.Spec {
         }
 
         [Fact]
+        public void Multiply_generates_combinations_and_name() {
+            var nvc = new [] {
+                new [] { "a", "b" },
+                new [] { "a", "b" },
+            };
+            var combo = new TestData(nvc[0]).WithName("x") * new TestData(nvc[1]).WithName("y");
+            Assert.HasCount(4, combo);
+            var all = ConvertToStrings(combo.Cast<object[]>());
+            Assert.Contains("a, a", all);
+            Assert.Contains("a, b", all);
+            Assert.Contains("b, a", all);
+            Assert.Contains("b, b", all);
+            Assert.Equal("x × y", combo.Name);
+        }
+
+        [Fact]
+        public void MultiplyOfT_generates_combinations_and_name() {
+            var nvc = new [] {
+                new [] { "a", "b" },
+                new [] { "a", "b" },
+            };
+            var combo = TestData.Create(nvc[0]).WithName("x") * TestData.Create(nvc[1]).WithName("y");
+            Assert.HasCount(4, combo);
+            var all = ConvertToStrings(combo);
+            Assert.Contains("a, a", all);
+            Assert.Contains("a, b", all);
+            Assert.Contains("b, a", all);
+            Assert.Contains("b, b", all);
+            Assert.Equal("x × y", combo.Name);
+        }
+
+        [Fact]
         public void Combinatorial_should_generate_trivial() {
             var nvc = new [] {
                 new [] { "a", "b" },

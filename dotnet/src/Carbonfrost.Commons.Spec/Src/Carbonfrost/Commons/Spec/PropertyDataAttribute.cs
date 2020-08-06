@@ -58,7 +58,7 @@ namespace Carbonfrost.Commons.Spec {
 
         public string Name {
             get {
-                return _name ?? string.Join(" × ", Properties);
+                return _name ?? TestData.CombinedName(Properties);
             }
             set {
                 _name= value;

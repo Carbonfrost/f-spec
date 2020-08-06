@@ -16,10 +16,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Carbonfrost.Commons.Spec {
 
     public readonly struct TestData<T> : ITestData<T>, ITestDataUntyped, ITestDataProvider {
+
+        public static readonly TestData<T> Empty = new TestData<T>(TestDataState.Empty, null);
 
         private readonly T[] _data;
         private readonly TestDataState _state;
@@ -179,6 +182,26 @@ namespace Carbonfrost.Commons.Spec {
             return new [] {
                 Untyped()
             };
+        }
+
+        public static TestData<T[]> Combinations(IEnumerable<TestData<T>> items) {
+            if (items == null) {
+                return TestData<T[]>.Empty;
+            }
+            var vars = items.Select(t => t._data).ToList();
+            return TestData<T[]>.Create(TestData.Combinatorial(vars).ToArray())
+                .WithName(TestData.CombinedName(items.Select(t => t.Name)));
+        }
+
+        public static TestData<T[]> Combinations(params TestData<T>[] items) {
+            if (items == null || items.Length == 0) {
+                return TestData<T[]>.Empty;
+            }
+            return Combinations((IEnumerable<TestData<T>>) items);
+        }
+
+        public static TestData<T[]> operator *(TestData<T> left, TestData<T> right) {
+            return Combinations(left, right);
         }
 
         public TestData Untyped() {
