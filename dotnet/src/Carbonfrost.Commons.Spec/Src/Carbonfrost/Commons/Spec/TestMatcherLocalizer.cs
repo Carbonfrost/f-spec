@@ -1,5 +1,5 @@
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 //
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 using Carbonfrost.Commons.Spec.Resources;
 using Carbonfrost.Commons.Spec.TestMatchers;
@@ -25,11 +24,11 @@ namespace Carbonfrost.Commons.Spec {
     static class TestMatcherLocalizer {
 
         public static TestFailure FailurePredicate(object matcher) {
-            return FailureMessageCore(false, matcher, true);
+            return FailureMessageCore(matcher, true);
         }
 
         public static TestFailure Failure(object matcher, object actual) {
-            TestFailure failure = FailureMessageCore(false, matcher, false);
+            TestFailure failure = FailureMessageCore(matcher, false);
             failure.UserData.Add("Actual", actual);
 
             if (matcher is ITestMatcherActualDiff diff) {
@@ -48,27 +47,16 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         private static string ExpectedMessage(
-            bool negated, UserDataCollection data, TypeInfo type, bool predicate) {
+            TestMatcherName matcherName, UserDataCollection data) {
 
-            if (type.Name == "InvariantMatcher") {
+            if (matcherName.IsInvariant) {
                 return "";
             }
-
-            var typeName = TestMatcherName.NAME.Replace(type.Name, "$1");
-            if (typeName == "And" || typeName == "Or") {
-                return negated ? SR.NotExpectedTo() : SR.ExpectedTo();
+            if (matcherName.IsAndOr) {
+                return matcherName.IsNegated ? SR.NotExpectedTo() : SR.ExpectedTo();
             }
 
-            var prefix = "Expected";
-            if (predicate) {
-                prefix = "Predicate";
-            }
-
-            var msgCode = prefix + typeName;
-            if (negated) {
-                msgCode = "Not" + msgCode;
-            }
-
+            var msgCode = matcherName.ToSRKey();
             var msg = SR.ResourceManager.GetString(msgCode);
             if (msg == null) {
                 return MissingLocalization(msgCode);
@@ -79,28 +67,27 @@ namespace Carbonfrost.Commons.Spec {
             return fill.ToString();
         }
 
-        static TestFailure FailureMessageCore(bool negated, object matcher, bool predicate) {
-            var support = matcher as ISupportTestMatcher;
-            if (support != null) {
-                return FailureMessageCore(negated, support.RealMatcher, predicate);
+        private static object ActualMatcher(object matcher) {
+            if (matcher is ISupportTestMatcher support) {
+                return ActualMatcher(support.RealMatcher);
+            }
+            if (matcher is INotMatcher nt) {
+                return ActualMatcher(nt.InnerMatcher);
+            }
+            return matcher;
+        }
+
+        static TestFailure FailureMessageCore(object matcher, bool predicate) {
+            var matcherName = TestMatcherName.For(matcher);
+            if (predicate) {
+                matcherName = matcherName.Predicate();
             }
 
-            var nt = matcher as INotMatcher;
-            if (nt != null) {
-                return FailureMessageCore(true, nt.InnerMatcher, predicate);
-            }
+            // We use the actual matcher to get the user data for the failure
+            var failure = new TestFailure(matcherName, ActualMatcher(matcher));
 
-            var matcherType = matcher.GetType().GetTypeInfo();
-            if (matcherType.IsGenericType) {
-                matcherType = matcherType.GetGenericTypeDefinition().GetTypeInfo();
-            }
-
-            var matcherName = TestMatcherName.FromType(matcherType);
-            if (negated) {
-                matcherName = matcherName.Negated();
-            }
-            var failure = new TestFailure(matcherName, matcher);
-            failure.Message = ExpectedMessage(negated, failure.UserData, matcherType, predicate);
+            string message = ExpectedMessage(matcherName, failure.UserData);
+            failure.Message = message;
             ChildrenMessages(failure, matcher);
             return failure;
         }
@@ -116,7 +103,7 @@ namespace Carbonfrost.Commons.Spec {
                 if (child == null) {
                     continue;
                 }
-                var f = FailureMessageCore(false, child, true);
+                var f = FailureMessageCore(child, true);
                 failure.Children.Add(f);
             }
 

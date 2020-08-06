@@ -153,7 +153,7 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        class InvariantMatcher : ITestMatcher<T> {
+        class InvariantMatcher : ITestMatcher<T>, TestMatcher.IInvariantTestMatcher {
 
             private readonly bool _answer;
 
@@ -162,6 +162,10 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             public bool Matches(ITestActualEvaluation<T> actualFactory) {
+                return _answer;
+            }
+
+            public bool Matches() {
                 return _answer;
             }
         }

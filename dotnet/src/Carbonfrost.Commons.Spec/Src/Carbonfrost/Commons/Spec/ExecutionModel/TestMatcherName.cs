@@ -13,8 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System.Reflection;
+
 using System;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
@@ -23,43 +24,116 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         internal static readonly Regex NAME = new Regex(@"^(.+)Matcher(`\d+)?$");
         private readonly string _name;
-        private readonly bool _negated;
+        private readonly Flags _flags;
+
+        public TestMatcherName Base {
+            get {
+                return new TestMatcherName(_name, Flags.None);
+            }
+        }
 
         public string Name {
             get {
-                return _name;
+                string name = "spec." + char.ToLowerInvariant(_name[0]) + _name.Substring(1);
+                return name + (IsPredicate ? ".predicate" : "") + (IsNegated ? ".not" : "");
+            }
+        }
+
+        internal bool IsAndOr {
+            get {
+                return _name == "And" || _name == "Or";
+            }
+        }
+
+        internal bool IsInvariant {
+            get {
+                return _name == "Anything" || _name == "Nothing";
+            }
+        }
+
+        public bool IsNegated {
+            get {
+                return _flags.HasFlag(Flags.Negated);
+            }
+        }
+
+        public bool IsPredicate {
+            get {
+                return _flags.HasFlag(Flags.Predicate);
             }
         }
 
         public TestMatcherName(string name) {
             _name = name;
-            _negated = false;
+            _flags = Flags.None;
         }
 
-        internal TestMatcherName(string name, bool negated) {
+        private TestMatcherName(string name, Flags flags) {
             _name = name;
-            _negated = negated;
+            _flags = flags;
         }
 
         public override string ToString() {
-            return Name + (_negated ? ".not" : "");
+            return Name;
         }
 
         public TestMatcherName Negated() {
-            return new TestMatcherName(_name, !_negated);
+            if (IsNegated) {
+                return new TestMatcherName(_name, _flags & ~Flags.Negated);
+            }
+            return new TestMatcherName(_name, _flags | Flags.Negated);
+        }
+
+        public TestMatcherName Predicate() {
+            return new TestMatcherName(_name, _flags | Flags.Predicate);
         }
 
         public static TestMatcherName FromType(Type type) {
-            return new TestMatcherName(Code(type.GetTypeInfo()));
+            string name = NAME.Replace(type.Name, "$1");
+            return new TestMatcherName(name);
         }
 
         public static implicit operator TestMatcherName(string name) {
             return new TestMatcherName(name);
         }
 
-        internal static string Code(TypeInfo type) {
-            string name = NAME.Replace(type.Name, "$1");
-            return "spec." + char.ToLowerInvariant(name[0]) + name.Substring(1);
+        internal string ToSRKey() {
+            var prefix = "Expected";
+            if (IsPredicate) {
+                prefix = "Predicate";
+            }
+
+            var msgCode = prefix + _name;
+            if (IsNegated) {
+                msgCode = "Not" + msgCode;
+            }
+            return msgCode;
+        }
+
+        public static TestMatcherName For(object matcher) {
+            if (matcher is TestMatcher.IInvariantTestMatcher invariant) {
+                return invariant.Matches() ? "Anything" : "Nothing";
+            }
+            if (matcher is ISupportTestMatcher support) {
+                return For(support.RealMatcher);
+            }
+            if (matcher is INotMatcher nt) {
+                return For(nt.InnerMatcher).Negated();
+            }
+
+            var matcherType = matcher.GetType().GetTypeInfo();
+            if (matcherType.IsGenericType) {
+                matcherType = matcherType.GetGenericTypeDefinition().GetTypeInfo();
+            }
+
+            return TestMatcherName.FromType(matcherType);
+        }
+
+        [Flags]
+        enum Flags {
+            None,
+            Negated = 1 << 0,
+            Predicate = 1 << 1,
         }
 
     }
