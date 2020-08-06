@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 
@@ -25,12 +24,17 @@ namespace Carbonfrost.Commons.Spec {
     static partial class DisplayActual {
 
         class DefaultDisplayActual : IDisplayActual {
+
+            private readonly DisplayActualSchema _schema;
             private readonly List<(string property, IDisplayActual actual)> _entries = new List<(string, IDisplayActual)>();
-            private readonly Type _type;
+
+            public Type Type {
+                get {
+                    return _schema.Type;
+                }
+            }
 
             public string Format(DisplayActualOptions options) {
-                string formatString = options.ShowType() ? "{0} {{ {1} }}" : "{{ {1} }}";
-
                 // On recursion, no need to display types
                 var recursionOptions = options & ~DisplayActualOptions.ShowType;
                 var entries = new StringBuilder();
@@ -44,35 +48,34 @@ namespace Carbonfrost.Commons.Spec {
                     entries.Append(e.actual.Format(recursionOptions));
                     comma = true;
                 }
+
+                // Show the type if it was requested or if there are no fields within
+                string formatString = (entries.Length == 0 || options.ShowType())
+                    ? "{0} {{ {1} }}"
+                    : "{{ {1} }}";
+
                 return string.Format(
-                    formatString, TextUtility.ConvertToSimpleTypeName(_type), entries
+                    formatString, _schema.SimpleTypeName, entries
                 );
             }
 
             public DefaultDisplayActual(object value, int depth, ObjectIDGenerator graph) {
-                _type = value.GetType();
+                _schema = DisplayActualSchema.Create(value.GetType());
                 depth += 1;
 
-                foreach (var field in _type.GetFields(BindingFlags.Public | BindingFlags.Instance)) {
-                    _entries.Add(
-                        (field.Name, DisplayActual.Create(field.GetValue(value), depth, graph))
-                    );
-                }
-
-                foreach (var prop in _type.GetProperties(BindingFlags.Public | BindingFlags.Instance)) {
-                    IDisplayActual pv = null;
-
+                foreach (var accessor in _schema.Accessors) {
+                    IDisplayActual pv;
                     try {
-                        pv = DisplayActual.Create(DisplayActual.Create(prop.GetValue(value), depth, graph));
+                        pv = DisplayActual.Create(DisplayActual.Create(accessor.GetValue(value), depth, graph));
                     } catch (Exception ex) {
                         ex = Record.UnwindTargetException(ex);
                         pv = DisplayActual.Create($"<{ex.GetType().Name}>");
                     }
+
                     _entries.Add(
-                        (prop.Name, pv)
+                        (accessor.Name, pv)
                     );
                 }
-                _type = value.GetType();
             }
         }
     }

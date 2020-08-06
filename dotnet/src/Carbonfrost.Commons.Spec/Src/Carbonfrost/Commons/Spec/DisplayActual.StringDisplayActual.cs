@@ -15,6 +15,7 @@
 //
 
 using System.Linq;
+using System;
 
 namespace Carbonfrost.Commons.Spec {
 
@@ -24,6 +25,12 @@ namespace Carbonfrost.Commons.Spec {
 
             private readonly string _text;
             private readonly bool _escape;
+
+            public Type Type {
+                get {
+                    return typeof(string);
+                }
+            }
 
             public StringDisplayActual(string s, bool escape = false) {
                 _text = s;

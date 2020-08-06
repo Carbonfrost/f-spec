@@ -1,4 +1,4 @@
-﻿//
+//
 // Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,8 @@
 
 using System;
 using System.Collections;
+using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.Serialization;
 
 namespace Carbonfrost.Commons.Spec {
@@ -78,7 +80,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public static bool OnlyTypeDifferences(IDisplayActual a, IDisplayActual b) {
-            if (a.GetType() == b.GetType()) {
+            if (a.Type == b.Type) {
                 return false;
             }
             return a.Format(DisplayActualOptions.None)
@@ -88,6 +90,9 @@ namespace Carbonfrost.Commons.Spec {
         internal static bool HasToStringOverride(Type type) {
             var method = type.GetMethod("ToString", Type.EmptyTypes);
             if (method.DeclaringType == typeof(object)) {
+                return false;
+            }
+            if (method.DeclaringType == typeof(ValueType)) {
                 return false;
             }
             return true;
@@ -119,12 +124,24 @@ namespace Carbonfrost.Commons.Spec {
 
         class NullImpl : IDisplayActual {
 
+            public Type Type {
+                get {
+                    return typeof(object);
+                }
+            }
+
             public string Format(DisplayActualOptions options) {
                 return "<null>";
             }
         }
 
         class EllipsisImpl : IDisplayActual {
+
+            public Type Type {
+                get {
+                    return typeof(object);
+                }
+            }
 
             public string Format(DisplayActualOptions options) {
                 return "...";
