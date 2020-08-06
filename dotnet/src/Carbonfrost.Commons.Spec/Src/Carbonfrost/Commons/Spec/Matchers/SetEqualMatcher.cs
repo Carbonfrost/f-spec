@@ -287,12 +287,10 @@ namespace Carbonfrost.Commons.Spec {
 
             public IEnumerable<TSource> Expected {
                 get;
-                private set;
             }
 
             public IEqualityComparer<TSource> Comparer {
                 get;
-                private set;
             }
 
             public SetEqualMatcher(IEnumerable<TSource> expected) {
@@ -327,6 +325,10 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             public override bool Matches(IEnumerable<TSource> actual) {
+                if (actual == null) {
+                    return false;
+                }
+
                 var comparer = Comparer ?? EqualityComparer<TSource>.Default;
                 var tally = new HashSet<TSource>(Expected, comparer);
                 tally.SymmetricExceptWith(actual);

@@ -20,5 +20,4 @@ namespace Carbonfrost.Commons.Spec.TestMatchers {
     interface ITestMatcherValidations {
         object AllowingNullActualValue();
     }
-
 }

@@ -110,7 +110,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         internal TestFailure UpdateMessage(string message, object[] args) {
             if (message != null) {
-                Message = string.Format(message, (object[]) args);
+                Message = string.Format(message, (object[]) args ?? Array.Empty<object>());
             }
             return this;
         }

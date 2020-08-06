@@ -331,9 +331,6 @@ namespace Carbonfrost.Commons.Spec {
                 if (actual == null) {
                     return false;
                 }
-                if (actual is null) {
-                    throw new ArgumentNullException(nameof(actual));
-                }
                 var comparer = Comparer ?? EqualityComparer<TSource>.Default;
                 if (actual.Count() != Expected.Count()) {
                     return false;

@@ -272,7 +272,7 @@ namespace Carbonfrost.Commons.Spec {
 
             public override bool Matches(IEnumerable<TSource> actual) {
                 if (actual == null) {
-                    throw new ArgumentNullException("actual");
+                    return false;
                 }
                 if (Comparer == null && actual is ICollection<TSource> coll) {
                     return coll.Contains(Expected);

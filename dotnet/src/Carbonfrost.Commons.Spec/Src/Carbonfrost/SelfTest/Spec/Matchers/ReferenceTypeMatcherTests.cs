@@ -32,8 +32,14 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
 
         [Fact]
         public void Matches_should_pass_on_null() {
-            var subj = new ReferenceTypeMatcher();
+            var subj = new ReferenceTypeMatcher().AllowingNullActualValue();
             Assert.True(subj.Matches((string) null));
+        }
+
+        [Fact]
+        public void Matches_should_detect_on_type_instances() {
+            var subj = new ReferenceTypeMatcher();
+            Assert.False(subj.Matches(typeof(int)));
         }
 
         [Fact]

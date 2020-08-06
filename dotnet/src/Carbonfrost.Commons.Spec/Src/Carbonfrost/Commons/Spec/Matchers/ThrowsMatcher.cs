@@ -79,6 +79,64 @@ namespace Carbonfrost.Commons.Spec {
             NotThat(action, Matchers.Throw());
         }
 
+        public void DoesNotThrow(Action action, string message, params object[] args) {
+            NotThat(action, Matchers.Throw(), message, args);
+        }
+
+        public void DoesNotThrow<T>(Task task) where T : Exception {
+            DoesNotThrow(typeof(T), task);
+        }
+
+        public void DoesNotThrow<T>(Action action) where T : Exception {
+            DoesNotThrow(typeof(T), action);
+        }
+
+        public void DoesNotThrow<T>(Func<object> func) where T : Exception {
+            Action act = () => func();
+            DoesNotThrow(typeof(T), act);
+        }
+
+        public void DoesNotThrow(Type exceptionType, Func<object> func) {
+            Action act = () => func();
+            DoesNotThrow(exceptionType, act);
+        }
+
+        public void DoesNotThrow(Type exceptionType, Task task) {
+            Action act = task.Wait;
+            DoesNotThrow(exceptionType, act);
+        }
+
+        public void DoesNotThrow(Type exceptionType, Action action) {
+            NotThat(action, Matchers.Throw(exceptionType));
+        }
+
+        public void DoesNotThrow<T>(Task task, string message, params object[] args) where T : Exception {
+            DoesNotThrow(typeof(T), task, message, args);
+        }
+
+        public void DoesNotThrow<T>(Action action, string message, params object[] args) where T : Exception {
+            DoesNotThrow(typeof(T), action, message, args);
+        }
+
+        public void DoesNotThrow<T>(Func<object> func, string message, params object[] args) where T : Exception {
+            Action act = () => func();
+            DoesNotThrow(typeof(T), act, message, args);
+        }
+
+        public void DoesNotThrow(Type exceptionType, Func<object> func, string message, params object[] args) {
+            Action act = () => func();
+            DoesNotThrow(exceptionType, act, message, args);
+        }
+
+        public void DoesNotThrow(Type exceptionType, Task task, string message, params object[] args) {
+            Action act = task.Wait;
+            DoesNotThrow(exceptionType, act, message, args);
+        }
+
+        public void DoesNotThrow(Type exceptionType, Action action, string message, params object[] args) {
+            NotThat(action, Matchers.Throw(exceptionType), message, args);
+        }
+
         public void Throws<T>(Task task) where T : Exception {
             Throws(typeof(T), task);
         }
@@ -104,10 +162,6 @@ namespace Carbonfrost.Commons.Spec {
 
         public void Throws(Type exceptionType, Action action) {
             That(action, Matchers.Throw(exceptionType));
-        }
-
-        public void DoesNotThrow(Action action, string message, params object[] args) {
-            NotThat(action, Matchers.Throw(), message, args);
         }
 
         public void Throws<T>(Task task, string message, params object[] args) where T : Exception {
@@ -138,10 +192,62 @@ namespace Carbonfrost.Commons.Spec {
         }
     }
 
-	partial class Assert {
+    partial class Assert {
 
         public static void DoesNotThrow(Action action) {
             Global.DoesNotThrow(action);
+        }
+
+        public static void DoesNotThrow(Action action, string message, params object[] args) {
+            Global.DoesNotThrow(action, message, (object[]) args);
+        }
+
+        public static void DoesNotThrow<T>(Task task) where T : Exception {
+            Global.DoesNotThrow<T>(task);
+        }
+
+        public static void DoesNotThrow<T>(Action action) where T : Exception {
+            Global.DoesNotThrow<T>(action);
+        }
+
+        public static void DoesNotThrow<T>(Func<object> func) where T : Exception {
+            Global.DoesNotThrow<T>(func);
+        }
+
+        public static void DoesNotThrow(Type exceptionType, Func<object> func) {
+            Global.DoesNotThrow(exceptionType, func);
+        }
+
+        public static void DoesNotThrow(Type exceptionType, Task task) {
+            Global.DoesNotThrow(exceptionType, task);
+        }
+
+        public static void DoesNotThrow(Type exceptionType, Action action) {
+            Global.DoesNotThrow(exceptionType, action);
+        }
+
+        public static void DoesNotThrow<T>(Task task, string message, params object[] args) where T : Exception {
+            Global.DoesNotThrow<T>(task, message, (object[]) args);
+        }
+
+        public static void DoesNotThrow<T>(Action action, string message, params object[] args) where T : Exception {
+            Global.DoesNotThrow<T>(action, message, (object[]) args);
+        }
+
+        public static void DoesNotThrow<T>(Func<object> func, string message, params object[] args) where T : Exception {
+            Global.DoesNotThrow<T>(func, message, (object[]) args);
+        }
+
+        public static void DoesNotThrow(Type exceptionType, Func<object> func, string message, params object[] args) {
+            Global.DoesNotThrow(exceptionType, func, message, (object[]) args);
+        }
+
+        public static void DoesNotThrow(Type exceptionType, Task task, string message, params object[] args) {
+            Global.DoesNotThrow(exceptionType, task, message, (object[]) args);
+        }
+
+        public static void DoesNotThrow(Type exceptionType, Action action, string message, params object[] args) {
+            Global.DoesNotThrow(exceptionType, action, message, (object[]) args);
         }
 
         public static void Throws<T>(Task task) where T : Exception {
@@ -166,10 +272,6 @@ namespace Carbonfrost.Commons.Spec {
 
         public static void Throws(Type exceptionType, Action action) {
             Global.Throws(exceptionType, action);
-        }
-
-        public static void DoesNotThrow(Action action, string message, params object[] args) {
-            Global.DoesNotThrow(action, message, (object[]) args);
         }
 
         public static void Throws<T>(Task task, string message, params object[] args) where T : Exception {
@@ -197,10 +299,62 @@ namespace Carbonfrost.Commons.Spec {
         }
     }
 
-	partial class Assume {
+    partial class Assume {
 
         public static void DoesNotThrow(Action action) {
             Global.DoesNotThrow(action);
+        }
+
+        public static void DoesNotThrow(Action action, string message, params object[] args) {
+            Global.DoesNotThrow(action, message, (object[]) args);
+        }
+
+        public static void DoesNotThrow<T>(Task task) where T : Exception {
+            Global.DoesNotThrow<T>(task);
+        }
+
+        public static void DoesNotThrow<T>(Action action) where T : Exception {
+            Global.DoesNotThrow<T>(action);
+        }
+
+        public static void DoesNotThrow<T>(Func<object> func) where T : Exception {
+            Global.DoesNotThrow<T>(func);
+        }
+
+        public static void DoesNotThrow(Type exceptionType, Func<object> func) {
+            Global.DoesNotThrow(exceptionType, func);
+        }
+
+        public static void DoesNotThrow(Type exceptionType, Task task) {
+            Global.DoesNotThrow(exceptionType, task);
+        }
+
+        public static void DoesNotThrow(Type exceptionType, Action action) {
+            Global.DoesNotThrow(exceptionType, action);
+        }
+
+        public static void DoesNotThrow<T>(Task task, string message, params object[] args) where T : Exception {
+            Global.DoesNotThrow<T>(task, message, (object[]) args);
+        }
+
+        public static void DoesNotThrow<T>(Action action, string message, params object[] args) where T : Exception {
+            Global.DoesNotThrow<T>(action, message, (object[]) args);
+        }
+
+        public static void DoesNotThrow<T>(Func<object> func, string message, params object[] args) where T : Exception {
+            Global.DoesNotThrow<T>(func, message, (object[]) args);
+        }
+
+        public static void DoesNotThrow(Type exceptionType, Func<object> func, string message, params object[] args) {
+            Global.DoesNotThrow(exceptionType, func, message, (object[]) args);
+        }
+
+        public static void DoesNotThrow(Type exceptionType, Task task, string message, params object[] args) {
+            Global.DoesNotThrow(exceptionType, task, message, (object[]) args);
+        }
+
+        public static void DoesNotThrow(Type exceptionType, Action action, string message, params object[] args) {
+            Global.DoesNotThrow(exceptionType, action, message, (object[]) args);
         }
 
         public static void Throws<T>(Task task) where T : Exception {
@@ -225,10 +379,6 @@ namespace Carbonfrost.Commons.Spec {
 
         public static void Throws(Type exceptionType, Action action) {
             Global.Throws(exceptionType, action);
-        }
-
-        public static void DoesNotThrow(Action action, string message, params object[] args) {
-            Global.DoesNotThrow(action, message, (object[]) args);
         }
 
         public static void Throws<T>(Task task, string message, params object[] args) where T : Exception {

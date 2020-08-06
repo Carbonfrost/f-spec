@@ -1,5 +1,5 @@
 //
-// Copyright 2018-2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -121,7 +121,7 @@ namespace Carbonfrost.Commons.Spec {
 
             public override bool Matches(IEnumerable<KeyValuePair<TKey, TValue>> actual) {
                 if (actual == null) {
-                    throw new ArgumentNullException("actual");
+                    return false;
                 }
                 var c = actual as IDictionary<TKey, TValue>;
                 if (c != null) {
@@ -134,7 +134,7 @@ namespace Carbonfrost.Commons.Spec {
 
             public bool Matches(IEnumerable<IGrouping<TKey, TValue>> actual) {
                 if (actual == null) {
-                    throw new ArgumentNullException("actual");
+                    return false;
                 }
                 var expected = new KeyValuePair<TKey, TValue>(_key, _value);
                 return actual.Any(kvp => kvp.Key.Equals(_key) && kvp.Contains(_value));

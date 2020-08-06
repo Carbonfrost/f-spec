@@ -82,8 +82,8 @@
   <data name="CannotTreatAsDictionaryOrGroupings" xml:space="preserve">
     <value>Can't assert that instance of `{0}' has keys because it doesn't support it.</value>
   </data>
-  <data name="CannotUseInstanceOfOnNullActual" xml:space="preserve">
-    <value>Can't use instance-of or not-instance-of on null actual values.  Assert that the value is non-null before trying to assert its type.</value>
+  <data name="CannotAssertTypeOnNullActual" xml:space="preserve">
+    <value>Can't check type of null actual values.  Assert that the value is non-null before trying to assert its type.</value>
   </data>
   <data name="CannotUseNullOnValueType" xml:space="preserve">
     <value>Can't use null or not-null on value type {0}.  Assert that the value is a reference type before trying to assert whether it is null.</value>

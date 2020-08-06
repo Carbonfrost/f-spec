@@ -109,7 +109,7 @@ namespace Carbonfrost.Commons.Spec {
                 var strActual = Convert.ToString(actual);
                 return new Patch(strExpected, strActual);
             }
-            if (expected is IEnumerable<string> strExpectedItems) {
+            if (actual != null && expected is IEnumerable<string> strExpectedItems) {
                 return new Patch(
                     string.Join("\n", strExpectedItems),
                     string.Join("\n", ((System.Collections.IEnumerable) actual).Cast<object>())

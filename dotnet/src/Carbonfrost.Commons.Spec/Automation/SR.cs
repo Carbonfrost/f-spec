@@ -119,11 +119,11 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("CannotTreatAsDictionaryOrGroupings") , @type);
     }
 
-  /// <summary>Can't use instance-of or not-instance-of on null actual values.  Assert that the value is non-null before trying to assert its type.</summary>
-    internal static string CannotUseInstanceOfOnNullActual(
+  /// <summary>Can't check type of null actual values.  Assert that the value is non-null before trying to assert its type.</summary>
+    internal static string CannotAssertTypeOnNullActual(
     
     ) {
-        return string.Format(Culture, ResourceFinder("CannotUseInstanceOfOnNullActual") );
+        return string.Format(Culture, ResourceFinder("CannotAssertTypeOnNullActual") );
     }
 
   /// <summary>Can't use null or not-null on value type ${type}.  Assert that the value is a reference type before trying to assert whether it is null.</summary>

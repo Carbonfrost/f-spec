@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2019-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 //
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
@@ -166,18 +167,24 @@ namespace Carbonfrost.Commons.Spec {
 
         public class ContainsSubstringMatcher : TestMatcher<string> {
 
-            public string Expected { get; private set; }
-            public StringComparison Comparison { get; private set; }
+            public string Expected {
+                get;
+            }
+
+            public StringComparison Comparison {
+                get;
+            }
 
             public ContainsSubstringMatcher(string expected, StringComparison comparison = StringComparison.Ordinal) {
                 if (expected == null) {
-                    throw new ArgumentNullException("expected");
+                    throw new ArgumentNullException(nameof(expected));
                 }
                 Expected = expected;
                 Comparison = comparison;
             }
 
             [MatcherUserData(Hidden = true)]
+            [DebuggerBrowsable(DebuggerBrowsableState.Never)]
             public ContainsSubstringMatcher IgnoringCase {
                 get {
                     return new ContainsSubstringMatcher(Expected, Comparison.MakeIgnoreCase());
@@ -185,6 +192,7 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             [MatcherUserData(Hidden = true)]
+            [DebuggerBrowsable(DebuggerBrowsableState.Never)]
             public ContainsSubstringMatcher UsingCurrentCulture {
                 get {
                     return new ContainsSubstringMatcher(Expected, Comparison.MakeCurrentCulture());
@@ -201,7 +209,7 @@ namespace Carbonfrost.Commons.Spec {
 
             public override bool Matches(string actual) {
                 if (actual == null) {
-                    throw new ArgumentNullException("actual");
+                    return false;
                 }
                 return actual.IndexOf(Expected, Comparison) >= 0;
             }

@@ -1,5 +1,5 @@
 //
-// Copyright 2018-2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -119,7 +119,7 @@ namespace Carbonfrost.Commons.Spec {
 
             public override bool Matches(IEnumerable actual) {
                 if (actual == null) {
-                    throw new ArgumentNullException("actual");
+                    return false;
                 }
 
                 return Keys(actual).Contains(_key);
