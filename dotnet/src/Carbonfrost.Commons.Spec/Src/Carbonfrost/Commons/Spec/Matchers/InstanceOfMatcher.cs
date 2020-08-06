@@ -163,6 +163,13 @@ namespace Carbonfrost.Commons.Spec {
                 get;
             }
 
+            [MatcherUserData]
+            private bool _ShowActualTypes {
+                get {
+                    return true;
+                }
+            }
+
             object ITestMatcherValidations.AllowingNullActualValue() {
                 return AllowingNullActualValue();
             }

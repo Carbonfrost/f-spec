@@ -57,6 +57,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        private bool MatcherShowActualTypes {
+            get {
+                return Contains("_ShowActualTypes");
+            }
+        }
+
         public void Clear() {
             _dictionary.Clear();
             _actuals.Clear();
@@ -80,9 +86,19 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         internal void CopyActuals(UserDataCollection from) {
-            foreach (var key in new [] { "Actual" }) {
-                _dictionary[key] = from._dictionary[key];
-                _actuals[key] = from._actuals[key];
+            foreach (var key in ActualOrder) {
+                if (from._dictionary.ContainsKey(key)) {
+                    _dictionary[key] = from._dictionary[key];
+                }
+                if (from._actuals.ContainsKey(key)) {
+                    _actuals[key] = from._actuals[key];
+                }
+            }
+        }
+
+        internal IEnumerable<string> VisibleKeys {
+            get {
+                return _dictionary.Keys.Where(k => !IsHiddenFromTable(k));
             }
         }
 
@@ -164,19 +180,23 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         private void ExtractUserData(object matcher) {
             var props = matcher.GetType()
-                .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(t => t.CanRead && t.GetIndexParameters().Length == 0);
 
             foreach (var pi in props) {
                 var name = pi.Name;
-                object val = pi.GetValue(matcher);
 
-                var attr = (MatcherUserDataAttribute) pi.GetCustomAttribute(typeof(MatcherUserDataAttribute));
-                if (attr != null) {
-                    if (attr.Hidden) {
-                        continue;
-                    }
+                // Allow MatcherUserDataAttribute to skip over public properties or to
+                // cause private properties to be added
+                var attr = pi.GetCustomAttribute<MatcherUserDataAttribute>();
+                if (attr != null && attr.Hidden) {
+                    continue;
                 }
+                if (!pi.GetMethod.IsPublic && attr == null) {
+                    continue;
+                }
+
+                object val = pi.GetValue(matcher);
                 Add(name, val);
             }
         }
@@ -200,10 +220,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return false;
         }
 
-        internal string FormatValue(string key, AssertionMessageFormatModes format) {
+        internal string FormatValue(string key, AssertionMessageFormatModes format = AssertionMessageFormatModes.None) {
             if (_actuals.TryGetValue(key, out IDisplayActual actual)) {
                 var options = format.ToDisplayActualOptions();
-                if (ActualsOnlyTypeDifferences) {
+                if (ActualsOnlyTypeDifferences || MatcherShowActualTypes) {
                     options |= DisplayActualOptions.ShowType;
                 }
                 return actual.Format(options);
