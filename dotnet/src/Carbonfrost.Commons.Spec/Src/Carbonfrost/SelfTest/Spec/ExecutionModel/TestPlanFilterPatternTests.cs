@@ -21,7 +21,7 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 using System;
 
 namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
-    
+
     public class TestPlanFilterPatternTests : TestClass {
 
         [InlineData("n", "n", "z")]

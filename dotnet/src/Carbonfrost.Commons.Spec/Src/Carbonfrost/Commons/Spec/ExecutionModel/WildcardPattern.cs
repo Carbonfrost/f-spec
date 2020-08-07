@@ -94,6 +94,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 case '+':
                 case '$':
                 case '^':
+                case '|':
                     return "\\" + c;
                 case '*':
                     return @"[^\s]*";
