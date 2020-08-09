@@ -32,11 +32,11 @@ Each <assembly> to load is specified as an argument to the command.  Assemblies 
 * `--fail-pending`:
   When used, specifies that the test plan fails if there are any pending tests.
 
-* `-F, --focus`=<string>:
-  Focus tests whose descriptions or names match the given <string>.  See [SELECTING TESTS][] for information about the syntax to use for <string>.
-
 * `-i, --fixture`=<path>:
   Add a path to the fixture search path.  If the path is a file, then the file can be loaded as a fixture.  If the path is a directory, then the directory is used as the prefix when searching for a fixture.  This option can be specified multiple times.
+
+* `-F, --focus`=<string>:
+  Focus tests whose descriptions or names match the given <string>.  See [SELECTING TESTS][] for information about the syntax to use for <string>.
 
 * `--full-stack-traces`:
   When specified, show full stack traces when errors occur.  By default, stack traces are filtered so that stack frames that are part of `fspec` itself are left out.  This hides the non-user stack frames and makes for more concise output.  This option is implied by `--self-test` because any errors that occur are likely to have occurred within these stack frames.  When set, the environment variable `DEBUG` also enables this option.

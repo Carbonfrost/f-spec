@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.0
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.0
-.TH "FSPEC" "1" "June 2020" ""
+.TH "FSPEC" "1" "August 2020" ""
 .SH "NAME"
 \fBfspec\fR \- a test framework for \.NET Core
 .SH "SYNOPSIS"
@@ -31,11 +31,11 @@ When used, specifies that the test plan fails if there are any tests that are fo
 \fB\-\-fail\-pending\fR
 When used, specifies that the test plan fails if there are any pending tests\.
 .TP
-\fB\-F, \-\-focus\fR=\fIstring\fR
-Focus tests whose descriptions or names match the given \fIstring\fR\. See \fI\%#SELECTING\-TESTS\fR for information about the syntax to use for \fIstring\fR\.
-.TP
 \fB\-i, \-\-fixture\fR=\fIpath\fR
 Add a path to the fixture search path\. If the path is a file, then the file can be loaded as a fixture\. If the path is a directory, then the directory is used as the prefix when searching for a fixture\. This option can be specified multiple times\.
+.TP
+\fB\-F, \-\-focus\fR=\fIstring\fR
+Focus tests whose descriptions or names match the given \fIstring\fR\. See \fI\%#SELECTING\-TESTS\fR for information about the syntax to use for \fIstring\fR\.
 .TP
 \fB\-\-full\-stack\-traces\fR
 When specified, show full stack traces when errors occur\. By default, stack traces are filtered so that stack frames that are part of \fBfspec\fR itself are left out\. This hides the non\-user stack frames and makes for more concise output\. This option is implied by \fB\-\-self\-test\fR because any errors that occur are likely to have occurred within these stack frames\. When set, the environment variable \fBDEBUG\fR also enables this option\.
@@ -119,7 +119,7 @@ If you specify none of the test selection options, then the default set of tests
 .SH "LOADER PATH"
 The loader path specifies the directories which are probed to find additional assemblies to load\. By default, the loader path contains each directory for each assembly that was specified at the command line\.
 .P
-You can specify the environment variable \fBFSPEC_LOADER_PATH\fR as described in [#ENVIRONMENT] to set up the loader path from the environment\.
+You can specify the environment variable \fBFSPEC_LOADER_PATH\fR as described in \fI\%#ENVIRONMENT\fR to set up the loader path from the environment\.
 .P
 If you need to add another loader path, you specify it with the \fB\-\-loader\-path\fR option\. This can be used to load an assembly directly or can be used to add a search directory from which assemblies can be loaded\. The loader path specified from the command line is searched before those set by an environment variable, and the implicit search of the containing directory of an assembly reference is performed last\.
 .SH "ENVIRONMENT"
@@ -131,7 +131,7 @@ When set, provide debug trace output\.
 Specifies the fixture path where fixtures can be loaded\. This environment variable uses the format that \fBPATH\fR does; that is, it is a colon\-delimited list of paths on Unix\-like platforms or a semicolon\-delimited list on Windows\. The other way to set fixture paths is with the \fB\-\-fixture\-path\fR option, and when it is specified, fixture paths are first loaded from the command line arguments\.
 .TP
 \fBFSPEC_LOADER_PATH\fR
-Specifies the loader path, which contains assembly file names or search directories\. This environment variable uses the format that \fBPATH\fR does; that is, it is a colon\-delimited list of paths on Unix\-like platforms or a semicolon\-delimited list on Windows\. See [#LOADER PATH] for an overview of how the loader path works\. The other way to set loader paths is with the \fB\-\-loader\-path\fR option, and when it is specified, loader paths are first loaded from the command line arguments\.
+Specifies the loader path, which contains assembly file names or search directories\. This environment variable uses the format that \fBPATH\fR does; that is, it is a colon\-delimited list of paths on Unix\-like platforms or a semicolon\-delimited list on Windows\. See \fI\%#LOADER\-PATH\fR for an overview of how the loader path works\. The other way to set loader paths is with the \fB\-\-loader\-path\fR option, and when it is specified, loader paths are first loaded from the command line arguments\.
 .SH "EXIT CODES"
 .TP
 0

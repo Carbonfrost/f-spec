@@ -133,6 +133,13 @@ namespace Carbonfrost.CFSpec.Resources {
         return string.Format(Culture, ResourceFinder("UFailFast") );
     }
 
+  /// <summary>Exit with an error code if any focused specs</summary>
+    internal static string UFailFocused(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UFailFocused") );
+    }
+
   /// <summary>Exit with an error code if any pending specs</summary>
     internal static string UFailOnPending(
 
