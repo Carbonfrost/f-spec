@@ -116,16 +116,4 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
     }
-
-    partial class Extensions {
-
-        internal static TestOptions SafeWithName(this TestOptions opts, string name) {
-            if (opts == null || ReferenceEquals(opts, TestOptions.Empty)) {
-                return TestOptions.Named(name);
-            };
-            var c = opts.Clone();
-            c.Name = name;
-            return c;
-        }
-    }
 }

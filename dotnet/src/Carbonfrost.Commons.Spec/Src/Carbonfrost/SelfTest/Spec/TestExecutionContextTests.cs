@@ -59,6 +59,27 @@ namespace Carbonfrost.SelfTest.Spec {
         }
 
         [Fact]
+        public void RunTest_Action_should_allow_called_twice_with_names() {
+            RunTest(tc => {
+                Assert.Pass("passed within");
+            }, new TestOptions {
+                Name = "X",
+                PassExplicitly = true
+            });
+
+            var results2 = RunTest(tc => {
+                Assert.Pass("passed within");
+            }, new TestOptions {
+                Name = "Y",
+                PassExplicitly = true
+            });
+
+            Assert.True(results2.Passed);
+            Assert.True(results2.IsStatusExplicit);
+            Assert.Equal("Y", results2.TestName.DataName);
+        }
+
+        [Fact]
         public void RunTests_should_process_test_data() {
             var handler = TestActionDispatcher.Create((TestExecutionContext c) => { });
             var results = RunTests(

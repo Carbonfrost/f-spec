@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -30,7 +29,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             private readonly RootNode _root;
 
             protected TestContext RootInitContext {
-                get;
+                get {
+                    return _root.InitContext;
+                }
             }
 
             public RootNode Root {
@@ -66,11 +67,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             protected TestPlanBase(DefaultTestRunner runner, TestRun testRun, TestRunnerOptions normalized) {
                 _normalizedOpts = normalized;
                 _runner = runner;
-                _root = new RootNode(normalized);
+                _root = new RootNode(runner, testRun);
 
-                var testContext = new RootTestContext(testRun, _runner);
-                RootInitContext = testContext;
-                Push(_root, testContext, testRun);
+                _root.Push(RootInitContext);
 
                 _root.AppendEnd(null);
 
@@ -84,24 +83,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
 
             public abstract TestRunResults RunTests();
-
-            private void Push(TestUnitNode parent, TestContext context, TestUnit item) {
-                if (parent == null) {
-                    throw new ArgumentNullException(nameof(parent));
-                }
-                item.InitializeSafe(context);
-
-                TestUnitNode startNode = parent.AppendStart(item);
-
-                IEnumerable<TestUnit> children = item.Children;
-                if (_normalizedOpts.RandomizeSpecs) {
-                    children = item.Children.Shuffle(new Random(_normalizedOpts.RandomSeed));
-                }
-                foreach (var c in children) {
-                    Push(startNode, context.WithSelf(c), c);
-                }
-                startNode.AppendEnd(item);
-            }
 
         }
 
