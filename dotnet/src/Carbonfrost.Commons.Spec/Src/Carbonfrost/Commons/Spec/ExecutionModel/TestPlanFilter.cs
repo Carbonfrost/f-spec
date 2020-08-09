@@ -14,6 +14,8 @@
 // limitations under the License.
 //
 using System;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
@@ -115,11 +117,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             } else if (emptyTags) {
                 // Only run tests that match includes
-                Includes.Apply(testRun, ACTIVATE, SKIP);
+                TestPlanFilterPattern.Or(Includes).Apply(testRun, ACTIVATE, SKIP);
 
             } else {
                 // Only run tests that match either
-                Includes.Apply(testRun, ACTIVATE, SKIP);
+                TestPlanFilterPattern.Or(Includes).Apply(testRun, ACTIVATE, SKIP);
                 Tags.Apply(testRun, ACTIVATE);
             }
         }
