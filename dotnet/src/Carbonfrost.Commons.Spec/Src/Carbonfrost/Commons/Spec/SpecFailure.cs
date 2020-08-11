@@ -75,8 +75,8 @@ namespace Carbonfrost.Commons.Spec {
             return new InvalidOperationException(SR.CannotUseNullOnValueType(type));
         }
 
-        public static AssertException CannotUseInstanceOfOnNullActual() {
-            return new AssertException(SR.CannotUseInstanceOfOnNullActual());
+        public static AssertVerificationException CannotAssertTypeOnNullActual() {
+            return new AssertVerificationException(SR.CannotAssertTypeOnNullActual());
         }
 
         public static AssertException CastRequiredByMatcherFailure(Exception inner, object matcher) {

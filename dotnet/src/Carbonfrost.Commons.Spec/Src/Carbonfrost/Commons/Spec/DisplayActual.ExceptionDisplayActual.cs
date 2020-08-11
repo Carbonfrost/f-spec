@@ -27,6 +27,15 @@ namespace Carbonfrost.Commons.Spec {
                 get;
             }
 
+            public Type Type {
+                get {
+                    if (Exception == null) {
+                        return typeof(Exception);
+                    }
+                    return Exception.GetType();
+                }
+            }
+
             public ExceptionDisplayActual(Exception exception) {
                 Exception = exception;
             }

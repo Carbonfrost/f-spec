@@ -136,6 +136,20 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
         }
 
         [Fact]
+        public void TestFailure_from_differing_types_should_format_actuals_with_type_information() {
+            var actual = new [] { "hello", "world" };
+            var subj = Matchers.Equal<IEnumerable<object>>(new List<object> { "hello", "world" });
+
+            // They have the same contents, but this is not considered a match
+            Expect(actual).To(Matchers.Not(subj));
+
+            var failure = TestMatcherLocalizer.Failure(subj, actual);
+            Assert.Equal("String[] { \"hello\", \"world\" }", failure.UserData.FormatValue("Actual"));
+            Assert.Equal("List<Object> { \"hello\", \"world\" }", failure.UserData.FormatValue("Expected"));
+            Assert.Null(failure.UserData.Diff);
+        }
+
+        [Fact]
         public void TestFailure_from_short_string_should_not_produce_diff() {
             var subj = new EqualMatcher<string>("and");
             var failure = TestMatcherLocalizer.Failure(subj, "bool");

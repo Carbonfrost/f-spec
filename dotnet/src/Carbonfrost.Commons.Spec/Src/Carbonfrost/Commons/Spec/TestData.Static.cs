@@ -251,13 +251,13 @@ namespace Carbonfrost.Commons.Spec {
             return actualData;
         }
 
-        internal static IEnumerable<object[]> Combinatorial(IList<object[]> vars) {
+        internal static IEnumerable<T[]> Combinatorial<T>(IList<T[]> vars) {
             int totalCombinations = vars.Aggregate(1, (a, v) => a * v.Length);
             int paramCount = vars.Count;
 
-            var result = new List<object[]>(totalCombinations);
+            var result = new List<T[]>(totalCombinations);
             for (int i = 0; i < totalCombinations; i++) {
-                result.Add(new object[paramCount]);
+                result.Add(new T[paramCount]);
             }
 
             // A tessellation generator

@@ -33,7 +33,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                 return;
             }
 
-            int maxLength = data.Keys.Max(t => t.Length);
+            int maxLength = data.VisibleKeys.Max(t => t.Length);
 
             WriteLine();
             foreach (var kvp in data) {

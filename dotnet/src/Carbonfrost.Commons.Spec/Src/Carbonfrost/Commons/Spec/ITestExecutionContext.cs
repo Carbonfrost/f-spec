@@ -24,17 +24,13 @@ namespace Carbonfrost.Commons.Spec {
         TestCaseResult RunTest(Func<TestExecutionContext, object> testFunc);
         TestCaseResult RunTest(Func<TestExecutionContext, object> testFunc, TestOptions options);
         TestCaseResult RunTest(string name, Action<TestExecutionContext> testFunc);
-        TestCaseResult RunTest(string name, Action<TestExecutionContext> testFunc, TestOptions options);
         TestCaseResult RunTest(string name, Func<TestExecutionContext, object> testFunc);
-        TestCaseResult RunTest(string name, Func<TestExecutionContext, object> testFunc, TestOptions options);
 
         TestUnitResults RunTests(ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc);
         TestUnitResults RunTests(ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc, TestOptions options);
         TestUnitResults RunTests(ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc);
         TestUnitResults RunTests(ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc, TestOptions options);
         TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc);
-        TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc, TestOptions options);
         TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc);
-        TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc, TestOptions options);
     }
 }

@@ -42,7 +42,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             if (TestTag.TryParse(text, out TestTag tag)) {
                 return Exactly(tag);
             }
-            Console.WriteLine("tryparseexact " + text);
             return null;
         }
 

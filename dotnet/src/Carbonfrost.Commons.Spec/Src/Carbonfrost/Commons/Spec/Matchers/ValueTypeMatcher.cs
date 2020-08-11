@@ -102,14 +102,35 @@ namespace Carbonfrost.Commons.Spec {
 
     namespace TestMatchers {
 
-        public class ValueTypeMatcher : TestMatcher<object> {
+        public class ValueTypeMatcher : TestMatcher<object>, ITestMatcherValidations {
+
+            private readonly TestMatcherValidations _validations;
+
+            public ValueTypeMatcher() : this(TestMatcherValidations.None) {
+            }
+
+            private ValueTypeMatcher(TestMatcherValidations v) {
+                _validations = v;
+            }
+
+            public ValueTypeMatcher AllowingNullActualValue() {
+                return new ValueTypeMatcher(_validations.AllowingNullActualValue());
+            }
 
             public override bool Matches(object actual) {
-                if (actual == null) {
+                _validations.ValidateActual(actual);
+
+                if (actual is null) {
                     return false;
                 }
-
+                if (actual is Type t) {
+                    return t.IsValueType;
+                }
                 return actual.GetType().IsValueType;
+            }
+
+            object ITestMatcherValidations.AllowingNullActualValue() {
+                return AllowingNullActualValue();
             }
         }
     }

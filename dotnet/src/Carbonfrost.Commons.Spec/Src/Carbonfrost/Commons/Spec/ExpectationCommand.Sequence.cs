@@ -153,7 +153,7 @@ namespace Carbonfrost.Commons.Spec {
                 ITestMatcher<object> baseMatcher
             ) {
                 var tally = Tally.New(items, baseMatcher, t => (t.Failures == 5));
-                return tally.Lift("spec.all", SR.ExpectedAllElementsTo());
+                return tally.Lift("all", SR.ExpectedAllElementsTo());
             }
         }
 
@@ -178,7 +178,7 @@ namespace Carbonfrost.Commons.Spec {
                                       Matchers.Not(baseMatcher),
                                       t => (t.Failures == 5),
                                       TestMatcherLocalizer.FailurePredicate(baseMatcher));
-                return tally.Lift("spec.notAny", SR.ExpectedNotAnyElementTo());
+                return tally.Lift("notAny", SR.ExpectedNotAnyElementTo());
             }
         }
 
@@ -202,7 +202,7 @@ namespace Carbonfrost.Commons.Spec {
                 if (tally.Successes > 0) {
                     return null;
                 }
-                return tally.Lift("spec.notAll", SR.ExpectedNotAllElementsTo());
+                return tally.Lift("notAll", SR.ExpectedNotAllElementsTo());
             }
         }
 
@@ -223,7 +223,7 @@ namespace Carbonfrost.Commons.Spec {
                 if (tally.Successes > 0) {
                     return null;
                 }
-                return tally.Lift("spec.any", SR.ExpectedAnyElementTo());
+                return tally.Lift("any", SR.ExpectedAnyElementTo());
             }
         }
 
@@ -324,7 +324,7 @@ namespace Carbonfrost.Commons.Spec {
                         message = message.Replace("to:", "items");
                     }
 
-                    return tally.Lift("spec.cardinality", message, true);
+                    return tally.Lift("cardinality", message, true);
                 }
 
                 return null;

@@ -84,6 +84,17 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
         }
 
         [Fact]
+        public void Includes_with_multiple_include_any_matching_tests() {
+            var names = WillRun(
+                pf => {
+                    pf.Includes.AddNew("TestD");
+                    pf.Includes.AddNew("TestC");
+                }
+            );
+            Assert.Equal(new [] { "TestC1", "TestC2", "TestC3", "TestD1", "TestD2" }, names);
+        }
+
+        [Fact]
         public void Excludes_will_excludes_matching_tests() {
             var names = WillRun(pf => pf.Excludes.AddNew("TestB"));
             Assert.DoesNotContain("TestB1", names);

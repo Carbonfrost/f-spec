@@ -71,6 +71,9 @@ namespace Carbonfrost.SelfTest.Spec {
         public void Localizer_should_generate_property_localization() {
             var data = ExtractedUserData;
             foreach (var kvp in data) {
+                if (data.IsHiddenFromTable(kvp.Key)) {
+                    continue;
+                }
                 var caption = ConsoleUserData.Caption(kvp.Key);
                 Assert.DoesNotContain("FAILED TO LOCALIZE", caption);
             }

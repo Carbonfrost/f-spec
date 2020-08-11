@@ -19,7 +19,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
     static class ConsoleWrapper {
 
-        public static readonly IConsoleWrapper Default = new BclConsole();
+        public static readonly IConsoleWrapper Default;
+
+        static ConsoleWrapper() {
+            Default = new BclConsole();
+
+            if (!Environment.OSVersion.Platform.ToString().Contains("Win")) {
+                Default = new AnsiConsole();
+            }
+        }
 
         internal static void Muted(this IConsoleWrapper self){
             self.Cyan();
@@ -103,6 +111,26 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                 self.Red();
             } else if (result.Passed) {
                 self.Green();
+            }
+        }
+
+        internal static void HeadlineColorFor(this IConsoleWrapper self, TestUnit unit) {
+            switch (unit.Type) {
+                case TestUnitType.Assembly:
+                    self.DarkCyan();
+                    self.Underline();
+                    break;
+
+                case TestUnitType.Namespace:
+                    self.DarkCyan();
+                    break;
+
+                case TestUnitType.Class:
+                    self.DarkGreen();
+                    break;
+
+                case TestUnitType.Theory:
+                    break;
             }
         }
     }

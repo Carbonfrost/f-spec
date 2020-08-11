@@ -1,3 +1,5 @@
+#if SELF_TEST
+
 //
 // Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
@@ -13,11 +15,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+using Carbonfrost.Commons.Spec;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
-namespace Carbonfrost.Commons.Spec.TestMatchers {
+namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
 
-    // This is not API because it may not be complete or widely used
-    interface ITestMatcherValidations {
-        object AllowingNullActualValue();
+    public class WildcardPatternTests : TestClass {
+
+        [InlineData("a.b", @"\Aa\.b\Z")]
+        [InlineData("a(", @"\Aa\(\Z")]
+        [InlineData("a|b", @"\Aa\|b\Z")]
+        [Theory]
+        public void Parse_should_escape_wildcard_characters(string wildcard, string regex) {
+            Assert.Equal(regex, new WildcardPattern(wildcard).ToRegex().ToString());
+        }
+
     }
 }
+#endif

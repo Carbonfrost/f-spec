@@ -34,7 +34,7 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel.Output {
             };
             Assert.Equal(
                 new [] {
-                    "        Actual: Text of A"
+                    "      Actual: Text of A"
                 },
                 Render(ud)
             );
@@ -49,6 +49,22 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel.Output {
             Assert.Equal(
                 new [] {
                     "        Actual: 123 (Int32)",
+                    "      Expected: 123 (string)",
+                },
+                Render(ud)
+            );
+        }
+
+        [Fact]
+        public void Render_should_display_type_when_matcher_requires_type() {
+            var ud = new UserDataCollection {
+                { "Expected", "123" },
+                { "Actual", "123" },
+                { "_ShowActualTypes", true },
+            };
+            Assert.Equal(
+                new [] {
+                    "        Actual: 123 (string)",
                     "      Expected: 123 (string)",
                 },
                 Render(ud)

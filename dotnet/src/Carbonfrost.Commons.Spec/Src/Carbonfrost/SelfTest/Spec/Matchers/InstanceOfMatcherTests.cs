@@ -1,7 +1,7 @@
 #if SELF_TEST
 
 //
-// Copyright 2018 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
                 subj.Matches((string) null);
 
                 Assert.Fail("Expected to fail with AssertException -- can't match null");
-            } catch (AssertException) {
+            } catch (AssertVerificationException) {
                 Assert.Pass();
             }
         }
@@ -49,7 +49,7 @@ namespace Carbonfrost.SelfTest.Spec.TestMatchers {
                 subj.Matches(TestActual.Value((string) null));
 
                 Assert.Fail("Expected to fail with AssertException -- can't match null");
-            } catch (AssertException) {
+            } catch (AssertVerificationException) {
                 Assert.Pass();
             }
         }

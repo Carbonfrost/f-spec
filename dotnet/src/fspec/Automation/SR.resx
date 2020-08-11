@@ -88,6 +88,9 @@
   <data name="UFailFast" xml:space="preserve">
     <value>Exit when the first test fails</value>
   </data>
+  <data name="UFailFocused" xml:space="preserve">
+    <value>Exit with an error code if any focused specs</value>
+  </data>
   <data name="UFailOnPending" xml:space="preserve">
     <value>Exit with an error code if any pending specs</value>
   </data>

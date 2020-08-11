@@ -51,7 +51,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
         protected override void OnCaseFinished(TestCaseFinishedEventArgs e) {
             _parts.onTestCaseFinished.Render(RenderContext, e.Result);
-            EndTestVerbose();
+            EndTestVerbose(e.TestCase);
         }
 
         protected override void OnTheoryStarted(TestTheoryStartedEventArgs e) {
@@ -62,8 +62,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             ShowTestVerbose(e.TestAssembly);
         }
 
+        protected override void OnAssemblyFinished(TestAssemblyFinishedEventArgs e) {
+            EndTestVerbose(e.TestAssembly);
+        }
+
         protected override void OnNamespaceStarted(TestNamespaceStartedEventArgs e) {
             ShowTestVerbose(e.TestNamespace);
+        }
+
+        protected override void OnNamespaceFinished(TestNamespaceFinishedEventArgs e) {
+            EndTestVerbose(e.TestNamespace);
         }
 
         protected override void OnClassStarted(TestClassStartedEventArgs e) {
@@ -75,12 +83,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
         }
 
         protected override void OnClassFinished(TestClassFinishedEventArgs e) {
-            EndTestVerbose();
+            EndTestVerbose(e.TestClass);
         }
 
         protected override void OnTheoryFinished(TestTheoryFinishedEventArgs e) {
             _parts.onTestTheoryFinished.Render(RenderContext, e.Results);
-            EndTestVerbose();
+            EndTestVerbose(e.TestTheory);
         }
 
         protected override void OnRunnerStarting(TestRunnerStartingEventArgs e) {
@@ -122,28 +130,46 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
         }
 
         private void ShowTestVerbose(TestUnit unit) {
+            if (ShouldSkipVerbose(unit)) {
+                return;
+            }
             if ((_flags & DisplayFlags.ShowCaseStart) > 0) {
-                console.PushIndent();
-
+                console.HeadlineColorFor(unit);
                 if (unit is TestCaseInfo tci) {
-                    console.Write($"{unit.Name} ");
+                    console.Write($"{unit.Name}");
                     var args = string.Join(
                         ",",
                         tci.TestName.Arguments.Select(s => TextUtility.Truncate(s))
                     );
                     console.Write($"{args}: ");
                 } else {
-                    console.Write($"{unit.Name}");
-                    console.WriteLine();
+                    console.WriteLine($"{unit.Name} {unit.Type}");
                 }
+
+                console.ResetColor();
+                console.ResetStyles();
+                console.PushIndent();
             }
         }
 
-        private void EndTestVerbose() {
+        private void EndTestVerbose(TestUnit unit) {
             if ((_flags & DisplayFlags.ShowCaseStart) > 0) {
+                if (ShouldSkipVerbose(unit)) {
+                    return;
+                }
                 console.WriteLine();
                 console.PopIndent();
             }
+        }
+
+        private static bool ShouldSkipVerbose(TestUnit unit) {
+            if (unit.Skipped) {
+                return true;
+            }
+            if (unit is TestClassInfo || unit is TestNamespace) {
+                return unit.Children.Count == 0 || unit.Children.All(c => ShouldSkipVerbose(c));
+            }
+            return false;
         }
 
         static string PrettyCodeBase(Assembly assembly, bool makeRelative = false) {

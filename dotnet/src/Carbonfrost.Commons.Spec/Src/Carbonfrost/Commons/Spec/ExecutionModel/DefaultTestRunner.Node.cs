@@ -23,7 +23,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
     partial class DefaultTestRunner {
 
         internal abstract class TestUnitNode {
-
             public readonly TestUnit Unit;
             public readonly TestUnitNode Parent;
 
@@ -86,6 +85,30 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             public TestUnitNode AppendEnd(TestUnit item) {
                 return new EndTestUnitNode(this, item);
             }
+
+
+            public void Push(TestContext context) {
+                Push(this, context, Unit);
+            }
+
+            private static void Push(TestUnitNode parent, TestContext context, TestUnit item) {
+                if (parent == null) {
+                    throw new ArgumentNullException(nameof(parent));
+                }
+                item.InitializeSafe(context);
+
+                TestUnitNode startNode = parent.AppendStart(item);
+
+                IEnumerable<TestUnit> children = item.Children;
+                var opts = context.TestRunnerOptions;
+                if (opts.RandomizeSpecs) {
+                    children = item.Children.Shuffle(new Random(opts.RandomSeed));
+                }
+                foreach (var c in children) {
+                    Push(startNode, context.WithSelf(c), c);
+                }
+                startNode.AppendEnd(item);
+            }
         }
 
         class TestCaseNode : TestUnitNode {
@@ -119,10 +142,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             private readonly TestRunResults _result;
 
-            public RootNode(TestRunnerOptions opts) : base(null, null) {
+            public TestContext InitContext {
+                get;
+            }
+
+            public RootNode(TestRunner runner, TestRun testRun) : base(null, testRun) {
+                TestRunnerOptions opts = runner.Options;
                 _result = new TestRunResults {
                     RunnerOptions = opts
                 };
+                InitContext = new RootTestContext(testRun, runner);
             }
 
             internal override void Run(DefaultTestRunner runner, TestContext rootInitContext) {

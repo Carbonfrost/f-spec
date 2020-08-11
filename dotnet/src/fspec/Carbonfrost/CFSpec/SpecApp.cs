@@ -66,6 +66,9 @@ namespace Carbonfrost.CFSpec {
             if (!_options.FailOnPending && reason == TestRunFailureReason.ContainsPendingElements) {
                 return 0;
             }
+            if (!_options.FailFocused && reason == TestRunFailureReason.ContainsFocusedElements) {
+                return 0;
+            }
 
             return (int) reason;
         }

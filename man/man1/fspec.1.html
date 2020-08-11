@@ -112,13 +112,13 @@
 <dt><code>--fail-pending</code></dt>
 <dd>When used, specifies that the test plan fails if there are any pending tests.</dd>
 <dt>
-<code>-F, --focus</code>=<var>string</var>
-</dt>
-<dd>Focus tests whose descriptions or names match the given <var>string</var>.  See <a href="#SELECTING-TESTS" title="SELECTING TESTS" data-bare-link="true">SELECTING TESTS</a> for information about the syntax to use for <var>string</var>.</dd>
-<dt>
 <code>-i, --fixture</code>=<var>path</var>
 </dt>
 <dd>Add a path to the fixture search path.  If the path is a file, then the file can be loaded as a fixture.  If the path is a directory, then the directory is used as the prefix when searching for a fixture.  This option can be specified multiple times.</dd>
+<dt>
+<code>-F, --focus</code>=<var>string</var>
+</dt>
+<dd>Focus tests whose descriptions or names match the given <var>string</var>.  See <a href="#SELECTING-TESTS" title="SELECTING TESTS" data-bare-link="true">SELECTING TESTS</a> for information about the syntax to use for <var>string</var>.</dd>
 <dt><code>--full-stack-traces</code></dt>
 <dd>When specified, show full stack traces when errors occur.  By default, stack traces are filtered so that stack frames that are part of <code>fspec</code> itself are left out.  This hides the non-user stack frames and makes for more concise output.  This option is implied by <code>--self-test</code> because any errors that occur are likely to have occurred within these stack frames.  When set, the environment variable <code>DEBUG</code> also enables this option.</dd>
 <dt>
@@ -206,7 +206,7 @@ Otherwise, the tests that will be run will be the tests that match the <code>--i
 
 <p>The loader path specifies the directories which are probed to find additional assemblies to load.  By default, the loader path contains each directory for each assembly that was specified at the command line.</p>
 
-<p>You can specify the environment variable <code>FSPEC_LOADER_PATH</code> as described in [#ENVIRONMENT] to set up the loader path from the environment.</p>
+<p>You can specify the environment variable <code>FSPEC_LOADER_PATH</code> as described in <a href="#ENVIRONMENT" title="ENVIRONMENT" data-bare-link="true">ENVIRONMENT</a> to set up the loader path from the environment.</p>
 
 <p>If you need to add another loader path, you specify it with the <code>--loader-path</code> option.  This can be used to load an assembly directly or can be used to add a search directory from which assemblies can be loaded.  The loader path specified from the command line is searched before those set by an environment variable, and the implicit search of the containing directory of an assembly reference is performed last.</p>
 
@@ -218,7 +218,7 @@ Otherwise, the tests that will be run will be the tests that match the <code>--i
 <dt><code>FSPEC_FIXTURE_PATH</code></dt>
 <dd>Specifies the fixture path where fixtures can be loaded.  This environment variable uses the format that <code>PATH</code> does; that is, it is a colon-delimited list of paths on Unix-like platforms or a semicolon-delimited list on Windows.  The other way to set fixture paths is with the <code>--fixture-path</code> option, and when it is specified, fixture paths are first loaded from the command line arguments.</dd>
 <dt><code>FSPEC_LOADER_PATH</code></dt>
-<dd>Specifies the loader path, which contains assembly file names or search directories.  This environment variable uses the format that <code>PATH</code> does; that is, it is a colon-delimited list of paths on Unix-like platforms or a semicolon-delimited list on Windows.  See [#LOADER PATH] for an overview of how the loader path works.  The other way to set loader paths is with the <code>--loader-path</code> option, and when it is specified, loader paths are first loaded from the command line arguments.</dd>
+<dd>Specifies the loader path, which contains assembly file names or search directories.  This environment variable uses the format that <code>PATH</code> does; that is, it is a colon-delimited list of paths on Unix-like platforms or a semicolon-delimited list on Windows.  See <a href="#LOADER-PATH" title="LOADER PATH" data-bare-link="true">LOADER PATH</a> for an overview of how the loader path works.  The other way to set loader paths is with the <code>--loader-path</code> option, and when it is specified, loader paths are first loaded from the command line arguments.</dd>
 </dl>
 
 <h2 id="EXIT-CODES">EXIT CODES</h2>
@@ -239,7 +239,7 @@ Otherwise, the tests that will be run will be the tests that match the <code>--i
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'></li>
-    <li class='tc'>June 2020</li>
+    <li class='tc'>August 2020</li>
     <li class='tr'>fspec(1)</li>
   </ol>
 

@@ -1,5 +1,5 @@
 //
-// Copyright 2018-2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2018-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -157,11 +157,17 @@ namespace Carbonfrost.Commons.Spec {
 
         public class InstanceOfMatcher : TestMatcher<object>, ITestMatcherValidations {
 
-            private bool _allowNull;
+            private readonly TestMatcherValidations _validations;
 
             public Type Expected {
                 get;
-                private set;
+            }
+
+            [MatcherUserData]
+            private bool _ShowActualTypes {
+                get {
+                    return true;
+                }
             }
 
             object ITestMatcherValidations.AllowingNullActualValue() {
@@ -169,23 +175,23 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             public InstanceOfMatcher AllowingNullActualValue() {
-                return new InstanceOfMatcher(Expected) {
-                    _allowNull = true
-                };
+                return new InstanceOfMatcher(Expected, _validations.AllowingNullActualValue());
             }
 
-            public InstanceOfMatcher(Type expected) {
+            public InstanceOfMatcher(Type expected) : this(expected, TestMatcherValidations.None) {
+            }
+
+            private InstanceOfMatcher(Type expected, TestMatcherValidations validations) {
                 if (expected == null) {
                     throw new ArgumentNullException(nameof(expected));
                 }
 
                 Expected = expected;
+                _validations = validations;
             }
 
             public override bool Matches(object actual) {
-                if (actual == null && !_allowNull) {
-                    throw SpecFailure.CannotUseInstanceOfOnNullActual();
-                }
+                _validations.ValidateActual(actual);
 
                 return Expected.GetTypeInfo().IsInstanceOfType(actual);
             }

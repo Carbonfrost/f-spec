@@ -82,8 +82,8 @@
   <data name="CannotTreatAsDictionaryOrGroupings" xml:space="preserve">
     <value>Can't assert that instance of `{0}' has keys because it doesn't support it.</value>
   </data>
-  <data name="CannotUseInstanceOfOnNullActual" xml:space="preserve">
-    <value>Can't use instance-of or not-instance-of on null actual values.  Assert that the value is non-null before trying to assert its type.</value>
+  <data name="CannotAssertTypeOnNullActual" xml:space="preserve">
+    <value>Can't check type of null actual values.  Assert that the value is non-null before trying to assert its type.</value>
   </data>
   <data name="CannotUseNullOnValueType" xml:space="preserve">
     <value>Can't use null or not-null on value type {0}.  Assert that the value is a reference type before trying to assert whether it is null.</value>
@@ -199,6 +199,9 @@
   <data name="ExpectedMatch" xml:space="preserve">
     <value>Expected to match {Expected}</value>
   </data>
+  <data name="ExpectedMemberwiseEqual" xml:space="preserve">
+    <value>Expected memberwise-equal</value>
+  </data>
   <data name="ExpectedNotAllElementsTo" xml:space="preserve">
     <value>Expected not all elements to:</value>
   </data>
@@ -222,6 +225,9 @@
   </data>
   <data name="ExpectedSatisfyAny" xml:space="preserve">
     <value>Expected to satisfy any:</value>
+  </data>
+  <data name="ExpectedSequenceEqual" xml:space="preserve">
+    <value>Expected sequence-equal</value>
   </data>
   <data name="ExpectedSetEqual" xml:space="preserve">
     <value>Expected set-equal</value>
@@ -278,7 +284,7 @@
     <value>Actual count</value>
   </data>
   <data name="LabelBoundsExclusive" xml:space="preserve">
-    <value>Bounds Exclusive</value>
+    <value>Bounds exclusive</value>
   </data>
   <data name="LabelComparer" xml:space="preserve">
     <value>Comparer</value>
@@ -288,6 +294,9 @@
   </data>
   <data name="LabelDiff" xml:space="preserve">
     <value>Diff</value>
+  </data>
+  <data name="LabelDifferences" xml:space="preserve">
+    <value>Differences</value>
   </data>
   <data name="LabelExpected" xml:space="preserve">
     <value>Expected</value>
@@ -312,6 +321,9 @@
   </data>
   <data name="LabelMatchers" xml:space="preserve">
     <value>Matchers</value>
+  </data>
+  <data name="LabelMemberFilter" xml:space="preserve">
+    <value>Member filter</value>
   </data>
   <data name="LabelPredicate" xml:space="preserve">
     <value>Predicate</value>
@@ -415,6 +427,9 @@
   <data name="NotExpectedMatch" xml:space="preserve">
     <value>Not expected to match {Expected}</value>
   </data>
+  <data name="NotExpectedMemberwiseEqual" xml:space="preserve">
+    <value>Not expected to be memberwise-equal</value>
+  </data>
   <data name="NotExpectedNull" xml:space="preserve">
     <value>Not expected to be null</value>
   </data>
@@ -432,6 +447,9 @@
   </data>
   <data name="NotExpectedSatisfyAny" xml:space="preserve">
     <value>Not expected to satisfy any</value>
+  </data>
+  <data name="NotExpectedSequenceEqual" xml:space="preserve">
+    <value>Not expected to be sequence-equal</value>
   </data>
   <data name="NotExpectedSetEqual" xml:space="preserve">
     <value>Not expected to be set-equal</value>
@@ -523,6 +541,9 @@
   <data name="NotPredicateMatch" xml:space="preserve">
     <value>not match {Expected}</value>
   </data>
+  <data name="NotPredicateMemberwiseEqual" xml:space="preserve">
+    <value>not be memberwise-equal</value>
+  </data>
   <data name="NotPredicateNull" xml:space="preserve">
     <value>not be null</value>
   </data>
@@ -540,6 +561,9 @@
   </data>
   <data name="NotPredicateSatisfyAny" xml:space="preserve">
     <value>not satisfy any</value>
+  </data>
+  <data name="NotPredicateSequenceEqual" xml:space="preserve">
+    <value>not be sequence-equal</value>
   </data>
   <data name="NotPredicateSetEqual" xml:space="preserve">
     <value>not be set-equal</value>
@@ -640,6 +664,9 @@
   <data name="PredicateMatch" xml:space="preserve">
     <value>match {Expected}</value>
   </data>
+  <data name="PredicateMemberwiseEqual" xml:space="preserve">
+    <value>be memberwise-equal</value>
+  </data>
   <data name="PredicateNull" xml:space="preserve">
     <value>be null</value>
   </data>
@@ -657,6 +684,9 @@
   </data>
   <data name="PredicateSatisfyAny" xml:space="preserve">
     <value>satisfy any</value>
+  </data>
+  <data name="PredicateSequenceEqual" xml:space="preserve">
+    <value>be sequence-equal</value>
   </data>
   <data name="PredicateSetEqual" xml:space="preserve">
     <value>be set-equal</value>

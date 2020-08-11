@@ -73,6 +73,7 @@ namespace Carbonfrost.CFSpec {
 
         public TestVerificationMode Verify;
         public bool FailOnPending;
+        public bool FailFocused;
 
         public TestRunnerOptions Options = new TestRunnerOptions();
 
@@ -122,6 +123,7 @@ namespace Carbonfrost.CFSpec {
                 { "self-test",     SR.USelfTest(),         v => WillSelfTest() },
                 { "show-tests",    SR.UShowTestNames(),    v => Options.ShowTestNames = true },
                 { "fail-fast",     SR.UFailFast(),         v => Options.FailFast = true },
+                { "fail-focused",  SR.UFailFocused(),      v => FailFocused = true },
                 { "fail-pending",  SR.UFailOnPending(),    v => FailOnPending = true },
 
                 { "show-pass-explicit", SR.UShowPassExplicit(), v => Options.ShowPassExplicitly = true },
@@ -149,7 +151,7 @@ namespace Carbonfrost.CFSpec {
             );
 
             OptionSet.Group(SR.UTestSelectionOptions(), sort: true,
-                "focus=",
+                "F|focus=",
                 "no-focus",
                 "exclude=",
                 "exclude-pattern=",
@@ -166,10 +168,12 @@ namespace Carbonfrost.CFSpec {
                 "random-seed=",
                 "self-test",
                 "fail-fast",
+                "fail-focused",
                 "fail-pending",
                 "i|fixture=",
                 "p|package=",
-                "loader-path="
+                "loader-path=",
+                "pause"
             );
 
             ShowUnifiedDiff = true;

@@ -15,11 +15,15 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    public abstract class TestPlanFilterPattern {
+    public abstract class TestPlanFilterPattern : ITestPlanFilter {
+
+        public static readonly TestPlanFilterPattern Any = new AnyImpl();
 
         public abstract bool IsMatch(TestUnit test);
 
@@ -81,6 +85,52 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 throw new ArgumentNullException(nameof(pattern));
             }
             return new WildcardImpl(WildcardPattern.Containing(pattern));
+        }
+
+        public static TestPlanFilterPattern And(params TestPlanFilterPattern[] items) {
+            return And((IEnumerable<TestPlanFilterPattern>) items);
+        }
+
+        public static TestPlanFilterPattern And(IEnumerable<TestPlanFilterPattern> items) {
+            return Utility.OptimalComposite(items, t => new AndFilter(t), Any);
+        }
+
+        public static TestPlanFilterPattern Or(params TestPlanFilterPattern[] items) {
+            return Or((IEnumerable<TestPlanFilterPattern>) items);
+        }
+
+        public static TestPlanFilterPattern Or(IEnumerable<TestPlanFilterPattern> items) {
+            return Utility.OptimalComposite(items, t => new OrFilter(t), Any);
+        }
+
+        private class OrFilter : TestPlanFilterPattern {
+            private readonly TestPlanFilterPattern[] _items;
+
+            public OrFilter(TestPlanFilterPattern[] items) {
+                _items = items;
+            }
+
+            public override bool IsMatch(TestUnit test) {
+                return _items.Any(m => m.IsMatch(test));
+            }
+        }
+
+        private class AndFilter : TestPlanFilterPattern {
+            private readonly TestPlanFilterPattern[] _items;
+
+            public AndFilter(TestPlanFilterPattern[] items) {
+                _items = items;
+            }
+
+            public override bool IsMatch(TestUnit test) {
+                return _items.All(m => m.IsMatch(test));
+            }
+        }
+
+        private class AnyImpl : TestPlanFilterPattern {
+            public override bool IsMatch(TestUnit test) {
+                return true;
+            }
         }
 
         private class WildcardImpl : TestPlanFilterPattern {

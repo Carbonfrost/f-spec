@@ -42,16 +42,8 @@ namespace Carbonfrost.Commons.Spec {
             return RunTest(testFunc, TestOptions.Named(name));
         }
 
-        public TestCaseResult RunTest(string name, Action<TestExecutionContext> testFunc, TestOptions options) {
-            return RunTest(testFunc, options.SafeWithName(name));
-        }
-
         public TestCaseResult RunTest(string name, Func<TestExecutionContext, object> testFunc) {
             return RunTest(testFunc, TestOptions.Named(name));
-        }
-
-        public TestCaseResult RunTest(string name, Func<TestExecutionContext, object> testFunc, TestOptions options) {
-            return RunTest(testFunc, options.SafeWithName(name));
         }
 
         public TestCaseResult RunTest(Func<TestExecutionContext, object> testFunc, TestOptions options) {
@@ -79,16 +71,8 @@ namespace Carbonfrost.Commons.Spec {
             return RunTests(testDataProvider, testFunc, TestOptions.Named(name));
         }
 
-        public TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc, TestOptions options) {
-            return RunTests(testDataProvider, testFunc, options.SafeWithName(name));
-        }
-
         public TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc) {
             return RunTests(testDataProvider, testFunc, TestOptions.Named(name));
-        }
-
-        public TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc, TestOptions options) {
-            return RunTests(testDataProvider, testFunc, options.SafeWithName(name));
         }
 
         public TestUnitResults RunTests(ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc, TestOptions options) {

@@ -1,5 +1,5 @@
 //
-// Copyright 2017, 2018-2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2018-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
@@ -161,10 +162,16 @@ namespace Carbonfrost.Commons.Spec {
 
         public class StartWithSubstringMatcher : TestMatcher<string> {
 
-            public string Expected { get; private set; }
-            public StringComparison Comparison { get; private set; }
+            public string Expected {
+                get;
+            }
+
+            public StringComparison Comparison {
+                get;
+            }
 
             [MatcherUserData(Hidden = true)]
+            [DebuggerBrowsable(DebuggerBrowsableState.Never)]
             public StartWithSubstringMatcher IgnoringCase {
                 get {
                     return new StartWithSubstringMatcher(Expected, Comparison.MakeIgnoreCase());
@@ -172,6 +179,7 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             [MatcherUserData(Hidden = true)]
+            [DebuggerBrowsable(DebuggerBrowsableState.Never)]
             public StartWithSubstringMatcher UsingCurrentCulture {
                 get {
                     return new StartWithSubstringMatcher(Expected, Comparison.MakeCurrentCulture());
@@ -180,7 +188,7 @@ namespace Carbonfrost.Commons.Spec {
 
             public StartWithSubstringMatcher(string expected, StringComparison comparison = StringComparison.Ordinal) {
                 if (expected == null) {
-                    throw new ArgumentNullException("expected");
+                    throw new ArgumentNullException(nameof(expected));
                 }
                 Expected = expected;
                 Comparison = comparison;
@@ -196,7 +204,7 @@ namespace Carbonfrost.Commons.Spec {
 
             public override bool Matches(string actual) {
                 if (actual == null) {
-                    throw new ArgumentNullException("actual");
+                    return false;
                 }
                 return actual.StartsWith(Expected, Comparison);
             }

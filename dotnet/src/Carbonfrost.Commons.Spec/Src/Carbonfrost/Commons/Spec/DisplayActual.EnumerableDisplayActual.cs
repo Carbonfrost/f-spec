@@ -28,6 +28,12 @@ namespace Carbonfrost.Commons.Spec {
             private readonly List<IDisplayActual> _values = new List<IDisplayActual>();
             private readonly Type _type;
 
+            public Type Type {
+                get {
+                    return _type;
+                }
+            }
+
             public string Format(DisplayActualOptions options) {
                 string formatString = options.ShowType() ? "{0} {{ {1} }}" : "{{ {1} }}";
 

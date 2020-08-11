@@ -16,6 +16,7 @@
 // limitations under the License.
 //
 using System;
+using System.Diagnostics;
 using System.Linq;
 using Carbonfrost.Commons.Spec;
 
@@ -66,15 +67,73 @@ namespace Carbonfrost.SelfTest.Spec {
         [Fact]
         public void Create_should_generate_default_no_string_override() {
             Assert.Equal(
-                "{ F = \"Field has value\", A = \"1\", B = \"2\", C = <InvalidCastException>, D = ... }",
+                "{ A = \"1\", B = \"2\", C = <InvalidCastException>, D = ..., F = \"Field has value\" }",
                 DisplayActual.Create(new PHasNoToStringOverride()).Format(DisplayActualOptions.None)
             );
+        }
+
+        [Fact]
+        public void Create_should_generate_type_information_if_no_properties() {
+            Assert.Equal(
+                "PHasNoToStringOverrideNoProperties {  }",
+                DisplayActual.Create(new PHasNoToStringOverrideNoProperties()).Format(DisplayActualOptions.None)
+            );
+        }
+
+        [Fact]
+        public void Create_should_generate_default_no_string_override_value_type() {
+            Assert.Equal(
+                "{ Comparison = <null>, Operand = <null> }",
+                DisplayActual.Create(new PHasNotStringOverrideStruct()).Format(DisplayActualOptions.None)
+            );
+        }
+
+        class PDebuggerToString {
+            [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+            public string Hidden { get; }
+
+            [DebuggerBrowsable(DebuggerBrowsableState.Collapsed)]
+            public NestedObject Collapsed { get; }
+
+            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            public NestedObject RootHidden { get; }
+
+            public PDebuggerToString() {
+                Hidden = "nope";
+                Collapsed = new NestedObject();
+                RootHidden = new NestedObject();
+            }
+
+            public class NestedObject {
+                public string A;
+
+                public NestedObject() {
+                    A = "T";
+                }
+            }
+        }
+
+        [Fact]
+        public void Create_should_format_debugger_properties() {
+            Assert.Equal(
+                "{ A = \"T\", Collapsed = ... }",
+                DisplayActual.Create(new PDebuggerToString()).Format(DisplayActualOptions.None)
+            );
+        }
+
+#pragma warning disable 0649
+        struct PHasNotStringOverrideStruct {
+            public string Operand;
+            public Comparison<string> Comparison;
         }
 
         class PHasToStringOverride {
             public override string ToString() {
                 return "ToString method";
             }
+        }
+
+        class PHasNoToStringOverrideNoProperties {
         }
 
         class PHasNoToStringOverride {

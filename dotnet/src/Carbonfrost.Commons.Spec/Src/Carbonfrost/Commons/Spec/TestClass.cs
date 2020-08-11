@@ -24,7 +24,7 @@ namespace Carbonfrost.Commons.Spec {
 
     public abstract partial class TestClass : ITestExecutionFilter, ITestExecutionContext {
 
-        private TestExecutionContext _context;
+        private readonly Stack<TestExecutionContext> _context = new Stack<TestExecutionContext>();
         private char _runTestIndex = 'A';
 
         internal static bool HasSelfTests {
@@ -35,7 +35,7 @@ namespace Carbonfrost.Commons.Spec {
 
         public TestExecutionContext TestContext {
             get {
-                return _context;
+                return _context.Peek();
             }
         }
 
@@ -205,7 +205,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public TestCaseResult RunTest(Action<TestExecutionContext> testFunc, TestOptions options) {
-            return TestContext.RunTest(DefaultTestName, testFunc, options);
+            return TestContext.RunTest(testFunc, options);
         }
 
         public TestCaseResult RunTest(Func<TestExecutionContext, object> testFunc) {
@@ -213,39 +213,23 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public TestCaseResult RunTest(Func<TestExecutionContext, object> testFunc, TestOptions options) {
-            return TestContext.RunTest(DefaultTestName, testFunc, options);
+            return TestContext.RunTest(testFunc, options);
         }
 
         public TestCaseResult RunTest(string name, Action<TestExecutionContext> testFunc) {
             return TestContext.RunTest(name, testFunc);
         }
 
-        public TestCaseResult RunTest(string name, Action<TestExecutionContext> testFunc, TestOptions options) {
-            return TestContext.RunTest(name, testFunc, options);
-        }
-
         public TestCaseResult RunTest(string name, Func<TestExecutionContext, object> testFunc) {
             return TestContext.RunTest(name, testFunc);
-        }
-
-        public TestCaseResult RunTest(string name, Func<TestExecutionContext, object> testFunc, TestOptions options) {
-            return TestContext.RunTest(name, testFunc, options);
         }
 
         public TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc) {
             return TestContext.RunTests(name, testDataProvider, testFunc);
         }
 
-        public TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc, TestOptions options) {
-            return TestContext.RunTests(name, testDataProvider, testFunc, options);
-        }
-
         public TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc) {
             return TestContext.RunTests(name, testDataProvider, testFunc);
-        }
-
-        public TestUnitResults RunTests(string name, ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc, TestOptions options) {
-            return TestContext.RunTests(name, testDataProvider, testFunc, options);
         }
 
         public TestUnitResults RunTests(ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc) {
@@ -253,7 +237,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public TestUnitResults RunTests(ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc, TestOptions options) {
-            return TestContext.RunTests(DefaultTestName, testDataProvider, testFunc, options);
+            return TestContext.RunTests(testDataProvider, testFunc, options);
         }
 
         public TestUnitResults RunTests(ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc) {
@@ -261,11 +245,11 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public TestUnitResults RunTests(ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc, TestOptions options) {
-            return TestContext.RunTests(DefaultTestName, testDataProvider, testFunc, options);
+            return TestContext.RunTests(testDataProvider, testFunc, options);
         }
 
         void ITestExecutionFilter.BeforeExecuting(TestContext testContext) {
-            _context = testContext as TestExecutionContext;
+            _context.Push((TestExecutionContext) testContext);
             BeforeTest(testContext.TestUnit);
             BeforeTest();
         }
@@ -275,7 +259,7 @@ namespace Carbonfrost.Commons.Spec {
                 AfterTest(testContext.TestUnit);
                 AfterTest();
             } finally {
-                _context = null;
+                _context.Pop();
             }
         }
     }

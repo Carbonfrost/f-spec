@@ -82,20 +82,18 @@ namespace Carbonfrost.Commons.Spec {
                 if (_negated) {
                     matcher = Matchers.Not(matcher);
                 }
-                bool matches = matcher.Matches(actual);
-
-                if (!matches) {
-                    var result = TestMatcherLocalizer.Failure(matcher, actual.Value)
-                        .UpdateGiven(_given)
-                        .UpdateAssumption(_assumption);
-
-                    if (matcher is ITestMatcher<Unit> m) {
-                        result.UpdateActual(DisplayActual.Exception(actual.Exception));
-                    }
-                    return result;
-
+                if (matcher.Matches(actual)) {
+                    return null;
                 }
-                return null;
+
+                var result = TestMatcherLocalizer.Failure(matcher, actual.Value)
+                    .UpdateGiven(_given)
+                    .UpdateAssumption(_assumption);
+
+                if (matcher is ITestMatcher<Unit> m) {
+                    result.UpdateActual(DisplayActual.Exception(actual.Exception));
+                }
+                return result;
             }
         }
     }

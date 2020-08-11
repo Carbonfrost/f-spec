@@ -1,5 +1,5 @@
 //
-// Copyright 2017, 2018-2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2018-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Carbonfrost.Commons.Spec.TestMatchers;
 
@@ -166,6 +167,7 @@ namespace Carbonfrost.Commons.Spec {
             public StringComparison Comparison { get; private set; }
 
             [MatcherUserData(Hidden = true)]
+            [DebuggerBrowsable(DebuggerBrowsableState.Never)]
             public EndWithSubstringMatcher IgnoringCase {
                 get {
                     return new EndWithSubstringMatcher(Expected, Comparison.MakeIgnoreCase());
@@ -173,6 +175,7 @@ namespace Carbonfrost.Commons.Spec {
             }
 
             [MatcherUserData(Hidden = true)]
+            [DebuggerBrowsable(DebuggerBrowsableState.Never)]
             public EndWithSubstringMatcher UsingCurrentCulture {
                 get {
                     return new EndWithSubstringMatcher(Expected, Comparison.MakeCurrentCulture());
@@ -197,7 +200,7 @@ namespace Carbonfrost.Commons.Spec {
 
             public override bool Matches(string actual) {
                 if (actual == null) {
-                    throw new ArgumentNullException("actual");
+                    return false;
                 }
                 return actual.EndsWith(Expected, Comparison);
             }
