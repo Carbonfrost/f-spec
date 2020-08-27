@@ -15,6 +15,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -144,6 +145,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             TestMethod = testMethod;
             Children.MakeReadOnly();
+
+            var attr = testMethod.GetCustomAttribute<DescriptionAttribute>();
+            if (attr != null) {
+                Description = attr.Description;
+            }
         }
 
         internal TestUnitResult RunTest(TestExecutionContext testContext) {

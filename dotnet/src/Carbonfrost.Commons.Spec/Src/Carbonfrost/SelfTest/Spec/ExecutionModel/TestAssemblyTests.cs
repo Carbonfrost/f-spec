@@ -23,6 +23,12 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
 
     public class TestAssemblyTests {
 
+        [Fact]
+        public void Description_comes_from_assembly_attribute() {
+            var asm = TestAssembly.Create(GetType().Assembly);
+            Assert.Equal("A unit testing framework", asm.Description);
+        }
+
         [Theory]
         [InlineData(typeof(PInternalTestClass))]
         [InlineData(typeof(PDerivedTestClass))]

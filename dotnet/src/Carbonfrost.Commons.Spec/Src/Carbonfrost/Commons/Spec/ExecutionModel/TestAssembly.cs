@@ -17,6 +17,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
@@ -74,6 +75,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             _assembly = assembly;
             _children = new TestUnitCollection(this);
             _options = TestAssemblyOptions.ForAssembly(assembly);
+            Description = FindDescription(assembly);
         }
 
         private class DefaultTestAssembly : TestAssembly {
@@ -147,6 +149,19 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return type.GetRuntimeMethods().SelectMany(m => m.CustomAttributes).Any(
                 a => typeof(IReflectionTestUnitFactory).IsAssignableFrom(a.AttributeType)
             );
+        }
+
+        private static string FindDescription(Assembly assembly) {
+            var attr = assembly.GetCustomAttribute<DescriptionAttribute>();
+            if (attr != null && attr.Description != null) {
+                return attr.Description.Trim();
+            }
+
+            var attr1 = assembly.GetCustomAttribute<AssemblyDescriptionAttribute>();
+            if (attr1 != null && attr1.Description != null) {
+                return attr1.Description.Trim();
+            }
+            return null;
         }
     }
 }

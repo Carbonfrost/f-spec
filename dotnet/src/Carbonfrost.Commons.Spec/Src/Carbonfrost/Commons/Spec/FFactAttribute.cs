@@ -27,11 +27,15 @@ namespace Carbonfrost.Commons.Spec {
             set;
         }
 
+        public string Description {
+            get;
+            set;
+        }
+
         TestUnit IReflectionTestUnitFactory.CreateTestCase(MethodInfo method) {
             return new FactMethodTestCase(method) {
-                IsFocused = true,
-                Reason = Reason
-            };
+                IsFocused = true
+            }.CopyDescriptions(this);
         }
     }
 }

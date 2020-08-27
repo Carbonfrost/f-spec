@@ -15,6 +15,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using Carbonfrost.Commons.Spec.Resources;
@@ -36,6 +37,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 throw new ArgumentNullException(nameof(testMethod));
             }
             _method = testMethod;
+
+            var attr = testMethod.GetCustomAttribute<DescriptionAttribute>();
+            if (attr != null) {
+                Description = attr.Description;
+            }
         }
 
         public override TestUnitType Type {
