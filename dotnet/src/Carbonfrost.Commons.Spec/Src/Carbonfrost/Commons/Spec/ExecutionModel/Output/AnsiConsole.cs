@@ -15,7 +15,6 @@
 //
 
 using System;
-using System.Linq;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
@@ -23,6 +22,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
 
         protected override string IndentString {
             get {
+                if (Indent == 0) {
+                    return string.Empty;
+                }
+
                 // Move forward columns (this prevents the indent from being written with underlined spaces)
                 return string.Concat("\x1B[", 2 * Indent, "C");
             }

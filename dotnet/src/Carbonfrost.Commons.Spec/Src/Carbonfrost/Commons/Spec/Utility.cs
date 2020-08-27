@@ -70,12 +70,10 @@ namespace Carbonfrost.Commons.Spec {
 
         internal static string PrettyCodeBase(Assembly assembly, bool makeRelative = false) {
             string result = assembly.CodeBase;
-            Uri uri;
-            if (Uri.TryCreate(result, UriKind.Absolute, out uri)) {
+            if (Uri.TryCreate(result, UriKind.Absolute, out Uri uri)) {
                 // Make it relative
                 if (makeRelative) {
-                    //var current = new Uri("file://" + Directory.GetCurrentDirectory() + "/");
-                    return MakeRelativePath(uri); // current.MakeRelativeUri(uri).ToString();
+                    return MakeRelativePath(uri);
                 }
                 return uri.LocalPath;
             }
@@ -83,7 +81,12 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         internal static string MakeRelativePath(string path) {
-            return MakeRelativePath(new Uri("file://" + path));
+            if (Uri.TryCreate(path, UriKind.Absolute, out Uri uri)) {
+                if (uri.IsFile) {
+                    return current.MakeRelativeUri(uri).ToString();
+                }
+            }
+            return uri.ToString();
         }
 
         internal static string MakeRelativePath(Uri uri) {

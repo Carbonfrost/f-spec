@@ -169,6 +169,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             if (unit is TestClassInfo || unit is TestNamespace) {
                 return unit.Children.Count == 0 || unit.Children.All(c => ShouldSkipVerbose(c));
             }
+            if (unit is TestRun) {
+                return false;
+            }
             return false;
         }
 
