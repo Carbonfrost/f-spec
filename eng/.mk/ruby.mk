@@ -1,5 +1,13 @@
 # Automatically detect whether Ruby is in use
 ENG_AUTODETECT_USING_RUBY = $(shell [ ! -f .ruby-version ] ; echo $$?)
+
+# User can define ENG_USING_RUBY themselves to avoid autodeteciton
+ifdef ENG_USING_RUBY
+_ENG_ACTUALLY_USING_RUBY = $(ENG_USING_RUBY)
+else
+_ENG_ACTUALLY_USING_RUBY = $(ENG_AUTODETECT_USING_RUBY)
+endif
+
 ENG_AVAILABLE_RUNTIMES += ruby
 
 .PHONY: \

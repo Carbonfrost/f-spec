@@ -6,7 +6,7 @@ TEXT_TEMPLATES = dotnet/src/Carbonfrost.Commons.Spec/Automation/Preprocessor/
 .PHONY: dotnet/install dotnet/generate -generate-docs -install-manuals
 
 ## Install dotnet outputs
-dotnet/install: -install-dotnet-fspec -install-manuals-fspec
+dotnet/install: dotnet/pack -install-dotnet-fspec -install-manuals-fspec
 
 ## Test dotnet
 dotnet/test: dotnet/build -dotnet/test

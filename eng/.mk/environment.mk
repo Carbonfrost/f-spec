@@ -22,23 +22,36 @@ _DEV_MESSAGE=(Is direnv set up correctly?  Have you tried 'make init'?)
 env: -env-global -env-enabled-frameworks
 	@ printf ""
 
+## Display the names of active frameworks
+eng/enabled:
+	@ echo $(ENG_ENABLED_RUNTIMES)
+
 -env-global:
 	@ $(call _display_variables,ENG_GLOBAL_VARIABLES)
+	@ if [[ -n "$(VERBOSE)" ]]; then \
+		$(call _display_variables,ENG_GLOBAL_VERBOSE_VARIABLES) \
+	fi
 
--env-enabled-frameworks: | -env-enabled-dotnet -env-enabled-python -env-enabled-ruby
+-env-enabled-frameworks: | -env-enabled-dotnet -env-enabled-python -env-enabled-ruby -env-enabled-go
 
 -env-enabled-dotnet:
-	@ $(call _runtime_status,.NET,$(_ENG_ACTUALLY_USING_DOTNET))
-	@ $(call _display_variables,ENG_DOTNET_VARIABLES)
+	@ $(call _status,.NET,DOTNET)
 
 -env-enabled-python:
-	@ $(call _runtime_status,Python,$(ENG_USING_PYTHON))
+	@ $(call _status,Python,PYTHON)
 
 -env-enabled-ruby:
-	@ $(call _runtime_status,Ruby,$(ENG_USING_RUBY))
+	@ $(call _status,Ruby,RUBY)
 
-define _runtime_status
-    printf "$(_MAGENTA)%s$(_RESET) support is available and %b$(_RESET)\n" $(1) "$(if $(filter $(2),1),$(_GREEN)enabled,$(_RED)not enabled)"
+-env-enabled-go:
+	@ $(call _status,Go,GO)
+
+# _status "display name" "base variable name"
+define _status
+    printf "$(_MAGENTA)%s$(_RESET) support is available and %b$(_RESET)\n" $(1) "$(if $(filter $(_ENG_ACTUALLY_USING_$(2)),1),$(_GREEN)enabled,$(_RED)not enabled)"
+    if [[ -n "$(VERBOSE)" ]] || [[ $(_ENG_ACTUALLY_USING_$(2)) == "1" ]]; then \
+	$(call _display_variables,ENG_$(2)_VARIABLES) \
+    fi
 endef
 
 define _display_variables
