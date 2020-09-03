@@ -18,14 +18,42 @@ using System.Collections.Generic;
 
 namespace Carbonfrost.Commons.Spec {
 
+    interface IFuncDispatcher<TArgs> { // <TArgs, TResult> {
+        int CallCount { get; }
+        // Action<TArgs, TResult> Action { get; }
+        Exception LastException { get; }
+        // TResult LastResult { get; }
+        TestCodeDispatchInfo LastDispatchInfo { get; }
+        TArgs LastArgs { get; }
+        bool Called { get; }
+        // IReadOnlyList<TArgs> Args { get; }
+        // IReadOnlyList<TArgs> Calls { get; }
+
+        // void After(Action<TArgs> action);
+        // void Before(Action<TArgs> action);
+        TArgs ArgsForCall(int index);
+
+        TestCodeDispatchInfo DispatchInfoForCall(int index);
+        Exception ExceptionForCall(int index);
+        // TResult Invoke(TArgs args);
+        void Reset();
+        // TResult ResultForCall(int index);
+    }
+
     // Provides a higher order test func dispatcher that can be used
     // by any of them
-    class HOTestFuncDispatcherState<TArgs, TResult> {
+    class HOTestFuncDispatcherState<TArgs, TResult> : IFuncDispatcher<TArgs> {
 
         private readonly List<Action<TArgs>> _before = new List<Action<TArgs>>();
         private readonly List<Action<TArgs>> _after = new List<Action<TArgs>>();
         private readonly Func<TArgs, TResult> _func;
         private readonly List<CallData> _calls = new List<CallData>();
+
+        public IReadOnlyList<CallData> Calls {
+            get {
+                return _calls;
+            }
+        }
 
         public int CallCount {
             get {
@@ -118,7 +146,7 @@ namespace Carbonfrost.Commons.Spec {
             return _calls[index].dispatchInfo;
         }
 
-        struct CallData {
+        internal struct CallData {
 
             public readonly TArgs args;
             public readonly TResult result;

@@ -20,7 +20,7 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    static class Mixin {
+    static partial class Mixin {
 
         public static IEnumerable<TestUnit> Ancestors(this TestUnit self) {
             self = self.Parent;

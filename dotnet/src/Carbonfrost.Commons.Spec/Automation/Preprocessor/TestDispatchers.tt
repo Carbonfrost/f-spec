@@ -52,17 +52,51 @@ namespace Carbonfrost.Commons.Spec {
         public static TestActionDispatcher<#= typeArgs #> Create<#= typeArgs #>(<#= action #> action) {
             return new TestActionDispatcher<#= typeArgs #>(action);
         }
+
+        public static TestActionDispatcher<#= typeArgs #> Create<#= typeArgs #>() {
+            return new TestActionDispatcher<#= typeArgs #>();
+        }
     }
 
-    public partial class TestActionDispatcher<#= typeArgs #> {
+    public partial class TestActionDispatcher<#= typeArgs #> : IFuncDispatcher<<#= argsHOTuple #>> {
 
         private readonly HOTestFuncDispatcherState<<#= argsHOTuple #>, Unit> _inner;
+
+        public TestActionDispatcher() : this(null) {
+        }
 
         public TestActionDispatcher(<#= action #> action) {
             if (action == null) {
                 action = (<#= args #>) => {};
             }
             _inner = new HOTestFuncDispatcherState<<#= argsHOTuple #>, Unit>(CallAdapter(action));
+        }
+
+        public IReadOnlyList<CallInfo> Calls {
+            get {
+                return _inner.Calls.ProjectedTo(c => new CallInfo(c.args, c.dispatchInfo));
+            }
+        }
+
+        public struct CallInfo {
+
+<# if (typeArgsList.Length > 0) { #>
+            public <#= argsHOTuple #> Args { get; }
+<# } #>
+            public TestCodeDispatchInfo DispatchInfo { get; }
+
+            public Exception Exception {
+                get {
+                    return DispatchInfo.Exception;
+                }
+            }
+
+            internal CallInfo(<#= argsHOTuple #> args, TestCodeDispatchInfo dispatchInfo) {
+<# if (typeArgsList.Length > 0) { #>
+                Args = args;
+<# } #>
+                DispatchInfo = dispatchInfo;
+            }
         }
 
         public int CallCount {
@@ -105,6 +139,12 @@ namespace Carbonfrost.Commons.Spec {
 <# } #>
         }
 
+        public <#= action #> Handler {
+            get {
+                return Invoke;
+            }
+        }
+
         private Func<<#= argsHOTuple #>, Unit> CallAdapter(<#= action #> action) {
             return t => {
                 action(<#= argsHOItems #>);
@@ -128,6 +168,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.Reset();
         }
 
+        <#= argsHOTuple #> IFuncDispatcher<<#= argsHOTuple #>>.LastArgs {
+            get {
+                return _inner.LastArgs;
+            }
+        }
+
+        <#= argsHOTuple #> IFuncDispatcher<<#= argsHOTuple #>>.ArgsForCall(int index) {
+            return _inner.ArgsForCall(index);
+        }
+
 <# if (typeArgsList.Length > 0) { #>
 
         public <#= argsHOTuple #> LastArgs {
@@ -149,18 +199,54 @@ namespace Carbonfrost.Commons.Spec {
         public static TestFuncDispatcher<#= typeArgsResult #> Create<#= typeArgsResult #>(<#= func #> func) {
             return new TestFuncDispatcher<#= typeArgsResult #>(func);
         }
+
+        public static TestFuncDispatcher<#= typeArgsResult #> Create<#= typeArgsResult #>() {
+            return new TestFuncDispatcher<#= typeArgsResult #>();
+        }
     }
 
 
-    public partial class TestFuncDispatcher<#= typeArgsResult #> {
+    public partial class TestFuncDispatcher<#= typeArgsResult #> : IFuncDispatcher<<#= argsHOTuple #>> {
 
         private readonly HOTestFuncDispatcherState<<#= argsHOTuple #>, TResult> _inner;
+
+        public TestFuncDispatcher() : this(null) {
+        }
 
         public TestFuncDispatcher(<#= func #> func) {
             if (func == null) {
                 func = (<#= args #>) => default;
             }
             _inner = new HOTestFuncDispatcherState<<#= argsHOTuple #>, TResult>(CallAdapter(func));
+        }
+
+        public IReadOnlyList<CallInfo> Calls {
+            get {
+                return _inner.Calls.ProjectedTo(c => new CallInfo(c.args, c.result, c.dispatchInfo));
+            }
+        }
+
+        public struct CallInfo {
+
+<# if (typeArgsList.Length > 0) { #>
+            public <#= argsHOTuple #> Args { get; }
+<# } #>
+            public TResult Result { get; }
+            public TestCodeDispatchInfo DispatchInfo { get; }
+
+            public Exception Exception {
+                get {
+                    return DispatchInfo.Exception;
+                }
+            }
+
+            internal CallInfo(<#= argsHOTuple #> args, TResult result, TestCodeDispatchInfo dispatchInfo) {
+<# if (typeArgsList.Length > 0) { #>
+                Args = args;
+<# } #>
+                Result = result;
+                DispatchInfo = dispatchInfo;
+            }
         }
 
         public int CallCount {
@@ -209,6 +295,12 @@ namespace Carbonfrost.Commons.Spec {
 <# } #>
         }
 
+        public <#= func #> Handler {
+            get {
+                return Invoke;
+            }
+        }
+
         private Func<<#= argsHOTuple #>, TResult> CallAdapter(<#= func #> func) {
             return t => func(<#= argsHOItems #>);
         }
@@ -233,6 +325,16 @@ namespace Carbonfrost.Commons.Spec {
             return _inner.ResultForCall(index);
         }
 
+        <#= argsHOTuple #> IFuncDispatcher<<#= argsHOTuple #>>.LastArgs {
+            get {
+                return _inner.LastArgs;
+            }
+        }
+
+        <#= argsHOTuple #> IFuncDispatcher<<#= argsHOTuple #>>.ArgsForCall(int index) {
+            return _inner.ArgsForCall(index);
+        }
+
 <# if (typeArgsList.Length > 0) { #>
 
         public <#= argsHOTuple #> LastArgs {
@@ -244,15 +346,9 @@ namespace Carbonfrost.Commons.Spec {
         public <#= argsHOTuple #> ArgsForCall(int index) {
             return _inner.ArgsForCall(index);
         }
-
 <# } #>
-
     }
-
-
-
 <# } #>
-
 }
 <#+
     static string List(IEnumerable<string> items) {
