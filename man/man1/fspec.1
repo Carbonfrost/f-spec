@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.9.0
 .\" http://github.com/apjanke/ronn-ng/tree/0.9.0
-.TH "FSPEC" "1" "August 2020" ""
+.TH "FSPEC" "1" "September 2020" ""
 .SH "NAME"
 \fBfspec\fR \- a test framework for \.NET Core
 .SH "SYNOPSIS"
@@ -72,6 +72,13 @@ Attach tty and wait for a keypress before exiting\. This is primarily used when 
 .TP
 \fB\-\-plan\-timeout\fR=\fItime\fR
 Provides the limit on the amount of \fItime\fR that the entire test plan is allowed to take\. When reached, the test plan fails\. The value for \fItime\fR is either in seconds or using the format described in the description for \fB\-\-timeout\fR
+.TP
+\fB\-\-previous\-failures\fR
+When specified, runs all tests that failed in the previous test run\. If there is no previous test run or if all tests in the previous test run passed, then all tests are run\.
+.IP
+A common idiom is to re\-run previous failures in order to focus on tests which are broken and repeat this process until the tests are fixed\. For example, the following command could be used to successively run the test suite until everything passes consistently:
+.IP
+fspec \-\-previous\-failures && fspec
 .TP
 \fB\-\-random\-seed\fR=\fIseed\fR
 Use the specified \fIseed\fR to randomize the ordering in which specs are executed

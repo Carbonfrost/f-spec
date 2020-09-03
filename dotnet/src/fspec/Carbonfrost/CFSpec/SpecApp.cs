@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 using System;
+using System.IO;
 
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.ExecutionModel;
@@ -44,6 +45,9 @@ namespace Carbonfrost.CFSpec {
         private int RunCore() {
             var testRunnerOptions = _options.Options;
             testRunnerOptions.LoadAssemblyFromPath = System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath;
+            if (File.Exists(TestRunnerState.DefaultFile)) {
+                testRunnerOptions.PreviousRun = TestRunnerState.FromFile(TestRunnerState.DefaultFile);
+            }
 
             SpecLog.DidFinalizeOptions(_options.ToString());
 

@@ -131,14 +131,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        // public abstract DateTime? StartedAt {
-        //     get;
-        // }
-
-        // public abstract DateTime? FinishedAt {
-        //     get;
-        // }
-
         // HACK These are the messages that were collected during the test run.
         // Can this be API?
         internal List<TestMessageEventArgs> Messages {
@@ -146,14 +138,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 return _messages;
             }
         }
-
-        // internal virtual void ApplyCounts(TestUnitCounts counts) {}
-
-        // internal virtual void SetFailed(Exception ex) {
-        // }
-
-        // internal virtual void Done(TestUnit unit, TestRunnerOptions opts) {
-        // }
 
         public bool StrictlyPassed {
             get {
@@ -224,9 +208,26 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        // public abstract TestUnitResultCollection Children {
-        //     get;
-        // }
+        internal abstract JTestUnitResult JResult {
+            get;
+        }
+
+        internal JTestAttributes Attributes {
+            get {
+                const JTestAttributes _ = default;
+                return (ContainsFocusedUnits ? JTestAttributes.ContainsFocusedUnits : _)
+                    | (Failed ? JTestAttributes.Failed : _)
+                    | (IsPending ? JTestAttributes.Pending : _)
+                    | (IsRunning ? JTestAttributes.Running : _)
+                    | (IsStatusExplicit ? JTestAttributes.StatusExplicit : _)
+                    | (Passed ? JTestAttributes.Passed : _)
+                    | (Skipped ? JTestAttributes.Skipped : _)
+                    | (StrictlyPassed ? JTestAttributes.StrictlyPassed : _)
+                    | (IsFocused ? JTestAttributes.Focused : _)
+                    | (IsSlow ? JTestAttributes.Slow : _)
+                ;
+            }
+        }
 
         internal virtual void SetFailed(Exception ex) {
             // Problem occured with setup

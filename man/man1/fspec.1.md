@@ -74,6 +74,13 @@ Each <assembly> to load is specified as an argument to the command.  Assemblies 
 * `--plan-timeout`=<time>:
   Provides the limit on the amount of <time> that the entire test plan is allowed to take.  When reached, the test plan fails.  The value for <time> is either in seconds or using the format described in the description for  `--timeout`
 
+* `--previous-failures`:
+  When specified, runs all tests that failed in the previous test run.  If there is no previous test run or if all tests in the previous test run passed, then all tests are run.
+
+  A common idiom is to re-run previous failures in order to focus on tests which are broken and repeat this process until the tests are fixed.  For example, the following command could be used to successively run the test suite until everything passes consistently:
+
+  fspec --previous-failures && fspec
+
 * `--random-seed`=<seed> :
   Use the specified <seed> to randomize the ordering in which specs are executed
 

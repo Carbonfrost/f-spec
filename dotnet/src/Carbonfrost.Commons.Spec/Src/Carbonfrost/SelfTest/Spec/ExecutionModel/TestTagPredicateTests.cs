@@ -48,10 +48,10 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
         }
 
         [Theory]
-        [PropertyData("NameFactoryMethods")]
+        [PropertyData(nameof(NameFactoryMethods))]
         public void Should_have_a_predicate_matching_every_TestTag_factory_method(MethodInfo mi) {
-            var method = typeof(TestTagPredicate).GetTypeInfo().GetMethod(mi.Name, new [] { typeof(string) });
-            Expect(method).Not.ToBe.Null();
+            var method = typeof(TestTagPredicate).GetTypeInfo().GetMethods().Where(m => m.Name == mi.Name);
+            Expect(method).Not.ToBe.Empty();
         }
 
         static bool IsNameFactoryMethod(MethodInfo m) {

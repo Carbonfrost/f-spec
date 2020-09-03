@@ -114,6 +114,28 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             }
         }
 
+        internal static void ColorFor(this IConsoleWrapper self, TestMessageSeverity result) {
+            switch (result) {
+                case TestMessageSeverity.Debug:
+                case TestMessageSeverity.Trace:
+                    self.Gray();
+                    break;
+                case TestMessageSeverity.Information:
+                    self.ResetColor();
+                    break;
+                case TestMessageSeverity.Warning:
+                    self.Yellow();
+                    break;
+                case TestMessageSeverity.Error:
+                    self.Red();
+                    break;
+                case TestMessageSeverity.Fatal:
+                    self.Red();
+                    self.Underline();
+                    break;
+            }
+        }
+
         internal static void HeadlineColorFor(this IConsoleWrapper self, TestUnit unit) {
             switch (unit.Type) {
                 case TestUnitType.Assembly:

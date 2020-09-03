@@ -145,6 +145,9 @@
   <data name="UPlanTimeout" xml:space="preserve">
     <value>Specify the maximum {{TIME}} allowed for the test plan to execute</value>
   </data>
+  <data name="UPreviousFailures" xml:space="preserve">
+    <value>Run the tests that failed in the previous test run, or all tests if no previous run</value>
+  </data>
   <data name="URandom" xml:space="preserve">
     <value>Use the specified {{SEED}} to randomize specs</value>
   </data>

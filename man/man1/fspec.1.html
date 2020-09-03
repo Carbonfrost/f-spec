@@ -155,6 +155,13 @@
 </dt>
 <dd>Provides the limit on the amount of <var>time</var> that the entire test plan is allowed to take.  When reached, the test plan fails.  The value for <var>time</var> is either in seconds or using the format described in the description for  <code>--timeout</code>
 </dd>
+<dt><code>--previous-failures</code></dt>
+<dd>When specified, runs all tests that failed in the previous test run.  If there is no previous test run or if all tests in the previous test run passed, then all tests are run.
+
+    <p>A common idiom is to re-run previous failures in order to focus on tests which are broken and repeat this process until the tests are fixed.  For example, the following command could be used to successively run the test suite until everything passes consistently:</p>
+
+    <p>fspec --previous-failures &amp;&amp; fspec</p>
+</dd>
 <dt>
 <code>--random-seed</code>=<var>seed</var> </dt>
 <dd>Use the specified <var>seed</var> to randomize the ordering in which specs are executed</dd>
@@ -239,7 +246,7 @@ Otherwise, the tests that will be run will be the tests that match the <code>--i
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'></li>
-    <li class='tc'>August 2020</li>
+    <li class='tc'>September 2020</li>
     <li class='tr'>fspec(1)</li>
   </ol>
 

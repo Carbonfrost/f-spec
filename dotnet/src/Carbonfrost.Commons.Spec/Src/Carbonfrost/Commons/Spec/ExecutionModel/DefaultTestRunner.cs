@@ -37,7 +37,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             if (Options.FailFast) {
                 return new FailFastTestPlan(this, run, Options);
             }
-
             return new TestPlan(this, run, Options);
         }
 
@@ -55,6 +54,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             var runResults = plan.RunTests();
             var e = new TestRunnerFinishedEventArgs(run, runResults, Options);
             OnRunnerFinished(e);
+
+            var state = TestRunnerState.FromResults(runResults);
+            state.Save();
             return runResults;
         }
 

@@ -1,3 +1,4 @@
+#if SELF_TEST
 //
 // Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
@@ -14,14 +15,25 @@
 // limitations under the License.
 //
 
-namespace Carbonfrost.Commons.Spec {
+using System;
+using Carbonfrost.Commons.Spec;
 
-    public static class TestTagType {
-        public const string Platform = "platform";
-        public const string Previously = "previously";
+namespace Carbonfrost.SelfTest.Spec {
 
-        internal static bool IsAutomaticTag(string type) {
-             return type == Previously;
+    public class JsonConvertersTests {
+
+        struct PDateTimeObject {
+            public DateTime? DateTime {
+                get;
+                set;
+            }
+        }
+
+        [Fact]
+        public void NullableDateTime_will_parse_null_as_DateTime() {
+            Assert.Equal((DateTime?) null, JsonUtility.LoadJson<PDateTimeObject>("{ \"DateTime\": null }").DateTime);
         }
     }
 }
+
+#endif

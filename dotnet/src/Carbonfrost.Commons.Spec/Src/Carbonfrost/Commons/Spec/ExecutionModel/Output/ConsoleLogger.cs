@@ -129,6 +129,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             _parts.onTestRunFinished.Render(RenderContext, e.Results);
         }
 
+        protected override void OnMessage(TestMessageEventArgs e) {
+            console.ColorFor(e.Severity);
+            console.Write(e.Severity.ToString());
+            console.ResetColor();
+            console.Write(": ");
+            console.WriteLine(e.Message);
+        }
+
         private void ShowTestVerbose(TestUnit unit) {
             if (ShouldSkipVerbose(unit)) {
                 return;

@@ -68,7 +68,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     ),
                     DataName,
                     Position >= 0 ? ("#" + Position) : null,
-                    Arguments.Count > 0 ? "(" + string.Join(",", Arguments) + ")" : null
+                    (Arguments != null && Arguments.Count > 0) ? "(" + string.Join(",", Arguments) + ")" : null
                 };
 
                 return string.Join(

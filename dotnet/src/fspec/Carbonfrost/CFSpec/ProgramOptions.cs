@@ -128,6 +128,7 @@ namespace Carbonfrost.CFSpec {
 
                 { "show-pass-explicit", SR.UShowPassExplicit(), v => Options.ShowPassExplicitly = true },
                 { "verify=",            SR.UVerify(),           v => Verify = SafeEnumParse<TestVerificationMode>(v, SR.InvalidVerify(), "--verify") },
+                { "previous-failures",  SR.UPreviousFailures(), v => Options.RerunPreviousFailures = true },
 
                 { "no-random",     SR.UNoRandomizeSpecs(), v => Options.RandomizeSpecs = false },
                 { "random-seed=",  SR.URandom(),           v => Options.RandomSeed = SafeInt32Parse(v, SR.InvalidRandomSeed(), "--random-seed") },
@@ -168,6 +169,7 @@ namespace Carbonfrost.CFSpec {
                 "random-seed=",
                 "self-test",
                 "fail-fast",
+                "previous-failures",
                 "fail-focused",
                 "fail-pending",
                 "i|fixture=",

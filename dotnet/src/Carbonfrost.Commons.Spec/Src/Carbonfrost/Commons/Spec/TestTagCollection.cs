@@ -53,6 +53,17 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        internal bool HasUserTags {
+            get {
+                if (_tags.Count == 0) {
+                    return false;
+                }
+                return _tags.All(
+                    kvp => TestTagType.IsAutomaticTag(kvp.Key)
+                );
+            }
+        }
+
         public TestTagCollection() {
         }
 

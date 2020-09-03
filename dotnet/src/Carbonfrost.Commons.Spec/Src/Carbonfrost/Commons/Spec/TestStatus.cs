@@ -1,11 +1,11 @@
 //
-// Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,12 +16,13 @@
 
 namespace Carbonfrost.Commons.Spec {
 
-    public static class TestTagType {
-        public const string Platform = "platform";
-        public const string Previously = "previously";
-
-        internal static bool IsAutomaticTag(string type) {
-             return type == Previously;
-        }
+    public enum TestStatus {
+        NotRun,
+        Running,
+        Passed,
+        Failed,
+        Skipped,
+        Pending, // TestUnitCounts depends on Pending being last because
+            // it uses this to determine the number of items in TestStatus
     }
 }

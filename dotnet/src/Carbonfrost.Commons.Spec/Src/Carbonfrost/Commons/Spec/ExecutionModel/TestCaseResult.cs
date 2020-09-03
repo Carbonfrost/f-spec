@@ -131,6 +131,17 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        internal override JTestUnitResult JResult {
+            get {
+                return new JTestUnitResult {
+                    Status = Status,
+                    DisplayName = DisplayName,
+                    TestName = TestName,
+                    Attributes = Attributes,
+                };
+            }
+        }
+
         [Flags]
         enum Flags {
             None = 0,

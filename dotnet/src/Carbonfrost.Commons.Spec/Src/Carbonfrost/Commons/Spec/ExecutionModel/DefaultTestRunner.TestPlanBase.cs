@@ -35,6 +35,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
             }
 
+            public TestLog Log {
+                get {
+                    return Root.InitContext.Log;
+                }
+            }
+
             public List<TestCaseInfo> WillRunTestCases {
                 get {
                     return _willRun;
@@ -64,6 +70,17 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 _runner = runner;
                 _root = new RootNode(runner, testRun);
                 _root.Initialize();
+
+                normalized.PreviousRun.ApplyTo(testRun);
+                if (normalized.RerunPreviousFailures) {
+                    if (normalized.PreviousRun.FailureReason.IsFailure()) {
+                        normalized.PlanFilter.Tags.Add(
+                            TestTagPredicate.Previously(TestStatus.Failed)
+                        );
+                    } else {
+                        Log.Warn("No previous failures, re-running all tests...");
+                    }
+                }
 
                 // Apply filter rules from the options
                 _normalizedOpts.PlanFilter.Apply(testRun, normalized);

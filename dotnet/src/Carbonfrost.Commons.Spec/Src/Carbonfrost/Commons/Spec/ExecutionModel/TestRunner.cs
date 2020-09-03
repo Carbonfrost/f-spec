@@ -104,8 +104,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         protected virtual TestRun CreateTestRun() {
             var run = new TestRun();
-            if (Options.IsSelfTest) {
+            // FIXME run.AddSelfTests();
+            if (Options.IsSelfTest) { // FIXME rename to public api Options.SelfTest
                 SpecLog.ActivatedSelfTestMode();
+
+                if (!TestClass.HasSelfTests) {
+                    throw new SpecException("can't self-test; no tests configured in this fspec build");
+                }
                 run.AddAssembly(typeof(TestMatcher).GetTypeInfo().Assembly);
             }
 

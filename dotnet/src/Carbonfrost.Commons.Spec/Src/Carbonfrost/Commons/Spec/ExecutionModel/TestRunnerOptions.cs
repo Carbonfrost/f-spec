@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
@@ -35,6 +36,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         private readonly AssemblyLoader _loader = new AssemblyLoader();
         private readonly PathCollection _loaderPaths = new PathCollection();
         private readonly TestPlanFilter _planFilter = new TestPlanFilter();
+        private TestRunnerState _previousRun;
 
         internal bool IsSelfTest {
             get {
@@ -128,6 +130,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        [JsonIgnore]
         public Func<string, Assembly> LoadAssemblyFromPath {
             get {
                 return _loader.LoadAssemblyFromPath;
@@ -155,6 +158,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             set {
                 WritePreamble();
                 SetFlag(value, Flags.IgnoreFocus);
+            }
+        }
+
+        public bool RerunPreviousFailures {
+            get {
+                return (_flags & Flags.RerunPreviousFailures) > 0;
+            }
+            set {
+                WritePreamble();
+                SetFlag(value, Flags.RerunPreviousFailures);
             }
         }
 
@@ -205,6 +218,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
              }
         }
 
+        public TestRunnerState PreviousRun {
+            get {
+                return _previousRun ?? TestRunnerState.Empty;
+            }
+            set {
+                WritePreamble();
+                _previousRun = value;
+            }
+        }
+
         public TestRunnerOptions() : this(null) {
         }
 
@@ -227,6 +250,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             PlanTimeout = copyFrom.PlanTimeout;
             SlowTestThreshold = copyFrom.SlowTestThreshold;
             AssertionMessageFormatMode = copyFrom.AssertionMessageFormatMode;
+            PreviousRun = copyFrom.PreviousRun;
         }
 
         internal TestRunnerOptions Normalize() {
@@ -289,6 +313,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             SuppressSummary = 1 << 4,
             FailFast = 1 << 5,
             SelfTest = 1 << 6,
+            RerunPreviousFailures = 1 << 7,
         }
     }
 }

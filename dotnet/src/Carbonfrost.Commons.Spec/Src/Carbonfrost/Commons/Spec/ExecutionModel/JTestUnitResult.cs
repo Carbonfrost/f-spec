@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,20 +13,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+using System;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    public enum TestRunFailureReason {
-        Success = 0,
-        Failure = 1,
-        ContainsPendingElements = 520,
-        ContainsFocusedElements = 521,
-    }
+    internal struct JTestUnitResult {
 
-    static partial class Extensions {
+        public TestName TestName {
+            get;
+            set;
+        }
 
-        internal static bool IsFailure(this TestRunFailureReason self) {
-            return (self & TestRunFailureReason.Failure) > 0;
+        public TestStatus Status {
+            get;
+            set;
+        }
+
+        public string DisplayName {
+            get;
+            set;
+        }
+
+        public TimeSpan? ExecutionTime {
+            get;
+            set;
+        }
+
+        public JTestAttributes Attributes {
+            get;
+            set;
         }
     }
 }

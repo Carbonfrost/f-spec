@@ -14,6 +14,8 @@
 // limitations under the License.
 //
 
+using System.Linq;
+
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     public class TestUnitResults : TestUnitResult {
@@ -35,6 +37,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         public override string DisplayName {
             get {
                 return _displayName;
+            }
+        }
+
+        internal override JTestUnitResult JResult {
+            get {
+                return new JTestUnitResult {
+                    Status = Status,
+                    DisplayName = DisplayName,
+                    Attributes = Attributes,
+                };
             }
         }
 
