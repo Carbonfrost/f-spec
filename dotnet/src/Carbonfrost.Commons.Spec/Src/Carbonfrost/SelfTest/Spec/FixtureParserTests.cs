@@ -112,6 +112,14 @@ namespace Carbonfrost.SelfTest.Spec {
             Assert.Equal("Illegal tabs, line 2", message);
         }
 
+        [Fact]
+        public void Parse_should_parse_tilde_as_null() {
+            var parser = new FixtureParser(null);
+            var result = parser.Parse("example: ~").First();
+
+            Assert.Null(result["example"]);
+        }
+
         static string ConvertVisibleWhitespace(string text) {
             return string.Concat(
                 text.Split('\n').Select(l => l.Trim().Replace("\\n", "\n").Replace("·", " "))
