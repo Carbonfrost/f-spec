@@ -1,5 +1,5 @@
 //
-// Copyright 2018, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,9 +14,6 @@
 // limitations under the License.
 //
 
-using System;
-using System.Linq;
-
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     partial class DefaultTestRunner {
@@ -29,12 +26,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
 
             public override TestRunResults RunTests() {
-                foreach (var item in PlanOrder) {
-                    item.Run(Runner, RootInitContext);
-                }
-                return (TestRunResults) Root.FindResult();
-            }
+                ExecutePlan(
+                    t => t.Execute(),
+                    t => t.AfterExecuting()
+                );
 
+                return (TestRunResults) Root.Result;
+            }
         }
 
         internal class FailFastTestPlan : TestPlanBase {
@@ -45,31 +43,21 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
 
             public override TestRunResults RunTests() {
-                var e = PlanOrder.GetEnumerator();
-;
-                while (e.MoveNext()) {
-                    var item = e.Current;
-                    item.Run(Runner, RootInitContext);
-
-                    if (item.FindResult().Failed) {
-                        // Ensure clean up by processing descendants
-                        foreach (var d in item.Descendants) {
-                            d.Run(Runner, RootInitContext);
+                bool aborting = false;
+                ExecutePlan(
+                    t => {
+                        if (aborting) {
+                            t.Abort();
+                        } else {
+                            t.Execute();
+                            aborting = t.Result.Failed;
                         }
-                        break;
-                    }
-                }
+                    },
+                    t => t.AfterExecuting()
+                );
 
-                while (e.MoveNext()) {
-                    var item = e.Current;
-                    item.Abort(Runner);
-                }
-
-                return (TestRunResults) Root.FindResult();
+                return (TestRunResults) Root.Result;
             }
-
         }
-
     }
-
 }

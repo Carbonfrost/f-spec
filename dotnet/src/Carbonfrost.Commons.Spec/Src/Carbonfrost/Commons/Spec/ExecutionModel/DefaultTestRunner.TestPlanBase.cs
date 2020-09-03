@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,13 +29,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             private readonly TestRunnerOptions _normalizedOpts;
             private readonly RootNode _root;
 
-            protected TestContext RootInitContext {
-                get {
-                    return _root.InitContext;
-                }
-            }
-
-            public RootNode Root {
+            internal Node Root {
                 get {
                     return _root;
                 }
@@ -58,7 +53,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
             }
 
-            internal IEnumerable<TestUnitNode> PlanOrder {
+            internal IEnumerable<Node> PlanOrder {
                 get {
                     return _root.DescendantsAndSelf;
                 }
@@ -68,21 +63,36 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 _normalizedOpts = normalized;
                 _runner = runner;
                 _root = new RootNode(runner, testRun);
-
-                _root.Push(RootInitContext);
-
-                _root.AppendEnd(null);
+                _root.Initialize();
 
                 // Apply filter rules from the options
                 _normalizedOpts.PlanFilter.Apply(testRun, normalized);
 
-                _willRun = PlanOrder.OfType<TestCaseNode>()
-                    .Select(t => (TestCaseInfo) t.Unit)
-                    .Where(t => !t.Skipped)
-                    .ToList();
+                _willRun = PlanOrder.Where(p => p.IsLeafThatWillRun).Select(n => (TestCaseInfo) n.Unit).ToList();
             }
 
             public abstract TestRunResults RunTests();
+
+            internal void ExecutePlan(Action<Node> operation, Action<Node> after) {
+                var stack = new Stack<(Node node, bool after)>();
+                stack.Push((Root, false));
+
+                while (stack.Count > 0) {
+                    var current = stack.Pop();
+                    if (current.after) {
+                        after(current.node);
+                        continue;
+                    } else {
+                        operation(current.node);
+                    }
+
+                    foreach (var child in current.node.Children.Reverse()) {
+                        stack.Push((child, false));
+                    }
+                    // Mark the end of the children scope
+                    stack.Push((current.node, true));
+                }
+            }
 
         }
 
