@@ -204,5 +204,9 @@ namespace Carbonfrost.Commons.Spec {
         internal static Exception MultipleTestUnitFactories() {
             return new SpecException(SR.MultipleTestUnitFactories());
         }
+
+        internal static SpecException NoSelfTestsAvailable() {
+            return new SpecException(SR.NoSelfTestsAvailable());
+        }
     }
 }

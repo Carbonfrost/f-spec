@@ -70,6 +70,9 @@
   <data name="CannotAssertAssertExceptions" xml:space="preserve">
     <value>Can't use `ExpectedExceptionAttribute` or `ThrowsAttribute` on a test that throws assertions exceptions if those exceptions might be caught by the attribute.  Replace with `Assert.Throws`.</value>
   </data>
+  <data name="CannotAssertTypeOnNullActual" xml:space="preserve">
+    <value>Can't check type of null actual values.  Assert that the value is non-null before trying to assert its type.</value>
+  </data>
   <data name="CannotFindDataField" xml:space="preserve">
     <value>Couldn't find data field {0} on test class.</value>
   </data>
@@ -81,9 +84,6 @@
   </data>
   <data name="CannotTreatAsDictionaryOrGroupings" xml:space="preserve">
     <value>Can't assert that instance of `{0}' has keys because it doesn't support it.</value>
-  </data>
-  <data name="CannotAssertTypeOnNullActual" xml:space="preserve">
-    <value>Can't check type of null actual values.  Assert that the value is non-null before trying to assert its type.</value>
   </data>
   <data name="CannotUseNullOnValueType" xml:space="preserve">
     <value>Can't use null or not-null on value type {0}.  Assert that the value is a reference type before trying to assert whether it is null.</value>
@@ -351,6 +351,9 @@
   </data>
   <data name="NoException" xml:space="preserve">
     <value>(No exception)</value>
+  </data>
+  <data name="NoSelfTestsAvailable" xml:space="preserve">
+    <value>Can't self-test; no tests configured in this build.</value>
   </data>
   <data name="NoTestMethods" xml:space="preserve">
     <value>Test class has no test methods</value>

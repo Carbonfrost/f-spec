@@ -60,5 +60,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public void AddSelfTests() {
+            SpecLog.ActivatedSelfTestMode();
+
+            if (!TestClass.HasSelfTests) {
+                throw SpecFailure.NoSelfTestsAvailable();
+            }
+            AddAssembly(typeof(TestMatcher).GetTypeInfo().Assembly);
+        }
     }
 }

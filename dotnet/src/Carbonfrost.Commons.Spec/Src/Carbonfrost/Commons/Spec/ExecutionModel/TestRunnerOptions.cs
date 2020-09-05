@@ -38,7 +38,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         private readonly TestPlanFilter _planFilter = new TestPlanFilter();
         private TestRunnerState _previousRun;
 
-        internal bool IsSelfTest {
+        public bool SelfTest {
             get {
                 return (_flags & Flags.SelfTest) > 0;
             }
@@ -243,7 +243,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             RandomSeed = copyFrom.RandomSeed;
             _flags = copyFrom._flags;
             ContextLines = copyFrom.ContextLines;
-            IsSelfTest = copyFrom.IsSelfTest;
+            SelfTest = copyFrom.SelfTest;
             PackageReferences.AddAll(copyFrom.PackageReferences);
             PlanFilter.CopyFrom(copyFrom.PlanFilter);
             TestTimeout = copyFrom.TestTimeout;

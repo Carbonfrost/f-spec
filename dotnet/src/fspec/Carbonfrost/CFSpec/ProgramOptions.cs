@@ -185,12 +185,7 @@ namespace Carbonfrost.CFSpec {
         }
 
         private void WillSelfTest() {
-            if (!TestClass.HasSelfTests) {
-                _console.WriteLine("fatal: can't self-test; no tests configured in this fspec build");
-                Quit = true;
-            }
-
-            Options.IsSelfTest = true;
+            Options.SelfTest = true;
             ShowFullStackTraces = true;
         }
 

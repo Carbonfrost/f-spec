@@ -91,6 +91,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("CannotAssertAssertExceptions") );
     }
 
+  /// <summary>Can't check type of null actual values.  Assert that the value is non-null before trying to assert its type.</summary>
+    internal static string CannotAssertTypeOnNullActual(
+    
+    ) {
+        return string.Format(Culture, ResourceFinder("CannotAssertTypeOnNullActual") );
+    }
+
   /// <summary>Couldn't find data field ${name} on test class.</summary>
     internal static string CannotFindDataField(
     object @name
@@ -117,13 +124,6 @@ namespace Carbonfrost.Commons.Spec.Resources {
     object @type
     ) {
         return string.Format(Culture, ResourceFinder("CannotTreatAsDictionaryOrGroupings") , @type);
-    }
-
-  /// <summary>Can't check type of null actual values.  Assert that the value is non-null before trying to assert its type.</summary>
-    internal static string CannotAssertTypeOnNullActual(
-    
-    ) {
-        return string.Format(Culture, ResourceFinder("CannotAssertTypeOnNullActual") );
     }
 
   /// <summary>Can't use null or not-null on value type ${type}.  Assert that the value is a reference type before trying to assert whether it is null.</summary>
@@ -394,7 +394,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Expected memberwise-equal</summary>
     internal static string ExpectedMemberwiseEqual(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("ExpectedMemberwiseEqual") );
     }
@@ -457,7 +457,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Expected sequence-equal</summary>
     internal static string ExpectedSequenceEqual(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("ExpectedSequenceEqual") );
     }
@@ -618,7 +618,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Differences</summary>
     internal static string LabelDifferences(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("LabelDifferences") );
     }
@@ -681,7 +681,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Member filter</summary>
     internal static string LabelMemberFilter(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("LabelMemberFilter") );
     }
@@ -695,7 +695,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Property</summary>
     internal static string LabelProperty(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("LabelProperty") );
     }
@@ -723,7 +723,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Method has more than one fact or theory attribute</summary>
     internal static string MultipleTestUnitFactories(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("MultipleTestUnitFactories") );
     }
@@ -747,6 +747,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
     
     ) {
         return string.Format(Culture, ResourceFinder("NoException") );
+    }
+
+  /// <summary>Can't self-test; no tests configured in this build.</summary>
+    internal static string NoSelfTestsAvailable(
+    
+    ) {
+        return string.Format(Culture, ResourceFinder("NoSelfTestsAvailable") );
     }
 
   /// <summary>Test class has no test methods</summary>
@@ -926,7 +933,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Not expected to be memberwise-equal</summary>
     internal static string NotExpectedMemberwiseEqual(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("NotExpectedMemberwiseEqual") );
     }
@@ -975,7 +982,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Not expected to be sequence-equal</summary>
     internal static string NotExpectedSequenceEqual(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("NotExpectedSequenceEqual") );
     }
@@ -1192,7 +1199,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>not be memberwise-equal</summary>
     internal static string NotPredicateMemberwiseEqual(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("NotPredicateMemberwiseEqual") );
     }
@@ -1241,7 +1248,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>not be sequence-equal</summary>
     internal static string NotPredicateSequenceEqual(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("NotPredicateSequenceEqual") );
     }
@@ -1311,7 +1318,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Delegate test data may need retargeting to work as expected, and you must explicitly opt-in using the proper attribute metadata or test types.</summary>
     internal static string PossibleDelegateRetargeting(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("PossibleDelegateRetargeting") );
     }
@@ -1479,7 +1486,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>be memberwise-equal</summary>
     internal static string PredicateMemberwiseEqual(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("PredicateMemberwiseEqual") );
     }
@@ -1528,7 +1535,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>be sequence-equal</summary>
     internal static string PredicateSequenceEqual(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("PredicateSequenceEqual") );
     }
