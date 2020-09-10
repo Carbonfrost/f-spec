@@ -114,7 +114,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
 
             public DefaultNode(TestUnit unit, Node parent) : base(unit, parent, new DefaultTestContext(parent.InitContext, unit)) {
-                 _results = new TestUnitResults(unit.DisplayName);
+                 _results = new TestUnitResults(unit);
             }
         }
 
@@ -187,8 +187,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
             }
 
-            public RootNode(TestRunner runner, TestUnit unit) : base(unit, null, new RootTestContext(unit, runner)) {
-                _results = new TestRunResults {
+            public RootNode(TestRunner runner, TestRun unit) : base(unit, null, new RootTestContext(unit, runner)) {
+                _results = new TestRunResults(unit) {
                     RunnerOptions = runner.Options
                 };
             }

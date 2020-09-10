@@ -47,11 +47,62 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
             Assert.Equal(text, pp.ToString());
         }
 
+        [Fact]
+        public void Parse_will_generate_Anything() {
+            Assert.Equal(TestTagPredicate.Anything, TestTagPredicate.Parse("*"));
+        }
+
+        [Fact]
+        public void Parse_will_generate_Nothing() {
+            Assert.Equal(TestTagPredicate.Nothing, TestTagPredicate.Parse("~"));
+        }
+
         [Theory]
         [PropertyData(nameof(NameFactoryMethods))]
         public void Should_have_a_predicate_matching_every_TestTag_factory_method(MethodInfo mi) {
             var method = typeof(TestTagPredicate).GetTypeInfo().GetMethods().Where(m => m.Name == mi.Name);
             Expect(method).Not.ToBe.Empty();
+        }
+
+        [Fact]
+        public void Invariant_Equals_should_match_by_value() {
+            Assert.True(TestTagPredicate.Anything == TestTagPredicate.Parse("*"));
+            Assert.True(TestTagPredicate.Nothing == TestTagPredicate.Parse("~"));
+        }
+
+        [Fact]
+        public void Invariant_GetHashCode_should_match_by_value() {
+            Given(TestTagPredicate.Anything).Expect(t => t.GetHashCode())
+                .ToBe.EqualTo(TestTagPredicate.Invariant(true).GetHashCode());
+            Given(TestTagPredicate.Nothing).Expect(t => t.GetHashCode())
+                .ToBe.EqualTo(TestTagPredicate.Invariant(false).GetHashCode());
+        }
+
+        [Fact]
+        public void And_Equals_should_match_by_value() {
+            var and1 = TestTagPredicate.And(
+                TestTagPredicate.Platform("a"), TestTagPredicate.Platform("b"), TestTagPredicate.Platform("c")
+            );
+            var and2 = TestTagPredicate.And(
+                TestTagPredicate.Platform("a"), TestTagPredicate.Platform("b"), TestTagPredicate.Platform("c")
+            );
+            Assert.True(and1.Equals(and2));
+        }
+
+        [Fact]
+        public void JsonUtility_LoadJson_should_parse_String() {
+            Assert.Equal(
+                TestTagPredicate.Platform("windows"),
+                JsonUtility.LoadJson<TestTagPredicate>("\"platform:windows\"")
+            );
+        }
+
+        [Fact]
+        public void JsonUtility_ToJson_should_generate_String() {
+            Assert.Equal(
+                "\"platform:windows\"",
+                JsonUtility.ToJson(TestTagPredicate.Platform("windows"))
+            );
         }
 
         static bool IsNameFactoryMethod(MethodInfo m) {

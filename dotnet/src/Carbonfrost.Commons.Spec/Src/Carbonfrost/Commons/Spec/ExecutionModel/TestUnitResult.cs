@@ -29,6 +29,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             get;
         }
 
+        public abstract TestUnitType Type {
+            get;
+        }
+
         public virtual TestStatus Status {
             get {
                 if (ExceptionInfo != null) {

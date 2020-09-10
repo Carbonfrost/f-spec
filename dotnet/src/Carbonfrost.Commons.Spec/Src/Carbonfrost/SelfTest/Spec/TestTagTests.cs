@@ -95,6 +95,22 @@ namespace Carbonfrost.SelfTest.Spec {
             Assert.Equal(new TestTag("slow", ""), new TestTag("slow", null));
         }
 
+        [Fact]
+        public void JsonUtility_LoadJson_should_parse_String() {
+            Assert.Equal(
+                TestTag.Platform("windows"),
+                JsonUtility.LoadJson<TestTag>("\"platform:windows\"")
+            );
+        }
+
+        [Fact]
+        public void JsonUtility_ToJson_should_generate_String() {
+            Assert.Equal(
+                "\"platform:windows\"",
+                JsonUtility.ToJson(TestTag.Platform("windows"))
+            );
+        }
+
     }
 }
 

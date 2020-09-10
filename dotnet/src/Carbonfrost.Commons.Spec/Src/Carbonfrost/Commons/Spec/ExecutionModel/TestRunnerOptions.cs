@@ -218,6 +218,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
              }
         }
 
+        [JsonIgnore]
         public TestRunnerState PreviousRun {
             get {
                 return _previousRun ?? TestRunnerState.Empty;

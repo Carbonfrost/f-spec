@@ -22,6 +22,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         private readonly TestUnitResultCollection _children;
         private readonly string _displayName;
+        private readonly TestUnitType _type;
 
         public override TestUnitResultCollection Children {
             get {
@@ -29,8 +30,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        internal TestUnitResults(string displayName) {
-            _displayName = displayName;
+        public override TestUnitType Type {
+            get {
+                return _type;
+            }
+        }
+
+        internal TestUnitResults(TestUnit node) {
+            _displayName = node.DisplayName;
+            _type = node.Type;
             _children = new TestUnitResultCollection(this);
         }
 
@@ -46,6 +54,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     Status = Status,
                     DisplayName = DisplayName,
                     Attributes = Attributes,
+                    Type = _type,
                 };
             }
         }

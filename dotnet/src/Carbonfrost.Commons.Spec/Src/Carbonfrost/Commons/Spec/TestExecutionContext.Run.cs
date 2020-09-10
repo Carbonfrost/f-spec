@@ -87,7 +87,7 @@ namespace Carbonfrost.Commons.Spec {
                 c.InitializeSafe(WithSelf(c));
             }
 
-            var results = new TestUnitResults(bs.DisplayName);
+            var results = new TestUnitResults(bs);
             foreach (var c in bs.Children) {
                 var myCase = (TestCaseInfo) c;
                 var myResult = CreateChildContext(myCase).RunCurrentTest();

@@ -14,39 +14,23 @@
 // limitations under the License.
 //
 using System;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 
-namespace Carbonfrost.Commons.Spec.ExecutionModel {
+namespace Carbonfrost.Commons.Spec {
 
-    internal struct JTestUnitResult {
+    partial class JsonConverters {
 
-        public TestName? TestName {
-            get;
-            set;
-        }
+        internal static readonly JsonNamingPolicy ScreamingSnakecase = new ScreamingSnakecaseNamingPolicy();
 
-        public TestUnitType Type {
-            get;
-            set;
-        }
-
-        public TestStatus Status {
-            get;
-            set;
-        }
-
-        public string DisplayName {
-            get;
-            set;
-        }
-
-        public TimeSpan? ExecutionTime {
-            get;
-            set;
-        }
-
-        public JTestAttributes Attributes {
-            get;
-            set;
+        class ScreamingSnakecaseNamingPolicy : JsonNamingPolicy {
+            public override string ConvertName(string property) {
+                return Regex.Replace(
+                    property,
+                    @"(^[a-z0-9]+|[A-Z]{2,}(?![a-z0-9])|[A-Z][a-z0-9]+)",
+                    e => $"{e.Groups[1]}_"
+                ).TrimEnd('_').ToUpper();
+            }
         }
     }
 }

@@ -19,19 +19,40 @@ using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
-    static class JsonConverters {
+    static partial class JsonConverters {
 
-        public static readonly JsonConverter<DateTime> DateTime = new DateTimeConverter();
-        public static readonly JsonConverter<DateTime?> NullableDateTime = Nullable(DateTime);
-        public static readonly JsonConverter<TimeSpan> TimeSpan = new TimeSpanConverter();
-        public static readonly JsonConverter<TimeSpan?> NullableTimeSpan = Nullable(TimeSpan);
-        public static readonly JsonConverter Enum = new EnumConverterFactory();
+        private static readonly JsonConverter<DateTime> _DateTime = new DateTimeConverter();
+        private static readonly JsonConverter<TimeSpan> _TimeSpan = new TimeSpanConverter();
+        private static readonly JsonConverter<TestName> _TestName = new TestNameConverter();
+
+        private static readonly JsonSerializerOptions RecursiveOptions = new JsonSerializerOptions {
+            WriteIndented = true,
+            IgnoreNullValues = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        };
+
+        public static readonly JsonConverter[] All = {
+            _DateTime,
+            _TimeSpan,
+            _TestName,
+            new EnumConverterFactory(),
+            Parser(TestTag.Parse),
+            Parser(TestTagPredicate.Parse),
+            Nullable(_DateTime),
+            Nullable(_TimeSpan),
+            Nullable(_TestName),
+        };
 
         static JsonConverter<T?> Nullable<T>(JsonConverter<T> item) where T:struct {
             return new NullableConverter<T>(item);
+        }
+
+        static JsonConverter<T> Parser<T>(Func<string, T> parser) {
+            return new ParserConverter<T>(parser);
         }
 
         public class EnumConverterFactory : JsonConverterFactory {
@@ -69,6 +90,21 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        class TestNameConverter : JsonConverter<TestName> {
+
+            public override TestName Read(
+                ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options
+            ) {
+                return JsonSerializer.Deserialize<TestName>(ref reader, RecursiveOptions);
+            }
+
+            public override void Write(
+                Utf8JsonWriter writer, TestName value, JsonSerializerOptions options
+            ) {
+                JsonSerializer.Serialize<TestName>(writer, value, RecursiveOptions);
+            }
+        }
+
         class NullableConverter<T> : JsonConverter<T?> where T : struct {
 
             private readonly JsonConverter<T> _inner;
@@ -95,12 +131,16 @@ namespace Carbonfrost.Commons.Spec {
 
         class EnumConverter<T> : JsonConverter<T> where T : Enum {
             public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
-                return (T) System.Enum.Parse(typeof(T), reader.GetString(), true);
+                var actual = reader.GetString()
+                    .Replace("|", ",")
+                    .Replace("_", "")
+                    .ToLowerInvariant();
+                return (T) Enum.Parse(typeof(T), actual, true);
             }
 
             public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options) {
                 writer.WriteStringValue(
-                    string.Join(" ", value.ToString().Split(' ').Select(s => JsonNamingPolicy.CamelCase.ConvertName(s)))
+                    string.Join(" | ", value.ToString().Split(',').Select(s => ScreamingSnakecase.ConvertName(s).Trim()))
                 );
             }
         }
@@ -110,11 +150,31 @@ namespace Carbonfrost.Commons.Spec {
                 if (Time.TryParse(reader.GetString(), out Time time)) {
                     return time.Value;
                 }
-                return System.TimeSpan.Parse(reader.GetString());;
+                return TimeSpan.Parse(reader.GetString());
             }
 
             public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options) {
                 writer.WriteStringValue(((Time) value).ToString("G"));
+            }
+        }
+
+        class ParserConverter<T> : JsonConverter<T> {
+            private readonly Func<string, T> _parser;
+
+            public ParserConverter(Func<string, T> parser) {
+                _parser = parser;
+            }
+
+            public override bool CanConvert(Type typeToConvert) {
+                return typeof(T).IsAssignableFrom(typeToConvert);
+            }
+
+            public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+                return _parser(reader.GetString());
+            }
+
+            public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options) {
+                writer.WriteStringValue(value.ToString());
             }
         }
     }

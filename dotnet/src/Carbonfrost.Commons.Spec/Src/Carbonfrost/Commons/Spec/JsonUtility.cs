@@ -19,18 +19,16 @@ namespace Carbonfrost.Commons.Spec {
 
     static class JsonUtility {
 
-        private static readonly JsonSerializerOptions Options = new JsonSerializerOptions {
-            WriteIndented = true,
-            IgnoreNullValues = true,
-            Converters = {
-                JsonConverters.DateTime,
-                JsonConverters.NullableDateTime,
-                JsonConverters.TimeSpan,
-                JsonConverters.NullableTimeSpan,
-                JsonConverters.Enum,
-            },
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        };
+        private static readonly JsonSerializerOptions Options;
+
+        static JsonUtility() {
+            Options = new JsonSerializerOptions {
+                WriteIndented = true,
+                IgnoreNullValues = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            };
+            Options.Converters.AddAll(JsonConverters.All);
+        }
 
         public static string ToJson(object any) {
             return JsonSerializer.Serialize(any, Options);

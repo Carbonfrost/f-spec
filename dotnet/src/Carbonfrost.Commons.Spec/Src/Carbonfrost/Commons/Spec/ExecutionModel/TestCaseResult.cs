@@ -21,6 +21,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
     public class TestCaseResult : TestUnitResult {
 
         private readonly TestName _testName;
+        private readonly TestUnitType _type;
         private TestStatus _status;
         private DateTime? _finishedAt;
         private DateTime? _startedAt;
@@ -29,6 +30,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         public TestName TestName {
             get {
                 return _testName;
+            }
+        }
+
+        public override TestUnitType Type {
+            get {
+                return _type;
             }
         }
 
@@ -72,6 +79,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             _status = status;
             Reason = testCase.Reason;
             _testName = testCase.TestName;
+            _type = testCase.Type;
         }
 
         internal override void ApplyCounts(TestUnitCounts counts) {
@@ -138,6 +146,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     DisplayName = DisplayName,
                     TestName = TestName,
                     Attributes = Attributes,
+                    Type = _type,
                 };
             }
         }

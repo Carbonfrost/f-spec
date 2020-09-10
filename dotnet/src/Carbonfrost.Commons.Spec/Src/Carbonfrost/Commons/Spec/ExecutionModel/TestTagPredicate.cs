@@ -22,8 +22,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     public abstract class TestTagPredicate : ITestPlanFilter {
 
-        public static readonly TestTagPredicate Anything = new InvariantImpl(true);
-        public static readonly TestTagPredicate Nothing = new InvariantImpl(false);
+        public static readonly TestTagPredicate Anything = Invariant(true);
+        public static readonly TestTagPredicate Nothing = Invariant(false);
 
         public static TestTagPredicate Parse(string text) {
             TestTagPredicate result;
@@ -49,6 +49,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             text = text.Trim();
             if (text.Length == 0) {
                 return null;
+            }
+            if (text == "*") {
+                return TestTagPredicate.Anything;
+            }
+            if (text == "~") {
+                return TestTagPredicate.Nothing;
             }
             if (text[0] == '~') {
                 var exact = _TryParseExactly(text.Substring(1));
@@ -78,9 +84,19 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public abstract bool IsMatch(TestUnit unit);
+        public abstract override bool Equals(object obj);
+        public abstract override int GetHashCode();
+
+        public static bool operator ==(TestTagPredicate x, TestTagPredicate y) {
+            return x.Equals(y);
+        }
+
+        public static bool operator !=(TestTagPredicate x, TestTagPredicate y) {
+            return !x.Equals(y);
+        }
 
         public static TestTagPredicate And(IEnumerable<TestTagPredicate> items) {
-            return Composite(items, (items2, match) => items2.All(match));
+            return Composite(items, items2 => new AndImpl(items2));
         }
 
         public static TestTagPredicate And(params TestTagPredicate[] items) {
@@ -88,7 +104,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public static TestTagPredicate Or(IEnumerable<TestTagPredicate> items) {
-            return Composite(items, (items2, match) => items2.Any(match));
+            return Composite(items, items2 => new OrImpl(items2));
         }
 
         public static TestTagPredicate Or(params TestTagPredicate[] items) {
@@ -100,6 +116,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 throw new ArgumentNullException(nameof(item));
             }
             return new NegatedImpl(item);
+        }
+
+        public static TestTagPredicate Invariant(bool invariant) {
+            return new InvariantImpl(invariant);
         }
 
         public static TestTagPredicate Exactly(TestTag tag) {
@@ -118,7 +138,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return Exactly(TestTag.Previously(value));
         }
 
-        private static TestTagPredicate Composite(IEnumerable<TestTagPredicate> items, TestTagPredicateComposer func) {
+        private static TestTagPredicate Composite(IEnumerable<TestTagPredicate> items, Func<TestTagPredicate[], CompositeImpl> factory) {
             if (items == null) {
                 return Anything;
             }
@@ -129,7 +149,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             if (myItems.Length == 1) {
                 return myItems[0];
             }
-            return new CompositeImpl(myItems, func);
+            return factory(myItems);
         }
 
         sealed class InvariantImpl : TestTagPredicate {
@@ -139,6 +159,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
             public override bool IsMatch(TestUnit unit) {
                 return _value;
+            }
+
+            public override bool Equals(object obj) {
+                return obj is InvariantImpl inv && _value == inv._value;
+            }
+
+            public override int GetHashCode() {
+                return _value.GetHashCode();
             }
         }
 
@@ -156,6 +184,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             public override string ToString() {
                 return _tag.ToString();
             }
+
+            public override bool Equals(object obj) {
+                return obj is ExactlyImpl tt && _tag == tt._tag;
+            }
+
+            public override int GetHashCode() {
+                return _tag.GetHashCode();
+            }
         }
 
         internal sealed class NegatedImpl : TestTagPredicate {
@@ -172,33 +208,70 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             public override string ToString() {
                 return "~" + _inner;
             }
+
+            public override bool Equals(object obj) {
+                return obj is NegatedImpl negated && _inner.Equals(negated._inner);
+            }
+
+            public override int GetHashCode() {
+                return 37 * _inner.GetHashCode();
+            }
         }
 
-        delegate bool TestTagPredicateComposer(
-            IEnumerable<TestTagPredicate> items, Func<TestTagPredicate, bool> match
-         );
-
-        class CompositeImpl : TestTagPredicate {
+        abstract class CompositeImpl : TestTagPredicate {
             private readonly TestTagPredicate[] _items;
-            private readonly TestTagPredicateComposer _predicate;
 
-            protected IEnumerable<TestTagPredicate> Items {
+            protected IReadOnlyList<TestTagPredicate> Items {
                 get {
                     return _items;
                 }
             }
 
-            public CompositeImpl(TestTagPredicate[] items, TestTagPredicateComposer predicate) {
+            protected CompositeImpl(TestTagPredicate[] items) {
                 _items = items;
-                _predicate = predicate;
-            }
-
-            public override bool IsMatch(TestUnit unit) {
-                return _predicate(_items, p => p.IsMatch(unit));
             }
 
             public override string ToString() {
                 return base.ToString();
+            }
+
+            public sealed override bool Equals(object obj) {
+                if (obj == null) {
+                    return false;
+                }
+                return GetType() == obj.GetType()
+                    && obj is CompositeImpl ci
+                    && ci.Items.Count == Items.Count
+                    && ci.Items.SequenceEqual(Items);
+            }
+
+            public sealed override int GetHashCode() {
+                unchecked {
+                    long result = GetType().GetHashCode();
+                    foreach (var i in Items) {
+                        result = ((result << 5) + result) ^ i.GetHashCode();
+                    }
+
+                    return (int) result;
+                }
+            }
+        }
+
+        class AndImpl : CompositeImpl {
+            public AndImpl(TestTagPredicate[] items) : base(items) {
+            }
+
+            public override bool IsMatch(TestUnit unit) {
+                return Items.All( p => p.IsMatch(unit));
+            }
+        }
+
+        class OrImpl : CompositeImpl {
+            public OrImpl(TestTagPredicate[] items) : base(items) {
+            }
+
+            public override bool IsMatch(TestUnit unit) {
+                return Items.Any( p => p.IsMatch(unit));
             }
         }
     }
