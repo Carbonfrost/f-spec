@@ -25,8 +25,8 @@ namespace Carbonfrost.SelfTest.Spec {
         [Theory]
         [InlineData("name")]
         [InlineData("name:value")]
-        public void Parse_should_extract_Name_from_string(string text) {
-            Assert.Equal("name", TestTag.Parse(text).Name);
+        public void Parse_should_extract_Type_from_string(string text) {
+            Assert.Equal("name", TestTag.Parse(text).Type);
         }
 
         [Theory]

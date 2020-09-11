@@ -64,8 +64,8 @@
   <data name="BadEpsilonComparerTypes" xml:space="preserve">
     <value>Can't apply approximate comparisons to `{0}'.</value>
   </data>
-  <data name="CannotAliasDifferentTagNames" xml:space="preserve">
-    <value>Cannot create an alias when tags have different names</value>
+  <data name="CannotAliasDifferentTagTypes" xml:space="preserve">
+    <value>Cannot create an alias when tags have different types</value>
   </data>
   <data name="CannotAssertAssertExceptions" xml:space="preserve">
     <value>Can't use `ExpectedExceptionAttribute` or `ThrowsAttribute` on a test that throws assertions exceptions if those exceptions might be caught by the attribute.  Replace with `Assert.Throws`.</value>

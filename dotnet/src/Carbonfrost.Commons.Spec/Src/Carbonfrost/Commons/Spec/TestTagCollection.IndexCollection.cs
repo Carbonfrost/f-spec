@@ -22,20 +22,20 @@ namespace Carbonfrost.Commons.Spec {
 
     public partial class TestTagCollection {
 
-        public struct IndexCollection : IReadOnlyDictionary<string, ICollection<string>> {
-            private readonly IDictionary<string, HashSet<string>> _keys;
+        public struct IndexCollection : IReadOnlyDictionary<TestTagType, ICollection<string>> {
+            private readonly IDictionary<TestTagType, HashSet<string>> _keys;
 
-            internal IndexCollection(IDictionary<string, HashSet<string>> keys) {
+            internal IndexCollection(IDictionary<TestTagType, HashSet<string>> keys) {
                 _keys = keys;
             }
 
-            public ICollection<string> this[string key] {
+            public ICollection<string> this[TestTagType key] {
                 get {
                     return _keys[key];
                 }
             }
 
-            public IEnumerable<string> Keys {
+            public IEnumerable<TestTagType> Keys {
                 get {
                     return _keys.Keys;
                 }
@@ -53,17 +53,17 @@ namespace Carbonfrost.Commons.Spec {
                 }
             }
 
-            public bool ContainsKey(string key) {
+            public bool ContainsKey(TestTagType key) {
                 return _keys.ContainsKey(key);
             }
 
-            public IEnumerator<KeyValuePair<string, ICollection<string>>> GetEnumerator() {
+            public IEnumerator<KeyValuePair<TestTagType, ICollection<string>>> GetEnumerator() {
                 return _keys.Select(
-                    kvp => new KeyValuePair<string, ICollection<string>>(kvp.Key, kvp.Value)
+                    kvp => new KeyValuePair<TestTagType, ICollection<string>>(kvp.Key, kvp.Value)
                 ).GetEnumerator();
             }
 
-            public bool TryGetValue(string key, out ICollection<string> value) {
+            public bool TryGetValue(TestTagType key, out ICollection<string> value) {
                 if (_keys.TryGetValue(key, out var result)) {
                     value = result;
                     return true;

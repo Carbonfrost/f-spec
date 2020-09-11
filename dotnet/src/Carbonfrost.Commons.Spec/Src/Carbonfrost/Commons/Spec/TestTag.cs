@@ -32,12 +32,12 @@ namespace Carbonfrost.Commons.Spec {
         private static readonly TestTag OSXPlatform = Alias(Platform("osx"), macOSPlatform);
         public static readonly TestTag Slow = "slow";
 
-        private readonly string _name;
+        private readonly TestTagType _type;
         private readonly string _value;
 
-        public string Name {
+        public TestTagType Type {
             get {
-                return _name;
+                return _type;
             }
         }
 
@@ -63,18 +63,18 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        public TestTag(string name) : this(name, null) {}
+        public TestTag(TestTagType name) : this(name, null) {}
 
-        public TestTag(string name, string value) {
-            _name = RequireName(name);
+        public TestTag(TestTagType type, string value) {
+            _type = RequireType(type);
             _value = string.IsNullOrEmpty(value) ? null : value;
         }
 
         public override string ToString() {
             if (string.IsNullOrEmpty(Value)) {
-                return Name;
+                return Type.ToString();
             }
-            return string.Concat(Name, ":", Value);
+            return string.Concat(Type, ":", Value);
         }
 
         public override bool Equals(object obj) {
@@ -82,8 +82,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public bool Equals(TestTag other) {
-            return string.Equals(other.Name, Name, StringComparison.OrdinalIgnoreCase)
-                && other.Value == Value;
+            return other.Type == Type && other.Value == Value;
         }
 
         public static TestTag Platform(string value) {
@@ -137,12 +136,12 @@ namespace Carbonfrost.Commons.Spec {
             return VALID_NAME.IsMatch(name);
         }
 
-        internal static string RequireName(string name) {
-            if (string.IsNullOrEmpty(name)) {
-                throw SpecFailure.EmptyString(nameof(name));
+        internal static TestTagType RequireType(TestTagType type) {
+            if (type == TestTagType.Unspecified) {
+                throw new ArgumentException();
             }
 
-            return name;
+            return type;
         }
 
         public TestTag Resolve() {
@@ -154,8 +153,8 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public static TestTag Alias(TestTag from, TestTag to) {
-            if (from.Name != to.Name) {
-                throw SpecFailure.CannotAliasDifferentTagNames();
+            if (from.Type != to.Type) {
+                throw SpecFailure.CannotAliasDifferentTagTypes();
             }
             if (from != to) {
                 _aliases[from] = to;
@@ -189,7 +188,7 @@ namespace Carbonfrost.Commons.Spec {
 
         public override int GetHashCode() {
             int hashCode = 1761208509;
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
+            hashCode = hashCode * -1521134295 + Type.GetHashCode();
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Value);
             return hashCode;
         }

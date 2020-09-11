@@ -77,11 +77,11 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("BadEpsilonComparerTypes") , @typeSelf);
     }
 
-  /// <summary>Cannot create an alias when tags have different names</summary>
-    internal static string CannotAliasDifferentTagNames(
+  /// <summary>Cannot create an alias when tags have different types</summary>
+    internal static string CannotAliasDifferentTagTypes(
     
     ) {
-        return string.Format(Culture, ResourceFinder("CannotAliasDifferentTagNames") );
+        return string.Format(Culture, ResourceFinder("CannotAliasDifferentTagTypes") );
     }
 
   /// <summary>Can't use `ExpectedExceptionAttribute` or `ThrowsAttribute` on a test that throws assertions exceptions if those exceptions might be caught by the attribute.  Replace with `Assert.Throws`.</summary>

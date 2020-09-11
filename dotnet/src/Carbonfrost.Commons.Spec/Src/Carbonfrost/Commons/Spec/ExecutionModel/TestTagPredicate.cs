@@ -126,8 +126,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return new ExactlyImpl(tag);
         }
 
-        public static TestTagPredicate Exactly(string name, string value) {
-            return Exactly(new TestTag(name, value));
+        public static TestTagPredicate Exactly(TestTagType type, string value) {
+            return Exactly(new TestTag(type, value));
         }
 
         public static TestTagPredicate Platform(string value) {

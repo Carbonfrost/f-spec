@@ -35,8 +35,8 @@ namespace Carbonfrost.Commons.Spec {
             return new AssertException(SR.TestTimedOut(timeout));
         }
 
-        public static Exception CannotAliasDifferentTagNames() {
-            return new ArgumentNullException(SR.CannotAliasDifferentTagNames());
+        public static Exception CannotAliasDifferentTagTypes() {
+            return new ArgumentNullException(SR.CannotAliasDifferentTagTypes());
         }
 
         public static InvalidOperationException FactMethodParamCount(string name) {
