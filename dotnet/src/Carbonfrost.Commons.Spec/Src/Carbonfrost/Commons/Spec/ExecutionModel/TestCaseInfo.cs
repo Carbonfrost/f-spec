@@ -138,6 +138,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public TestId Id {
+            get {
+                return TestId.FromTestName(TestName);
+            }
+        }
+
         private protected TestCaseInfo(MethodInfo testMethod) {
             if (testMethod == null) {
                 throw new ArgumentNullException(nameof(testMethod));

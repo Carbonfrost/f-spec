@@ -19,6 +19,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     internal struct JTestUnitResult {
 
+        public TestId? Id {
+            get;
+            set;
+        }
+
         public TestName? TestName {
             get;
             set;

@@ -66,12 +66,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 return;
             }
 
-            var previously = new Dictionary<string, TestStatus>();
+            var previously = new Dictionary<TestId, TestStatus>();
             foreach (var s in _state.Results) {
-                previously[s.DisplayName] = s.Status;
+                if (s.Id is TestId id) {
+                    previously[id] = s.Status;
+                }
             }
-            foreach (var u in run.DescendantsAndSelf) {
-                if (previously.TryGetValue(u.DisplayName, out var state)) {
+            foreach (var u in run.DescendantsAndSelf.OfType<TestCaseInfo>()) {
+                if (previously.TryGetValue(u.Id, out var state)) {
                     u.Tags.Add(TestTag.Previously(state));
                 }
             }

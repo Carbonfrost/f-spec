@@ -27,7 +27,8 @@ namespace Carbonfrost.Commons.Spec {
 
         private static readonly JsonConverter<DateTime> _DateTime = new DateTimeConverter();
         private static readonly JsonConverter<TimeSpan> _TimeSpan = new TimeSpanConverter();
-        private static readonly JsonConverter<TestName> _TestName = new TestNameConverter();
+        private static readonly JsonConverter<TestName> _TestName = Default<TestName>();
+        private static readonly JsonConverter<TestId> _TestId = Parser(TestId.Parse);
 
         private static readonly JsonSerializerOptions RecursiveOptions = new JsonSerializerOptions {
             WriteIndented = true,
@@ -39,9 +40,11 @@ namespace Carbonfrost.Commons.Spec {
             _DateTime,
             _TimeSpan,
             _TestName,
+            _TestId,
             new EnumConverterFactory(),
             Parser(TestTag.Parse),
             Parser(TestTagPredicate.Parse),
+            Nullable(_TestId),
             Nullable(_DateTime),
             Nullable(_TimeSpan),
             Nullable(_TestName),
@@ -49,6 +52,10 @@ namespace Carbonfrost.Commons.Spec {
 
         static JsonConverter<T?> Nullable<T>(JsonConverter<T> item) where T:struct {
             return new NullableConverter<T>(item);
+        }
+
+        static JsonConverter<T> Default<T>() where T:struct {
+            return new DefaultConverter<T>();
         }
 
         static JsonConverter<T> Parser<T>(Func<string, T> parser) {
@@ -90,18 +97,33 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        class TestNameConverter : JsonConverter<TestName> {
+        class DefaultConverter<T> : JsonConverter<T> {
 
-            public override TestName Read(
+            public override T Read(
                 ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options
             ) {
-                return JsonSerializer.Deserialize<TestName>(ref reader, RecursiveOptions);
+                return JsonSerializer.Deserialize<T>(ref reader, RecursiveOptions);
             }
 
             public override void Write(
-                Utf8JsonWriter writer, TestName value, JsonSerializerOptions options
+                Utf8JsonWriter writer, T value, JsonSerializerOptions options
             ) {
-                JsonSerializer.Serialize<TestName>(writer, value, RecursiveOptions);
+                JsonSerializer.Serialize<T>(writer, value, RecursiveOptions);
+            }
+        }
+
+        class TestIdConverter : JsonConverter<TestId> {
+
+            public override TestId Read(
+                ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options
+            ) {
+                return JsonSerializer.Deserialize<TestId>(ref reader, RecursiveOptions);
+            }
+
+            public override void Write(
+                Utf8JsonWriter writer, TestId value, JsonSerializerOptions options
+            ) {
+                JsonSerializer.Serialize<TestId>(writer, value, RecursiveOptions);
             }
         }
 

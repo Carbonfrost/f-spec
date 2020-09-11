@@ -15,7 +15,7 @@
 //
 using System;
 using System.IO;
-
+using System.Text.Json;
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 using Carbonfrost.Commons.Spec.ExecutionModel.Output;
@@ -45,8 +45,12 @@ namespace Carbonfrost.CFSpec {
         private int RunCore() {
             var testRunnerOptions = _options.Options;
             testRunnerOptions.LoadAssemblyFromPath = System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath;
-            if (File.Exists(TestRunnerState.DefaultFile)) {
-                testRunnerOptions.PreviousRun = TestRunnerState.FromFile(TestRunnerState.DefaultFile);
+            try {
+                if (File.Exists(TestRunnerState.DefaultFile)) {
+                    testRunnerOptions.PreviousRun = TestRunnerState.FromFile(TestRunnerState.DefaultFile);
+                }
+            } catch (JsonException ex) {
+                Console.Error.WriteLine("warning: parsing previous run cache file: " + ex.Message);
             }
 
             SpecLog.DidFinalizeOptions(_options.ToString());
