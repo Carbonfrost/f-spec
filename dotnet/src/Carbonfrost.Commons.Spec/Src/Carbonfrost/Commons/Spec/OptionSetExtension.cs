@@ -1,11 +1,11 @@
 //
-// Copyright 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@ using System.Linq;
 using System.Text;
 using NDesk.Options;
 
-namespace Carbonfrost.CFSpec {
+namespace Carbonfrost.Commons.Spec {
 
     class OptionSetExtension : OptionSet {
 
@@ -104,9 +104,9 @@ namespace Carbonfrost.CFSpec {
                 o.WriteLine(group.Label + ":");
 
                 // Keep order they were specified in Add(), not Group
-                var options = this.Where(o => group.Options.Contains(o.Prototype));
+                var options = this.Where(ox => group.Options.Contains(ox.Prototype));
                 if (group.Sort) {
-                    options = options.OrderBy(o => o.Names[0]);
+                    options = options.OrderBy(ox => ox.Names[0]);
                 }
 
                 foreach (Option option in options) {

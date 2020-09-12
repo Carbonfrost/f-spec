@@ -50,6 +50,9 @@ Each <assembly> to load is specified as an argument to the command.  Assemblies 
 * `--loader-path`=<path>:
   Add a path to the loader search path.  When the path is a file, this is the same as loading the specified assembly.  If the path is a directory, then the directory is used to search for assemblies when an assembly reference must be loaded.  This option can be specified multiple times.
 
+* `--no-config`:
+  When specified, configuration files are not loaded, which causes fspec(1) to use defaults.  This also prevents options like `--previous-failures` from working because they implicitly depend upon results that were cached in `.fspec` directory.
+
 * `--no-diff`:
   Don't use unified diffs when assertion messages contain long strings
 
@@ -80,6 +83,9 @@ Each <assembly> to load is specified as an argument to the command.  Assemblies 
   A common idiom is to re-run previous failures in order to focus on tests which are broken and repeat this process until the tests are fixed.  For example, the following command could be used to successively run the test suite until everything passes consistently:
 
   fspec --previous-failures && fspec
+
+* `-C|--project-dir`=<directory>:
+  Change directory into the specified directory when starting up.  This has the effect of specifying how paths are resolved for the [LOADER PATH][], include path, and configuration directories.
 
 * `--random-seed`=<seed> :
   Use the specified <seed> to randomize the ordering in which specs are executed

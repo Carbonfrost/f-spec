@@ -1,11 +1,11 @@
 //
-// Copyright 2013, 2016-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2016-2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,12 +21,12 @@ using System.Reflection;
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 using NDesk.Options;
-using Carbonfrost.CFSpec.Resources;
+using Carbonfrost.Commons.Spec.Resources;
 using Carbonfrost.Commons.Spec.ExecutionModel.Output;
 using System.Text.RegularExpressions;
 using System.Linq;
 
-namespace Carbonfrost.CFSpec {
+namespace Carbonfrost.Commons.Spec {
 
     class ProgramOptions {
 
@@ -40,6 +40,8 @@ namespace Carbonfrost.CFSpec {
 
         public bool DebugWait;
         public bool Quit;
+        public string ProjectDirectory;
+        public bool NoConfig;
 
         private bool ShowWhitespace {
             set {
@@ -105,6 +107,8 @@ namespace Carbonfrost.CFSpec {
                 { "i|fixture=",    SR.UFixture(),          v => FixturePaths.Add(v) },
                 { "p|package=",    SR.UPackage(),          v => Packages.Add(SafeParsePackageFormula(v, SR.InvalidPackageReference(), "--package")) },
                 { "loader-path=",  SR.ULoaderPath(),       v => LoaderPaths.Add(v) },
+                { "no-config",     SR.UNoConfig(),         v => NoConfig = true },
+                { "C|project-dir=",  SR.UProjectDir(),     v => ProjectDirectory = v },
 
                 { "exclude=",         SR.UExclude(),        v => PlanFilter.Excludes.AddNew(v) },
                 { "exclude-pattern=", SR.UExcludePattern(), v => PlanFilter.Excludes.AddRegex(SafeRegexParse(v, "--exclude-pattern")) },
@@ -175,7 +179,9 @@ namespace Carbonfrost.CFSpec {
                 "i|fixture=",
                 "p|package=",
                 "loader-path=",
-                "pause"
+                "pause",
+                "no-config",
+                "C|project-dir"
             );
 
             ShowUnifiedDiff = true;
@@ -205,8 +211,10 @@ namespace Carbonfrost.CFSpec {
 
         private List<string> ParseInternal(string[] args) {
             var myArgs = new List<string>(args.Length);
-            foreach (FspecOptionsFile src in FspecOptionsFile.FindAll()) {
-                myArgs.AddRange(src.Values);
+            if (!args.Contains("--no-config")) {
+                foreach (FspecOptionsFile src in FspecOptionsFile.FindAll()) {
+                    myArgs.AddRange(src.Values);
+                }
             }
 
             foreach (var item in args) {
@@ -304,8 +312,8 @@ namespace Carbonfrost.CFSpec {
             return new OptionException(string.Format("{0}: '{1}'", msg, v), optionName);
         }
 
-        private static DateTime? GetBuildDate() {
-            foreach (AssemblyMetadataAttribute meta in typeof(Program).GetTypeInfo().Assembly.GetCustomAttributes(typeof(AssemblyMetadataAttribute))) {
+        private DateTime? GetBuildDate() {
+            foreach (AssemblyMetadataAttribute meta in GetType().Assembly.GetCustomAttributes(typeof(AssemblyMetadataAttribute))) {
                 if (meta.Key == "[share:BuildDate]") {
                     if (DateTime.TryParse(meta.Value, out DateTime result)) {
                         return result;
@@ -317,7 +325,7 @@ namespace Carbonfrost.CFSpec {
         }
 
         private void ShowVersion() {
-            var asm = typeof(Program).GetTypeInfo().Assembly;
+            var asm = GetType().Assembly;
 
             string version = TestRunner.Version;
 
@@ -338,6 +346,11 @@ namespace Carbonfrost.CFSpec {
             _console.WriteLine("Copyright {0} {2}{1:yyyy} Carbonfrost Systems, Inc.  All rights reserved.", copy, buildDate, since);
             _console.WriteLine();
             Quit = true;
+        }
+
+        internal enum TestVerificationMode {
+            None,
+            Strict,
         }
     }
 }

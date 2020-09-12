@@ -134,6 +134,8 @@
 <code>--loader-path</code>=<var>path</var>
 </dt>
 <dd>Add a path to the loader search path.  When the path is a file, this is the same as loading the specified assembly.  If the path is a directory, then the directory is used to search for assemblies when an assembly reference must be loaded.  This option can be specified multiple times.</dd>
+<dt><code>--no-config</code></dt>
+<dd>When specified, configuration files are not loaded, which causes <span class="man-ref">fspec<span class="s">(1)</span></span> to use defaults.  This also prevents options like <code>--previous-failures</code> from working because they implicitly depend upon results that were cached in <code>.fspec</code> directory.</dd>
 <dt><code>--no-diff</code></dt>
 <dd>Don't use unified diffs when assertion messages contain long strings</dd>
 <dt><code>--no-focus</code></dt>
@@ -162,6 +164,10 @@
 
     <p>fspec --previous-failures &amp;&amp; fspec</p>
 </dd>
+<dt>
+<code>-C|--project-dir</code>=<var>directory</var>
+</dt>
+<dd>Change directory into the specified directory when starting up.  This has the effect of specifying how paths are resolved for the <a href="#LOADER-PATH" title="LOADER PATH" data-bare-link="true">LOADER PATH</a>, include path, and configuration directories.</dd>
 <dt>
 <code>--random-seed</code>=<var>seed</var> </dt>
 <dd>Use the specified <var>seed</var> to randomize the ordering in which specs are executed</dd>

@@ -16,7 +16,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json.Serialization;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
@@ -50,6 +49,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        private IEnumerable<IReadOnlyList<TestUnitResult>> Categories {
+            get {
+                return new [] {
+                    Failures,
+                    Pending,
+                    Slow,
+                };
+            }
+        }
+
         internal TestRunProblems(IEnumerable<TestUnitResult> descendants, TestRunnerOptions opts) {
             foreach (var item in descendants) {
                 if (item.Children.Count > 0) {
@@ -72,7 +81,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public IEnumerator<TestUnitResult> GetEnumerator() {
-            return Failures.Concat(Pending).GetEnumerator();
+            return Categories.SelectMany(t => t).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {

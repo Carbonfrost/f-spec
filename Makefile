@@ -20,10 +20,6 @@ dotnet/generate:
 		-r Carbonfrost.Commons.Spec.Automation.SR \
 		dotnet/src/Carbonfrost.Commons.Spec/Automation/SR.properties \
 		--resx
-	$(Q) srgen -c Carbonfrost.CFSpec.Resources.SR \
-		-r Carbonfrost.CFSpec.Resources.SR \
-		dotnet/src/fspec/Automation/SR.properties \
-		--resx
 	$(Q) dotnet t4 $(TEXT_TEMPLATES)/TestDispatchers.tt -o $(TEXT_TEMPLATES)/TestDispatchers.cs
 	$(Q) dotnet t4 $(TEXT_TEMPLATES)/GivenExpectationBuilder.tt -o $(TEXT_TEMPLATES)/GivenExpectationBuilder.cs
 	$(Q) dotnet t4 $(TEXT_TEMPLATES)/TestLogHelpers.tt -o $(TEXT_TEMPLATES)/TestLogHelpers.cs

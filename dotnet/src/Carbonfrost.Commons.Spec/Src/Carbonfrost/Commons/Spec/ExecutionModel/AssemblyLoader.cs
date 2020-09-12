@@ -23,9 +23,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     class AssemblyLoader {
 
+        public static Func<string, Assembly> DefaultLoadAssemblyFromPath;
+
         public Func<string, Assembly> LoadAssemblyFromPath {
             get;
             set;
+        }
+
+        public AssemblyLoader() {
+            LoadAssemblyFromPath = DefaultLoadAssemblyFromPath;
         }
 
         internal void RegisterAssemblyResolve(IEnumerable<string> paths) {

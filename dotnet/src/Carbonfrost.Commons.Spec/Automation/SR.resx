@@ -277,6 +277,24 @@
   <data name="HaveLengthWorksWith" xml:space="preserve">
     <value>Can't assert length with objects of this type.  It works only for strings and arrays.  Investigate asserting on count for collections instead.</value>
   </data>
+  <data name="InvalidContextLines" xml:space="preserve">
+    <value>invalid number of context lines</value>
+  </data>
+  <data name="InvalidPackageReference" xml:space="preserve">
+    <value>invalid package reference syntax</value>
+  </data>
+  <data name="InvalidRandomSeed" xml:space="preserve">
+    <value>invalid random seed</value>
+  </data>
+  <data name="InvalidRegex" xml:space="preserve">
+    <value>invalid regex: {0}</value>
+  </data>
+  <data name="InvalidTimeSpan" xml:space="preserve">
+    <value>invalid time span</value>
+  </data>
+  <data name="InvalidVerify" xml:space="preserve">
+    <value>invalid verification mode</value>
+  </data>
   <data name="LabelActual" xml:space="preserve">
     <value>Actual</value>
   </data>
@@ -727,8 +745,122 @@
   <data name="TheoryHasNoDataProviders" xml:space="preserve">
     <value>No test data for theory</value>
   </data>
+  <data name="UContextLines" xml:space="preserve">
+    <value>Show as many lines of context in unified diffs</value>
+  </data>
+  <data name="UExclude" xml:space="preserve">
+    <value>Skip tests whose descriptions or names match the given {{PATTERN}}</value>
+  </data>
+  <data name="UExcludePattern" xml:space="preserve">
+    <value>Skip tests whose full names match {{REGEX}}</value>
+  </data>
+  <data name="UFailFast" xml:space="preserve">
+    <value>Exit when the first test fails</value>
+  </data>
+  <data name="UFailFocused" xml:space="preserve">
+    <value>Exit with an error code if any focused specs</value>
+  </data>
+  <data name="UFailOnPending" xml:space="preserve">
+    <value>Exit with an error code if any pending specs</value>
+  </data>
+  <data name="UFixture" xml:space="preserve">
+    <value>Include a fixture search {{PATH}}</value>
+  </data>
+  <data name="UFocus" xml:space="preserve">
+    <value>Focus tests whose descriptions or names match the given {{PATTERN}}</value>
+  </data>
+  <data name="UFullStackTraces" xml:space="preserve">
+    <value>Don't hide f-spec stack frames in exception stack traces</value>
+  </data>
+  <data name="UHelp" xml:space="preserve">
+    <value>Display this help screen</value>
+  </data>
+  <data name="UInclude" xml:space="preserve">
+    <value>Run tests whose full names match the given {{PATTERN}}</value>
+  </data>
+  <data name="UIncludePattern" xml:space="preserve">
+    <value>Run tests whose full names match {{REGEX}}</value>
+  </data>
+  <data name="ULoaderOptions" xml:space="preserve">
+    <value>Loader options</value>
+  </data>
+  <data name="ULoaderPath" xml:space="preserve">
+    <value>Add {{PATH}} to loader path</value>
+  </data>
+  <data name="UNoConfig" xml:space="preserve">
+    <value>Don't load configuration from .fspecrc or .fspec cache</value>
+  </data>
+  <data name="UNoDiff" xml:space="preserve">
+    <value>Don't use unified diffs when assertion messages contain long strings</value>
+  </data>
+  <data name="UNoFocus" xml:space="preserve">
+    <value>Ignore all focused elements and run everything</value>
+  </data>
+  <data name="UNoRandomizeSpecs" xml:space="preserve">
+    <value>Don't randomize specs</value>
+  </data>
+  <data name="UNoSummary" xml:space="preserve">
+    <value>Don't show test run summary of failed tests at the end</value>
+  </data>
+  <data name="UNoWhitespace" xml:space="preserve">
+    <value>Don't use special characters when printing whitespace in assertion failure messages</value>
+  </data>
   <data name="UnusableComparer" xml:space="preserve">
     <value>Unable to compare values using the specified comparer</value>
+  </data>
+  <data name="UOutputOptions" xml:space="preserve">
+    <value>Output options</value>
+  </data>
+  <data name="UPackage" xml:space="preserve">
+    <value>Load the NuGet package dependency {{FORMULA}}</value>
+  </data>
+  <data name="UPause" xml:space="preserve">
+    <value>Attach tty and wait for a keypress before exiting</value>
+  </data>
+  <data name="UPlanTimeout" xml:space="preserve">
+    <value>Specify the maximum {{TIME}} allowed for the test plan to execute</value>
+  </data>
+  <data name="UPreviousFailures" xml:space="preserve">
+    <value>Run the tests that failed in the previous test run, or all tests if no previous run</value>
+  </data>
+  <data name="UProjectDir" xml:space="preserve">
+    <value>Change directory into the specified {{PROJECT}} directory</value>
+  </data>
+  <data name="URandom" xml:space="preserve">
+    <value>Use the specified {{SEED}} to randomize specs</value>
+  </data>
+  <data name="URunnerOptions" xml:space="preserve">
+    <value>Runner options</value>
+  </data>
+  <data name="USelfTest" xml:space="preserve">
+    <value>Run the self-tests and exit</value>
+  </data>
+  <data name="UShowPassExplicit" xml:space="preserve">
+    <value>Display messages when Assert.Pass is used</value>
+  </data>
+  <data name="UShowTestNames" xml:space="preserve">
+    <value>Display names of tests and test cases even on success</value>
+  </data>
+  <data name="UShowWhitespace" xml:space="preserve">
+    <value>Use special characters when printing whitespace in assertion failure messages</value>
+  </data>
+  <data name="USlowTest" xml:space="preserve">
+    <value>Threshold {{TIME}} span for whether a test is considered slow</value>
+  </data>
+  <data name="UTag" xml:space="preserve">
+    <value>Run tests with the specified TAG.  (Optionally, ~TAG for tests without tag)</value>
+  </data>
+  <data name="UTestSelectionOptions" xml:space="preserve">
+    <value>Test selection options</value>
+  </data>
+  <data name="UTimeout" xml:space="preserve">
+    <value>Specify the maximum {{TIME}} allowed for any particular test to execute</value>
+  </data>
+  <data name="UVerify" xml:space="preserve">
+    <value>Use the specified verification {{MODE}} (either strict or none) to check for errors in tests and assertions</value>
+  </data>
+  <data name="UVersion" xml:space="preserve">
+    <value>Report the version information and exit</value>
   </data>
   <data name="WrongNumberOfTheoryArguments" xml:space="preserve">
     <value>Test case #{0} for theory method {1}.{2} has incorrect number of arguments.</value>

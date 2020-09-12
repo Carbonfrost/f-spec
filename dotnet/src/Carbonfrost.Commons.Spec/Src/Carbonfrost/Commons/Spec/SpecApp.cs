@@ -1,11 +1,11 @@
 //
-// Copyright 2016, 2017, 2019, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2019, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,22 +15,49 @@
 //
 using System;
 using System.IO;
-using System.Text.Json;
-using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 using Carbonfrost.Commons.Spec.ExecutionModel.Output;
 
-namespace Carbonfrost.CFSpec {
+namespace Carbonfrost.Commons.Spec {
 
-    class SpecApp {
+    public class SpecApp {
 
         private readonly ProgramOptions _options;
 
-        public SpecApp(ProgramOptions options) {
+        internal SpecApp(ProgramOptions options) {
             _options = options;
         }
 
-        public int Run() {
+        public static int Run(string[] args) {
+            ProgramOptions options = null;
+
+            try {
+                options = ProgramOptions.Parse(args);
+
+            } catch (NDesk.Options.OptionException e) {
+                return ExitWithMessage(ExitCode.UsageError, e.Message);
+            }
+
+            int result = 0;
+
+            if (!options.Quit) {
+                var app = new SpecApp(options);
+                result = app.Run();
+            }
+
+            if (options.DebugWait) {
+                Console.WriteLine("Press ENTER to exit ...");
+                Console.ReadLine();
+            }
+            return result;
+        }
+
+        static int ExitWithMessage(ExitCode exitCode, string message) {
+            Console.WriteLine("fspec: " + message);
+            return (int) exitCode;
+        }
+
+        private int Run() {
             try {
                 return RunCore();
 
@@ -44,18 +71,19 @@ namespace Carbonfrost.CFSpec {
 
         private int RunCore() {
             var testRunnerOptions = _options.Options;
-            testRunnerOptions.LoadAssemblyFromPath = System.Runtime.Loader.AssemblyLoadContext.Default.LoadFromAssemblyPath;
-            try {
-                if (File.Exists(TestRunnerState.DefaultFile)) {
-                    testRunnerOptions.PreviousRun = TestRunnerState.FromFile(TestRunnerState.DefaultFile);
-                }
-            } catch (JsonException ex) {
-                Console.Error.WriteLine("warning: parsing previous run cache file: " + ex.Message);
+
+            SpecConfiguration spec = null;
+            if (!_options.NoConfig) {
+                spec = SpecConfiguration.Create(_options.ProjectDirectory);
+                spec.CopyToOptions(testRunnerOptions);
+            }
+            if (!string.IsNullOrEmpty(_options.ProjectDirectory)) {
+                Directory.SetCurrentDirectory(_options.ProjectDirectory);
             }
 
             SpecLog.DidFinalizeOptions(_options.ToString());
 
-            Assert.UseStrictMode = TestVerificationMode.Strict == _options.Verify;
+            Assert.UseStrictMode = ProgramOptions.TestVerificationMode.Strict == _options.Verify;
 
             TestRunner runner = TestRunner.Create(testRunnerOptions);
 
@@ -63,6 +91,9 @@ namespace Carbonfrost.CFSpec {
 
             try {
                 var result = runner.RunTests();
+                if (spec != null) {
+                    spec.Save(result);
+                }
                 return ToExitCode(result.FailureReason);
 
             } catch (SpecException ex) {
@@ -84,6 +115,12 @@ namespace Carbonfrost.CFSpec {
         private int Fail(string message) {
             Console.Error.WriteLine("fatal: " + message);
             return 1;
+        }
+
+        internal enum ExitCode {
+            Success = 0,
+            GenericError = 1,
+            UsageError = 2,
         }
     }
 }
