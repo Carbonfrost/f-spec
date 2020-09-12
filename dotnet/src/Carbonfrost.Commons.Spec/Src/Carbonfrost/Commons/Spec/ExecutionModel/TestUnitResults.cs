@@ -14,8 +14,6 @@
 // limitations under the License.
 //
 
-using System.Linq;
-
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     public class TestUnitResults : TestUnitResult {
@@ -56,6 +54,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     Attributes = Attributes,
                     Type = _type,
                 };
+            }
+        }
+
+        internal override void ApplyCounts(TestUnitCounts counts) {
+            foreach (var c in Children) {
+                c.ApplyCounts(counts);
             }
         }
 

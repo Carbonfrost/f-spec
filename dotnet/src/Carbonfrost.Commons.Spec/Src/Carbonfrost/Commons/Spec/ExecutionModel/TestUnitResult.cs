@@ -250,16 +250,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        internal virtual void ApplyCounts(TestUnitCounts counts) {
-            // If no children, then count self
-            if (Children.Count == 0) {
-                counts.Apply(_status);
-                return;
-            }
-
-            foreach (var c in Children) {
-                c.ApplyCounts(counts);
-            }
-        }
+        internal abstract void ApplyCounts(TestUnitCounts counts);
     }
 }
