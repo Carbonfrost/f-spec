@@ -86,6 +86,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             counts.Apply(Status);
         }
 
+        internal void SetPredetermined(TestStatus status, string reason) {
+            _status = status;
+            if (reason != null) {
+                Reason = reason;
+            }
+        }
+
         internal void SetSuccess() {
             _status = TestStatus.Passed;
         }
@@ -120,7 +127,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             if (unit != null && unit.IsFocused) {
                 _flags |= Flags.Focused;
             }
-            if (ExecutionTime >= opts.SlowTestThreshold.Value) {
+            if (opts.SlowTestThreshold.HasValue && ExecutionTime >= opts.SlowTestThreshold.Value) {
                 _flags |= Flags.Slow;
             }
         }

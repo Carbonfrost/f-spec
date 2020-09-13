@@ -77,7 +77,9 @@ namespace Carbonfrost.Commons.Spec {
         public bool FailOnPending;
         public bool FailFocused;
 
-        public TestRunnerOptions Options = new TestRunnerOptions();
+        public TestRunnerOptions Options = new TestRunnerOptions {
+            RandomizeSpecs = true
+        };
 
         private PathCollection FixturePaths {
             get {

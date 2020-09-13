@@ -24,6 +24,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public static readonly TestTagPredicate Anything = Invariant(true);
         public static readonly TestTagPredicate Nothing = Invariant(false);
+        public static readonly TestTagPredicate Dynamic = Exactly(TestTag.Dynamic);
 
         public static TestTagPredicate Parse(string text) {
             TestTagPredicate result;

@@ -53,7 +53,7 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
             var testContext = SelfTestUtility.NewTestContext(tc, new FakeRunner());
             tc.InitializeSafe(testContext);
 
-            var exec = new TestExecutionContext(testContext, (TestCaseInfo) tc.Children[0], new PHasMethodWithMultipleAttributes());
+            var exec = new FakeTestExecutionContext(testContext, (TestCaseInfo) tc.Children[0], new PHasMethodWithMultipleAttributes());
             var result = exec.RunCurrentTest();
 
             Assert.Equal("Problem creating test (SpecException: Method has more than one fact or theory attribute)", result.Reason);

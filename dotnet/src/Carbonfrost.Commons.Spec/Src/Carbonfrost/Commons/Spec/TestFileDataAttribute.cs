@@ -50,7 +50,7 @@ namespace Carbonfrost.Commons.Spec {
             TestUnit unit = context.TestUnit;
             var rt = (TestTheory) unit;
             var pms = rt.TestMethod.GetParameters();
-            if (pms.Length != 0) {
+            if (pms.Length != 1) {
                 throw SpecFailure.TestFileDataRequiresOneParameter();
             }
             var pt = pms[0].ParameterType.GetTypeInfo();

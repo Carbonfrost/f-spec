@@ -31,6 +31,7 @@ namespace Carbonfrost.Commons.Spec {
 
         private static readonly TestTag OSXPlatform = Alias(Platform("osx"), macOSPlatform);
         public static readonly TestTag Slow = "slow";
+        public static readonly TestTag Dynamic = "dynamic";
 
         private readonly TestTagType _type;
         private readonly string _value;

@@ -32,12 +32,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        private protected TestStatus PredeterminedStatus {
-            get {
-                return TestUnit.ConvertToStatus(this).GetValueOrDefault(TestStatus.NotRun);
-            }
-        }
-
         public RetargetDelegates RetargetDelegates {
             get;
             internal set;
@@ -158,29 +152,17 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        internal TestUnitResult RunTest(TestExecutionContext testContext) {
-            if (PredeterminedStatus == TestStatus.NotRun) {
-                TestCaseResult result = new TestCaseResult(this);
-                result.Starting();
-                try {
-                    using (testContext.ApplyingContext()) {
-                        result = RunTestCore(testContext);
-                    }
-
-                } catch (Exception ex) {
-                    result.SetFailed(ex);
-                    result.Done(null, testContext.TestRunnerOptions);
-                }
-                return result;
+        internal TestCaseResult RunTest(TestExecutionContext testContext) {
+            using (testContext.ApplyingContext()) {
+                return RunTestCore(testContext);
             }
-            return PredeterminedResult(testContext);
         }
 
-        private TestCaseResult PredeterminedResult(TestExecutionContext testContext) {
-            var result = new TestCaseResult(this, PredeterminedStatus);
+        internal TestCaseResult AbortTest(TestExecutionContext testContext) {
+            var result = new TestCaseResult(this, TestStatus.Skipped);
+            var runnerOpts = testContext.TestRunnerOptions;
             result.Starting();
-            result.Reason = Reason;
-            result.Done(this, testContext.TestRunnerOptions);
+            result.Done(this, runnerOpts);
             return result;
         }
 

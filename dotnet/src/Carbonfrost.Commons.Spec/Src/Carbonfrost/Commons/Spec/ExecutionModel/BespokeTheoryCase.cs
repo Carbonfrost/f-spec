@@ -59,13 +59,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return null;
         }
 
-        public BespokeTheoryCase(Func<TestExecutionContext, object> func, TestName baseName, TestDataInfo info) : base(func.Method) {
+        public BespokeTheoryCase(Func<TestExecutionContext, object> func, TestName baseName, TestDataInfo info, TestOptions opts) : base(func.Method) {
             _func = func;
             _data = info.TestData;
             _index = info.Index;
             Reason = _data.Reason;
             CopyFlags(_data.Flags);
             _testName = baseName.WithIndex(_index).WithArguments(_data.Select(t => t.ToString()));
+            Filters.AddAll(opts.Filters);
+            Timeout = opts.Timeout;
+            PassExplicitly = opts.PassExplicitly;
+            Reason = opts.Reason;
+            Tags.Add(TestTag.Dynamic);
         }
 
         protected override object CoreRunTest(TestExecutionContext context) {

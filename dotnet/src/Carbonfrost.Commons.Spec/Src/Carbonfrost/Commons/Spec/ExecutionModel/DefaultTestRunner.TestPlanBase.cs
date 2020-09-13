@@ -91,8 +91,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             public abstract TestRunResults RunTests();
 
             internal void ExecutePlan(Action<Node> operation, Action<Node> after) {
+                ExecutePlan(Root, operation, after);
+            }
+
+            internal static void ExecutePlan(Node root, Action<Node> operation, Action<Node> after) {
                 var stack = new Stack<(Node node, bool after)>();
-                stack.Push((Root, false));
+                stack.Push((root, false));
 
                 while (stack.Count > 0) {
                     var current = stack.Pop();
@@ -103,11 +107,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                         operation(current.node);
                     }
 
+                    // Mark the end of the children scope
+                    stack.Push((current.node, true));
+
                     foreach (var child in current.node.Children.Reverse()) {
                         stack.Push((child, false));
                     }
-                    // Mark the end of the children scope
-                    stack.Push((current.node, true));
                 }
             }
 

@@ -22,16 +22,24 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     partial class DefaultTestRunner {
 
+        enum NodeState {
+            Start,
+            Initialized,
+            Executed,
+            AfterExecuting,
+        }
+
         internal abstract class Node {
 
             public readonly TestUnit Unit;
             public readonly TestContext InitContext;
+            private NodeState _state;
 
-            public abstract Node Parent {
+            public abstract CompositeNode Parent {
                 get;
             }
 
-            public abstract IList<Node> Children {
+            public abstract IReadOnlyList<Node> Children {
                 get;
             }
 
@@ -62,14 +70,25 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 InitContext = initContext;
             }
 
-            public abstract void Initialize();
+            public void Initialize() {
+                AssertState(NodeState.Start);
+                InitializeCore();
+                _state = NodeState.Initialized;
+            }
+
+            protected abstract void InitializeCore();
 
             internal void Execute() {
+                AssertState(NodeState.Initialized);
                 ExecuteSelf();
+                _state = NodeState.Executed;
             }
 
             internal void AfterExecuting() {
+                AssertState(NodeState.Executed);
+
                 AfterExecutingChildren();
+                _state = NodeState.AfterExecuting;
             }
 
             internal void Abort() {
@@ -101,6 +120,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     Parent.Result.Children.Add(Result);
                 }
             }
+
+            private void AssertState(NodeState st) {
+                if (_state != st) {
+                    throw new NotImplementedException("required state: " + st);
+                }
+            }
         }
 
         class DefaultNode : CompositeNode {
@@ -113,37 +138,43 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
             }
 
-            public DefaultNode(TestUnit unit, Node parent) : base(unit, parent, new DefaultTestContext(parent.InitContext, unit)) {
-                 _results = new TestUnitResults(unit);
+            public DefaultNode(TestUnit unit, CompositeNode parent) : base(unit, parent, new DefaultTestContext(parent.InitContext, unit)) {
+                _results = new TestUnitResults(unit);
             }
         }
 
-        private abstract class CompositeNode : Node {
+        internal abstract class CompositeNode : Node {
 
-            private readonly Node _parent;
+            private readonly CompositeNode _parent;
             private readonly List<Node> _children = new List<Node>();
 
-            public sealed override Node Parent {
+            public sealed override CompositeNode Parent {
                 get {
                     return _parent;
                 }
             }
 
-            public override IList<Node> Children {
+            public override IReadOnlyList<Node> Children {
                 get {
                     return _children;
                 }
             }
 
-            public CompositeNode(TestUnit unit, Node parent, TestContext initContext) : base(unit, initContext) {
+            public CompositeNode(TestUnit unit, CompositeNode parent, TestContext initContext) : base(unit, initContext) {
                 _parent = parent;
             }
 
-            public override void Initialize() {
+            internal Node Append(TestUnit test) {
+                var newNode = CreateChildNode(test);
+                _children.Add(newNode);
+                return newNode;
+            }
+
+            protected override void InitializeCore() {
                 Unit.InitializeSafe(InitContext);
 
                 var opts = InitContext.TestRunnerOptions;
-                var children = Unit.Children.Select(c => AppendNode(c));
+                var children = Unit.Children.Select(c => CreateChildNode(c));
 
                 if (opts.RandomizeSpecs) {
                     Random random = InitContext.Random;
@@ -157,9 +188,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
             }
 
-            public Node AppendNode(TestUnit unit) {
+            private Node CreateChildNode(TestUnit unit) {
                 if (unit is TestCaseInfo testCaseInfo) {
                     return new CaseNode(testCaseInfo, this);
+                }
+                if (unit is TestTheory tt) {
+                    return new TheoryNode(tt, this);
                 }
                 return new DefaultNode(unit, this);
             }
@@ -199,11 +233,79 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        private class CaseNode : Node {
-            private TestCaseResult _result;
-            private readonly Node _parent;
+        internal abstract class NodeExecutionContextBase : TestExecutionContext {
 
-            public override Node Parent {
+            private readonly Node _node;
+
+            internal Node Node {
+                get {
+                    return _node;
+                }
+            }
+
+            protected NodeExecutionContextBase(Node node, TestContext parent, TestUnit self, object testObject)
+                : base(parent, self, testObject) {
+                _node = node;
+            }
+
+            protected override TestExecutionContext CreateChildContext(TestUnit test) {
+                var newNode = Node.Parent.Append(test);
+                if (newNode is IExecutionNode exe) {
+                    return exe.ExecutionContext;
+                }
+                throw new NotImplementedException();
+            }
+
+            internal override TestUnitResult RunCurrentTest() {
+                Node.Initialize();
+                TestPlanBase.ExecutePlan(
+                    Node,
+                    t => t.Execute(),
+                    t => t.AfterExecuting()
+                );
+                return Node.Result;
+            }
+        }
+
+        interface IExecutionNode {
+            NodeExecutionContextBase ExecutionContext {
+                get;
+            }
+        }
+
+        class TheoryNode : CompositeNode, IExecutionNode {
+            private readonly TestUnitResults _results;
+            private TheoryExecutionContext _execution;
+
+            NodeExecutionContextBase IExecutionNode.ExecutionContext {
+                get {
+                    return _execution;
+                }
+            }
+
+            public override TestUnitResult Result {
+                get {
+                    return _results;
+                }
+            }
+
+            public TheoryNode(TestTheory unit, CompositeNode parent) : base(unit, parent, new DefaultTestContext(parent.InitContext, unit)) {
+                _results = new TestUnitResults(unit);
+                _execution = new TheoryExecutionContext(this, InitContext, (TestTheory) Unit, null);
+            }
+        }
+
+        internal class CaseNode : Node, IExecutionNode {
+            private readonly NodeExecutionContext _execution;
+            private readonly CompositeNode _parent;
+
+            NodeExecutionContextBase IExecutionNode.ExecutionContext {
+                get {
+                    return _execution;
+                }
+            }
+
+            public override CompositeNode Parent {
                 get {
                     return _parent;
                 }
@@ -221,7 +323,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
             }
 
-            public override IList<Node> Children {
+            public override IReadOnlyList<Node> Children {
                 get {
                     return Array.Empty<Node>();
                 }
@@ -239,35 +341,51 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
             }
 
-            public CaseNode(TestCaseInfo unit, Node parent) : base(unit, new DefaultTestContext(parent.InitContext, unit)) {
+            public CaseNode(TestCaseInfo unit, CompositeNode parent) : base(unit, new DefaultTestContext(parent.InitContext, unit)) {
                 _parent = parent;
+                _execution = new NodeExecutionContext(this, InitContext, Case, Case.CreateTestObject());
             }
 
             public override TestUnitResult Result {
                 get {
-                    return _result;
+                    return _execution.Result;
                 }
             }
 
-            public override void Initialize() {
+            protected override void InitializeCore() {
                 Unit.InitializeSafe(InitContext);
             }
 
             protected override void ExecuteSelf() {
-                var myCase = Case;
-                var ctxt = new TestExecutionContext(InitContext, myCase, myCase.CreateTestObject());
-                _result = ctxt.RunCurrentTest();
+                ExecuteSelfCore(e => Case.RunTest(e));
             }
 
             protected override void AbortSelf() {
-                var myCase = Case;
-                var result = new TestCaseResult(myCase, TestStatus.Skipped);
-                var runnerOpts = InitContext.TestRunnerOptions;
-                result.Starting();
-                result.Done(myCase, runnerOpts);
-                _result = result;
+                ExecuteSelfCore(e => Case.AbortTest(e));
+            }
+
+            private void ExecuteSelfCore(Func<NodeExecutionContext, TestCaseResult> act) {
+                _execution.Result = act(_execution);
+            }
+        }
+
+        class TheoryExecutionContext : NodeExecutionContextBase {
+
+            public TheoryExecutionContext(CompositeNode node, TestContext parent, TestTheory self, object testObject)
+                : base(node, parent, self, testObject) {
+            }
+        }
+
+        internal class NodeExecutionContext : NodeExecutionContextBase {
+
+            public TestCaseResult Result {
+                get;
+                set;
+            }
+
+            public NodeExecutionContext(CaseNode node, TestContext parent, TestCaseInfo self, object testObject)
+                : base(node, parent, self, testObject) {
             }
         }
     }
-
 }
