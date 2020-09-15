@@ -1,6 +1,6 @@
 
 //
-// File was automatically generated at 09/04/2020 20:14:32
+// File was automatically generated at 09/14/2020 18:39:12
 //
 
 using System;
@@ -82,8 +82,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.After(ActionAdapter(action));
         }
 
+        public void After(Action<CallInfo> action) {
+            _inner.After(c => action(new CallInfo(c.args, c.dispatchInfo)));
+        }
+
         public void Before(Action action) {
             _inner.Before(ActionAdapter(action));
+        }
+
+        public void RethrowExceptions() {
+            _inner.RethrowExceptions();
         }
 
         public void Invoke() {
@@ -215,8 +223,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.After(ActionAdapter(action));
         }
 
+        public void After(Action<CallInfo> action) {
+            _inner.After(c => action(new CallInfo(c.args, c.result, c.dispatchInfo)));
+        }
+
         public void Before(Action action) {
             _inner.Before(ActionAdapter(action));
+        }
+
+        public void RethrowExceptions() {
+            _inner.RethrowExceptions();
         }
 
         public TResult Invoke() {
@@ -340,8 +356,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.After(ActionAdapter(action));
         }
 
+        public void After(Action<CallInfo> action) {
+            _inner.After(c => action(new CallInfo(c.args, c.dispatchInfo)));
+        }
+
         public void Before(Action<T> action) {
             _inner.Before(ActionAdapter(action));
+        }
+
+        public void RethrowExceptions() {
+            _inner.RethrowExceptions();
         }
 
         public void Invoke(T arg1) {
@@ -486,8 +510,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.After(ActionAdapter(action));
         }
 
+        public void After(Action<CallInfo> action) {
+            _inner.After(c => action(new CallInfo(c.args, c.result, c.dispatchInfo)));
+        }
+
         public void Before(Action<T> action) {
             _inner.Before(ActionAdapter(action));
+        }
+
+        public void RethrowExceptions() {
+            _inner.RethrowExceptions();
         }
 
         public TResult Invoke(T arg1) {
@@ -621,8 +653,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.After(ActionAdapter(action));
         }
 
+        public void After(Action<CallInfo> action) {
+            _inner.After(c => action(new CallInfo(c.args, c.dispatchInfo)));
+        }
+
         public void Before(Action<T1, T2> action) {
             _inner.Before(ActionAdapter(action));
+        }
+
+        public void RethrowExceptions() {
+            _inner.RethrowExceptions();
         }
 
         public void Invoke(T1 arg1, T2 arg2) {
@@ -767,8 +807,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.After(ActionAdapter(action));
         }
 
+        public void After(Action<CallInfo> action) {
+            _inner.After(c => action(new CallInfo(c.args, c.result, c.dispatchInfo)));
+        }
+
         public void Before(Action<T1, T2> action) {
             _inner.Before(ActionAdapter(action));
+        }
+
+        public void RethrowExceptions() {
+            _inner.RethrowExceptions();
         }
 
         public TResult Invoke(T1 arg1, T2 arg2) {
@@ -902,8 +950,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.After(ActionAdapter(action));
         }
 
+        public void After(Action<CallInfo> action) {
+            _inner.After(c => action(new CallInfo(c.args, c.dispatchInfo)));
+        }
+
         public void Before(Action<T1, T2, T3> action) {
             _inner.Before(ActionAdapter(action));
+        }
+
+        public void RethrowExceptions() {
+            _inner.RethrowExceptions();
         }
 
         public void Invoke(T1 arg1, T2 arg2, T3 arg3) {
@@ -1048,8 +1104,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.After(ActionAdapter(action));
         }
 
+        public void After(Action<CallInfo> action) {
+            _inner.After(c => action(new CallInfo(c.args, c.result, c.dispatchInfo)));
+        }
+
         public void Before(Action<T1, T2, T3> action) {
             _inner.Before(ActionAdapter(action));
+        }
+
+        public void RethrowExceptions() {
+            _inner.RethrowExceptions();
         }
 
         public TResult Invoke(T1 arg1, T2 arg2, T3 arg3) {
@@ -1183,8 +1247,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.After(ActionAdapter(action));
         }
 
+        public void After(Action<CallInfo> action) {
+            _inner.After(c => action(new CallInfo(c.args, c.dispatchInfo)));
+        }
+
         public void Before(Action<T1, T2, T3, T4> action) {
             _inner.Before(ActionAdapter(action));
+        }
+
+        public void RethrowExceptions() {
+            _inner.RethrowExceptions();
         }
 
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4) {
@@ -1329,8 +1401,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.After(ActionAdapter(action));
         }
 
+        public void After(Action<CallInfo> action) {
+            _inner.After(c => action(new CallInfo(c.args, c.result, c.dispatchInfo)));
+        }
+
         public void Before(Action<T1, T2, T3, T4> action) {
             _inner.Before(ActionAdapter(action));
+        }
+
+        public void RethrowExceptions() {
+            _inner.RethrowExceptions();
         }
 
         public TResult Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4) {
@@ -1464,8 +1544,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.After(ActionAdapter(action));
         }
 
+        public void After(Action<CallInfo> action) {
+            _inner.After(c => action(new CallInfo(c.args, c.dispatchInfo)));
+        }
+
         public void Before(Action<T1, T2, T3, T4, T5> action) {
             _inner.Before(ActionAdapter(action));
+        }
+
+        public void RethrowExceptions() {
+            _inner.RethrowExceptions();
         }
 
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5) {
@@ -1610,8 +1698,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.After(ActionAdapter(action));
         }
 
+        public void After(Action<CallInfo> action) {
+            _inner.After(c => action(new CallInfo(c.args, c.result, c.dispatchInfo)));
+        }
+
         public void Before(Action<T1, T2, T3, T4, T5> action) {
             _inner.Before(ActionAdapter(action));
+        }
+
+        public void RethrowExceptions() {
+            _inner.RethrowExceptions();
         }
 
         public TResult Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5) {
@@ -1745,8 +1841,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.After(ActionAdapter(action));
         }
 
+        public void After(Action<CallInfo> action) {
+            _inner.After(c => action(new CallInfo(c.args, c.dispatchInfo)));
+        }
+
         public void Before(Action<T1, T2, T3, T4, T5, T6> action) {
             _inner.Before(ActionAdapter(action));
+        }
+
+        public void RethrowExceptions() {
+            _inner.RethrowExceptions();
         }
 
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6) {
@@ -1891,8 +1995,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.After(ActionAdapter(action));
         }
 
+        public void After(Action<CallInfo> action) {
+            _inner.After(c => action(new CallInfo(c.args, c.result, c.dispatchInfo)));
+        }
+
         public void Before(Action<T1, T2, T3, T4, T5, T6> action) {
             _inner.Before(ActionAdapter(action));
+        }
+
+        public void RethrowExceptions() {
+            _inner.RethrowExceptions();
         }
 
         public TResult Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6) {
@@ -2026,8 +2138,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.After(ActionAdapter(action));
         }
 
+        public void After(Action<CallInfo> action) {
+            _inner.After(c => action(new CallInfo(c.args, c.dispatchInfo)));
+        }
+
         public void Before(Action<T1, T2, T3, T4, T5, T6, T7> action) {
             _inner.Before(ActionAdapter(action));
+        }
+
+        public void RethrowExceptions() {
+            _inner.RethrowExceptions();
         }
 
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7) {
@@ -2172,8 +2292,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.After(ActionAdapter(action));
         }
 
+        public void After(Action<CallInfo> action) {
+            _inner.After(c => action(new CallInfo(c.args, c.result, c.dispatchInfo)));
+        }
+
         public void Before(Action<T1, T2, T3, T4, T5, T6, T7> action) {
             _inner.Before(ActionAdapter(action));
+        }
+
+        public void RethrowExceptions() {
+            _inner.RethrowExceptions();
         }
 
         public TResult Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7) {

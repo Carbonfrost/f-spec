@@ -370,6 +370,9 @@
   <data name="NoException" xml:space="preserve">
     <value>(No exception)</value>
   </data>
+  <data name="NoExceptionCaptured" xml:space="preserve">
+    <value>Can't throw because no exception was captured</value>
+  </data>
   <data name="NoSelfTestsAvailable" xml:space="preserve">
     <value>Can't self-test; no tests configured in this build.</value>
   </data>

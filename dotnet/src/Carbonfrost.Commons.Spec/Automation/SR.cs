@@ -791,6 +791,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("NoException") );
     }
 
+  /// <summary>Can't throw because no exception was captured</summary>
+    internal static string NoExceptionCaptured(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("NoExceptionCaptured") );
+    }
+
   /// <summary>Can't self-test; no tests configured in this build.</summary>
     internal static string NoSelfTestsAvailable(
     

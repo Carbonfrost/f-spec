@@ -13,11 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+using System;
 using Carbonfrost.Commons.Spec;
 
 namespace Carbonfrost.SelfTest.Spec {
 
-    public class TestActionDispatcherTests {
+    public class TestActionDispatcherTests : TestClass {
 
         [Fact]
         public void Before_will_be_called_first() {
@@ -37,6 +38,35 @@ namespace Carbonfrost.SelfTest.Spec {
 
             dispatcher.Invoke();
             Assert.True(afterCalled);
+        }
+
+        [Fact]
+        public void After_will_be_called_after_and_have_exception() {
+            Exception actualException = null;
+            var dispatcher = new TestActionDispatcher<int>(_ => throw new Exception());
+            dispatcher.After(ci => { actualException = ci.Exception; });
+
+            dispatcher.Invoke(200);
+            Assert.NotNull(actualException);
+        }
+
+
+        [Fact]
+        public void Invoke_will_swallow_exceptions_by_default() {
+            var dispatcher = new TestActionDispatcher(FExceptionThrowingMethod);
+            Assert.DoesNotThrow(() => dispatcher.Invoke());
+        }
+
+        [Fact]
+        public void RethrowExceptions_will_cause_exceptions_to_be_rethrown() {
+            var dispatcher = new TestActionDispatcher(FExceptionThrowingMethod);
+            dispatcher.RethrowExceptions();
+
+            Expect(() => dispatcher.Invoke()).ToThrow.Message.EqualTo("this throws");
+        }
+
+        static void FExceptionThrowingMethod() {
+            throw new Exception("this throws");
         }
     }
 }

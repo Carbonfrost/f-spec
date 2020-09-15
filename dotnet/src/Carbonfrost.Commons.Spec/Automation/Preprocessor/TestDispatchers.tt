@@ -127,8 +127,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.After(ActionAdapter(action));
         }
 
+        public void After(Action<CallInfo> action) {
+            _inner.After(c => action(new CallInfo(c.args, c.dispatchInfo)));
+        }
+
         public void Before(<#= action #> action) {
             _inner.Before(ActionAdapter(action));
+        }
+
+        public void RethrowExceptions() {
+            _inner.RethrowExceptions();
         }
 
         public void Invoke(<#= args #>) {
@@ -283,8 +291,16 @@ namespace Carbonfrost.Commons.Spec {
             _inner.After(ActionAdapter(action));
         }
 
+        public void After(Action<CallInfo> action) {
+            _inner.After(c => action(new CallInfo(c.args, c.result, c.dispatchInfo)));
+        }
+
         public void Before(<#= action #> action) {
             _inner.Before(ActionAdapter(action));
+        }
+
+        public void RethrowExceptions() {
+            _inner.RethrowExceptions();
         }
 
         public TResult Invoke(<#= args #>) {

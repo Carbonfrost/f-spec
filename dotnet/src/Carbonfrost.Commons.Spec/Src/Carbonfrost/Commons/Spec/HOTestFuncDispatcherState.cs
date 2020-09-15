@@ -18,26 +18,18 @@ using System.Collections.Generic;
 
 namespace Carbonfrost.Commons.Spec {
 
-    interface IFuncDispatcher<TArgs> { // <TArgs, TResult> {
+    interface IFuncDispatcher<TArgs> {
         int CallCount { get; }
-        // Action<TArgs, TResult> Action { get; }
         Exception LastException { get; }
-        // TResult LastResult { get; }
         TestCodeDispatchInfo LastDispatchInfo { get; }
         TArgs LastArgs { get; }
         bool Called { get; }
-        // IReadOnlyList<TArgs> Args { get; }
-        // IReadOnlyList<TArgs> Calls { get; }
-
-        // void After(Action<TArgs> action);
-        // void Before(Action<TArgs> action);
         TArgs ArgsForCall(int index);
 
         TestCodeDispatchInfo DispatchInfoForCall(int index);
         Exception ExceptionForCall(int index);
-        // TResult Invoke(TArgs args);
+        void RethrowExceptions();
         void Reset();
-        // TResult ResultForCall(int index);
     }
 
     // Provides a higher order test func dispatcher that can be used
@@ -45,9 +37,10 @@ namespace Carbonfrost.Commons.Spec {
     class HOTestFuncDispatcherState<TArgs, TResult> : IFuncDispatcher<TArgs> {
 
         private readonly List<Action<TArgs>> _before = new List<Action<TArgs>>();
-        private readonly List<Action<TArgs>> _after = new List<Action<TArgs>>();
+        private readonly List<Action<CallData>> _after = new List<Action<CallData>>();
         private readonly Func<TArgs, TResult> _func;
         private readonly List<CallData> _calls = new List<CallData>();
+        private bool _rethrow;
 
         public IReadOnlyList<CallData> Calls {
             get {
@@ -100,7 +93,15 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public void After(Action<TArgs> action) {
+            _after.Add(a => action(a.args));
+        }
+
+        public void After(Action<CallData> action) {
             _after.Add(action);
+        }
+
+        public void RethrowExceptions() {
+            _rethrow = true;
         }
 
         public TResult Invoke(TArgs args) {
@@ -113,10 +114,14 @@ namespace Carbonfrost.Commons.Spec {
                     result = _func(args);
                 }
             );
+            var call = new CallData(args, result, dispatchInfo);
             foreach (var action in _after) {
-                action(args);
+                action(call);
             }
-            _calls.Add(new CallData(args, result, dispatchInfo));
+            _calls.Add(call);
+            if (_rethrow && dispatchInfo.Exception != null) {
+                dispatchInfo.Throw();
+            }
             return result;
         }
 

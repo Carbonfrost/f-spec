@@ -147,6 +147,10 @@ namespace Carbonfrost.Commons.Spec {
             return new InvalidOperationException(SR.Sealed());
         }
 
+        public static Exception NoExceptionCaptured() {
+            return new InvalidOperationException(SR.NoExceptionCaptured());
+        }
+
         public static Exception Disposed(string name) {
              return new ObjectDisposedException(name);
         }
