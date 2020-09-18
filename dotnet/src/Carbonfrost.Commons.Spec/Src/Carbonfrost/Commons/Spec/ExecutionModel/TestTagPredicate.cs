@@ -139,6 +139,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return Exactly(TestTag.Previously(value));
         }
 
+        public static TestTagPredicate Previously(string tag) {
+            return Exactly(TestTag.Previously(tag));
+        }
+
         private static TestTagPredicate Composite(IEnumerable<TestTagPredicate> items, Func<TestTagPredicate[], CompositeImpl> factory) {
             if (items == null) {
                 return Anything;

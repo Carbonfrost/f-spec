@@ -106,7 +106,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public override int GetHashCode() {
-            return -1945990370 + EqualityComparer<byte[]>.Default.GetHashCode(_data);
+            unchecked {
+                long result = -1945990370;
+                for (int i = 0; i < _data.Length; i++) {
+                    result = ((result << 5) + result) ^ _data[i].GetHashCode();
+                }
+                return (int) result;
+            }
         }
     }
 }

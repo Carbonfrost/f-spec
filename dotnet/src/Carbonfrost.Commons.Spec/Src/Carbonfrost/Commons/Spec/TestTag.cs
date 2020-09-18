@@ -94,6 +94,10 @@ namespace Carbonfrost.Commons.Spec {
             return new TestTag(TestTagType.Previously, status.ToString());
         }
 
+        public static TestTag Previously(string tag) {
+            return new TestTag(TestTagType.Previously, tag);
+        }
+
         public static TestTag Parse(string text) {
             var ex = _TryParse(text, out TestTag result);
             if (ex != null) {

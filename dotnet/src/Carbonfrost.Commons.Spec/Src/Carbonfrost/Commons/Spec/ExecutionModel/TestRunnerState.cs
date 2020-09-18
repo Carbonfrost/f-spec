@@ -60,9 +60,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     previously[id] = s.Status;
                 }
             }
+            var slow = new HashSet<TestId>();
+            slow.AddAll(
+                _state.Results.Where(s => s.Attributes.HasFlag(JTestAttributes.Slow) && s.Id.HasValue).Select(s => s.Id.Value)
+            );
             foreach (var u in run.DescendantsAndSelf.OfType<TestCaseInfo>()) {
                 if (previously.TryGetValue(u.Id, out var state)) {
                     u.Tags.Add(TestTag.Previously(state));
+                }
+                if (slow.Contains(u.Id)) {
+                    u.Tags.Add(TestTag.Previously("slow"));
                 }
             }
         }
