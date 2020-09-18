@@ -56,6 +56,13 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
                 test.Children[0].DisplayName
             );
         }
+
+        [Fact]
+        public void TestUnitFromType_should_not_find_filter_types() {
+            var asm = TestAssembly.Create(GetType().Assembly);
+            var test = asm.TestUnitFromType(typeof(Carbonfrost.Commons.Spec.ExecutionModel.TestFilters.UsingCultureFilter));
+            Assert.Null(test);
+        }
     }
 
     class PInternalTestClass {

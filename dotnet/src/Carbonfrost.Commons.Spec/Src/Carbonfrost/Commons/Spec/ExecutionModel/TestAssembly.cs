@@ -115,7 +115,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             if (!IsTestClassByAccess(type)) {
                 return null;
             }
-            if (typeof(ITestExecutionFilter).IsAssignableFrom(type)) {
+            if (typeof(TestClass).IsAssignableFrom(type)) {
                 return new UserTestClassAdapter(type);
             }
             if (IsTestClassByConvention(type)) {
