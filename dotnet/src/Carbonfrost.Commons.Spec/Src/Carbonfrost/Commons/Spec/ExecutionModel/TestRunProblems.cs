@@ -78,6 +78,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     _slow.Add(item);
                 }
             }
+
+            int ordinal = 1;
+            foreach (var f in _failures) {
+                f.Ordinal = ordinal++;
+            }
+            foreach (var f in _slow) {
+                f.Ordinal = ordinal++;
+            }
         }
 
         public IEnumerator<TestUnitResult> GetEnumerator() {

@@ -53,6 +53,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     DisplayName = DisplayName,
                     Attributes = Attributes,
                     Type = _type,
+                    Ordinal = Ordinal,
                 };
             }
         }

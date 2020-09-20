@@ -155,6 +155,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     Attributes = Attributes,
                     Type = _type,
                     Id = TestId.FromTestName(TestName),
+                    Ordinal = Ordinal,
                 };
             }
         }

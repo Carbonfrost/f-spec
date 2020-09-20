@@ -53,5 +53,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             get;
             set;
         }
+
+        public int? Ordinal {
+            get;
+            set;
+        }
     }
 }

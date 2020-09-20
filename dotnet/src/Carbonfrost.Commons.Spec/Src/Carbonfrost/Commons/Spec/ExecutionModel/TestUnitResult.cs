@@ -233,6 +233,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public int Ordinal {
+            get;
+            set;
+        }
+
         internal virtual void SetFailed(Exception ex) {
             // Problem occured with setup
             if (ex is TargetInvocationException) {

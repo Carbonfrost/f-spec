@@ -71,13 +71,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
                 console.ResetColor();
                 console.PushIndent();
 
-                int number = 1;
                 foreach (var p in problems.Failures) {
-                    if (number > 0) {
-                        console.Write(number + ") ");
-                    }
                     parts.forResultDetails.Render(context, p);
-                    number++;
                 }
 
                 console.PopIndent();
