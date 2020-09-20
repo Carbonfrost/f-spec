@@ -161,12 +161,14 @@ Contains the results of the previous test run.
 
 Using jq(1), several common queries with `results.json` are available.
 
-* Get the result of the test run:
-  jq .failureReason .fspec/results.json
+* **Get the result of the test run**:
+  jq -r .failureReason .fspec/results.json
 
-* Get display names of failed tests:
-  jq '.results[] | select(.status=="FAILED") | .displayName' .fspec/results.json
+* **Get display names of failed tests**:
+  jq -r '.results[] | select(.status=="FAILED") | .displayName' .fspec/results.json
 
+* **Get tests sorted on their execution durations**:
+  jq -r '.results | sort_by(.executionTime) | map(.displayName + "\t" +   .executionTime) | .[]' .fspec/results.json
 
 ## LOADER PATH
 

@@ -156,6 +156,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     Type = _type,
                     Id = TestId.FromTestName(TestName),
                     Ordinal = Ordinal,
+                    ExecutedPercentage = Children.Count == 0 ? (double?) null : ExecutedPercentage,
+                    ExecutionTime = ExecutionTime,
                 };
             }
         }

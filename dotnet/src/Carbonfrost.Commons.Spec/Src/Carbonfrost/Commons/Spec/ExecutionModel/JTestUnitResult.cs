@@ -49,6 +49,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             set;
         }
 
+        public double? ExecutedPercentage {
+            get;
+            set;
+        }
+
         public JTestAttributes Attributes {
             get;
             set;

@@ -54,6 +54,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     Attributes = Attributes,
                     Type = _type,
                     Ordinal = Ordinal,
+                    ExecutedPercentage = ExecutedPercentage,
+                    ExecutionTime = ExecutionTime,
                 };
             }
         }

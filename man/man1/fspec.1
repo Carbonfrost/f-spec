@@ -159,11 +159,14 @@ Contains the results of the previous test run\.
 .P
 Using jq(1), several common queries with \fBresults\.json\fR are available\.
 .TP
-Get the result of the test run
-jq \.failureReason \.fspec/results\.json
+\fBGet the result of the test run\fR
+jq \-r \.failureReason \.fspec/results\.json
 .TP
-Get display names of failed tests
-jq \'\.results[] | select(\.status=="FAILED") | \.displayName\' \.fspec/results\.json
+\fBGet display names of failed tests\fR
+jq \-r \'\.results[] | select(\.status=="FAILED") | \.displayName\' \.fspec/results\.json
+.TP
+\fBGet tests sorted on their execution duration\fR
+jq \-r \'\.results | sort_by(\.executionTime) | map(\.displayName + "\et" + \.executionTime) | \.[]\' \.fspec/results\.json
 .SH "LOADER PATH"
 The loader path specifies the directories which are probed to find additional assemblies to load\. By default, the loader path contains each directory for each assembly that was specified at the command line\.
 .P

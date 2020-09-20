@@ -248,10 +248,12 @@ Otherwise, the tests that will be run will be the tests that match the <code>--i
 <p>Using <span class="man-ref">jq<span class="s">(1)</span></span>, several common queries with <code>results.json</code> are available.</p>
 
 <dl>
-<dt>Get the result of the test run</dt>
-<dd>jq .failureReason .fspec/results.json</dd>
-<dt>Get display names of failed tests</dt>
-<dd>jq '.results[] | select(.status=="FAILED") | .displayName' .fspec/results.json</dd>
+<dt><strong>Get the result of the test run</strong></dt>
+<dd>jq -r .failureReason .fspec/results.json</dd>
+<dt><strong>Get display names of failed tests</strong></dt>
+<dd>jq -r '.results[] | select(.status=="FAILED") | .displayName' .fspec/results.json</dd>
+<dt><strong>Get tests sorted on their execution duration</strong></dt>
+<dd>jq -r '.results | sort_by(.executionTime) | map(.displayName + "\t" + .executionTime) | .[]' .fspec/results.json</dd>
 </dl>
 
 <h2 id="LOADER-PATH">LOADER PATH</h2>
