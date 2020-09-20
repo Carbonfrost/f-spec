@@ -38,18 +38,8 @@ namespace Carbonfrost.Commons.Spec {
                 return ExitWithMessage(ExitCode.UsageError, e.Message);
             }
 
-            int result = 0;
-
-            if (!options.Quit) {
-                var app = new SpecApp(options);
-                result = app.Run();
-            }
-
-            if (options.DebugWait) {
-                Console.WriteLine("Press ENTER to exit ...");
-                Console.ReadLine();
-            }
-            return result;
+            var app = new SpecApp(options);
+            return app.Run();
         }
 
         static int ExitWithMessage(ExitCode exitCode, string message) {
@@ -58,6 +48,10 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         private int Run() {
+            if (_options.Action != null) {
+                _options.Action();
+                return 0;
+            }
             try {
                 return RunCore();
 
@@ -93,6 +87,11 @@ namespace Carbonfrost.Commons.Spec {
                 var result = runner.RunTests();
                 if (spec != null) {
                     spec.Save(result);
+                }
+
+                if (_options.DebugWait) {
+                    Console.WriteLine("Press ENTER to exit ...");
+                    Console.ReadLine();
                 }
                 return ToExitCode(result.FailureReason);
 

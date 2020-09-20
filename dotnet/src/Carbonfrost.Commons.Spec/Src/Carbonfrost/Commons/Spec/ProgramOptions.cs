@@ -38,8 +38,8 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        public Action Action;
         public bool DebugWait;
-        public bool Quit;
         public string ProjectDirectory;
         public bool NoConfig;
 
@@ -103,8 +103,8 @@ namespace Carbonfrost.Commons.Spec {
 
         private ProgramOptions() {
             OptionSet = new OptionSetExtension {
-                { "help",          SR.UHelp(),             v => ShowHelp() },
-                { "version",       SR.UVersion(),          v => ShowVersion() },
+                { "help",          SR.UHelp(),             v => Action = ShowHelp },
+                { "version",       SR.UVersion(),          v => Action = ShowVersion },
 
                 { "i|fixture=",    SR.UFixture(),          v => FixturePaths.Add(v) },
                 { "p|package=",    SR.UPackage(),          v => Packages.Add(SafeParsePackageFormula(v, SR.InvalidPackageReference(), "--package")) },
@@ -267,7 +267,6 @@ namespace Carbonfrost.Commons.Spec {
 
         private void ShowHelp() {
             Usage();
-            Quit = true;
         }
 
         static TimeSpan SafeTimeSpanParse(string v, string msg, string optionName) {
@@ -347,7 +346,6 @@ namespace Carbonfrost.Commons.Spec {
             _console.WriteLine("Carbonfrost{1} Fspec version {0}", version, registered);
             _console.WriteLine("Copyright {0} {2}{1:yyyy} Carbonfrost Systems, Inc.  All rights reserved.", copy, buildDate, since);
             _console.WriteLine();
-            Quit = true;
         }
 
         internal enum TestVerificationMode {
