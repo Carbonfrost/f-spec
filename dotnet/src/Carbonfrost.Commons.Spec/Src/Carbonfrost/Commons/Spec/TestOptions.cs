@@ -106,6 +106,14 @@ namespace Carbonfrost.Commons.Spec {
             };
         }
 
+        internal TestOptions Focused() {
+            return AddFilter(TestCaseFilter.Create(tex => tex.TestUnit.IsFocused = true));
+        }
+
+        internal TestOptions Pending() {
+            return AddFilter(TestCaseFilter.Create(tex => tex.Pending()));
+        }
+
         public TestOptions Clone() {
             return new TestOptions(this);
         }
@@ -114,6 +122,12 @@ namespace Carbonfrost.Commons.Spec {
             if (_seal) {
                 throw SpecFailure.Sealed();
             }
+        }
+
+        private TestOptions AddFilter(ITestCaseFilter filter) {
+            var result = Clone();
+            result.Filters.Add(filter);
+            return result;
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             t.IsFocused = true;
         };
         private static readonly Action<TestUnit> SKIP_IF_HAS_ANY_TAGS = t => {
-            if (t.Tags.Count > 0) {
+            if (t.Tags.HasUserTags) {
                 t.Skipped = true;
             }
         };

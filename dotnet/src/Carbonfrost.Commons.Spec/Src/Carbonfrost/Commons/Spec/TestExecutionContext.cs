@@ -19,12 +19,12 @@ using System.Threading;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public partial class TestExecutionContext : TestContext, ITestExecutionContext {
+    public abstract partial class TestExecutionContext : TestContext, ITestExecutionContext {
 
         private readonly object _testObject;
         private object _testReturnValue;
         private CancellationToken _cancellationToken;
-        private TestCaseInfo _testUnit;
+        private TestUnit _testUnit;
 
         private TestContext BaseContext {
             get;
@@ -92,7 +92,7 @@ namespace Carbonfrost.Commons.Spec {
 
         public TestCaseInfo CurrentTest {
             get {
-                return (TestCaseInfo) TestUnit;
+                return TestUnit as TestCaseInfo;
             }
         }
 
@@ -105,7 +105,7 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        internal TestExecutionContext(TestContext parent, TestCaseInfo self, object testObject) {
+        protected TestExecutionContext(TestContext parent, TestUnit self, object testObject) {
             BaseContext = parent;
             _testUnit = self;
             _testObject = testObject;

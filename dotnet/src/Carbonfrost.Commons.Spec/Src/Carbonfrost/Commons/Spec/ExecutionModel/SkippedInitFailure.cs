@@ -19,10 +19,9 @@ using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    class SkippedInitFailure : TestCaseInfo {
+    class SkippedInitFailure : ReflectedTestCase {
 
         private readonly Exception _err;
-        private string _reason;
 
         public override TestUnitType Type {
             get {
@@ -36,16 +35,13 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public SkippedInitFailure(MethodInfo mi, Exception err) : base(mi) {
+        public SkippedInitFailure(MethodInfo mi, Exception err, string reason = null) : base(mi) {
             _err = err;
-            _reason = string.Format("Problem setting up test ({0}: {1})", err.GetType().Name, err.Message);
+            ForcePredeterminedStatus(TestUnitFlags.Failed, reason);
         }
 
-        protected override TestCaseResult RunTestCore(TestExecutionContext testContext) {
-            var result = new TestCaseResult(this, TestStatus.Skipped);
-            result.Reason = _reason;
-            result.SetFailed(_err);
-            return result;
+        protected override object CoreRunTest(TestExecutionContext context) {
+            return null;
         }
 
         public override int Position {
@@ -61,9 +57,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         public static TestCaseInfo CreateTestUnitFactoryProblem(MethodInfo mi, Exception err) {
-            return new SkippedInitFailure(mi, err) {
-                _reason = string.Format("Problem creating test ({0}: {1})", err.GetType().Name, err.Message)
-            };
+            return new SkippedInitFailure(mi, err, string.Format("Problem creating test ({0}: {1})", err.GetType().Name, err.Message));
         }
 
         public static TestCaseInfo DataProviderProblem(TestUnit item,
@@ -72,9 +66,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             Exception err
         ) {
             string reason = string.Format("Problem with data provider {0}", dataProvider);
-            return new SkippedInitFailure(mi, err) {
-                _reason = reason,
-            };
+            return new SkippedInitFailure(mi, err, reason);
         }
 
         internal override object CreateTestObject() {

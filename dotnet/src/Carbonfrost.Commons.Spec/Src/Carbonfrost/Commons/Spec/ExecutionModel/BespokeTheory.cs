@@ -24,12 +24,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         private readonly TestUnitCollection _children;
         private readonly Func<TestExecutionContext, object> _func;
         private readonly TestName _baseTestName;
+        private readonly TestOptions _options;
 
-        public BespokeTheory(ITestDataProvider provider, TestName baseName, Func<TestExecutionContext, object> func) : base(func.Method) {
+        public BespokeTheory(ITestDataProvider provider, TestName baseName, Func<TestExecutionContext, object> func, TestOptions options) : base(func.Method) {
             _children = new TestUnitCollection(this);
             _func = func;
             _testDataProviders = TestDataProviderCollection.Create(provider);
             _baseTestName = baseName;
+            _options = options;
+            Timeout = options.Timeout;
+            PassExplicitly = options.PassExplicitly;
+            Reason = options.Reason;
+            Tags.Add(TestTag.Dynamic);
         }
 
         public sealed override TestUnitCollection Children {
@@ -50,7 +56,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         public TestCaseInfo CreateTestCase(MethodInfo method, TestDataInfo row) {
             // Use _func; it should be the same as the method passed in
-            return new BespokeTheoryCase(_func, _baseTestName, row);
+            return new BespokeTheoryCase(_func, _baseTestName, row, _options);
         }
     }
 }

@@ -1,7 +1,7 @@
 _DISABLED_RUNTIMES = $(subst $(_SPACE),$(_PIPE),$(strip $(ENG_DISABLED_RUNTIMES)))
 
 ifdef ALL
-	_FILTER_DISABLED_TARGETS = | sed '/^(zzz|$(_DISABLED_RUNTIMES))/ s/$/ anotherthing/' - | grep --color -E '(zzz|$(_DISABLED_RUNTIMES))/|$$' -
+	_FILTER_DISABLED_TARGETS = | grep --color -E '(zzz|$(_DISABLED_RUNTIMES))/|$$' -
 else
 	_FILTER_DISABLED_TARGETS = | grep -vE '(zzz|$(_DISABLED_RUNTIMES))/' -
 endif

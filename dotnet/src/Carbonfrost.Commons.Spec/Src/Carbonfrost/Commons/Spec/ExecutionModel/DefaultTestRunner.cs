@@ -1,11 +1,11 @@
 //
-// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,7 +37,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             if (Options.FailFast) {
                 return new FailFastTestPlan(this, run, Options);
             }
-
             return new TestPlan(this, run, Options);
         }
 
@@ -55,6 +54,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             var runResults = plan.RunTests();
             var e = new TestRunnerFinishedEventArgs(run, runResults, Options);
             OnRunnerFinished(e);
+
             return runResults;
         }
 

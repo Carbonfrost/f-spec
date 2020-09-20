@@ -16,8 +16,9 @@
 // limitations under the License.
 //
 
+using System.Linq;
+
 using Carbonfrost.Commons.Spec;
-using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.SelfTest.Spec {
 
@@ -81,7 +82,7 @@ namespace Carbonfrost.SelfTest.Spec {
 
         [Fact]
         public void RunTests_should_process_test_data() {
-            var handler = TestActionDispatcher.Create((TestExecutionContext c) => { });
+            var handler = TestActionDispatcher.Create((TestExecutionContext c) => {});
             var results = RunTests(
                 TestData.Table(
                     TestData.Create("a", "b"),
@@ -90,8 +91,11 @@ namespace Carbonfrost.SelfTest.Spec {
             );
 
             Assert.Equal(2, handler.CallCount);
-            Assert.Equal(new [] { "a", "b" }, handler.ArgsForCall(0).TestData);
-            Assert.Equal(new [] { "x", "y" }, handler.ArgsForCall(1).TestData);
+
+            // Tests could have been shuffled, but ensure both are present
+            var allArgs = handler.Calls.Select(c => string.Join(" ", c.Args.TestData)).ToList();
+            Assert.Contains("a b", allArgs);
+            Assert.Contains("x y", allArgs);
         }
 
         [Fact]
@@ -108,8 +112,15 @@ namespace Carbonfrost.SelfTest.Spec {
             Assert.HasCount(2, results.Children);
             Assert.Equal(TestStatus.Passed, results.Children[0].Status);
             Assert.Equal(TestStatus.Passed, results.Children[1].Status);
-            Assert.Equal($"{baseName} dynamic A #0 (a,b)", results.Children[0].DisplayName);
-            Assert.Equal($"{baseName} dynamic A #1 (x,y)", results.Children[1].DisplayName);
+
+            // Tests could have been shuffled, but ensure both are present
+            string bothTests = string.Join(
+                "\n",
+                results.Children[0].DisplayName,
+                results.Children[1].DisplayName
+            );
+            Assert.Contains($"{baseName} dynamic A #0 (a,b)", bothTests);
+            Assert.Contains($"{baseName} dynamic A #1 (x,y)", bothTests);
         }
     }
 }

@@ -25,6 +25,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         private int _isDisposed;
         private TestUnitFlags _flags;
         private string _reason;
+        private string _description;
         private Exception _initializeError;
         private TimeSpan? _timeout;
         private TestUnit _parent;
@@ -184,6 +185,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             set {
                 WritePreamble();
                 SetFlag(TestUnitFlags.Failed, value);
+            }
+        }
+
+        public string Description {
+            get {
+                return _description;
+            }
+            set {
+                WritePreamble();
+                _description = value;
             }
         }
 

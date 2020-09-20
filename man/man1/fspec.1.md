@@ -50,6 +50,9 @@ Each <assembly> to load is specified as an argument to the command.  Assemblies 
 * `--loader-path`=<path>:
   Add a path to the loader search path.  When the path is a file, this is the same as loading the specified assembly.  If the path is a directory, then the directory is used to search for assemblies when an assembly reference must be loaded.  This option can be specified multiple times.
 
+* `--no-config`:
+  When specified, configuration files are not loaded, which causes fspec(1) to use defaults.  This also prevents options like `--previous-failures` from working because they implicitly depend upon results that were cached in `.fspec` directory.  See [THE .FSPEC DIRECTORY][] for information.
+
 * `--no-diff`:
   Don't use unified diffs when assertion messages contain long strings
 
@@ -73,6 +76,16 @@ Each <assembly> to load is specified as an argument to the command.  Assemblies 
 
 * `--plan-timeout`=<time>:
   Provides the limit on the amount of <time> that the entire test plan is allowed to take.  When reached, the test plan fails.  The value for <time> is either in seconds or using the format described in the description for  `--timeout`
+
+* `--previous-failures`:
+  When specified, runs all tests that failed in the previous test run.  If there is no previous test run or if all tests in the previous test run passed, then all tests are run.
+
+  A common idiom is to re-run previous failures in order to focus on tests which are broken and repeat this process until the tests are fixed.  For example, the following command could be used to successively run the test suite until everything passes consistently:
+
+  fspec --previous-failures && fspec
+
+* `-C|--project-dir`=<directory>:
+  Change directory into the specified directory when starting up.  This has the effect of specifying how paths are resolved for the [LOADER PATH][], include path, and configuration directories.
 
 * `--random-seed`=<seed> :
   Use the specified <seed> to randomize the ordering in which specs are executed
@@ -109,14 +122,53 @@ Each <assembly> to load is specified as an argument to the command.  Assemblies 
 
 ## SELECTING TESTS
 
-By default, all tests will be run in the test suite except for tests that are marked as "explicit".  Various options let you specify which tests are included in the test plan.  Each option has a string argument:
+By default, all tests will be run in the test suite except for tests that are marked as "explicit" or have user-defined tags.  Various options let you specify which tests are included in the test plan.  Each option has a string argument:
 
 1.  The string must be contained in the full name or description of the test (case insensitive).
 2.  _But_ if a wildcard pattern character '*', '?', '[', or ']', is present, then the string must match the wildcard expression.  Therefore, if you specify `test`, the pattern will match strings that _contain "test"_, but if you specify `test*` the pattern will match strings that _start with "test"_.
 3.  When you prefix the string with `regex:`, then the string is interpretted as a regular expression and is case sensitive.
 
-If you specify none of the test selection options, then the default set of tests are run, which is all tests except those marked with "explicit".
+If you specify none of the test selection options, then the default set of tests are run, which is all tests _except_ those marked with "explicit" or that have user-defined tags.
 Otherwise, the tests that will be run will be the tests that match the `--include` or `--tag` options but do not match the `--exclude` option.
+
+When present, fspec(1) loads the contents of the `.fspec` directory to determine information about the previous test run.  Special tags are automatically assigned to tests representing the outcome of the previously run test:
+
+* `previously:failed`
+* `previously:passed`
+* `previously:pending`
+* `previously:skipped`
+* `previously:slow`
+
+### EXAMPLES
+
+* **Run tests whose names contain a string "watermelon"**:
+    fspec -e watermelon Assembly.dll
+
+* **Run tests whose names start with "lemon"**:
+    fspec -e 'lemon*' Assembly.dll
+
+* **Run tests which were slow in the last test run**:
+    fspec -t previously:slow Assembly.dll
+
+
+## THE .FSPEC DIRECTORY
+
+A special directory named `.fspec` is created in the project directory when fspec(1) runs.  This directory will store information about the test run including the results.  This can be used to obtain information about the previous test run.  The following sections describe the files stored there and what you can do with them.
+
+### results.json
+
+Contains the results of the previous test run.
+
+Using jq(1), several common queries with `results.json` are available.
+
+* **Get the result of the test run**:
+  jq -r .failureReason .fspec/results.json
+
+* **Get display names of failed tests**:
+  jq -r '.results[] | select(.status=="FAILED") | .displayName' .fspec/results.json
+
+* **Get tests sorted on their execution durations**:
+  jq -r '.results | sort_by(.executionTime) | map(.displayName + "\t" +   .executionTime) | .[]' .fspec/results.json
 
 ## LOADER PATH
 

@@ -55,10 +55,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             return null;
         }
 
-        public BespokeFact(Func<TestExecutionContext, object> func, TestName baseName, string name) : base(func.Method) {
+        public BespokeFact(Func<TestExecutionContext, object> func, TestName baseName, TestOptions opts) : base(func.Method) {
             _baseName = baseName;
             _func = func;
-            _name = name;
+            _name = opts.Name;
+            Filters.AddAll(opts.Filters);
+            Timeout = opts.Timeout;
+            PassExplicitly = opts.PassExplicitly;
+            Reason = opts.Reason;
+            Tags.Add(TestTag.Dynamic);
         }
     }
 }

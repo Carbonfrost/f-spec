@@ -6,7 +6,7 @@ TEXT_TEMPLATES = dotnet/src/Carbonfrost.Commons.Spec/Automation/Preprocessor/
 .PHONY: dotnet/install dotnet/generate -generate-docs -install-manuals
 
 ## Install dotnet outputs
-dotnet/install: -install-dotnet-fspec -install-manuals-fspec
+dotnet/install: dotnet/pack -install-dotnet-fspec -install-manuals-fspec
 
 ## Test dotnet
 dotnet/test: dotnet/build -dotnet/test
@@ -19,10 +19,6 @@ dotnet/generate:
 	$(Q) srgen -c Carbonfrost.Commons.Spec.Resources.SR \
 		-r Carbonfrost.Commons.Spec.Automation.SR \
 		dotnet/src/Carbonfrost.Commons.Spec/Automation/SR.properties \
-		--resx
-	$(Q) srgen -c Carbonfrost.CFSpec.Resources.SR \
-		-r Carbonfrost.CFSpec.Resources.SR \
-		dotnet/src/fspec/Automation/SR.properties \
 		--resx
 	$(Q) dotnet t4 $(TEXT_TEMPLATES)/TestDispatchers.tt -o $(TEXT_TEMPLATES)/TestDispatchers.cs
 	$(Q) dotnet t4 $(TEXT_TEMPLATES)/GivenExpectationBuilder.tt -o $(TEXT_TEMPLATES)/GivenExpectationBuilder.cs

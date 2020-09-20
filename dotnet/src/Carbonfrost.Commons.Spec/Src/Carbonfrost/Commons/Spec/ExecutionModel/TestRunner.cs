@@ -87,7 +87,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             // HACK -- This is unsealed when the self-tests run because it could be modified
             // to facilitate runner-specific test setup (e.g. DSLGrammarTests)
-            if (!Options.IsSelfTest) {
+            if (!Options.SelfTest) {
                 Options.MakeReadOnly();
             }
             SessionId = Utility.RandomName();
@@ -104,9 +104,8 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         protected virtual TestRun CreateTestRun() {
             var run = new TestRun();
-            if (Options.IsSelfTest) {
-                SpecLog.ActivatedSelfTestMode();
-                run.AddAssembly(typeof(TestMatcher).GetTypeInfo().Assembly);
+            if (Options.SelfTest) {
+                run.AddSelfTests();
             }
 
             foreach (var asm in Options.LoadAssembliesAndBindLoader()) {

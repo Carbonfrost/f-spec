@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv='content-type' content='text/html;charset=utf8'>
-  <meta name='generator' content='Ronn-NG/v0.9.0 (http://github.com/apjanke/ronn-ng/tree/0.9.0)'>
+  <meta name='generator' content='Ronn-NG/v0.9.1 (http://github.com/apjanke/ronn-ng/tree/0.9.1)'>
   <title>fspec(1) - a test framework for .NET Core</title>
   <style type='text/css' media='all'>
   /* style: man */
@@ -58,6 +58,7 @@
     <a href="#DESCRIPTION">DESCRIPTION</a>
     <a href="#OPTIONS">OPTIONS</a>
     <a href="#SELECTING-TESTS">SELECTING TESTS</a>
+    <a href="#THE-FSPEC-DIRECTORY">THE .FSPEC DIRECTORY</a>
     <a href="#LOADER-PATH">LOADER PATH</a>
     <a href="#ENVIRONMENT">ENVIRONMENT</a>
     <a href="#EXIT-CODES">EXIT CODES</a>
@@ -134,6 +135,8 @@
 <code>--loader-path</code>=<var>path</var>
 </dt>
 <dd>Add a path to the loader search path.  When the path is a file, this is the same as loading the specified assembly.  If the path is a directory, then the directory is used to search for assemblies when an assembly reference must be loaded.  This option can be specified multiple times.</dd>
+<dt><code>--no-config</code></dt>
+<dd>When specified, configuration files are not loaded, which causes <span class="man-ref">fspec<span class="s">(1)</span></span> to use defaults.  This also prevents options like <code>--previous-failures</code> from working because they implicitly depend upon results that were cached in <code>.fspec</code> directory.  See [THE .FSPEC DIRECTORY][] for information.</dd>
 <dt><code>--no-diff</code></dt>
 <dd>Don't use unified diffs when assertion messages contain long strings</dd>
 <dt><code>--no-focus</code></dt>
@@ -155,6 +158,17 @@
 </dt>
 <dd>Provides the limit on the amount of <var>time</var> that the entire test plan is allowed to take.  When reached, the test plan fails.  The value for <var>time</var> is either in seconds or using the format described in the description for  <code>--timeout</code>
 </dd>
+<dt><code>--previous-failures</code></dt>
+<dd>When specified, runs all tests that failed in the previous test run.  If there is no previous test run or if all tests in the previous test run passed, then all tests are run.
+
+    <p>A common idiom is to re-run previous failures in order to focus on tests which are broken and repeat this process until the tests are fixed.  For example, the following command could be used to successively run the test suite until everything passes consistently:</p>
+
+    <p>fspec --previous-failures &amp;&amp; fspec</p>
+</dd>
+<dt>
+<code>-C|--project-dir</code>=<var>directory</var>
+</dt>
+<dd>Change directory into the specified directory when starting up.  This has the effect of specifying how paths are resolved for the <a href="#LOADER-PATH" title="LOADER PATH" data-bare-link="true">LOADER PATH</a>, include path, and configuration directories.</dd>
 <dt>
 <code>--random-seed</code>=<var>seed</var> </dt>
 <dd>Use the specified <var>seed</var> to randomize the ordering in which specs are executed</dd>
@@ -190,7 +204,7 @@
 
 <h2 id="SELECTING-TESTS">SELECTING TESTS</h2>
 
-<p>By default, all tests will be run in the test suite except for tests that are marked as "explicit".  Various options let you specify which tests are included in the test plan.  Each option has a string argument:</p>
+<p>By default, all tests will be run in the test suite except for tests that are marked as "explicit" or have user-defined tags.  Various options let you specify which tests are included in the test plan.  Each option has a string argument:</p>
 
 <ol>
   <li>The string must be contained in the full name or description of the test (case insensitive).</li>
@@ -199,8 +213,48 @@
   <li>When you prefix the string with <code>regex:</code>, then the string is interpretted as a regular expression and is case sensitive.</li>
 </ol>
 
-<p>If you specify none of the test selection options, then the default set of tests are run, which is all tests except those marked with "explicit".
+<p>If you specify none of the test selection options, then the default set of tests are run, which is all tests <em>except</em> those marked with "explicit" or that have user-defined tags.
 Otherwise, the tests that will be run will be the tests that match the <code>--include</code> or <code>--tag</code> options but do not match the <code>--exclude</code> option.</p>
+
+<p>When present, <span class="man-ref">fspec<span class="s">(1)</span></span> loads the contents of the <code>.fspec</code> directory to determine information about the previous test run.  Special tags are automatically assigned to tests representing the outcome of the previously run test:</p>
+
+<ul>
+  <li><code>previously:failed</code></li>
+  <li><code>previously:passed</code></li>
+  <li><code>previously:pending</code></li>
+  <li><code>previously:skipped</code></li>
+  <li><code>previously:slow</code></li>
+</ul>
+
+<h3 id="EXAMPLES">EXAMPLES</h3>
+
+<dl>
+<dt><strong>Run tests whose names contain a string "watermelon"</strong></dt>
+<dd>  fspec -e watermelon Assembly.dll</dd>
+<dt><strong>Run tests whose names start with "lemon"</strong></dt>
+<dd>  fspec -e 'lemon*' Assembly.dll</dd>
+<dt><strong>Run tests which were slow in the last test run</strong></dt>
+<dd>  fspec -t previously:slow Assembly.dll</dd>
+</dl>
+
+<h2 id="THE-FSPEC-DIRECTORY">THE .FSPEC DIRECTORY</h2>
+
+<p>A special directory named <code>.fspec</code> is created in the project directory when <span class="man-ref">fspec<span class="s">(1)</span></span> runs.  This directory will store information about the test run including the results.  This can be used to obtain information about the previous test run.  The following sections describe the files stored there and what you can do with them.</p>
+
+<h3 id="results-json">results.json</h3>
+
+<p>Contains the results of the previous test run.</p>
+
+<p>Using <span class="man-ref">jq<span class="s">(1)</span></span>, several common queries with <code>results.json</code> are available.</p>
+
+<dl>
+<dt><strong>Get the result of the test run</strong></dt>
+<dd>jq -r .failureReason .fspec/results.json</dd>
+<dt><strong>Get display names of failed tests</strong></dt>
+<dd>jq -r '.results[] | select(.status=="FAILED") | .displayName' .fspec/results.json</dd>
+<dt><strong>Get tests sorted on their execution duration</strong></dt>
+<dd>jq -r '.results | sort_by(.executionTime) | map(.displayName + "\t" + .executionTime) | .[]' .fspec/results.json</dd>
+</dl>
 
 <h2 id="LOADER-PATH">LOADER PATH</h2>
 
@@ -239,7 +293,7 @@ Otherwise, the tests that will be run will be the tests that match the <code>--i
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'></li>
-    <li class='tc'>August 2020</li>
+    <li class='tc'>September 2020</li>
     <li class='tr'>fspec(1)</li>
   </ol>
 

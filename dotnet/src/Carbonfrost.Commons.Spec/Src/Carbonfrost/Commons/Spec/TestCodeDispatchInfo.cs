@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 using System;
+using System.Runtime.ExceptionServices;
 
 namespace Carbonfrost.Commons.Spec {
 
@@ -26,6 +27,13 @@ namespace Carbonfrost.Commons.Spec {
 
         internal TestCodeDispatchInfo(Exception exception) {
             Exception = exception;
+        }
+
+        public void Throw() {
+            if (Exception == null) {
+                throw SpecFailure.NoExceptionCaptured();
+            }
+            ExceptionDispatchInfo.Capture(Exception).Throw();
         }
     }
 

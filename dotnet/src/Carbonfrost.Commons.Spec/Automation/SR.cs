@@ -77,11 +77,11 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("BadEpsilonComparerTypes") , @typeSelf);
     }
 
-  /// <summary>Cannot create an alias when tags have different names</summary>
-    internal static string CannotAliasDifferentTagNames(
+  /// <summary>Cannot create an alias when tags have different types</summary>
+    internal static string CannotAliasDifferentTagTypes(
     
     ) {
-        return string.Format(Culture, ResourceFinder("CannotAliasDifferentTagNames") );
+        return string.Format(Culture, ResourceFinder("CannotAliasDifferentTagTypes") );
     }
 
   /// <summary>Can't use `ExpectedExceptionAttribute` or `ThrowsAttribute` on a test that throws assertions exceptions if those exceptions might be caught by the attribute.  Replace with `Assert.Throws`.</summary>
@@ -89,6 +89,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
     
     ) {
         return string.Format(Culture, ResourceFinder("CannotAssertAssertExceptions") );
+    }
+
+  /// <summary>Can't check type of null actual values.  Assert that the value is non-null before trying to assert its type.</summary>
+    internal static string CannotAssertTypeOnNullActual(
+    
+    ) {
+        return string.Format(Culture, ResourceFinder("CannotAssertTypeOnNullActual") );
     }
 
   /// <summary>Couldn't find data field ${name} on test class.</summary>
@@ -117,13 +124,6 @@ namespace Carbonfrost.Commons.Spec.Resources {
     object @type
     ) {
         return string.Format(Culture, ResourceFinder("CannotTreatAsDictionaryOrGroupings") , @type);
-    }
-
-  /// <summary>Can't check type of null actual values.  Assert that the value is non-null before trying to assert its type.</summary>
-    internal static string CannotAssertTypeOnNullActual(
-    
-    ) {
-        return string.Format(Culture, ResourceFinder("CannotAssertTypeOnNullActual") );
     }
 
   /// <summary>Can't use null or not-null on value type ${type}.  Assert that the value is a reference type before trying to assert whether it is null.</summary>
@@ -394,7 +394,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Expected memberwise-equal</summary>
     internal static string ExpectedMemberwiseEqual(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("ExpectedMemberwiseEqual") );
     }
@@ -457,7 +457,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Expected sequence-equal</summary>
     internal static string ExpectedSequenceEqual(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("ExpectedSequenceEqual") );
     }
@@ -574,6 +574,48 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("HaveLengthWorksWith") );
     }
 
+  /// <summary>invalid number of context lines</summary>
+    internal static string InvalidContextLines(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("InvalidContextLines") );
+    }
+
+  /// <summary>invalid package reference syntax</summary>
+    internal static string InvalidPackageReference(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("InvalidPackageReference") );
+    }
+
+  /// <summary>invalid random seed</summary>
+    internal static string InvalidRandomSeed(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("InvalidRandomSeed") );
+    }
+
+  /// <summary>invalid regex: ${reason}</summary>
+    internal static string InvalidRegex(
+    object @reason
+    ) {
+        return string.Format(Culture, ResourceFinder("InvalidRegex") , @reason);
+    }
+
+  /// <summary>invalid time span</summary>
+    internal static string InvalidTimeSpan(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("InvalidTimeSpan") );
+    }
+
+  /// <summary>invalid verification mode</summary>
+    internal static string InvalidVerify(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("InvalidVerify") );
+    }
+
   /// <summary>Actual</summary>
     internal static string LabelActual(
     
@@ -618,7 +660,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Differences</summary>
     internal static string LabelDifferences(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("LabelDifferences") );
     }
@@ -681,7 +723,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Member filter</summary>
     internal static string LabelMemberFilter(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("LabelMemberFilter") );
     }
@@ -695,7 +737,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Property</summary>
     internal static string LabelProperty(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("LabelProperty") );
     }
@@ -723,7 +765,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Method has more than one fact or theory attribute</summary>
     internal static string MultipleTestUnitFactories(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("MultipleTestUnitFactories") );
     }
@@ -747,6 +789,20 @@ namespace Carbonfrost.Commons.Spec.Resources {
     
     ) {
         return string.Format(Culture, ResourceFinder("NoException") );
+    }
+
+  /// <summary>Can't throw because no exception was captured</summary>
+    internal static string NoExceptionCaptured(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("NoExceptionCaptured") );
+    }
+
+  /// <summary>Can't self-test; no tests configured in this build.</summary>
+    internal static string NoSelfTestsAvailable(
+    
+    ) {
+        return string.Format(Culture, ResourceFinder("NoSelfTestsAvailable") );
     }
 
   /// <summary>Test class has no test methods</summary>
@@ -926,7 +982,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Not expected to be memberwise-equal</summary>
     internal static string NotExpectedMemberwiseEqual(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("NotExpectedMemberwiseEqual") );
     }
@@ -975,7 +1031,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Not expected to be sequence-equal</summary>
     internal static string NotExpectedSequenceEqual(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("NotExpectedSequenceEqual") );
     }
@@ -1192,7 +1248,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>not be memberwise-equal</summary>
     internal static string NotPredicateMemberwiseEqual(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("NotPredicateMemberwiseEqual") );
     }
@@ -1241,7 +1297,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>not be sequence-equal</summary>
     internal static string NotPredicateSequenceEqual(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("NotPredicateSequenceEqual") );
     }
@@ -1311,7 +1367,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>Delegate test data may need retargeting to work as expected, and you must explicitly opt-in using the proper attribute metadata or test types.</summary>
     internal static string PossibleDelegateRetargeting(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("PossibleDelegateRetargeting") );
     }
@@ -1479,7 +1535,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>be memberwise-equal</summary>
     internal static string PredicateMemberwiseEqual(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("PredicateMemberwiseEqual") );
     }
@@ -1528,7 +1584,7 @@ namespace Carbonfrost.Commons.Spec.Resources {
 
   /// <summary>be sequence-equal</summary>
     internal static string PredicateSequenceEqual(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("PredicateSequenceEqual") );
     }
@@ -1617,11 +1673,277 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("TheoryHasNoDataProviders") );
     }
 
+  /// <summary>Show as many lines of context in unified diffs</summary>
+    internal static string UContextLines(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UContextLines") );
+    }
+
+  /// <summary>Skip tests whose descriptions or names match the given {{PATTERN}}</summary>
+    internal static string UExclude(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UExclude") );
+    }
+
+  /// <summary>Skip tests whose full names match {{REGEX}}</summary>
+    internal static string UExcludePattern(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UExcludePattern") );
+    }
+
+  /// <summary>Exit when the first test fails</summary>
+    internal static string UFailFast(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UFailFast") );
+    }
+
+  /// <summary>Exit with an error code if any focused specs</summary>
+    internal static string UFailFocused(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UFailFocused") );
+    }
+
+  /// <summary>Exit with an error code if any pending specs</summary>
+    internal static string UFailOnPending(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UFailOnPending") );
+    }
+
+  /// <summary>Include a fixture search {{PATH}}</summary>
+    internal static string UFixture(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UFixture") );
+    }
+
+  /// <summary>Focus tests whose descriptions or names match the given {{PATTERN}}</summary>
+    internal static string UFocus(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UFocus") );
+    }
+
+  /// <summary>Don't hide f-spec stack frames in exception stack traces</summary>
+    internal static string UFullStackTraces(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UFullStackTraces") );
+    }
+
+  /// <summary>Display this help screen</summary>
+    internal static string UHelp(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UHelp") );
+    }
+
+  /// <summary>Run tests whose full names match the given {{PATTERN}}</summary>
+    internal static string UInclude(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UInclude") );
+    }
+
+  /// <summary>Run tests whose full names match {{REGEX}}</summary>
+    internal static string UIncludePattern(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UIncludePattern") );
+    }
+
+  /// <summary>Loader options</summary>
+    internal static string ULoaderOptions(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("ULoaderOptions") );
+    }
+
+  /// <summary>Add {{PATH}} to loader path</summary>
+    internal static string ULoaderPath(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("ULoaderPath") );
+    }
+
+  /// <summary>Don't load configuration from .fspecrc or .fspec cache</summary>
+    internal static string UNoConfig(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UNoConfig") );
+    }
+
+  /// <summary>Don't use unified diffs when assertion messages contain long strings</summary>
+    internal static string UNoDiff(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UNoDiff") );
+    }
+
+  /// <summary>Ignore all focused elements and run everything</summary>
+    internal static string UNoFocus(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UNoFocus") );
+    }
+
+  /// <summary>Don't randomize specs</summary>
+    internal static string UNoRandomizeSpecs(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UNoRandomizeSpecs") );
+    }
+
+  /// <summary>Don't show test run summary of failed tests at the end</summary>
+    internal static string UNoSummary(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UNoSummary") );
+    }
+
+  /// <summary>Don't use special characters when printing whitespace in assertion failure messages</summary>
+    internal static string UNoWhitespace(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UNoWhitespace") );
+    }
+
   /// <summary>Unable to compare values using the specified comparer</summary>
     internal static string UnusableComparer(
     
     ) {
         return string.Format(Culture, ResourceFinder("UnusableComparer") );
+    }
+
+  /// <summary>Output options</summary>
+    internal static string UOutputOptions(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UOutputOptions") );
+    }
+
+  /// <summary>Load the NuGet package dependency {{FORMULA}}</summary>
+    internal static string UPackage(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UPackage") );
+    }
+
+  /// <summary>Attach tty and wait for a keypress before exiting</summary>
+    internal static string UPause(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UPause") );
+    }
+
+  /// <summary>Specify the maximum {{TIME}} allowed for the test plan to execute</summary>
+    internal static string UPlanTimeout(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UPlanTimeout") );
+    }
+
+  /// <summary>Run the tests that failed in the previous test run, or all tests if no previous run</summary>
+    internal static string UPreviousFailures(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UPreviousFailures") );
+    }
+
+  /// <summary>Change directory into the specified {{PROJECT}} directory</summary>
+    internal static string UProjectDir(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UProjectDir") );
+    }
+
+  /// <summary>Use the specified {{SEED}} to randomize specs</summary>
+    internal static string URandom(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("URandom") );
+    }
+
+  /// <summary>Runner options</summary>
+    internal static string URunnerOptions(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("URunnerOptions") );
+    }
+
+  /// <summary>Run the self-tests and exit</summary>
+    internal static string USelfTest(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("USelfTest") );
+    }
+
+  /// <summary>Display messages when Assert.Pass is used</summary>
+    internal static string UShowPassExplicit(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UShowPassExplicit") );
+    }
+
+  /// <summary>Display names of tests and test cases even on success</summary>
+    internal static string UShowTestNames(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UShowTestNames") );
+    }
+
+  /// <summary>Use special characters when printing whitespace in assertion failure messages</summary>
+    internal static string UShowWhitespace(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UShowWhitespace") );
+    }
+
+  /// <summary>Threshold {{TIME}} span for whether a test is considered slow</summary>
+    internal static string USlowTest(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("USlowTest") );
+    }
+
+  /// <summary>Run tests with the specified TAG.  (Optionally, ~TAG for tests without tag)</summary>
+    internal static string UTag(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UTag") );
+    }
+
+  /// <summary>Test selection options</summary>
+    internal static string UTestSelectionOptions(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UTestSelectionOptions") );
+    }
+
+  /// <summary>Specify the maximum {{TIME}} allowed for any particular test to execute</summary>
+    internal static string UTimeout(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UTimeout") );
+    }
+
+  /// <summary>Use the specified verification {{MODE}} (either strict or none) to check for errors in tests and assertions</summary>
+    internal static string UVerify(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UVerify") );
+    }
+
+  /// <summary>Report the version information and exit</summary>
+    internal static string UVersion(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("UVersion") );
     }
 
   /// <summary>Test case #${num} for theory method ${clazz}.${method} has incorrect number of arguments.</summary>

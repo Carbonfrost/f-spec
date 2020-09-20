@@ -15,12 +15,15 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    abstract class ReflectedTestCase : TestCaseInfo {
+    abstract partial class ReflectedTestCase : TestCaseInfo {
+
+        private static readonly IEnumerable<ITestCaseFilter> EMPTY_FILTERS = Array.Empty<ITestCaseFilter>();
 
         protected sealed override TestCaseResult RunTestCore(TestExecutionContext testContext) {
             var options = NewTestOptions();
@@ -29,17 +32,24 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             Func<TestExecutionContext, object> testFunc = CoreRunTest;
 
-            var winder = new TestCaseCommandWinder(options.Filters.Concat(new [] {
-                new RunCommand(testFunc, options)
-            }));
+            var groupedByPhase = options.Filters.GroupBy(GetPhaseForFilter);
+            var metadataPhase = groupedByPhase.FirstOrDefault(g => g.Key == Phase.MetadataOnly) ?? EMPTY_FILTERS;
+            var execPhase = groupedByPhase.FirstOrDefault(g => g.Key == Phase.Assertion) ?? EMPTY_FILTERS;
+            var filters = metadataPhase
+                .Concat(new ITestCaseFilter[] {
+                    new PredeterminedStatusCommand(result)
+                }).Concat(execPhase)
+                .Concat(new ITestCaseFilter[] {
+                    new RunCommand(testFunc, result, options)
+                });
 
-            winder.RunAll(testContext);
-
-            if (options.PassExplicitly) {
-                result.SetFailed(SpecFailure.ExplicitPassNotSet());
-            } else {
-                result.SetSuccess();
+            var winder = new TestCaseCommandWinder(filters);
+            try {
+                winder.RunAll(testContext);
+            } catch (Exception ex) {
+                result.SetFailed(ex);
             }
+
             result.Done(null, testContext.TestRunnerOptions);
             return result;
         }
@@ -83,6 +93,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             options.Filters.AddAll(Attributes.OfType<ITestCaseFilter>());
             options.Filters.AddAll(Filters);
             return options;
+        }
+
+        private Phase GetPhaseForFilter(ITestCaseFilter filter) {
+            if (filter is TestMatchers.IFactoryMetadataProvider) {
+                return Phase.Assertion;
+            }
+            return Phase.MetadataOnly;
+        }
+
+        enum Phase {
+            MetadataOnly,
+            Assertion,
         }
     }
 }

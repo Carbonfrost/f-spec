@@ -83,7 +83,10 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         protected override void InsertItem(int index, TestUnitResult item) {
             if (item == null) {
-                throw new ArgumentNullException("item");
+                throw new ArgumentNullException(nameof(item));
+            }
+            if (item.Parent == _owner) {
+                return;
             }
             if (item.Parent != null) {
                 throw new NotImplementedException();
@@ -106,8 +109,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         }
 
         protected override void SetItem(int index, TestUnitResult item) {
-            if (item == null)
-                throw new ArgumentNullException("item");
+            if (item == null) {
+                throw new ArgumentNullException(nameof(item));
+            }
 
             ThrowIfReadOnly();
             this[index].Parent = null;

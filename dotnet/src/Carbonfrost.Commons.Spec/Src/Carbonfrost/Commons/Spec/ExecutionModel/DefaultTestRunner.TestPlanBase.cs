@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,15 +29,15 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             private readonly TestRunnerOptions _normalizedOpts;
             private readonly RootNode _root;
 
-            protected TestContext RootInitContext {
+            internal Node Root {
                 get {
-                    return _root.InitContext;
+                    return _root;
                 }
             }
 
-            public RootNode Root {
+            public TestLog Log {
                 get {
-                    return _root;
+                    return Root.InitContext.Log;
                 }
             }
 
@@ -58,7 +59,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 }
             }
 
-            internal IEnumerable<TestUnitNode> PlanOrder {
+            internal IEnumerable<Node> PlanOrder {
                 get {
                     return _root.DescendantsAndSelf;
                 }
@@ -68,21 +69,52 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                 _normalizedOpts = normalized;
                 _runner = runner;
                 _root = new RootNode(runner, testRun);
+                _root.Initialize();
 
-                _root.Push(RootInitContext);
-
-                _root.AppendEnd(null);
+                normalized.PreviousRun.ApplyTo(testRun);
+                if (normalized.RerunPreviousFailures) {
+                    if (normalized.PreviousRun.FailureReason.IsFailure()) {
+                        normalized.PlanFilter.Tags.Add(
+                            TestTagPredicate.Previously(TestStatus.Failed)
+                        );
+                    } else {
+                        Log.Warn("No previous failures, re-running all tests...");
+                    }
+                }
 
                 // Apply filter rules from the options
                 _normalizedOpts.PlanFilter.Apply(testRun, normalized);
 
-                _willRun = PlanOrder.OfType<TestCaseNode>()
-                    .Select(t => (TestCaseInfo) t.Unit)
-                    .Where(t => !t.Skipped)
-                    .ToList();
+                _willRun = PlanOrder.Where(p => p.IsLeafThatWillRun).Select(n => (TestCaseInfo) n.Unit).ToList();
             }
 
             public abstract TestRunResults RunTests();
+
+            internal void ExecutePlan(Action<Node> operation, Action<Node> after) {
+                ExecutePlan(Root, operation, after);
+            }
+
+            internal static void ExecutePlan(Node root, Action<Node> operation, Action<Node> after) {
+                var stack = new Stack<(Node node, bool after)>();
+                stack.Push((root, false));
+
+                while (stack.Count > 0) {
+                    var current = stack.Pop();
+                    if (current.after) {
+                        after(current.node);
+                        continue;
+                    } else {
+                        operation(current.node);
+                    }
+
+                    // Mark the end of the children scope
+                    stack.Push((current.node, true));
+
+                    foreach (var child in current.node.Children.Reverse()) {
+                        stack.Push((child, false));
+                    }
+                }
+            }
 
         }
 

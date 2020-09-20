@@ -35,8 +35,8 @@ namespace Carbonfrost.Commons.Spec {
             return new AssertException(SR.TestTimedOut(timeout));
         }
 
-        public static Exception CannotAliasDifferentTagNames() {
-            return new ArgumentNullException(SR.CannotAliasDifferentTagNames());
+        public static Exception CannotAliasDifferentTagTypes() {
+            return new ArgumentNullException(SR.CannotAliasDifferentTagTypes());
         }
 
         public static InvalidOperationException FactMethodParamCount(string name) {
@@ -147,6 +147,10 @@ namespace Carbonfrost.Commons.Spec {
             return new InvalidOperationException(SR.Sealed());
         }
 
+        public static Exception NoExceptionCaptured() {
+            return new InvalidOperationException(SR.NoExceptionCaptured());
+        }
+
         public static Exception Disposed(string name) {
              return new ObjectDisposedException(name);
         }
@@ -203,6 +207,10 @@ namespace Carbonfrost.Commons.Spec {
 
         internal static Exception MultipleTestUnitFactories() {
             return new SpecException(SR.MultipleTestUnitFactories());
+        }
+
+        internal static SpecException NoSelfTestsAvailable() {
+            return new SpecException(SR.NoSelfTestsAvailable());
         }
     }
 }

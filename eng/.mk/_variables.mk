@@ -22,6 +22,16 @@ ENG_GLOBAL_VARIABLES := \
 	PATH \
 	PREFIX \
 	VERBOSE \
+	BUILD_FIRST \
+
+# Variables that are global but only show when VERBOSE is set
+ENG_GLOBAL_VERBOSE_VARIABLES := \
+	HOME \
+	LANG \
+	LC_CTYPE \
+	TMPDIR \
+	USER \
+	DIRENV_DIR \
 
 # ------- .NET settings
 #
@@ -59,9 +69,11 @@ ENG_PYTHON_VARIABLES := \
 	ENG_USING_PYTHON \
 	PIP \
 	PYTHON \
+	VIRTUAL_ENV \
+	VIRTUAL_ENV_DISABLE_PROMPT \
 	VIRTUAL_ENV_NAME \
 
-# Whether we are meant to use Pyhon.  (See python.mk for autodetection)
+# Whether we are meant to use Python.  (See python.mk for autodetection)
 ENG_USING_PYTHON ?= $(ENG_AUTODETECT_USING_PYTHON)
 
 # Name of the python executable
@@ -73,13 +85,24 @@ PIP ?= pip3
 # Name of the virtual environment
 VIRTUAL_ENV_NAME ?= venv
 
+# ------- Go settings
+#
+
+# Variables used by Python settings
+ENG_GO_VARIABLES := \
+	GOPATH \
+
+# Whether we are meant to use Go.  (See go.mk for autodetection)
+ENG_USING_GO ?= $(ENG_AUTODETECT_USING_GO)
+
 # ------- Ruby settings
 #
 
 # Variables used by Ruby settings
-ENG_PYTHON_VARIABLES = \
+ENG_RUBY_VARIABLES = \
 	ENG_USING_RUBY \
 	ENG_LATEST_RUBY_VERSION \
+	RBENV_SHELL \
 
 # Whether we are meant to use Ruby.  (See ruby.mk for autodetection)
 ENG_USING_RUBY ?= $(ENG_AUTODETECT_USING_RUBY)

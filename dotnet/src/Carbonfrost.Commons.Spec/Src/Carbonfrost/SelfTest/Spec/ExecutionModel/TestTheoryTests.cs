@@ -15,6 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+using System.ComponentModel;
 
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.Spec.ExecutionModel;
@@ -22,6 +23,19 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
 
     public class TestTheoryTests {
+
+        [Fact(Description = "expected description")]
+        public void Description_comes_from_description_on_FactAttribute() {
+            var unit = TestContext.Current.TestUnit;
+            Assert.Equal("expected description", unit.Description);
+        }
+
+        [Fact]
+        [Description("expected description")]
+        public void Description_comes_from_description_on_DescriptionAttribute() {
+            var unit = TestContext.Current.TestUnit;
+            Assert.Equal("expected description", unit.Description);
+        }
 
         // Has no data attributes
         public void PNoDataAttributesTheory() {}

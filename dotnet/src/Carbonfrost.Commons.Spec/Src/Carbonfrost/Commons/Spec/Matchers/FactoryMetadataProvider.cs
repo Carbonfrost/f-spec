@@ -18,7 +18,10 @@ using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec.TestMatchers {
 
-    class FactoryMetadataProvider : ITestUnitMetadataProvider, ITestUnitDescendantMetadataProvider, ITestCaseFilter {
+    interface IFactoryMetadataProvider {
+    }
+
+    class FactoryMetadataProvider : ITestUnitMetadataProvider, ITestUnitDescendantMetadataProvider, ITestCaseFilter, IFactoryMetadataProvider {
 
         private readonly ITestMatcherFactory _provider;
 
@@ -45,7 +48,7 @@ namespace Carbonfrost.Commons.Spec.TestMatchers {
         }
     }
 
-    class FactoryMetadataProvider<T> : ITestUnitMetadataProvider, ITestUnitDescendantMetadataProvider, ITestCaseFilter {
+    class FactoryMetadataProvider<T> : ITestUnitMetadataProvider, ITestUnitDescendantMetadataProvider, ITestCaseFilter, IFactoryMetadataProvider {
 
         private readonly ITestMatcherFactory<T> _provider;
 

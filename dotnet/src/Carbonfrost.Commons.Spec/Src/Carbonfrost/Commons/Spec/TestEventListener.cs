@@ -17,6 +17,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Spec {
@@ -34,9 +35,33 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        private MethodInfo HandlerMethod {
+            get {
+                return GetType().GetMethod("_Handler", BindingFlags.Instance | BindingFlags.NonPublic);
+            }
+        }
+
         public IReadOnlyList<TEventArgs> Events {
             get {
                 return _events;
+            }
+        }
+
+        public TEventArgs LastEvent {
+            get {
+                return _events.LastOrDefault();
+            }
+        }
+
+        public bool Handled {
+            get {
+                return Events.Any();
+            }
+        }
+
+        public int HandledCount {
+            get {
+                return Events.Count;
             }
         }
 
@@ -77,8 +102,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         private Delegate GetHandlerCore(Type eventHandlerType) {
-            var handler = GetType().GetMethod("_Handler", BindingFlags.Instance | BindingFlags.NonPublic);
-            return Delegate.CreateDelegate(eventHandlerType, this, handler);
+            return Delegate.CreateDelegate(eventHandlerType, this, HandlerMethod);
         }
     }
 }

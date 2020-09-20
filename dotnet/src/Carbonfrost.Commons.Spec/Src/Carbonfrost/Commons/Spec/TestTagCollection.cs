@@ -21,11 +21,9 @@ using System.Linq;
 
 namespace Carbonfrost.Commons.Spec {
 
-    public partial class TestTagCollection : ICollection<TestTag>, ICollection<string> {
+    public partial class TestTagCollection : ICollection<TestTag> {
 
-        private readonly Dictionary<string, HashSet<string>> _tags = new Dictionary<string, HashSet<string>>(
-            StringComparer.OrdinalIgnoreCase
-        );
+        private readonly Dictionary<TestTagType, HashSet<string>> _tags = new Dictionary<TestTagType, HashSet<string>>();
         internal static readonly TestTagCollection Empty = new TestTagCollection(true);
 
         public int Count {
@@ -50,6 +48,17 @@ namespace Carbonfrost.Commons.Spec {
         public IndexCollection ByName {
             get {
                 return new IndexCollection(_tags);
+            }
+        }
+
+        internal bool HasUserTags {
+            get {
+                if (_tags.Count == 0) {
+                    return false;
+                }
+                return _tags.All(
+                    kvp => kvp.Key.Automatic
+                );
             }
         }
 
@@ -79,21 +88,21 @@ namespace Carbonfrost.Commons.Spec {
             return Empty;
         }
 
-        public bool Contains(string name, string value) {
-            TestTag.RequireName(name);
-            return TryGetGroup(name, false, out var items)
+        public bool Contains(TestTagType type, string value) {
+            TestTag.RequireType(type);
+            return TryGetGroup(type, false, out var items)
                 && (string.IsNullOrEmpty(value) || items.Contains(value));
         }
 
-        public bool Contains(string name) {
-            TestTag.RequireName(name);
-            return TestTag.TryParse(name, out var item)
+        public bool Contains(TestTagType type) {
+            TestTag.RequireType(type);
+            return TestTag.TryParse(type.ToString(), out var item)
                 && Contains(item);
         }
 
         public bool Add(TestTag item) {
             ThrowIfReadOnly();
-            return Add(item.Name, item.Value);
+            return Add(item.Type, item.Value);
         }
 
         public bool Add(string item) {
@@ -101,27 +110,15 @@ namespace Carbonfrost.Commons.Spec {
             return Parse(item, out var tt) && Add(tt);
         }
 
-        void ICollection<string>.Add(string item) {
-            Add(item);
-        }
-
-        public bool Add(string name, string value) {
-            TestTag.RequireName(name);
-            return TryGetGroup(name, true, out var items) && (
+        public bool Add(TestTagType type, string value) {
+            TestTag.RequireType(type);
+            return TryGetGroup(type, true, out var items) && (
                 items.Add(value ?? string.Empty)
             );
         }
 
-        void ICollection<string>.CopyTo(string[] array, int arrayIndex) {
-            All.Select(k => k.ToString()).ToArray().CopyTo(array, arrayIndex);
-        }
-
         public bool Remove(string item) {
             return Parse(item, out var tt) && Remove(tt);
-        }
-
-        IEnumerator<string> IEnumerable<string>.GetEnumerator() {
-            return All.Select(t => t.ToString()).GetEnumerator();
         }
 
         void ICollection<TestTag>.Add(TestTag item) {
@@ -134,7 +131,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public bool Contains(TestTag item) {
-            return Contains(item.Name, item.Value);
+            return Contains(item.Type, item.Value);
         }
 
         public void CopyTo(TestTag[] array, int arrayIndex) {
@@ -143,7 +140,7 @@ namespace Carbonfrost.Commons.Spec {
 
         public bool Remove(TestTag item) {
             ThrowIfReadOnly();
-            return TryGetGroup(item.Name, false, out var items) && items.Remove(item.Value);
+            return TryGetGroup(item.Type, false, out var items) && items.Remove(item.Value);
         }
 
         public IEnumerator<TestTag> GetEnumerator() {
@@ -158,15 +155,15 @@ namespace Carbonfrost.Commons.Spec {
             IsReadOnly = true;
         }
 
-        private bool TryGetGroup(string name, bool create, out HashSet<string> result) {
+        private bool TryGetGroup(TestTagType type, bool create, out HashSet<string> result) {
             if (create) {
                 result = _tags.GetValueOrCache(
-                    name,
+                    type,
                     _ => new HashSet<string>(StringComparer.OrdinalIgnoreCase)
                 );
                 return true;
             }
-            return _tags.TryGetValue(name, out result);
+            return _tags.TryGetValue(type, out result);
         }
 
         static bool Parse(string item, out TestTag tag) {

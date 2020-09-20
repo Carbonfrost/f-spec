@@ -27,6 +27,11 @@ namespace Carbonfrost.Commons.Spec {
             set;
         }
 
+        public string Description {
+            get;
+            set;
+        }
+
         public string Reason {
             get;
             set;
@@ -37,7 +42,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         TestUnit IReflectionTestUnitFactory.CreateTestCase(MethodInfo method) {
-            return new ReflectedTheory(method);
+            return new ReflectedTheory(method).CopyDescriptions(this);
         }
     }
 }

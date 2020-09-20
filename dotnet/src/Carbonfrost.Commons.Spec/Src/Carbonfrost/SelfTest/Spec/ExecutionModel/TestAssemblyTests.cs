@@ -23,6 +23,12 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
 
     public class TestAssemblyTests {
 
+        [Fact]
+        public void Description_comes_from_assembly_attribute() {
+            var asm = TestAssembly.Create(GetType().Assembly);
+            Assert.Equal("A unit testing framework", asm.Description);
+        }
+
         [Theory]
         [InlineData(typeof(PInternalTestClass))]
         [InlineData(typeof(PDerivedTestClass))]
@@ -49,6 +55,13 @@ namespace Carbonfrost.SelfTest.Spec.ExecutionModel {
                 "PFact",
                 test.Children[0].DisplayName
             );
+        }
+
+        [Fact]
+        public void TestUnitFromType_should_not_find_filter_types() {
+            var asm = TestAssembly.Create(GetType().Assembly);
+            var test = asm.TestUnitFromType(typeof(Carbonfrost.Commons.Spec.ExecutionModel.TestFilters.UsingCultureFilter));
+            Assert.Null(test);
         }
     }
 

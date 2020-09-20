@@ -15,6 +15,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -28,12 +29,6 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
         internal IList<ITestCaseFilter> Filters {
             get {
                 return _filters;
-            }
-        }
-
-        private protected TestStatus PredeterminedStatus {
-            get {
-                return TestUnit.ConvertToStatus(this).GetValueOrDefault(TestStatus.NotRun);
             }
         }
 
@@ -137,6 +132,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        public TestId Id {
+            get {
+                return TestId.FromTestName(TestName);
+            }
+        }
+
         private protected TestCaseInfo(MethodInfo testMethod) {
             if (testMethod == null) {
                 throw new ArgumentNullException(nameof(testMethod));
@@ -144,31 +145,24 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
             TestMethod = testMethod;
             Children.MakeReadOnly();
-        }
 
-        internal TestUnitResult RunTest(TestExecutionContext testContext) {
-            if (PredeterminedStatus == TestStatus.NotRun) {
-                TestCaseResult result = new TestCaseResult(this);
-                result.Starting();
-                try {
-                    using (testContext.ApplyingContext()) {
-                        result = RunTestCore(testContext);
-                    }
-
-                } catch (Exception ex) {
-                    result.SetFailed(ex);
-                    result.Done(null, testContext.TestRunnerOptions);
-                }
-                return result;
+            var attr = testMethod.GetCustomAttribute<DescriptionAttribute>();
+            if (attr != null) {
+                Description = attr.Description;
             }
-            return PredeterminedResult(testContext);
         }
 
-        private TestCaseResult PredeterminedResult(TestExecutionContext testContext) {
-            var result = new TestCaseResult(this, PredeterminedStatus);
+        internal TestCaseResult RunTest(TestExecutionContext testContext) {
+            using (testContext.ApplyingContext()) {
+                return RunTestCore(testContext);
+            }
+        }
+
+        internal TestCaseResult AbortTest(TestExecutionContext testContext) {
+            var result = new TestCaseResult(this, TestStatus.Skipped);
+            var runnerOpts = testContext.TestRunnerOptions;
             result.Starting();
-            result.Reason = Reason;
-            result.Done(this, testContext.TestRunnerOptions);
+            result.Done(this, runnerOpts);
             return result;
         }
 

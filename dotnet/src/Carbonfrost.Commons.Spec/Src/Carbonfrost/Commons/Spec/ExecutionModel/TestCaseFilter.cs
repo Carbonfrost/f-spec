@@ -13,12 +13,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+using System;
 
-namespace Carbonfrost.CFSpec {
+namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    enum TestVerificationMode {
-        None,
-        Strict,
+    static class TestCaseFilter {
+
+        public static ITestCaseFilter Create(Action<TestExecutionContext> action) {
+            return new Impl(action);
+        }
+
+        class Impl : ITestCaseFilter {
+            private readonly Action<TestExecutionContext> _action;
+
+            public Impl(Action<TestExecutionContext> action) {
+                _action = action;
+            }
+
+            public void RunTest(TestExecutionContext context, Action<TestExecutionContext> next) {
+                _action(context);
+                next(context);
+            }
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,15 +13,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-
 using System;
-using System.Linq;
 
-namespace Carbonfrost.CFSpec {
+namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    enum ExitCode {
-        Success = 0,
-        GenericError = 1,
-        UsageError = 2,
+    [Flags]
+    internal enum JTestAttributes {
+        None = 0,
+        Slow = 1 << 0,
+        ContainsFocusedUnits = 1 << 1,
+        Failed = 1 << 2,
+        Pending = 1 << 3,
+        Running = 1 << 4,
+        StatusExplicit = 1 << 5,
+        Passed = 1 << 6,
+        Skipped = 1 << 7,
+        StrictlyPassed = 1 << 8,
+        Focused = 1 << 9,
     }
 }

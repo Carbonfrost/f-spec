@@ -248,6 +248,102 @@ namespace Carbonfrost.Commons.Spec {
             return TestContext.RunTests(testDataProvider, testFunc, options);
         }
 
+        public TestCaseResult XRunTest(Action<TestExecutionContext> testFunc) {
+            return TestContext.XRunTest(DefaultTestName, testFunc);
+        }
+
+        public TestCaseResult XRunTest(Action<TestExecutionContext> testFunc, TestOptions options) {
+            return TestContext.XRunTest(testFunc, options);
+        }
+
+        public TestCaseResult XRunTest(Func<TestExecutionContext, object> testFunc) {
+            return TestContext.XRunTest(DefaultTestName, testFunc);
+        }
+
+        public TestCaseResult XRunTest(Func<TestExecutionContext, object> testFunc, TestOptions options) {
+            return TestContext.XRunTest(testFunc, options);
+        }
+
+        public TestCaseResult XRunTest(string name, Action<TestExecutionContext> testFunc) {
+            return TestContext.XRunTest(name, testFunc);
+        }
+
+        public TestCaseResult XRunTest(string name, Func<TestExecutionContext, object> testFunc) {
+            return TestContext.XRunTest(name, testFunc);
+        }
+
+        public TestUnitResults XRunTests(string name, ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc) {
+            return TestContext.XRunTests(name, testDataProvider, testFunc);
+        }
+
+        public TestUnitResults XRunTests(string name, ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc) {
+            return TestContext.XRunTests(name, testDataProvider, testFunc);
+        }
+
+        public TestUnitResults XRunTests(ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc) {
+            return TestContext.XRunTests(DefaultTestName, testDataProvider, testFunc);
+        }
+
+        public TestUnitResults XRunTests(ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc, TestOptions options) {
+            return TestContext.XRunTests(testDataProvider, testFunc, options);
+        }
+
+        public TestUnitResults XRunTests(ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc) {
+            return TestContext.XRunTests(DefaultTestName, testDataProvider, testFunc);
+        }
+
+        public TestUnitResults XRunTests(ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc, TestOptions options) {
+            return TestContext.XRunTests(testDataProvider, testFunc, options);
+        }
+
+        public TestCaseResult FRunTest(Action<TestExecutionContext> testFunc) {
+            return TestContext.FRunTest(DefaultTestName, testFunc);
+        }
+
+        public TestCaseResult FRunTest(Action<TestExecutionContext> testFunc, TestOptions options) {
+            return TestContext.FRunTest(testFunc, options);
+        }
+
+        public TestCaseResult FRunTest(Func<TestExecutionContext, object> testFunc) {
+            return TestContext.FRunTest(DefaultTestName, testFunc);
+        }
+
+        public TestCaseResult FRunTest(Func<TestExecutionContext, object> testFunc, TestOptions options) {
+            return TestContext.FRunTest(testFunc, options);
+        }
+
+        public TestCaseResult FRunTest(string name, Action<TestExecutionContext> testFunc) {
+            return TestContext.FRunTest(name, testFunc);
+        }
+
+        public TestCaseResult FRunTest(string name, Func<TestExecutionContext, object> testFunc) {
+            return TestContext.FRunTest(name, testFunc);
+        }
+
+        public TestUnitResults FRunTests(string name, ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc) {
+            return TestContext.FRunTests(name, testDataProvider, testFunc);
+        }
+
+        public TestUnitResults FRunTests(string name, ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc) {
+            return TestContext.FRunTests(name, testDataProvider, testFunc);
+        }
+
+        public TestUnitResults FRunTests(ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc) {
+            return TestContext.FRunTests(DefaultTestName, testDataProvider, testFunc);
+        }
+
+        public TestUnitResults FRunTests(ITestDataProvider testDataProvider, Action<TestExecutionContext> testFunc, TestOptions options) {
+            return TestContext.FRunTests(testDataProvider, testFunc, options);
+        }
+
+        public TestUnitResults FRunTests(ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc) {
+            return TestContext.FRunTests(DefaultTestName, testDataProvider, testFunc);
+        }
+
+        public TestUnitResults FRunTests(ITestDataProvider testDataProvider, Func<TestExecutionContext, object> testFunc, TestOptions options) {
+            return TestContext.FRunTests(testDataProvider, testFunc, options);
+        }
+
         void ITestExecutionFilter.BeforeExecuting(TestContext testContext) {
             _context.Push((TestExecutionContext) testContext);
             BeforeTest(testContext.TestUnit);

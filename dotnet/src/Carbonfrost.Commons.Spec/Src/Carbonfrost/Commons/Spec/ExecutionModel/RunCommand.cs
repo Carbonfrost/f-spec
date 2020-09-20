@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 using System;
-using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
@@ -22,10 +21,20 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         private readonly Func<TestExecutionContext, object> _testFunc;
         private readonly TestOptions _opts;
+        private readonly TestCaseResult _result;
 
-        public RunCommand(Func<TestExecutionContext, object> coreRunTest, TestOptions opts) {
+        public RunCommand(Func<TestExecutionContext, object> coreRunTest, TestCaseResult result, TestOptions opts) {
             _testFunc = coreRunTest;
             _opts = opts;
+            _result = result;
+        }
+
+        private void CompleteResult() {
+            if (_opts.PassExplicitly) {
+                _result.SetFailed(SpecFailure.ExplicitPassNotSet());
+            } else {
+                _result.SetSuccess();
+            }
         }
 
         void ITestCaseFilter.RunTest(TestExecutionContext context, Action<TestExecutionContext> next) {
@@ -39,6 +48,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             if (filter != null) {
                 filter.RunTest(context, next);
                 adapt.AfterExecuting(context);
+                CompleteResult();
                 return;
             }
 
@@ -47,6 +57,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     context.TestRunnerOptions.TestTimeout.GetValueOrDefault()
                 );
                 context.RunTestWithTimeout(_testFunc, effectiveTimeout);
+                CompleteResult();
 
                 next(context);
             } finally {

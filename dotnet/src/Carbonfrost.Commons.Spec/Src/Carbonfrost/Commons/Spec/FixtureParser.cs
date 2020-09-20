@@ -92,6 +92,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         private KeyValuePair<string, string> ParseFieldOrHeredoc() {
+            const string nullLiteral = "~";
             string line = _lex.Current.Trim();
             Match heredoc = HEREDOC.Match(line);
             if (heredoc.Success) {
@@ -102,7 +103,11 @@ namespace Carbonfrost.Commons.Spec {
             if (kvp.Length != 2) {
                 throw SpecFailure.FixtureParserMissingFieldSeparator(_lex.Line);
             }
-            return new KeyValuePair<string, string>(kvp[0].Trim(), kvp[1].Trim());
+            var value = kvp[1].Trim();
+            if (value == nullLiteral) {
+                value = null;
+            }
+            return new KeyValuePair<string, string>(kvp[0].Trim(), value);
         }
 
         private KeyValuePair<string, string> ParseHeredoc(Match match) {

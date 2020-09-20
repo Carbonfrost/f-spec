@@ -49,6 +49,16 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        private IEnumerable<IReadOnlyList<TestUnitResult>> Categories {
+            get {
+                return new [] {
+                    Failures,
+                    Pending,
+                    Slow,
+                };
+            }
+        }
+
         internal TestRunProblems(IEnumerable<TestUnitResult> descendants, TestRunnerOptions opts) {
             foreach (var item in descendants) {
                 if (item.Children.Count > 0) {
@@ -68,10 +78,18 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
                     _slow.Add(item);
                 }
             }
+
+            int ordinal = 1;
+            foreach (var f in _failures) {
+                f.Ordinal = ordinal++;
+            }
+            foreach (var f in _slow) {
+                f.Ordinal = ordinal++;
+            }
         }
 
         public IEnumerator<TestUnitResult> GetEnumerator() {
-            return Failures.Concat(Pending).GetEnumerator();
+            return Categories.SelectMany(t => t).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {

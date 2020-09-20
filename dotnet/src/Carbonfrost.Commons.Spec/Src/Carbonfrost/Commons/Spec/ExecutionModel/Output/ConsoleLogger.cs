@@ -129,6 +129,14 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             _parts.onTestRunFinished.Render(RenderContext, e.Results);
         }
 
+        protected override void OnMessage(TestMessageEventArgs e) {
+            console.ColorFor(e.Severity);
+            console.Write(e.Severity.ToString());
+            console.ResetColor();
+            console.Write(": ");
+            console.WriteLine(e.Message);
+        }
+
         private void ShowTestVerbose(TestUnit unit) {
             if (ShouldSkipVerbose(unit)) {
                 return;
@@ -168,6 +176,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
             }
             if (unit is TestClassInfo || unit is TestNamespace) {
                 return unit.Children.Count == 0 || unit.Children.All(c => ShouldSkipVerbose(c));
+            }
+            if (unit is TestRun) {
+                return false;
             }
             return false;
         }

@@ -20,6 +20,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         private readonly TestUnitResultCollection _children;
         private readonly string _displayName;
+        private readonly TestUnitType _type;
 
         public override TestUnitResultCollection Children {
             get {
@@ -27,14 +28,41 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        internal TestUnitResults(string displayName) {
-            _displayName = displayName;
+        public override TestUnitType Type {
+            get {
+                return _type;
+            }
+        }
+
+        internal TestUnitResults(TestUnit node) {
+            _displayName = node.DisplayName;
+            _type = node.Type;
             _children = new TestUnitResultCollection(this);
         }
 
         public override string DisplayName {
             get {
                 return _displayName;
+            }
+        }
+
+        internal override JTestUnitResult JResult {
+            get {
+                return new JTestUnitResult {
+                    Status = Status,
+                    DisplayName = DisplayName,
+                    Attributes = Attributes,
+                    Type = _type,
+                    Ordinal = Ordinal,
+                    ExecutedPercentage = ExecutedPercentage,
+                    ExecutionTime = ExecutionTime,
+                };
+            }
+        }
+
+        internal override void ApplyCounts(TestUnitCounts counts) {
+            foreach (var c in Children) {
+                c.ApplyCounts(counts);
             }
         }
 

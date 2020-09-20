@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 using System;
+using System.Text.Json.Serialization;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
@@ -21,6 +22,12 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
         private DateTime _startedAt;
         private TestRunProblems _problems;
+
+        public override TestUnitType Type {
+            get {
+                return TestUnitType.Run;
+            }
+        }
 
         public override DateTime? StartedAt {
             get {
@@ -63,8 +70,7 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
-        public TestRunResults()
-            : base("<>") {
+        internal TestRunResults(TestRun run) : base(run) {
         }
 
         internal void RunStarting() {

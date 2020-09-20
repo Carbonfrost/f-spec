@@ -25,8 +25,8 @@ namespace Carbonfrost.SelfTest.Spec {
         [Theory]
         [InlineData("name")]
         [InlineData("name:value")]
-        public void Parse_should_extract_Name_from_string(string text) {
-            Assert.Equal("name", TestTag.Parse(text).Name);
+        public void Parse_should_extract_Type_from_string(string text) {
+            Assert.Equal("name", TestTag.Parse(text).Type);
         }
 
         [Theory]
@@ -93,6 +93,22 @@ namespace Carbonfrost.SelfTest.Spec {
         [Fact]
         public void Equals_treats_null_and_empty_string_value_as_equal() {
             Assert.Equal(new TestTag("slow", ""), new TestTag("slow", null));
+        }
+
+        [Fact]
+        public void JsonUtility_LoadJson_should_parse_String() {
+            Assert.Equal(
+                TestTag.Platform("windows"),
+                JsonUtility.LoadJson<TestTag>("\"platform:windows\"")
+            );
+        }
+
+        [Fact]
+        public void JsonUtility_ToJson_should_generate_String() {
+            Assert.Equal(
+                "\"platform:windows\"",
+                JsonUtility.ToJson(TestTag.Platform("windows"))
+            );
         }
 
     }

@@ -19,6 +19,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel.Output {
     class ConsoleResultDetails : ConsoleOutputPart<TestUnitResult> {
 
         protected override void RenderCore(TestUnitResult result) {
+            if (result.Ordinal > 0) {
+                console.Write(result.Ordinal.ToString());
+                console.Write(") ");
+            }
+
             if (result.IsSlow) {
                 console.Write("[");
                 console.Write(((Time) result.ExecutionTime.Value).ToString("n"));

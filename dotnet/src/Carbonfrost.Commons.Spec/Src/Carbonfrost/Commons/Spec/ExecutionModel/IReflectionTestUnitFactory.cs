@@ -18,11 +18,32 @@ using System.Reflection;
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
     interface IReflectionTestUnitFactory {
+        string Description {
+            get;
+            set;
+        }
+
         string Reason {
             get;
             set;
         }
 
         TestUnit CreateTestCase(MethodInfo method);
+    }
+
+    static partial class Extensions {
+
+        internal static T CopyDescriptions<T>(
+            this T unit,
+            IReflectionTestUnitFactory from
+        ) where T : TestUnit {
+            if (!string.IsNullOrEmpty(from.Description)) {
+                unit.Description = from.Description;
+            }
+            if (!string.IsNullOrEmpty(from.Reason)) {
+                unit.Reason = from.Reason;
+            }
+            return unit;
+        }
     }
 }

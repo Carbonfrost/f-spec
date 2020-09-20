@@ -15,6 +15,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Reflection;
 using System.Linq;
 
@@ -78,6 +79,11 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
             _type = type;
             _children = new TestUnitCollection(this);
+
+            var attr = type.GetCustomAttribute<DescriptionAttribute>();
+            if (attr != null) {
+                Description = attr.Description;
+            }
         }
 
         internal override TestClassInfo FindTestClass() {
