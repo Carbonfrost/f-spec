@@ -67,9 +67,9 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
 
             if (TestSubjectProvider != null) {
-                testContext.Log.NoTestSubjects();
+                testContext.Log.NoTestSubjects(TestClass);
             } else {
-                testContext.Log.NoTestMethods();
+                testContext.Log.NoTestMethods(TestClass);
             }
 
             base.BeforeExecuting(testContext);

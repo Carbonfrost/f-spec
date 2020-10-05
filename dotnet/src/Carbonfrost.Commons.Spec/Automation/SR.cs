@@ -805,18 +805,18 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("NoSelfTestsAvailable") );
     }
 
-  /// <summary>Test class has no test methods</summary>
+  /// <summary>Test class `${name}' has no test methods</summary>
     internal static string NoTestMethods(
-    
+    object @name
     ) {
-        return string.Format(Culture, ResourceFinder("NoTestMethods") );
+        return string.Format(Culture, ResourceFinder("NoTestMethods") , @name);
     }
 
-  /// <summary>Test class has no test subjects</summary>
+  /// <summary>Test class `${name}' has no test subjects</summary>
     internal static string NoTestSubjects(
-    
+    object @name
     ) {
-        return string.Format(Culture, ResourceFinder("NoTestSubjects") );
+        return string.Format(Culture, ResourceFinder("NoTestSubjects") , @name);
     }
 
   /// <summary>Not expected to be assignable from {Expected}</summary>
