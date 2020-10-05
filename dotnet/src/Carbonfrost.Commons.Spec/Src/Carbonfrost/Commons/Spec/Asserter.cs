@@ -25,22 +25,29 @@ namespace Carbonfrost.Commons.Spec {
 
         internal static readonly Asserter Default = new Asserter(false);
         internal static readonly Asserter Assumptions = new Asserter(true);
-        private readonly bool _assumption;
+        private readonly AsserterBehavior _defaultBehavior;
+        private bool _disabled;
 
-        private Asserter(bool assumption) {
-            _assumption = assumption;
+        private AsserterBehavior Behavior {
+            get {
+                return _disabled ? AsserterBehavior.Disabled : _defaultBehavior;
+            }
+        }
+
+        internal Asserter(bool assumption) {
+            _defaultBehavior = assumption ? AsserterBehavior.Assumption : AsserterBehavior.Default;
         }
 
         public IExpectationBuilder<IEnumerable> Expect() {
-            return new ExpectationBuilder<IEnumerable>(() => Array.Empty<object>(), false, null, _assumption);
+            return new ExpectationBuilder<IEnumerable>(() => Array.Empty<object>(), false, null, Behavior);
         }
 
         public IExpectationBuilder<T> Expect<T>(T value) {
-            return new ExpectationBuilder<T>(() => value, false, null, _assumption);
+            return new ExpectationBuilder<T>(() => value, false, null, Behavior);
         }
 
         public IExpectationBuilder<TEnumerable, T> Expect<TEnumerable, T>(TEnumerable value) where TEnumerable : IEnumerable<T> {
-            return new ExpectationBuilder<TEnumerable, T>(() => value, false, null, _assumption);
+            return new ExpectationBuilder<TEnumerable, T>(() => value, false, null, Behavior);
         }
 
         public IExpectationBuilder<TValue[], TValue> Expect<TValue>(params TValue[] value) {
@@ -48,7 +55,7 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         public IExpectationBuilder Expect(Action value) {
-            return new ExpectationBuilder(value, false, null, _assumption);
+            return new ExpectationBuilder(value, false, null, Behavior);
         }
 
         public IExpectationBuilder<T> Expect<T>(Func<T> func) {
@@ -104,7 +111,12 @@ namespace Carbonfrost.Commons.Spec {
         }
 
         private void RaiseException(Exception ex) {
-            throw ex;
+            Behavior.Fail(ex);
+        }
+
+        public IDisposable Disabled() {
+            _disabled = true;
+            return new Disposer(() => _disabled = false);
         }
 
         internal void That(Action actual, ITestMatcher matcher, string message = null, params object[] args) {

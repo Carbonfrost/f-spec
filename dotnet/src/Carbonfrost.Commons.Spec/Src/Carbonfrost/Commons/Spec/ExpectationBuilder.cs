@@ -16,9 +16,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq.Expressions;
-using System.Reflection;
+
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
@@ -72,8 +72,8 @@ namespace Carbonfrost.Commons.Spec {
             _cmd = cmd;
         }
 
-        internal ExpectationBuilder(Action thunk, bool negated, string given, bool assumption) {
-            _cmd = ExpectationCommand.TestCode(thunk, negated, given, assumption);
+        internal ExpectationBuilder(Action thunk, bool negated, string given, AsserterBehavior behavior) {
+            _cmd = ExpectationCommand.TestCode(thunk, negated, given, behavior);
         }
 
         public void To(ITestMatcher matcher, string message = null, params object[] args) {
@@ -125,8 +125,8 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        internal ExpectationBuilder(Func<T> thunk, bool negated, string given, bool assumption) {
-            _cmd = ExpectationCommand.Of(thunk, negated, given, assumption);
+        internal ExpectationBuilder(Func<T> thunk, bool negated, string given, AsserterBehavior behavior) {
+            _cmd = ExpectationCommand.Of(thunk, negated, given, behavior);
         }
 
         internal ExpectationBuilder(ExpectationCommand<T> cmd) {
@@ -213,8 +213,8 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
-        internal ExpectationBuilder(Func<TSelf> thunk, bool negated, string given, bool assumption) {
-            _cmd = ExpectationCommand.Of(thunk, negated, given, assumption);
+        internal ExpectationBuilder(Func<TSelf> thunk, bool negated, string given, AsserterBehavior behavior) {
+            _cmd = ExpectationCommand.Of(thunk, negated, given, behavior);
         }
 
         private ExpectationBuilder(ExpectationCommand<TSelf> cmd) {

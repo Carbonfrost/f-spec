@@ -34,7 +34,7 @@ namespace Carbonfrost.Commons.Spec {
         internal static void Should<T>(this ExpectationCommand<T> self, ITestMatcher<T> matcher, string message = null, object[] args = null) {
             var failure = self.Should(matcher);
             if (failure != null) {
-                IAsserterBehavior behavior = failure.AsserterBehavior;
+                AsserterBehavior behavior = failure.AsserterBehavior;
                 behavior.Assert(failure.UpdateTestSubject().UpdateMessage(message, args));
             }
         }
@@ -45,7 +45,7 @@ namespace Carbonfrost.Commons.Spec {
             );
 
             if (failure != null) {
-                IAsserterBehavior behavior = failure.AsserterBehavior;
+                AsserterBehavior behavior = failure.AsserterBehavior;
                 behavior.Assert(failure.UpdateTestSubject().UpdateMessage(message, args));
             }
         }

@@ -22,20 +22,20 @@ namespace Carbonfrost.Commons.Spec {
 
     partial class ExpectationCommand {
 
-        public static ExpectationCommand<T> Of<T>(Func<T> thunk, bool negated, string given, bool assumption) {
-            return new SingletonCommand<T>(thunk, negated, given, assumption);
+        public static ExpectationCommand<T> Of<T>(Func<T> thunk, bool negated, string given, AsserterBehavior behavior) {
+            return new SingletonCommand<T>(thunk, negated, given, behavior);
         }
 
         public static ExpectationCommand<T> Of<T>(Func<T> thunk) {
-            return Of(thunk, false, null, false);
+            return Of(thunk, false, null, AsserterBehavior.Default);
         }
 
-        public static ExpectationCommand<Unit> TestCode(Action action, bool negated, string given, bool assumption) {
-            return Of(Unit.Thunk(action), negated, given, assumption);
+        public static ExpectationCommand<Unit> TestCode(Action action, bool negated, string given, AsserterBehavior behavior) {
+            return Of(Unit.Thunk(action), negated, given, behavior);
         }
 
         public static ExpectationCommand<Unit> TestCode(Action action) {
-            return TestCode(action, false, null, false);
+            return TestCode(action, false, null, AsserterBehavior.Default);
         }
 
         class SingletonCommand<T> : ExpectationCommand<T> {
@@ -43,26 +43,26 @@ namespace Carbonfrost.Commons.Spec {
             private readonly Func<T> _thunk;
             private readonly bool _negated;
             private readonly string _given;
-            private readonly bool _assumption;
+            private readonly AsserterBehavior _behavior;
 
-            public SingletonCommand(Func<T> thunk, bool negated, string given, bool assumption) {
+            public SingletonCommand(Func<T> thunk, bool negated, string given, AsserterBehavior behavior) {
                 _thunk = thunk;
                 _negated = negated;
                 _given = given;
-                _assumption = assumption;
+                _behavior = behavior;
             }
 
             public override ExpectationCommand<T> Negated() {
-                return new SingletonCommand<T>(_thunk, !_negated, _given, _assumption);
+                return new SingletonCommand<T>(_thunk, !_negated, _given, _behavior);
             }
 
             public override ExpectationCommand<T> Given(string given) {
-                return new SingletonCommand<T>(_thunk, _negated, given, _assumption);
+                return new SingletonCommand<T>(_thunk, _negated, given, _behavior);
             }
 
             internal override ExpectationCommand<Unit> Untyped() {
                 var myThunk = _thunk;
-                return TestCode(() => myThunk(), _negated, _given, _assumption);
+                return TestCode(() => myThunk(), _negated, _given, _behavior);
             }
 
             public override ExpectationCommand<object> ToAll() {
@@ -88,7 +88,7 @@ namespace Carbonfrost.Commons.Spec {
 
                 var result = TestMatcherLocalizer.Failure(matcher, actual.Value)
                     .UpdateGiven(_given)
-                    .UpdateAssumption(_assumption);
+                    .UpdateBehavior(_behavior);
 
                 if (matcher is ITestMatcher<Unit> m) {
                     result.UpdateActual(DisplayActual.Exception(actual.Exception));

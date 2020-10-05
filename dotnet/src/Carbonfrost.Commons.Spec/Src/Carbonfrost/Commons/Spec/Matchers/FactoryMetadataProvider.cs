@@ -44,7 +44,7 @@ namespace Carbonfrost.Commons.Spec.TestMatchers {
             Action actual = () => next(testContext);
             string message = TestMatcherFactory.GetMessage(_provider);
 
-            new Expectation(ExpectationCommand.TestCode(actual, false, null, false)).Like(matcher, message, null);
+            new Expectation(ExpectationCommand.TestCode(actual, false, null, AsserterBehavior.Default)).Like(matcher, message, null);
         }
     }
 

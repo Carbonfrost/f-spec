@@ -9,6 +9,7 @@
 //
 
 using System;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
 <#
     const int MAX = 8;
@@ -44,7 +45,7 @@ namespace Carbonfrost.Commons.Spec {
     partial class Asserter {
 
         public GivenExpectationBuilder<#= typeArgs #> Given<#= typeArgs #>(<#= args #>) {
-            return new GivenExpectationBuilder<#= typeArgs #>(<#= List(parms) #><#= comma #> _assumption);
+            return new GivenExpectationBuilder<#= typeArgs #>(<#= List(parms) #><#= comma #> Behavior);
         }
 
     }
@@ -67,9 +68,8 @@ namespace Carbonfrost.Commons.Spec {
 
     public partial struct GivenExpectationBuilder<#= typeArgs #> {
 
-        public bool Assumption {
+        internal AsserterBehavior Behavior {
             get;
-            private set;
         }
 
 <# foreach (var m in typeArgsList.Zip(fields, (t, f) => (t + " " + f))) { #>
@@ -79,8 +79,8 @@ namespace Carbonfrost.Commons.Spec {
         }
 <# } #>
 
-        internal GivenExpectationBuilder(<#= args #><#= comma #>bool assumption) {
-          Assumption = assumption;
+        internal GivenExpectationBuilder(<#= args #><#= comma #>AsserterBehavior behavior) {
+            Behavior = behavior;
 <# foreach (var m in fields.Zip(parms, (t, f) => (t + " = " + f))) { #>
         <#= m #>;
 <# } #>
@@ -93,7 +93,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder<TResult>(() => func(<#= List(parms) #>),
                                                    false,
                                                    TextUtility.FormatArgs(<#= List(parms) #>),
-                                                   Assumption);
+                                                   Behavior);
         }
 
         public IExpectationBuilder Expect(Action<#= typeArgs #> func) {
@@ -103,7 +103,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder(() => func(<#= List(parms) #>),
                                           false,
                                           TextUtility.FormatArgs(<#= List(parms) #>),
-                                          Assumption);
+                                          Behavior);
         }
 
         public GivenRecord Record {

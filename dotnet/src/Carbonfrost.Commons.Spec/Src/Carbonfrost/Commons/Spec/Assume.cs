@@ -28,6 +28,10 @@ namespace Carbonfrost.Commons.Spec {
             }
         }
 
+        public static IDisposable Disabled() {
+            return Global.Disabled();
+        }
+
         public static IExpectationBuilder<IEnumerable> Expect() {
             return Global.Expect();
         }

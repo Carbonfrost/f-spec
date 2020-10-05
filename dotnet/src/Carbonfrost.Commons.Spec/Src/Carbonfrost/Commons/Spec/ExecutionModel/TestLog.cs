@@ -55,6 +55,19 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             CoreLog(message, TestMessageSeverity.Debug);
         }
 
+        // Purely for the sake of testing
+        internal IList<TestMessageEventArgs> CaptureEvents(Action action) {
+            var oldBuffer = _buffer;
+            var newBuffer = new List<TestMessageEventArgs>();
+            _buffer = newBuffer;
+            try {
+                action();
+                return newBuffer;
+            } finally {
+                _buffer = oldBuffer;
+            }
+        }
+
         internal void Flush() {
             if (_buffer == null) {
                 return;

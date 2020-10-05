@@ -1,9 +1,10 @@
 
 //
-// File was automatically generated at 06/08/2020 19:40:10
+// File was automatically generated at 10/17/2020 20:33:37
 //
 
 using System;
+using Carbonfrost.Commons.Spec.ExecutionModel;
 
 namespace Carbonfrost.Commons.Spec {
 
@@ -18,7 +19,7 @@ namespace Carbonfrost.Commons.Spec {
     partial class Asserter {
 
         public GivenExpectationBuilder Given() {
-            return new GivenExpectationBuilder( _assumption);
+            return new GivenExpectationBuilder( Behavior);
         }
 
     }
@@ -41,28 +42,27 @@ namespace Carbonfrost.Commons.Spec {
 
     public partial struct GivenExpectationBuilder {
 
-        public bool Assumption {
+        internal AsserterBehavior Behavior {
             get;
-            private set;
         }
 
 
-        internal GivenExpectationBuilder(bool assumption) {
-          Assumption = assumption;
+        internal GivenExpectationBuilder(AsserterBehavior behavior) {
+            Behavior = behavior;
         }
 
         public IExpectationBuilder<TResult> Expect<TResult>(Func<TResult> func) {
             return new ExpectationBuilder<TResult>(() => func(),
                                                    false,
                                                    TextUtility.FormatArgs(),
-                                                   Assumption);
+                                                   Behavior);
         }
 
         public IExpectationBuilder Expect(Action func) {
             return new ExpectationBuilder(() => func(),
                                           false,
                                           TextUtility.FormatArgs(),
-                                          Assumption);
+                                          Behavior);
         }
 
         public GivenRecord Record {
@@ -109,7 +109,7 @@ namespace Carbonfrost.Commons.Spec {
     partial class Asserter {
 
         public GivenExpectationBuilder<T> Given<T>(T arg1) {
-            return new GivenExpectationBuilder<T>(arg1,  _assumption);
+            return new GivenExpectationBuilder<T>(arg1,  Behavior);
         }
 
     }
@@ -132,9 +132,8 @@ namespace Carbonfrost.Commons.Spec {
 
     public partial struct GivenExpectationBuilder<T> {
 
-        public bool Assumption {
+        internal AsserterBehavior Behavior {
             get;
-            private set;
         }
 
         public T Arg1 {
@@ -142,8 +141,8 @@ namespace Carbonfrost.Commons.Spec {
             private set;
         }
 
-        internal GivenExpectationBuilder(T arg1, bool assumption) {
-          Assumption = assumption;
+        internal GivenExpectationBuilder(T arg1, AsserterBehavior behavior) {
+            Behavior = behavior;
         Arg1 = arg1;
         }
 
@@ -152,7 +151,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder<TResult>(() => func(arg1),
                                                    false,
                                                    TextUtility.FormatArgs(arg1),
-                                                   Assumption);
+                                                   Behavior);
         }
 
         public IExpectationBuilder Expect(Action<T> func) {
@@ -160,7 +159,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder(() => func(arg1),
                                           false,
                                           TextUtility.FormatArgs(arg1),
-                                          Assumption);
+                                          Behavior);
         }
 
         public GivenRecord Record {
@@ -211,7 +210,7 @@ namespace Carbonfrost.Commons.Spec {
     partial class Asserter {
 
         public GivenExpectationBuilder<T1, T2> Given<T1, T2>(T1 arg1, T2 arg2) {
-            return new GivenExpectationBuilder<T1, T2>(arg1, arg2,  _assumption);
+            return new GivenExpectationBuilder<T1, T2>(arg1, arg2,  Behavior);
         }
 
     }
@@ -234,9 +233,8 @@ namespace Carbonfrost.Commons.Spec {
 
     public partial struct GivenExpectationBuilder<T1, T2> {
 
-        public bool Assumption {
+        internal AsserterBehavior Behavior {
             get;
-            private set;
         }
 
         public T1 Arg1 {
@@ -248,8 +246,8 @@ namespace Carbonfrost.Commons.Spec {
             private set;
         }
 
-        internal GivenExpectationBuilder(T1 arg1, T2 arg2, bool assumption) {
-          Assumption = assumption;
+        internal GivenExpectationBuilder(T1 arg1, T2 arg2, AsserterBehavior behavior) {
+            Behavior = behavior;
         Arg1 = arg1;
         Arg2 = arg2;
         }
@@ -260,7 +258,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder<TResult>(() => func(arg1, arg2),
                                                    false,
                                                    TextUtility.FormatArgs(arg1, arg2),
-                                                   Assumption);
+                                                   Behavior);
         }
 
         public IExpectationBuilder Expect(Action<T1, T2> func) {
@@ -269,7 +267,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder(() => func(arg1, arg2),
                                           false,
                                           TextUtility.FormatArgs(arg1, arg2),
-                                          Assumption);
+                                          Behavior);
         }
 
         public GivenRecord Record {
@@ -324,7 +322,7 @@ namespace Carbonfrost.Commons.Spec {
     partial class Asserter {
 
         public GivenExpectationBuilder<T1, T2, T3> Given<T1, T2, T3>(T1 arg1, T2 arg2, T3 arg3) {
-            return new GivenExpectationBuilder<T1, T2, T3>(arg1, arg2, arg3,  _assumption);
+            return new GivenExpectationBuilder<T1, T2, T3>(arg1, arg2, arg3,  Behavior);
         }
 
     }
@@ -347,9 +345,8 @@ namespace Carbonfrost.Commons.Spec {
 
     public partial struct GivenExpectationBuilder<T1, T2, T3> {
 
-        public bool Assumption {
+        internal AsserterBehavior Behavior {
             get;
-            private set;
         }
 
         public T1 Arg1 {
@@ -365,8 +362,8 @@ namespace Carbonfrost.Commons.Spec {
             private set;
         }
 
-        internal GivenExpectationBuilder(T1 arg1, T2 arg2, T3 arg3, bool assumption) {
-          Assumption = assumption;
+        internal GivenExpectationBuilder(T1 arg1, T2 arg2, T3 arg3, AsserterBehavior behavior) {
+            Behavior = behavior;
         Arg1 = arg1;
         Arg2 = arg2;
         Arg3 = arg3;
@@ -379,7 +376,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder<TResult>(() => func(arg1, arg2, arg3),
                                                    false,
                                                    TextUtility.FormatArgs(arg1, arg2, arg3),
-                                                   Assumption);
+                                                   Behavior);
         }
 
         public IExpectationBuilder Expect(Action<T1, T2, T3> func) {
@@ -389,7 +386,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder(() => func(arg1, arg2, arg3),
                                           false,
                                           TextUtility.FormatArgs(arg1, arg2, arg3),
-                                          Assumption);
+                                          Behavior);
         }
 
         public GivenRecord Record {
@@ -448,7 +445,7 @@ namespace Carbonfrost.Commons.Spec {
     partial class Asserter {
 
         public GivenExpectationBuilder<T1, T2, T3, T4> Given<T1, T2, T3, T4>(T1 arg1, T2 arg2, T3 arg3, T4 arg4) {
-            return new GivenExpectationBuilder<T1, T2, T3, T4>(arg1, arg2, arg3, arg4,  _assumption);
+            return new GivenExpectationBuilder<T1, T2, T3, T4>(arg1, arg2, arg3, arg4,  Behavior);
         }
 
     }
@@ -471,9 +468,8 @@ namespace Carbonfrost.Commons.Spec {
 
     public partial struct GivenExpectationBuilder<T1, T2, T3, T4> {
 
-        public bool Assumption {
+        internal AsserterBehavior Behavior {
             get;
-            private set;
         }
 
         public T1 Arg1 {
@@ -493,8 +489,8 @@ namespace Carbonfrost.Commons.Spec {
             private set;
         }
 
-        internal GivenExpectationBuilder(T1 arg1, T2 arg2, T3 arg3, T4 arg4, bool assumption) {
-          Assumption = assumption;
+        internal GivenExpectationBuilder(T1 arg1, T2 arg2, T3 arg3, T4 arg4, AsserterBehavior behavior) {
+            Behavior = behavior;
         Arg1 = arg1;
         Arg2 = arg2;
         Arg3 = arg3;
@@ -509,7 +505,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder<TResult>(() => func(arg1, arg2, arg3, arg4),
                                                    false,
                                                    TextUtility.FormatArgs(arg1, arg2, arg3, arg4),
-                                                   Assumption);
+                                                   Behavior);
         }
 
         public IExpectationBuilder Expect(Action<T1, T2, T3, T4> func) {
@@ -520,7 +516,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder(() => func(arg1, arg2, arg3, arg4),
                                           false,
                                           TextUtility.FormatArgs(arg1, arg2, arg3, arg4),
-                                          Assumption);
+                                          Behavior);
         }
 
         public GivenRecord Record {
@@ -583,7 +579,7 @@ namespace Carbonfrost.Commons.Spec {
     partial class Asserter {
 
         public GivenExpectationBuilder<T1, T2, T3, T4, T5> Given<T1, T2, T3, T4, T5>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5) {
-            return new GivenExpectationBuilder<T1, T2, T3, T4, T5>(arg1, arg2, arg3, arg4, arg5,  _assumption);
+            return new GivenExpectationBuilder<T1, T2, T3, T4, T5>(arg1, arg2, arg3, arg4, arg5,  Behavior);
         }
 
     }
@@ -606,9 +602,8 @@ namespace Carbonfrost.Commons.Spec {
 
     public partial struct GivenExpectationBuilder<T1, T2, T3, T4, T5> {
 
-        public bool Assumption {
+        internal AsserterBehavior Behavior {
             get;
-            private set;
         }
 
         public T1 Arg1 {
@@ -632,8 +627,8 @@ namespace Carbonfrost.Commons.Spec {
             private set;
         }
 
-        internal GivenExpectationBuilder(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, bool assumption) {
-          Assumption = assumption;
+        internal GivenExpectationBuilder(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, AsserterBehavior behavior) {
+            Behavior = behavior;
         Arg1 = arg1;
         Arg2 = arg2;
         Arg3 = arg3;
@@ -650,7 +645,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder<TResult>(() => func(arg1, arg2, arg3, arg4, arg5),
                                                    false,
                                                    TextUtility.FormatArgs(arg1, arg2, arg3, arg4, arg5),
-                                                   Assumption);
+                                                   Behavior);
         }
 
         public IExpectationBuilder Expect(Action<T1, T2, T3, T4, T5> func) {
@@ -662,7 +657,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder(() => func(arg1, arg2, arg3, arg4, arg5),
                                           false,
                                           TextUtility.FormatArgs(arg1, arg2, arg3, arg4, arg5),
-                                          Assumption);
+                                          Behavior);
         }
 
         public GivenRecord Record {
@@ -729,7 +724,7 @@ namespace Carbonfrost.Commons.Spec {
     partial class Asserter {
 
         public GivenExpectationBuilder<T1, T2, T3, T4, T5, T6> Given<T1, T2, T3, T4, T5, T6>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6) {
-            return new GivenExpectationBuilder<T1, T2, T3, T4, T5, T6>(arg1, arg2, arg3, arg4, arg5, arg6,  _assumption);
+            return new GivenExpectationBuilder<T1, T2, T3, T4, T5, T6>(arg1, arg2, arg3, arg4, arg5, arg6,  Behavior);
         }
 
     }
@@ -752,9 +747,8 @@ namespace Carbonfrost.Commons.Spec {
 
     public partial struct GivenExpectationBuilder<T1, T2, T3, T4, T5, T6> {
 
-        public bool Assumption {
+        internal AsserterBehavior Behavior {
             get;
-            private set;
         }
 
         public T1 Arg1 {
@@ -782,8 +776,8 @@ namespace Carbonfrost.Commons.Spec {
             private set;
         }
 
-        internal GivenExpectationBuilder(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, bool assumption) {
-          Assumption = assumption;
+        internal GivenExpectationBuilder(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, AsserterBehavior behavior) {
+            Behavior = behavior;
         Arg1 = arg1;
         Arg2 = arg2;
         Arg3 = arg3;
@@ -802,7 +796,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder<TResult>(() => func(arg1, arg2, arg3, arg4, arg5, arg6),
                                                    false,
                                                    TextUtility.FormatArgs(arg1, arg2, arg3, arg4, arg5, arg6),
-                                                   Assumption);
+                                                   Behavior);
         }
 
         public IExpectationBuilder Expect(Action<T1, T2, T3, T4, T5, T6> func) {
@@ -815,7 +809,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder(() => func(arg1, arg2, arg3, arg4, arg5, arg6),
                                           false,
                                           TextUtility.FormatArgs(arg1, arg2, arg3, arg4, arg5, arg6),
-                                          Assumption);
+                                          Behavior);
         }
 
         public GivenRecord Record {
@@ -886,7 +880,7 @@ namespace Carbonfrost.Commons.Spec {
     partial class Asserter {
 
         public GivenExpectationBuilder<T1, T2, T3, T4, T5, T6, T7> Given<T1, T2, T3, T4, T5, T6, T7>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7) {
-            return new GivenExpectationBuilder<T1, T2, T3, T4, T5, T6, T7>(arg1, arg2, arg3, arg4, arg5, arg6, arg7,  _assumption);
+            return new GivenExpectationBuilder<T1, T2, T3, T4, T5, T6, T7>(arg1, arg2, arg3, arg4, arg5, arg6, arg7,  Behavior);
         }
 
     }
@@ -909,9 +903,8 @@ namespace Carbonfrost.Commons.Spec {
 
     public partial struct GivenExpectationBuilder<T1, T2, T3, T4, T5, T6, T7> {
 
-        public bool Assumption {
+        internal AsserterBehavior Behavior {
             get;
-            private set;
         }
 
         public T1 Arg1 {
@@ -943,8 +936,8 @@ namespace Carbonfrost.Commons.Spec {
             private set;
         }
 
-        internal GivenExpectationBuilder(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, bool assumption) {
-          Assumption = assumption;
+        internal GivenExpectationBuilder(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, AsserterBehavior behavior) {
+            Behavior = behavior;
         Arg1 = arg1;
         Arg2 = arg2;
         Arg3 = arg3;
@@ -965,7 +958,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder<TResult>(() => func(arg1, arg2, arg3, arg4, arg5, arg6, arg7),
                                                    false,
                                                    TextUtility.FormatArgs(arg1, arg2, arg3, arg4, arg5, arg6, arg7),
-                                                   Assumption);
+                                                   Behavior);
         }
 
         public IExpectationBuilder Expect(Action<T1, T2, T3, T4, T5, T6, T7> func) {
@@ -979,7 +972,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder(() => func(arg1, arg2, arg3, arg4, arg5, arg6, arg7),
                                           false,
                                           TextUtility.FormatArgs(arg1, arg2, arg3, arg4, arg5, arg6, arg7),
-                                          Assumption);
+                                          Behavior);
         }
 
         public GivenRecord Record {
@@ -1054,7 +1047,7 @@ namespace Carbonfrost.Commons.Spec {
     partial class Asserter {
 
         public GivenExpectationBuilder<T1, T2, T3, T4, T5, T6, T7, T8> Given<T1, T2, T3, T4, T5, T6, T7, T8>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8) {
-            return new GivenExpectationBuilder<T1, T2, T3, T4, T5, T6, T7, T8>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8,  _assumption);
+            return new GivenExpectationBuilder<T1, T2, T3, T4, T5, T6, T7, T8>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8,  Behavior);
         }
 
     }
@@ -1077,9 +1070,8 @@ namespace Carbonfrost.Commons.Spec {
 
     public partial struct GivenExpectationBuilder<T1, T2, T3, T4, T5, T6, T7, T8> {
 
-        public bool Assumption {
+        internal AsserterBehavior Behavior {
             get;
-            private set;
         }
 
         public T1 Arg1 {
@@ -1115,8 +1107,8 @@ namespace Carbonfrost.Commons.Spec {
             private set;
         }
 
-        internal GivenExpectationBuilder(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, bool assumption) {
-          Assumption = assumption;
+        internal GivenExpectationBuilder(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, AsserterBehavior behavior) {
+            Behavior = behavior;
         Arg1 = arg1;
         Arg2 = arg2;
         Arg3 = arg3;
@@ -1139,7 +1131,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder<TResult>(() => func(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8),
                                                    false,
                                                    TextUtility.FormatArgs(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8),
-                                                   Assumption);
+                                                   Behavior);
         }
 
         public IExpectationBuilder Expect(Action<T1, T2, T3, T4, T5, T6, T7, T8> func) {
@@ -1154,7 +1146,7 @@ namespace Carbonfrost.Commons.Spec {
             return new ExpectationBuilder(() => func(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8),
                                           false,
                                           TextUtility.FormatArgs(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8),
-                                          Assumption);
+                                          Behavior);
         }
 
         public GivenRecord Record {

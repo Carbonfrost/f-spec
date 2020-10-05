@@ -15,7 +15,7 @@
 //
 
 using System;
-using System.Linq;
+
 using Carbonfrost.Commons.Spec.Resources;
 using Carbonfrost.Commons.Spec.ExecutionModel;
 
@@ -33,6 +33,10 @@ namespace Carbonfrost.Commons.Spec {
 
         public static void NoTestMethods(this TestLog log, object clazz) {
             log.Warn(SR.NoTestMethods(clazz));
+        }
+
+        public static void AsserterDisabled(this TestLog log, Exception ex) {
+            log.Warn(SR.AsserterDisabled(TextUtility.ConvertToString(ex)));
         }
     }
 }

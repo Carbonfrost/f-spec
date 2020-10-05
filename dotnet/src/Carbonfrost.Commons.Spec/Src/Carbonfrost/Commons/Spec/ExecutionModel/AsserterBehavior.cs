@@ -13,26 +13,47 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+using System;
 
 namespace Carbonfrost.Commons.Spec.ExecutionModel {
 
-    static class AsserterBehavior {
+    abstract class AsserterBehavior {
 
-        public static readonly IAsserterBehavior Default = new DefaultBehavior();
-        public static readonly IAsserterBehavior Assumption = new AssumptionBehavior();
+        public static readonly AsserterBehavior Default = new DefaultBehavior();
+        public static readonly AsserterBehavior Assumption = new AssumptionBehavior();
+        public static readonly AsserterBehavior Disabled = new DisabledBehavior();
 
-        class DefaultBehavior : IAsserterBehavior {
-            public void Assert(TestFailure failure) {
+        public abstract void Assert(TestFailure failure);
+
+        public virtual void Fail(Exception exception) {
+            throw exception;
+        }
+
+        class DefaultBehavior : AsserterBehavior {
+            public override void Assert(TestFailure failure) {
                 if (failure != null) {
-                    throw failure.ToException();
+                    Fail(failure.ToException());
                 }
             }
         }
 
-        class AssumptionBehavior : IAsserterBehavior {
-            public void Assert(TestFailure failure) {
+        class AssumptionBehavior : AsserterBehavior {
+            public override void Assert(TestFailure failure) {
+                if (failure != null) {
+                    failure.UserData.IsAssumption = true;
+                }
+            }
+        }
+
+        class DisabledBehavior : AsserterBehavior {
+            public override void Assert(TestFailure failure) {
+                if (failure != null) {
+                    Fail(failure.ToException());
+                }
+            }
+            public override void Fail(Exception exception) {
+                TestContext.Current.Log.AsserterDisabled(exception);
             }
         }
     }
-
 }

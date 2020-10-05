@@ -17,6 +17,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+using Carbonfrost.Commons.Spec.ExecutionModel;
+
 namespace Carbonfrost.Commons.Spec {
 
     struct EnumerableExpectation : IEnumerableExpectation {
@@ -168,8 +170,8 @@ namespace Carbonfrost.Commons.Spec {
             _cmd = cmd;
         }
 
-        internal EnumerableExpectation(Func<IEnumerable<TValue>> thunk, bool negated, string given, bool assumption) {
-            _cmd = ExpectationCommand.Of(thunk, negated, given, assumption);
+        internal EnumerableExpectation(Func<IEnumerable<TValue>> thunk, bool negated, string given, AsserterBehavior behavior) {
+            _cmd = ExpectationCommand.Of(thunk, negated, given, behavior);
         }
 
         public IExpectation<TValue> Exactly(int count) {

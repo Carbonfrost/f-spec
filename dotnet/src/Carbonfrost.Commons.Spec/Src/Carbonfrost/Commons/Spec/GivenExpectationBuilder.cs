@@ -29,7 +29,7 @@ namespace Carbonfrost.Commons.Spec {
                 () => self.Arg1[name],
                 false,
                 TextUtility.FormatArgs(),
-                self.Assumption
+                self.Behavior
             );
         }
     }

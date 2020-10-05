@@ -63,6 +63,19 @@ namespace Carbonfrost.Commons.Spec.ExecutionModel {
             }
         }
 
+        internal bool IsAssumption {
+            get {
+                return ContainsKey("_Assumption");
+            }
+            set {
+                if (value) {
+                    this["_Assumption"] = "True";
+                } else {
+                    Remove("_Assumption");
+                }
+            }
+        }
+
         public void Clear() {
             _dictionary.Clear();
             _actuals.Clear();

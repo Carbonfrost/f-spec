@@ -70,6 +70,13 @@ namespace Carbonfrost.Commons.Spec.Resources {
         return string.Format(Culture, ResourceFinder("AllWhitespace") );
     }
 
+  /// <summary>Can't assert in this context, and assertion was not evaluated: ${error}</summary>
+    internal static string AsserterDisabled(
+    object @error
+    ) {
+        return string.Format(Culture, ResourceFinder("AsserterDisabled") , @error);
+    }
+
   /// <summary>Can't apply approximate comparisons to `${typeSelf}'.</summary>
     internal static string BadEpsilonComparerTypes(
     object @typeSelf
