@@ -1,5 +1,5 @@
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,58 +14,57 @@
 // limitations under the License.
 //
 using System;
-using System.Linq;
 
 namespace Carbonfrost.Commons.Spec {
 
     partial class Assert {
 
         public static void Pass(string message) {
-            throw SpecFailure.Pass(message);
+            Global.Pass(message);
         }
 
         public static void Pass() {
-            throw SpecFailure.Pass();
+            Global.Pass();
         }
 
         public static void Pass(IFormatProvider formatProvider, string format, params object[] args) {
-            throw SpecFailure.Pass(string.Format(formatProvider, format, args));
+            Global.Pass(string.Format(formatProvider, format, args));
         }
 
         public static void Pass(string format, params object[] args) {
-            throw SpecFailure.Pass(string.Format(format, args));
+            Global.Pass(string.Format(format, args));
         }
 
         public static void Fail(IFormatProvider formatProvider, string format, params object[] args) {
-            throw SpecFailure.Fail(string.Format(formatProvider, format, args));
+            Global.Fail(string.Format(formatProvider, format, args));
         }
 
         public static void Fail(string format, params object[] args) {
-            throw SpecFailure.Fail(string.Format(format, args));
+            Global.Fail(string.Format(format, args));
         }
 
         public static void Fail(string message) {
-            throw SpecFailure.Fail(message);
+            Global.Fail(message);
         }
 
         public static void Fail() {
-            throw SpecFailure.Fail();
+            Global.Fail();
         }
 
         public static void Pending(string message) {
-            throw SpecFailure.Pending(message);
+            Global.Pending(message);
         }
 
         public static void Pending() {
-            throw SpecFailure.Pending();
+            Global.Pending();
         }
 
         public static void Pending(IFormatProvider formatProvider, string format, params object[] args) {
-            throw SpecFailure.Pending(string.Format(formatProvider, format, args));
+            Global.Pending(string.Format(formatProvider, format, args));
         }
 
         public static void Pending(string format, params object[] args) {
-            throw SpecFailure.Pending(string.Format(format, args));
+            Global.Pending(string.Format(format, args));
         }
     }
 }

@@ -55,6 +55,58 @@ namespace Carbonfrost.Commons.Spec {
             return Given().Expect(func);
         }
 
+        public void Pass(string message) {
+            RaiseException(SpecFailure.Pass(message));
+        }
+
+        public void Pass() {
+            RaiseException(SpecFailure.Pass());
+        }
+
+        public void Pass(IFormatProvider formatProvider, string format, params object[] args) {
+            RaiseException(SpecFailure.Pass(string.Format(formatProvider, format, args)));
+        }
+
+        public void Pass(string format, params object[] args) {
+            RaiseException(SpecFailure.Pass(string.Format(format, args)));
+        }
+
+        public void Fail(IFormatProvider formatProvider, string format, params object[] args) {
+            RaiseException(SpecFailure.Fail(string.Format(formatProvider, format, args)));
+        }
+
+        public void Fail(string format, params object[] args) {
+            RaiseException(SpecFailure.Fail(string.Format(format, args)));
+        }
+
+        public void Fail(string message) {
+            RaiseException(SpecFailure.Fail(message));
+        }
+
+        public void Fail() {
+            RaiseException(SpecFailure.Fail());
+        }
+
+        public void Pending(string message) {
+            RaiseException(SpecFailure.Pending(message));
+        }
+
+        public void Pending() {
+            RaiseException(SpecFailure.Pending());
+        }
+
+        public void Pending(IFormatProvider formatProvider, string format, params object[] args) {
+            RaiseException(SpecFailure.Pending(string.Format(formatProvider, format, args)));
+        }
+
+        public void Pending(string format, params object[] args) {
+            RaiseException(SpecFailure.Pending(string.Format(format, args)));
+        }
+
+        private void RaiseException(Exception ex) {
+            throw ex;
+        }
+
         internal void That(Action actual, ITestMatcher matcher, string message = null, params object[] args) {
             Expect(actual).To(matcher, message, (object[]) args);
         }

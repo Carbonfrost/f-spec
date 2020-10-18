@@ -122,6 +122,16 @@ namespace Carbonfrost.SelfTest.Spec {
             Assert.Contains($"{baseName} dynamic A #0 (a,b)", bothTests);
             Assert.Contains($"{baseName} dynamic A #1 (x,y)", bothTests);
         }
+
+        [Theory]
+        [InlineData("Pass")]
+        [InlineData("Fail")]
+        [InlineData("Pending")]
+        public void TestExecutionContext_class_should_have_matching_methods(string name) {
+            var assertMethods = typeof(Assert).GetMethods().Where(m => m.Name == name).Select(m => m.ToString());
+            var contextMethods = typeof(TestExecutionContext).GetMethods().Where(m => m.Name == name).Select(m => m.ToString());
+            Assert.SetEqual(assertMethods, contextMethods);
+        }
     }
 }
 #endif
