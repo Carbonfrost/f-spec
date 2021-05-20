@@ -1,13 +1,13 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    kramdown (2.3.0)
+    kramdown (2.3.1)
       rexml
     mini_portile2 (2.4.0)
     mustache (0.99.8)
     nokogiri (1.10.10)
       mini_portile2 (~> 2.4.0)
-    rexml (3.2.4)
+    rexml (3.2.5)
     ronn-ng (0.9.1)
       kramdown (~> 2.1)
       mustache (~> 0.7, >= 0.7.0)
