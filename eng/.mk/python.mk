@@ -1,3 +1,5 @@
+#: python engineering
+
 ENG_AUTODETECT_USING_PYTHON = $(shell \
 	[ ! -f requirements.txt ] && \
 	[ ! -f Pipfile ] ; \
@@ -14,11 +16,14 @@ endif
 ENG_AVAILABLE_RUNTIMES += python
 
 _VENV = . $(VIRTUAL_ENV_NAME)/bin/activate $(OUTPUT_HIDDEN)
+_ENG_ACTUAL_PYTHON_VERSION=$(shell $(PYTHON) -V | awk '{ print $$2 }')
 
 .PHONY: \
+	-check-python-version \
 	-hint-unsupported-python \
 	-python/init \
 	-python/install \
+	-requirements-python \
 	-use/python \
 	-use/python-Pipfile \
 	python/init \
@@ -82,3 +87,10 @@ endif
 	$(Q) if [ -f Pipfile ]; then \
 		$(_VENV) && command -v pipenv > /dev/null && $(OUTPUT_HIDDEN) pipenv install; \
 	fi
+
+-check-python-version: -check-command-python
+	@ $(call _check_version,python,$(_ENG_ACTUAL_PYTHON_VERSION),$(PYTHON_VERSION))
+
+-requirements-python: -check-python-version -check-command-python
+
+-init-frameworks: python/init

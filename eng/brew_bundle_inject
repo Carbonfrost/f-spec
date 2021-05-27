@@ -26,12 +26,12 @@ case $arg in
     TYPE=brew
     shift
     ;;
-    
+
     *)
     LINE="${TYPE} '${1}'"
     grep -qF -- "$LINE" "$FILE" || echo "$LINE" >> "$FILE"
-    
-    shift 
+
+    shift
     ;;
 esac
 done

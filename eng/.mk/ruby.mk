@@ -1,3 +1,5 @@
+#: ruby engineering
+
 # Automatically detect whether Ruby is in use
 ENG_AUTODETECT_USING_RUBY = $(shell [ ! -f .ruby-version ] ; echo $$?)
 
@@ -48,3 +50,5 @@ endif
 -hint-unsupported-ruby:
 	@ echo $(_HIDDEN_IF_BOOTSTRAPPING) "$(_WARNING) Nothing to do" \
 		"because $(_MAGENTA)Ruby$(_RESET) is not enabled (Investigate $(_CYAN)\`make use/ruby\`$(_RESET))"
+
+-init-frameworks: ruby/init

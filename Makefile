@@ -1,5 +1,8 @@
+include eng/Makefile
+
+.DEFAULT_GOAL = build
+
 FRAMEWORK ?= netcoreapp3.0
-PREFIX = /usr/local
 
 TEXT_TEMPLATES = dotnet/src/Carbonfrost.Commons.Spec/Automation/Preprocessor/
 
@@ -57,4 +60,3 @@ man/man1/fspec.1: -generate-docs
 -generate-docs:
 	$(Q) ronn man/man1/fspec.1.md
 
-include eng/.mk/*.mk

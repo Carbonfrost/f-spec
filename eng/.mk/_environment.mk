@@ -2,6 +2,7 @@
 	env \
 	-env-global \
 	-env-enabled-dotnet \
+	-env-enabled-rust \
 	-env-enabled-frameworks \
 	-env-enabled-python \
 	-env-enabled-ruby
@@ -19,12 +20,8 @@ _DEV_MESSAGE=(Is direnv set up correctly?  Have you tried 'make init'?)
 		exit 1; \
 	fi
 
-env: -env-global -env-enabled-frameworks
+-env: -env-global -env-enabled-frameworks
 	@ printf ""
-
-## Display the names of active frameworks
-eng/enabled:
-	@ echo $(ENG_ENABLED_RUNTIMES)
 
 -env-global:
 	@ $(call _display_variables,ENG_GLOBAL_VARIABLES)
@@ -32,7 +29,7 @@ eng/enabled:
 		$(call _display_variables,ENG_GLOBAL_VERBOSE_VARIABLES) \
 	fi
 
--env-enabled-frameworks: | -env-enabled-dotnet -env-enabled-python -env-enabled-ruby -env-enabled-go
+-env-enabled-frameworks: | -env-enabled-dotnet -env-enabled-python -env-enabled-ruby -env-enabled-go -env-enabled-rust
 
 -env-enabled-dotnet:
 	@ $(call _status,.NET,DOTNET)
@@ -46,14 +43,20 @@ eng/enabled:
 -env-enabled-go:
 	@ $(call _status,Go,GO)
 
+-env-enabled-rust:
+	@ $(call _status,Rust,RUST)
+
 # _status "display name" "base variable name"
 define _status
-    printf "$(_MAGENTA)%s$(_RESET) support is available and %b$(_RESET)\n" $(1) "$(if $(filter $(_ENG_ACTUALLY_USING_$(2)),1),$(_GREEN)enabled,$(_RED)not enabled)"
-    if [[ -n "$(VERBOSE)" ]] || [[ $(_ENG_ACTUALLY_USING_$(2)) == "1" ]]; then \
+	printf "$(_MAGENTA)%s$(_RESET) support is available and %b$(_RESET)\n" $(1) "$(if $(filter $(_ENG_ACTUALLY_USING_$(2)),1),$(_GREEN)enabled,$(_RED)not enabled)"
+	if [[ -n "$(VERBOSE)" ]] || [[ $(_ENG_ACTUALLY_USING_$(2)) == "1" ]]; then \
 	$(call _display_variables,ENG_$(2)_VARIABLES) \
-    fi
+	fi
+	if [[ -n "$(VERBOSE)" ]]; then \
+	$(call _display_variables,ENG_$(2)_VERBOSE_VARIABLES) \
+	fi
 endef
 
 define _display_variables
-    $(foreach var,$($(1)),printf "  $(_CYAN)%-22s$(_RESET) %s\n" $(var) "$($(var))";)
+	$(foreach var,$($(1)),printf "  $(_CYAN)%-22s$(_RESET) %s\n" $(var) "$($(var))";)
 endef
